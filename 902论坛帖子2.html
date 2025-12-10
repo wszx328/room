@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>有没有人知道701住客为什么被送医院？ - R∞M酒店内部系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block" data-i18n="nav.internalSystem">| 内部系统</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username" data-i18n="user.name">刘婉</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white" data-i18n="forum.title">员工论坛</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-21</span> | 
+            <span id="current-time">15:45:22</span>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2">
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <!-- 帖子内容 -->
+              <div class="mb-6">
+                <div class="flex justify-between items-start mb-4">
+                  <h2 class="text-2xl font-bold text-white" data-i18n="post.title">有没有人知道701住客为什么被送医院？</h2>
+                  <span class="text-gray-400 text-sm" data-i18n="post.timeAgo">2025/11/21 14:22</span>
+                </div>
+                <div class="flex items-center mb-4 text-gray-300">
+                  <i class="fa fa-user-circle mr-2"></i>
+                  <span data-i18n="post.author">前台-金倩</span>
+                  <span class="mx-2">•</span>
+                  <span class="text-accent" data-i18n="post.category">八卦闲聊</span>
+                </div>
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <p class="text-gray-300 mb-3" data-i18n="post.content1">昨天凌晨2点多，701的客人突然打电话到前台说心脏不舒服，安保把他送去医院了。今天他退房的时候我办理的手续，看他脸色还是很差。我听说医院检查结果是心率异常？有没有具体情况？客人有投诉吗？</p>
+                </div>
+              </div>
+              
+              <!-- 回复列表 -->
+              <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-white mb-4" data-i18n="post.replies">回复 (4)</h3>
+                
+                <!-- 回复1 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply1.author">安保部-吴建宇</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply1.time">2025/11/21 15:03</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply1.content">我当班送他去的医院。他当时的状态很吓人——脸色苍白，冷汗直流，一直说'有东西在敲我的心脏'。医生说他心率每分钟120次，而且极其规律，像节拍器一样精准。但心电图显示心脏本身没问题，就是心率被'强制调整'到了这个频率。医生也觉得奇怪，问他是不是接触过什么强磁场或者特殊音频设备。他说没有，就是住酒店睡觉而已。他退房的时候跟我说，他再也不会来R∞M了。他说这个酒店'不干净'。</p>
+                </div>
+                
+                <!-- 回复2 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply2.author">客房服务-李华</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply2.time">2025/11/21 16:34</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply2.content">902现在住的那个客人，每天晚上都在放很大声的音乐。会不会是音乐影响到了楼下？</p>
+                </div>
+                
+                <!-- 回复3 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply3.author">技术部-王文华</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply3.time">2025/11/21 17:52</span>
+                  </div>
+                  <p class="text-gray-300 mb-2" data-i18n="reply3.content1">我检查过隔音系统,完全正常。而且902房间的音量虽然大，但实测只有65分贝，不至于影响到其他楼层。</p>
+                  <p class="text-gray-300" data-i18n="reply3.content2">不过……我注意到一个奇怪的现象。902房间在'演出'时段，整栋楼的低频共振数据会异常。频率大概在18-22Hz之间，这个频段人耳听不到，但可能会引起身体不适。我报告给了RIKI先生，他说这属于正常现象，让我不要多管。</p>
+                </div>
+                
+                <!-- 回复4 -->
+                <div class="bg-primary/40 p-4 rounded-sm border border-accent/30">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2 text-warning"></i>
+                      <span class="font-semibold" data-i18n="reply4.author">管理员RIKI</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply4.time">2025/11/21 18:30</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply4.content">701客人的医疗费用和房费已经由酒店承担，他本人表示接受。此事到此为止。@技术部-王文华，18-22Hz的低频共振在城市建筑中很常见，可能来自地铁、重型车辆或者建筑本身的结构。不要把所有异常都归咎于某一个房间。请大家认真工作，不要过度解读。</p>
+                </div>
+              </div>
+              
+              <!-- 回复表单 -->
+              <div class="mt-6 pt-6 border-t border-accent/20">
+                <h3 class="text-lg font-semibold text-white mb-4" data-i18n="post.replyForm">发表回复</h3>
+                <form>
+                  <textarea rows="4" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" data-i18n-placeholder="post.replyPlaceholder" placeholder="输入回复内容..."></textarea>
+                  <div class="mt-4 flex justify-end">
+                    <button type="submit" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300" data-i18n="post.submitReply">
+                      发表回复
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.categories">论坛分类</h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.work">工作交流</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">42</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.data">数据分析</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">28</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.anomaly">异常报告</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">18</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.gossip">八卦闲聊</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">23</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.system">系统更新</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">9</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.notice">部门通知</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">34</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.related">相关帖子</h3>
+              <div class="space-y-3">
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost1.title">902房间的"演出"到底是什么？</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost1.stats">回复 15 · 查看 89</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost2.title">低频共振对健康的影响</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost2.stats">回复 8 · 查看 47</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost3.title">必须安利！力丸新专辑《ROOM》太绝了！</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost3.stats">回复 23 · 查看 156</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.rules">论坛规则</h3>
+              <ul class="text-gray-300 text-sm space-y-2">
+                <li data-i18n="rule1">• 禁止讨论敏感客户信息</li>
+                <li data-i18n="rule2">• 所有分析必须基于客观数据</li>
+                <li data-i18n="rule3">• 发现异常请立即报告管理员</li>
+                <li data-i18n="rule4">• 保持专业态度，尊重同事</li>
+                <li data-i18n="rule5">• 遵守公司保密协议</li>
+              </ul>
+              <div class="mt-4 pt-4 border-t border-accent/20">
+                <p class="text-gray-400 text-xs terminal-font" data-i18n="system.note">> 系统提示：您的所有活动都会被记录</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm" data-i18n="footer.system">| 内部系统 v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.usage">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p data-i18n="footer.lastUpdate">最后系统更新: 2025-11-12 11:02</p>
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态:</span> <span class="text-success" data-i18n="footer.statusNormal">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.internalSystem': '| 内部系统',
+        'user.name': '刘婉',
+        'forum.title': '员工论坛',
+        'post.title': '有没有人知道701住客为什么被送医院？',
+        'post.timeAgo': '2025/11/21 14:22',
+        'post.author': '前台-金倩',
+        'post.category': '八卦闲聊',
+        'post.content1': '昨天凌晨2点多，701的客人突然打电话到前台说心脏不舒服，安保把他送去医院了。今天他退房的时候我办理的手续，看他脸色还是很差。我听说医院检查结果是心率异常？有没有具体情况？客人有投诉吗？',
+        'post.replies': '回复 (4)',
+        'post.replyForm': '发表回复',
+        'post.replyPlaceholder': '输入回复内容...',
+        'post.submitReply': '发表回复',
+        'reply1.author': '安保部-吴建宇',
+        'reply1.time': '2025/11/21 15:03',
+        'reply1.content': '我当班送他去的医院。他当时的状态很吓人——脸色苍白，冷汗直流，一直说"有东西在敲我的心脏"。医生说他心率每分钟120次，而且极其规律，像节拍器一样精准。但心电图显示心脏本身没问题，就是心率被"强制调整"到了这个频率。医生也觉得奇怪，问他是不是接触过什么强磁场或者特殊音频设备。他说没有，就是住酒店睡觉而已。他退房的时候跟我说，他再也不会来R∞M了。他说这个酒店"不干净"。',
+        'reply2.author': '客房服务-李华',
+        'reply2.time': '2025/11/21 16:34',
+        'reply2.content': '902现在住的那个客人，每天晚上都在放很大声的音乐。会不会是音乐影响到了楼下？',
+        'reply3.author': '技术部-王文华',
+        'reply3.time': '2025/11/21 17:52',
+        'reply3.content1': '我检查过隔音系统,完全正常。而且902房间的音量虽然大，但实测只有65分贝，不至于影响到其他楼层。',
+        'reply3.content2': '不过……我注意到一个奇怪的现象。902房间在"演出"时段，整栋楼的低频共振数据会异常。频率大概在18-22Hz之间，这个频段人耳听不到，但可能会引起身体不适。我报告给了RIKI先生，他说这属于正常现象，让我不要多管。',
+        'reply4.author': '管理员RIKI',
+        'reply4.time': '2025/11/21 18:30',
+        'reply4.content': '701客人的医疗费用和房费已经由酒店承担，他本人表示接受。此事到此为止。@技术部-王文华，18-22Hz的低频共振在城市建筑中很常见，可能来自地铁、重型车辆或者建筑本身的结构。不要把所有异常都归咎于某一个房间。请大家认真工作，不要过度解读。',
+        'sidebar.categories': '论坛分类',
+        'category.work': '工作交流',
+        'category.data': '数据分析',
+        'category.anomaly': '异常报告',
+        'category.gossip': '八卦闲聊',
+        'category.system': '系统更新',
+        'category.notice': '部门通知',
+        'sidebar.related': '相关帖子',
+        'relatedPost1.title': '902房间的"演出"到底是什么？',
+        'relatedPost1.stats': '回复 15 · 查看 89',
+        'relatedPost2.title': '低频共振对健康的影响',
+        'relatedPost2.stats': '回复 8 · 查看 47',
+        'relatedPost3.title': '必须安利！力丸新专辑《ROOM》太绝了！',
+        'relatedPost3.stats': '回复 23 · 查看 156',
+        'sidebar.rules': '论坛规则',
+        'rule1': '• 禁止讨论敏感客户信息',
+        'rule2': '• 所有分析必须基于客观数据',
+        'rule3': '• 发现异常请立即报告管理员',
+        'rule4': '• 保持专业态度，尊重同事',
+        'rule5': '• 遵守公司保密协议',
+        'system.note': '> 系统提示：您的所有活动都会被记录',
+        'footer.system': '| 内部系统 v2.1.4',
+        'footer.usage': '仅供内部使用 - 保密级别：高级',
+        'footer.lastUpdate': '最后系统更新: 2025-11-12 11:02',
+        'footer.status': '系统状态:',
+        'footer.statusNormal': '运行正常'
+      },
+      'en': {
+        'nav.internalSystem': '| Internal System',
+        'user.name': 'Liu Wan',
+        'forum.title': 'Employee Forum',
+        'post.title': 'Does Anyone Know Why the Guest in Room 701 Was Sent to the Hospital?',
+        'post.timeAgo': '2025/11/21 14:22',
+        'post.author': 'Front Desk - Jin Qian',
+        'post.category': 'Gossip Chat',
+        'post.content1': 'Yesterday around 2 AM, the guest in room 701 suddenly called the front desk saying he had heart discomfort. Security sent him to the hospital. Today when he checked out, I handled the procedure and saw his face still looked very pale. I heard the hospital test results showed abnormal heart rate? Any specific details? Did the guest complain?',
+        'post.replies': 'Replies (4)',
+        'post.replyForm': 'Post a Reply',
+        'post.replyPlaceholder': 'Enter reply content...',
+        'post.submitReply': 'Post Reply',
+        'reply1.author': 'Security Dept - Wu Jianyu',
+        'reply1.time': '2025/11/21 15:03',
+        'reply1.content': 'I was on duty and took him to the hospital. His condition was frightening—pale face, sweating profusely, constantly saying "something is knocking on my heart." The doctor said his heart rate was 120 beats per minute, extremely regular, like a metronome. But the ECG showed his heart itself was fine, just that the heart rate was "forcibly adjusted" to this frequency. The doctor also found it strange, asking if he had been exposed to strong magnetic fields or special audio equipment. He said no, he was just sleeping in the hotel. When he checked out, he told me he would never come back to R∞M. He said this hotel is "not clean."',
+        'reply2.author': 'Room Service - Li Hua',
+        'reply2.time': '2025/11/21 16:34',
+        'reply2.content': 'The guest currently staying in 902 plays very loud music every night. Could that be affecting the floor below?',
+        'reply3.author': 'Technical Dept - Wang Wenhua',
+        'reply3.time': '2025/11/21 17:52',
+        'reply3.content1': 'I checked the sound insulation system, it\'s completely normal. And although the volume in room 902 is loud, it measures only 65 decibels, not enough to affect other floors.',
+        'reply3.content2': 'But... I noticed a strange phenomenon. During the "performance" time in room 902, the low-frequency resonance data for the entire building becomes abnormal. The frequency is around 18-22Hz, a range that the human ear cannot hear, but may cause physical discomfort. I reported this to Mr. RIKI, and he said this is a normal phenomenon and told me not to worry about it.',
+        'reply4.author': 'Administrator RIKI',
+        'reply4.time': '2025/11/21 18:30',
+        'reply4.content': 'The medical expenses and room fees for the guest in 701 have been covered by the hotel, and he has accepted this. This matter ends here. @Technical Dept - Wang Wenhua, 18-22Hz low-frequency resonance is common in urban buildings, possibly from subways, heavy vehicles, or the building structure itself. Don\'t attribute all anomalies to one specific room. Everyone, please focus on your work and avoid over-interpretation.',
+        'sidebar.categories': 'Forum Categories',
+        'category.work': 'Work Communication',
+        'category.data': 'Data Analysis',
+        'category.anomaly': 'Anomaly Reports',
+        'category.gossip': 'Gossip Chat',
+        'category.system': 'System Updates',
+        'category.notice': 'Department Notices',
+        'sidebar.related': 'Related Posts',
+        'relatedPost1.title': 'What Exactly is the "Performance" in Room 902?',
+        'relatedPost1.stats': 'Replies 15 · Views 89',
+        'relatedPost2.title': 'Health Effects of Low-Frequency Resonance',
+        'relatedPost2.stats': 'Replies 8 · Views 47',
+        'relatedPost3.title': 'Must Recommend! Rikimaru\'s New Album "ROOM" is Amazing!',
+        'relatedPost3.stats': 'Replies 23 · Views 156',
+        'sidebar.rules': 'Forum Rules',
+        'rule1': '• Do not discuss sensitive customer information',
+        'rule2': '• All analysis must be based on objective data',
+        'rule3': '• Report anomalies to administrators immediately',
+        'rule4': '• Maintain professional attitude and respect colleagues',
+        'rule5': '• Comply with company confidentiality agreement',
+        'system.note': '> System Note: All your activities will be recorded',
+        'footer.system': '| Internal System v2.1.4',
+        'footer.usage': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.lastUpdate': 'Last System Update: 2025-11-12 11:02',
+        'footer.status': 'System Status:',
+        'footer.statusNormal': 'Running Normally'
+      },
+      'ja': {
+        'nav.internalSystem': '| 内部システム',
+        'user.name': '刘婉',
+        'forum.title': '従業員フォーラム',
+        'post.title': '701号室の宿泊客が病院に送られた理由を知っている人はいますか？',
+        'post.timeAgo': '2025/11/21 14:22',
+        'post.author': 'フロント - 金倩',
+        'post.category': '噂話',
+        'post.content1': '昨日の午前2時頃、701号室のお客様が突然フロントに電話をかけ、心臓の不快感を訴えました。警備員が病院に送りました。今日、彼がチェックアウトした時、私が手続きを担当しましたが、顔色はまだとても悪かったです。病院の検査結果が心拍異常だったと聞きましたか？具体的な詳細はありますか？お客様は苦情を言いましたか？',
+        'post.replies': '返信 (4)',
+        'post.replyForm': '返信を投稿',
+        'post.replyPlaceholder': '返信内容を入力...',
+        'post.submitReply': '返信を投稿',
+        'reply1.author': '警備部 - 呉建宇',
+        'reply1.time': '2025/11/21 15:03',
+        'reply1.content': '私が当番で彼を病院に連れて行きました。彼の状態は恐ろしいものでした——顔色は青白く、冷や汗が流れ落ち、「何かが私の心臓を叩いている」と繰り返し言っていました。医師は心拍数が毎分120回で、非常に規則的で、メトロノームのように正確だと言いました。しかし、心電図では心臓自体には問題がなく、心拍数がこの頻度に「強制的に調整」されているだけでした。医師も奇妙に思い、強力な磁場や特殊な音響装置に接触したかと尋ねました。彼はいいえ、ホテルで寝ていただけだと言いました。チェックアウトの時、彼はもう二度とR∞Mには来ないと言いました。このホテルは「清潔ではない」と。',
+        'reply2.author': '客室サービス - 李華',
+        'reply2.time': '2025/11/21 16:34',
+        'reply2.content': '902号室に今泊まっているお客様は、毎晩とても大きな音で音楽を流しています。それが下の階に影響している可能性はありませんか？',
+        'reply3.author': '技術部 - 王文華',
+        'reply3.time': '2025/11/21 17:52',
+        'reply3.content1': '遮音システムをチェックしましたが、完全に正常です。また、902号室の音量は大きいですが、実測では65デシベルしかなく、他の階に影響を与えるほどではありません。',
+        'reply3.content2': 'ただし…奇妙な現象に気づきました。902号室の「公演」時間帯に、建物全体の低周波共振データが異常になります。周波数は約18-22Hzで、この周波数帯は人間の耳には聞こえませんが、身体の不快感を引き起こす可能性があります。RIKIさんに報告しましたが、これは正常な現象で、気にしないでと言われました。',
+        'reply4.author': '管理者RIKI',
+        'reply4.time': '2025/11/21 18:30',
+        'reply4.content': '701号室のお客様の医療費と宿泊費はホテルが負担し、本人も了承しています。この件はこれで終了です。@技術部-王文華、18-22Hzの低周波共振は都市の建物ではよくあることで、地下鉄、重量車両、または建物自体の構造から来る可能性があります。すべての異常を特定の部屋に帰属させないでください。皆さん、仕事に集中し、過度に解釈しないでください。',
+        'sidebar.categories': 'フォーラムカテゴリ',
+        'category.work': '仕事の連絡',
+        'category.data': 'データ分析',
+        'category.anomaly': '異常報告',
+        'category.gossip': '噂話',
+        'category.system': 'システム更新',
+        'category.notice': '部門通知',
+        'sidebar.related': '関連投稿',
+        'relatedPost1.title': '902号室の「公演」とは一体何ですか？',
+        'relatedPost1.stats': '返信 15 · 閲覧 89',
+        'relatedPost2.title': '低周波共振の健康への影響',
+        'relatedPost2.stats': '返信 8 · 閲覧 47',
+        'relatedPost3.title': 'おすすめ！力丸の新アルバム「ROOM」が最高です！',
+        'relatedPost3.stats': '返信 23 · 閲覧 156',
+        'sidebar.rules': 'フォーラムルール',
+        'rule1': '• 機密性の高い顧客情報について議論しないでください',
+        'rule2': '• すべての分析は客観的なデータに基づく必要があります',
+        'rule3': '• 異常を発見したらすぐに管理者に報告してください',
+        'rule4': '• 専門的な態度を保ち、同僚を尊重してください',
+        'rule5': '• 会社の機密保持契約を遵守してください',
+        'system.note': '> システムメモ：すべての活動は記録されます',
+        'footer.system': '| 内部システム v2.1.4',
+        'footer.usage': '内部使用のみ - 機密レベル：高',
+        'footer.lastUpdate': '最終システム更新: 2025-11-12 11:02',
+        'footer.status': 'システムステータス:',
+        'footer.statusNormal': '正常に動作中'
+      },
+      'pt': {
+        'nav.internalSystem': '| Sistema Interno',
+        'user.name': 'Liu Wan',
+        'forum.title': 'Fórum de Funcionários',
+        'post.title': 'Alguém Sabe Por Que o Hóspede do Quarto 701 Foi Enviado ao Hospital?',
+        'post.timeAgo': '2025/11/21 14:22',
+        'post.author': 'Recepção - Jin Qian',
+        'post.category': 'Fofocas e Conversas',
+        'post.content1': 'Ontem por volta das 2 da manhã, o hóspede do quarto 701 ligou de repente para a recepção dizendo que estava com desconforto no coração. A segurança o levou ao hospital. Hoje, quando ele fez o check-out, eu cuidei do procedimento e vi que seu rosto ainda estava muito pálido. Ouvi dizer que os resultados do hospital mostraram frequência cardíaca anormal? Algum detalhe específico? O hóspede reclamou?',
+        'post.replies': 'Respostas (4)',
+        'post.replyForm': 'Postar uma Resposta',
+        'post.replyPlaceholder': 'Digite o conteúdo da resposta...',
+        'post.submitReply': 'Postar Resposta',
+        'reply1.author': 'Departamento de Segurança - Wu Jianyu',
+        'reply1.time': '2025/11/21 15:03',
+        'reply1.content': 'Eu estava de plantão e o levei ao hospital. Sua condição era assustadora—rosto pálido, suando profusamente, dizendo constantemente "algo está batendo no meu coração". O médico disse que sua frequência cardíaca era de 120 batimentos por minuto, extremamente regular, como um metrônomo. Mas o ECG mostrou que o coração em si estava bem, apenas a frequência cardíaca foi "ajustada à força" para essa frequência. O médico também achou estranho, perguntando se ele havia sido exposto a campos magnéticos fortes ou equipamentos de áudio especiais. Ele disse que não, que estava apenas dormindo no hotel. Quando ele fez o check-out, me disse que nunca mais voltaria ao R∞M. Ele disse que este hotel "não é limpo".',
+        'reply2.author': 'Serviço de Quarto - Li Hua',
+        'reply2.time': '2025/11/21 16:34',
+        'reply2.content': 'O hóspede atualmente no 902 toca música muito alta todas as noites. Isso poderia estar afetando o andar de baixo?',
+        'reply3.author': 'Departamento Técnico - Wang Wenhua',
+        'reply3.time': '2025/11/21 17:52',
+        'reply3.content1': 'Verifiquei o sistema de isolamento acústico, está completamente normal. E embora o volume no quarto 902 seja alto, mede apenas 65 decibéis, não o suficiente para afetar outros andares.',
+        'reply3.content2': 'Mas... notei um fenômeno estranho. Durante o horário de "apresentação" no quarto 902, os dados de ressonância de baixa frequência de todo o edifício ficam anormais. A frequência é em torno de 18-22Hz, uma faixa que o ouvido humano não pode ouvir, mas pode causar desconforto físico. Informei ao Sr. RIKI, e ele disse que isso é um fenômeno normal e me disse para não me preocupar com isso.',
+        'reply4.author': 'Administrador RIKI',
+        'reply4.time': '2025/11/21 18:30',
+        'reply4.content': 'As despesas médicas e as taxas do quarto do hóspede do 701 foram cobertas pelo hotel, e ele aceitou. Este assunto termina aqui. @Departamento Técnico - Wang Wenhua, a ressonância de baixa frequência de 18-22Hz é comum em edifícios urbanos, possivelmente proveniente de metrôs, veículos pesados ou da estrutura do próprio edifício. Não atribua todas as anomalias a um quarto específico. Todos, por favor, concentrem-se em seu trabalho e evitem interpretações exageradas.',
+        'sidebar.categories': 'Categorias do Fórum',
+        'category.work': 'Comunicação de Trabalho',
+        'category.data': 'Análise de Dados',
+        'category.anomaly': 'Relatórios de Anomalias',
+        'category.gossip': 'Fofocas e Conversas',
+        'category.system': 'Atualizações do Sistema',
+        'category.notice': 'Avisos do Departamento',
+        'sidebar.related': 'Posts Relacionados',
+        'relatedPost1.title': 'O Que Exatamente é a "Apresentação" no Quarto 902?',
+        'relatedPost1.stats': 'Respostas 15 · Visualizações 89',
+        'relatedPost2.title': 'Efeitos da Ressonância de Baixa Frequência na Saúde',
+        'relatedPost2.stats': 'Respostas 8 · Visualizações 47',
+        'relatedPost3.title': 'Devo Recomendar! O Novo Álbum "ROOM" do Rikimaru é Incrível!',
+        'relatedPost3.stats': 'Respostas 23 · Visualizações 156',
+        'sidebar.rules': 'Regras do Fórum',
+        'rule1': '• Não discuta informações confidenciais do cliente',
+        'rule2': '• Todas as análises devem ser baseadas em dados objetivos',
+        'rule3': '• Reporte anomalias aos administradores imediatamente',
+        'rule4': '• Mantenha atitude profissional e respeite os colegas',
+        'rule5': '• Cumpra o acordo de confidencialidade da empresa',
+        'system.note': '> Nota do Sistema: Todas as suas atividades serão registradas',
+        'footer.system': '| Sistema Interno v2.1.4',
+        'footer.usage': 'Apenas para Uso Interno - Nível de Confidencialidade: Alto',
+        'footer.lastUpdate': 'Última Atualização do Sistema: 2025-11-12 11:02',
+        'footer.status': 'Status do Sistema:',
+        'footer.statusNormal': 'Executando Normalmente'
+      }
+    };
+
+    // 更新日期和时间
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+      document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+    }
+    
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // 语言切换功能
+    window.addEventListener('DOMContentLoaded', () => {
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+    });
+  </script>
+</body>
+</html>

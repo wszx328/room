@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[求助] 9楼最近是不是有点邪门？ - R∞M酒店内部系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .warning-banner {
+        background: rgba(255, 68, 68, 0.1);
+        border: 1px solid rgba(255, 68, 68, 0.3);
+        color: #ff6b6b;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin: 10px 0;
+        font-size: 0.9rem;
+      }
+      .deleted-account {
+        color: #888;
+        font-style: italic;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block" data-i18n="nav.internalSystem">| 内部系统</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username" data-i18n="user.name">；李丽</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white" data-i18n="forum.title">员工论坛</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2">
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <!-- 帖子内容 -->
+              <div class="mb-6">
+                <div class="flex justify-between items-start mb-4">
+                  <h2 class="text-2xl font-bold text-white" data-i18n="post.title">[求助] 9楼最近是不是有点邪门？</h2>
+                  <span class="text-gray-400 text-sm" data-i18n="post.timeAgo">2天前</span>
+                </div>
+                <div class="flex items-center mb-4 text-gray-300">
+                  <i class="fa fa-user-circle mr-2"></i>
+                  <span data-i18n="post.author">客房服务-张敏</span>
+                  <span class="mx-2">•</span>
+                  <span class="text-accent" data-i18n="post.category">异常报告</span>
+                </div>
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <p class="text-gray-300 mb-4" data-i18n="post.content">有没有同事最近去过9楼？我这几天给902房送东西的时候总感觉怪怪的。</p>
+                  <p class="text-gray-300 mb-4" data-i18n="post.content2">前两天我送威士忌过去，房门开了一条缝，我无意中看到房间里……怎么说呢，地上全是白色的粉笔画的图案，特别复杂，像那种宗教仪式用的魔法阵？然后房间中央堆着一堆黑色的大箱子，那个住客坐在中间，闭着眼睛，手在空中乱挥。</p>
+                  <p class="text-gray-300 mb-4" data-i18n="post.content3">我当时就感觉后背发凉，赶紧放下东西就走了。</p>
+                  <p class="text-gray-300 mb-4" data-i18n="post.content4">今天又去送东西，这次门是关着的，但我站在门口就感觉不舒服，头晕，想吐，耳朵里有嗡嗡的声音。而且走廊的灯一直在闪，就那种……一闪一闪的，特别规律。</p>
+                  <p class="text-gray-300 mb-4" data-i18n="post.content5">我知道酒店什么客人都有，我们不应该多管闲事。但说实话我有点害怕。902这个房间是不是有什么问题啊？还是那个住客在搞什么奇怪的东西？</p>
+                  <p class="text-gray-300" data-i18n="post.content6">有没有老员工能说说这个房间以前有没有发生过什么事？</p>
+                </div>
+              </div>
+              
+              <!-- 警告横幅 -->
+              <div class="warning-banner terminal-font">
+                <i class="fa fa-exclamation-triangle mr-2"></i>
+                <span data-i18n="post.deletionNotice">帖子状态：已被删除 | 该贴禁止回复</span>
+              </div>
+              
+              <!-- 回复列表 -->
+              <div class="space-y-4 mt-6">
+                <h3 class="text-lg font-semibold text-white mb-4" data-i18n="post.replies">回复 (6)</h3>
+                
+                <!-- 回复1 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply1.author">安保部林强</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply1.time">2025/11/18 16:02</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply1.content">张敏你想多了。902就是个普通的总统套房，以前住过的客人也没出过事。你说的那些症状可能是你自己太累了，最近客房部不是在赶年底考核吗？注意休息。<br>至于那个住客，人家可能是艺术家，搞行为艺术或者音乐创作什么的。咱们酒店的规矩你也知道——不打听,不多问，做好本职工作就行。</p>
+                </div>
+                
+                <!-- 回复2 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply2.author">前台胡静</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply2.time">2025/11/18 17:21</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply2.content">办理入住的时候我见过那个客人。戴着墨镜和帽子，但我认出来了，应该是几年前挺有名的一个音乐人，叫刘星辰。他以前的歌我还挺喜欢的，不过后来就没消息了。<br>他入住的时候态度还挺正常的，就是看起来很累，声音也哑了。可能真的是来找灵感的吧？艺术家嘛，行为可能是会怪一点。</p>
+                </div>
+                
+                <!-- 回复3 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply3.author">客房服务李华</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply3.time">2025/11/18 19:47</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply3.content">@张敏 我也送过几次，确实感觉不太对劲。那天我去的时候，门缝里传出来一种低频的声音，就是那种……你听不太清楚，但能感觉到的声音，震得我胸口发闷。<br>而且我注意到，他房间门口放的威士忌和水，好几天都没拿进去。今天我去送新的，发现上次的还堆在那儿。他这是不吃不喝吗？<br>说实话我也有点担心他会不会出事。要不要报告给主管，让他们检查一下？</p>
+                </div>
+                
+                <!-- 回复4 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply4.author">客房主管马丽</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply4.time">2025/11/18 21:03</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply4.content">@张敏 @李华 你们两个注意一下自己的言行。住客的隐私是受保护的，在论坛上公开讨论客人的行为是违反酒店规定的。<br>我已经向管理层报告了902房间的情况，得到的回复是：一切正常，不需要特殊处理。住客已经签署了免责声明，他在房间内的任何行为都是他的自由。<br>你们只需要按照要求送物资就好，不要多想，更不要传播不必要的恐慌。<br>另外，这个帖子我会申请删除。大家散了吧。</p>
+                </div>
+                
+                <!-- 回复5 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span class="deleted-account" data-i18n="reply5.author">（已注销账号）</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply5.time">2025/11/18 23:47</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply5.content">你们真的以为902只是个普通房间吗？<br><br>2022年的时候，那年夏天902住过一个女人，住了一个月。退房的时候，她走路的样子……怎么说呢，就像个木偶，眼神是空的，嘴角一直在笑，但那笑容让人看了想吐。<br><br>我问过老员工，他们说902住过的客人，没有一个是正常离开的。有的人进去的时候好好的，出来的时候就像丢了魂；有的人干脆就再也没出来过，人间蒸发了。<br><br>还有人说，902的镜子有问题。说是半夜的时候，如果你盯着那面镜子看,会看到不该看到的东西。<br><br>你们可以不信，但我劝你们最好离那个房间远一点。尤其是现在那个住客，我听说他在搞什么召唤仪式。如果他真的把什么东西召唤出来了……<br><br>算了，说多了也没用。反正我已经辞职了，你们自求多福吧。</p>
+                </div>
+                
+                <!-- 回复6 -->
+                <div class="bg-primary/40 p-4 rounded-sm border-l-4 border-warning">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply6.author">管理员RIKI</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply6.time">2025/11/19 00:12</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply6.content">R∞M酒店建立至今，所有房间的安全记录都有据可查，从未发生过任何非正常事件。902号房是我们的豪华套房之一，入住率和客户满意度都很高。<br><br>请各位员工不要轻信谣言，更不要在论坛传播未经证实的信息。如果再发现类似帖子，发帖人将被记过处分。<br><br>这个帖子将在24小时后自动删除。大家继续工作。</p>
+                </div>
+              </div>
+              
+              <!-- 禁止回复的表单 -->
+              <div class="mt-6 pt-6 border-t border-accent/20 opacity-50">
+                <h3 class="text-lg font-semibold text-white mb-4" data-i18n="post.replyForm">发表回复</h3>
+                <div class="bg-primary/30 border border-accent/30 rounded-sm p-4 text-gray-400 text-center terminal-font">
+                  <i class="fa fa-lock mr-2"></i>
+                  <span data-i18n="post.replyDisabled">此帖已锁定，禁止回复</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.categories">论坛分类</h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.work">工作交流</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">42</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.data">数据分析</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">28</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.anomaly">异常报告</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">15</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.system">系统更新</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">9</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.notice">部门通知</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">34</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.leisure">休闲娱乐</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">67</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.related">相关帖子</h3>
+              <div class="space-y-3">
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost1.title">必须安利！力丸新专辑《ROOM》太绝了！</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost1.stats">回复 23 · 查看 156</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost2.title">酒店监控系统维护通知</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost2.stats">回复 7 · 查看 42</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost3.title">餐厅新菜单试吃反馈</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost3.stats">回复 18 · 查看 94</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.rules">论坛规则</h3>
+              <ul class="text-gray-300 text-sm space-y-2">
+                <li data-i18n="rule1">• 禁止讨论敏感客户信息</li>
+                <li data-i18n="rule2">• 所有分析必须基于客观数据</li>
+                <li data-i18n="rule3">• 发现异常请立即报告管理员</li>
+                <li data-i18n="rule4">• 保持专业态度，尊重同事</li>
+                <li data-i18n="rule5">• 遵守公司保密协议</li>
+              </ul>
+              <div class="mt-4 pt-4 border-t border-accent/20">
+                <p class="text-gray-400 text-xs terminal-font" data-i18n="system.note">> 系统提示：您的所有活动都会被记录</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm" data-i18n="footer.system">| 内部系统 v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.usage">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p data-i18n="footer.lastUpdate">最后系统更新: 2025-11-12 11:02</p>
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态:</span> <span class="text-success" data-i18n="footer.statusNormal">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.internalSystem': '| 内部系统',
+        'user.name': '李丽',
+        'forum.title': '员工论坛',
+        'post.title': '[求助] 9楼最近是不是有点邪门？',
+        'post.timeAgo': '2天前',
+        'post.author': '客房服务-张敏',
+        'post.category': '异常报告',
+        'post.content': '有没有同事最近去过9楼？我这几天给902房送东西的时候总感觉怪怪的。',
+        'post.content2': '前两天我送威士忌过去，房门开了一条缝，我无意中看到房间里……怎么说呢，地上全是白色的粉笔画的图案，特别复杂，像那种宗教仪式用的魔法阵？然后房间中央堆着一堆黑色的大箱子，那个住客坐在中间，闭着眼睛，手在空中乱挥。',
+        'post.content3': '我当时就感觉后背发凉，赶紧放下东西就走了。',
+        'post.content4': '今天又去送东西，这次门是关着的，但我站在门口就感觉不舒服，头晕，想吐，耳朵里有嗡嗡的声音。而且走廊的灯一直在闪，就那种……一闪一闪的，特别规律。',
+        'post.content5': '我知道酒店什么客人都有，我们不应该多管闲事。但说实话我有点害怕。902这个房间是不是有什么问题啊？还是那个住客在搞什么奇怪的东西？',
+        'post.content6': '有没有老员工能说说这个房间以前有没有发生过什么事？',
+        'post.deletionNotice': '帖子状态：已被删除 | 该贴禁止回复',
+        'post.replies': '回复 (6)',
+        'post.replyForm': '发表回复',
+        'post.replyDisabled': '此帖已锁定，禁止回复',
+        'reply1.author': '安保部林强',
+        'reply1.time': '2025/11/18 16:02',
+        'reply1.content': '张敏你想多了。902就是个普通的总统套房，以前住过的客人也没出过事。你说的那些症状可能是你自己太累了，最近客房部不是在赶年底考核吗？注意休息。<br>至于那个住客，人家可能是艺术家，搞行为艺术或者音乐创作什么的。咱们酒店的规矩你也知道——不打听,不多问，做好本职工作就行。',
+        'reply2.author': '前台胡静',
+        'reply2.time': '2025/11/18 17:21',
+        'reply2.content': '办理入住的时候我见过那个客人。戴着墨镜和帽子，但我认出来了，应该是几年前挺有名的一个音乐人，叫刘星辰。他以前的歌我还挺喜欢的，不过后来就没消息了。<br>他入住的时候态度还挺正常的，就是看起来很累，声音也哑了。可能真的是来找灵感的吧？艺术家嘛，行为可能是会怪一点。',
+        'reply3.author': '客房服务李华',
+        'reply3.time': '2025/11/18 19:47',
+        'reply3.content': '@张敏 我也送过几次，确实感觉不太对劲。那天我去的时候，门缝里传出来一种低频的声音，就是那种……你听不太清楚，但能感觉到的声音，震得我胸口发闷。<br>而且我注意到，他房间门口放的威士忌和水，好几天都没拿进去。今天我去送新的，发现上次的还堆在那儿。他这是不吃不喝吗？<br>说实话我也有点担心他会不会出事。要不要报告给主管，让他们检查一下？',
+        'reply4.author': '客房主管马丽',
+        'reply4.time': '2025/11/18 21:03',
+        'reply4.content': '@张敏 @李华 你们两个注意一下自己的言行。住客的隐私是受保护的，在论坛上公开讨论客人的行为是违反酒店规定的。<br>我已经向管理层报告了902房间的情况，得到的回复是：一切正常，不需要特殊处理。住客已经签署了免责声明，他在房间内的任何行为都是他的自由。<br>你们只需要按照要求送物资就好，不要多想，更不要传播不必要的恐慌。<br>另外，这个帖子我会申请删除。大家散了吧。',
+        'reply5.author': '（已注销账号）',
+        'reply5.time': '2025/11/18 23:47',
+        'reply5.content': '你们真的以为902只是个普通房间吗？<br><br>2022年的时候，那年夏天902住过一个女人，住了一个月。退房的时候，她走路的样子……怎么说呢，就像个木偶，眼神是空的，嘴角一直在笑，但那笑容让人看了想吐。<br><br>我问过老员工，他们说902住过的客人，没有一个是正常离开的。有的人进去的时候好好的，出来的时候就像丢了魂；有的人干脆就再也没出来过，人间蒸发了。<br><br>还有人说，902的镜子有问题。说是半夜的时候，如果你盯着那面镜子看,会看到不该看到的东西。<br><br>你们可以不信，但我劝你们最好离那个房间远一点。尤其是现在那个住客，我听说他在搞什么召唤仪式。如果他真的把什么东西召唤出来了……<br><br>算了，说多了也没用。反正我已经辞职了，你们自求多福吧。',
+        'reply6.author': '管理员RIKI',
+        'reply6.time': '2025/11/19 00:12',
+        'reply6.content': 'R∞M酒店建立至今，所有房间的安全记录都有据可查，从未发生过任何非正常事件。902号房是我们的豪华套房之一，入住率和客户满意度都很高。<br><br>请各位员工不要轻信谣言，更不要在论坛传播未经证实的信息。如果再发现类似帖子，发帖人将被记过处分。<br><br>这个帖子将在24小时后自动删除。大家继续工作。',
+        'sidebar.categories': '论坛分类',
+        'category.work': '工作交流',
+        'category.data': '数据分析',
+        'category.anomaly': '异常报告',
+        'category.system': '系统更新',
+        'category.notice': '部门通知',
+        'category.leisure': '休闲娱乐',
+        'sidebar.related': '相关帖子',
+        'relatedPost1.title': '必须安利！力丸新专辑《ROOM》太绝了！',
+        'relatedPost1.stats': '回复 23 · 查看 156',
+        'relatedPost2.title': '酒店监控系统维护通知',
+        'relatedPost2.stats': '回复 7 · 查看 42',
+        'relatedPost3.title': '餐厅新菜单试吃反馈',
+        'relatedPost3.stats': '回复 18 · 查看 94',
+        'sidebar.rules': '论坛规则',
+        'rule1': '• 禁止讨论敏感客户信息',
+        'rule2': '• 所有分析必须基于客观数据',
+        'rule3': '• 发现异常请立即报告管理员',
+        'rule4': '• 保持专业态度，尊重同事',
+        'rule5': '• 遵守公司保密协议',
+        'system.note': '> 系统提示：您的所有活动都会被记录',
+        'footer.system': '| 内部系统 v2.1.4',
+        'footer.usage': '仅供内部使用 - 保密级别：高级',
+        'footer.lastUpdate': '最后系统更新: 2025-11-12 11:02',
+        'footer.status': '系统状态:',
+        'footer.statusNormal': '运行正常'
+      },
+      'en': {
+        'nav.internalSystem': '| Internal System',
+        'user.name': 'Li Li',
+        'forum.title': 'Employee Forum',
+        'post.title': '[Help] Is the 9th floor a bit weird lately?',
+        'post.timeAgo': '2 days ago',
+        'post.author': 'Room Service - Zhang Min',
+        'post.category': 'Anomaly Report',
+        'post.content': 'Has any colleague been to the 9th floor recently? I\'ve been feeling weird these days when delivering items to room 902.',
+        'post.content2': 'Two days ago, I delivered whiskey there. The door was slightly ajar, and I accidentally saw inside... how should I put it? The floor was covered with white chalk patterns, very complex, like those magic circles used in religious rituals? Then in the center of the room, there was a pile of large black boxes, and the guest was sitting in the middle, eyes closed, waving his hands in the air.',
+        'post.content3': 'I immediately felt chills down my spine, put down the stuff and left quickly.',
+        'post.content4': 'Today I went to deliver items again. This time the door was closed, but I felt uncomfortable just standing at the door—dizzy, nauseous, with buzzing in my ears. And the corridor lights kept flickering, that kind of... flickering, very rhythmic.',
+        'post.content5': 'I know the hotel has all kinds of guests, and we shouldn\'t meddle. But honestly, I\'m a bit scared. Is there something wrong with room 902? Or is that guest doing something strange?',
+        'post.content6': 'Are there any senior employees who can talk about whether anything has happened in this room before?',
+        'post.deletionNotice': 'Post status: Deleted | This post is locked, replies are disabled',
+        'post.replies': 'Replies (6)',
+        'post.replyForm': 'Post a Reply',
+        'post.replyDisabled': 'This post is locked, replies are disabled',
+        'reply1.author': 'Security Dept - Lin Qiang',
+        'reply1.time': '2025/11/18 16:02',
+        'reply1.content': 'Zhang Min, you\'re overthinking it. Room 902 is just an ordinary presidential suite, and nothing has ever happened to previous guests. Those symptoms you mentioned might just be you being too tired; isn\'t the housekeeping department rushing year-end assessments lately? Take some rest.<br>As for that guest, he might be an artist, doing performance art or music creation. You know our hotel\'s rules—no prying, no asking too many questions, just do your job well.',
+        'reply2.author': 'Front Desk - Hu Jing',
+        'reply2.time': '2025/11/18 17:21',
+        'reply2.content': 'I saw that guest during check-in. He wore sunglasses and a hat, but I recognized him—he should be a musician who was quite famous a few years ago, named Liu Xingchen. I used to like his songs, but he disappeared later.<br>His attitude during check-in was quite normal, just looking very tired and his voice was hoarse. Maybe he really came here for inspiration? Artists can be a bit weird in their behavior.',
+        'reply3.author': 'Room Service - Li Hua',
+        'reply3.time': '2025/11/18 19:47',
+        'reply3.content': '@Zhang Min I\'ve delivered a few times too, and it really doesn\'t feel right. When I went that day, there was a low-frequency sound coming from the door crack—the kind you can\'t hear clearly but can feel, making my chest feel tight.<br>And I noticed that the whiskey and water left at his door haven\'t been taken in for several days. Today when I delivered new ones, the previous ones were still piled there. Is he not eating or drinking?<br>Honestly, I\'m also a bit worried something might happen to him. Should we report to the supervisor and have them check?',
+        'reply4.author': 'Housekeeping Supervisor - Ma Li',
+        'reply4.time': '2025/11/18 21:03',
+        'reply4.content': '@Zhang Min @Li Hua You two need to watch your words and actions. Guest privacy is protected, and publicly discussing guest behavior on the forum violates hotel regulations.<br>I\'ve already reported the situation in room 902 to management, and the response was: everything is normal, no special handling needed. The guest has signed a disclaimer; any behavior in his room is his freedom.<br>You just need to deliver supplies as required, don\'t overthink, and don\'t spread unnecessary panic.<br>Also, I will request deletion of this post. Everyone, disperse.',
+        'reply5.author': '(Deleted Account)',
+        'reply5.time': '2025/11/18 23:47',
+        'reply5.content': 'Do you really think room 902 is just an ordinary room?<br><br>Back in 2022, that summer, a woman stayed in 902 for a month. When she checked out, the way she walked... how should I put it? Like a puppet, her eyes were empty, her mouth kept smiling, but that smile made you want to vomit.<br><br>I asked senior employees, they said no guest who stayed in 902 ever left normally. Some went in fine but came out like they lost their soul; some simply never came out again, vanished without a trace.<br><br>Some also say there\'s something wrong with the mirror in 902. They say if you stare at that mirror at midnight, you\'ll see things you shouldn\'t see.<br><br>You can choose not to believe, but I advise you to stay away from that room. Especially now with that guest, I heard he\'s doing some summoning ritual. If he really summons something...<br><br>Never mind, no use saying more. Anyway, I\'ve resigned. Good luck to you all.',
+        'reply6.author': 'Administrator RIKI',
+        'reply6.time': '2025/11/19 00:12',
+        'reply6.content': 'Since the establishment of R∞M Hotel, all room safety records are well-documented, and no abnormal incidents have ever occurred. Room 902 is one of our luxury suites with high occupancy rates and customer satisfaction.<br><br>Please do not believe rumors, and do not spread unverified information on the forum. If similar posts are found again, the poster will be given demerit points.<br><br>This post will be automatically deleted in 24 hours. Everyone, get back to work.',
+        'sidebar.categories': 'Forum Categories',
+        'category.work': 'Work Communication',
+        'category.data': 'Data Analysis',
+        'category.anomaly': 'Anomaly Reports',
+        'category.system': 'System Updates',
+        'category.notice': 'Department Notices',
+        'category.leisure': 'Leisure & Entertainment',
+        'sidebar.related': 'Related Posts',
+        'relatedPost1.title': 'Must Recommend! Rikimaru\'s New Album "ROOM" is Amazing!',
+        'relatedPost1.stats': 'Replies 23 · Views 156',
+        'relatedPost2.title': 'Hotel Surveillance System Maintenance Notice',
+        'relatedPost2.stats': 'Replies 7 · Views 42',
+        'relatedPost3.title': 'Restaurant New Menu Tasting Feedback',
+        'relatedPost3.stats': 'Replies 18 · Views 94',
+        'sidebar.rules': 'Forum Rules',
+        'rule1': '• Do not discuss sensitive customer information',
+        'rule2': '• All analysis must be based on objective data',
+        'rule3': '• Report anomalies to administrators immediately',
+        'rule4': '• Maintain professional attitude and respect colleagues',
+        'rule5': '• Comply with company confidentiality agreement',
+        'system.note': '> System Note: All your activities will be recorded',
+        'footer.system': '| Internal System v2.1.4',
+        'footer.usage': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.lastUpdate': 'Last System Update: 2025-11-12 11:02',
+        'footer.status': 'System Status:',
+        'footer.statusNormal': 'Running Normally'
+      },
+      'ja': {
+        'nav.internalSystem': '| 内部システム',
+        'user.name': '李丽',
+        'forum.title': '従業員フォーラム',
+        'post.title': '[助けて] 9階は最近ちょっと変じゃない？',
+        'post.timeAgo': '2日前',
+        'post.author': 'ルームサービス - 張敏',
+        'post.category': '異常報告',
+        'post.content': '最近9階に行った同僚はいますか？この数日902号室に物を届けるとき、いつも変な感じがするんです。',
+        'post.content2': '2日前、ウィスキーを届けに行った時、ドアが少し開いていて、うっかり中を見てしまいました…どう言えばいいんでしょう、床一面に白いチョークで描かれた模様があって、すごく複雑で、宗教儀式で使う魔法陣みたいな？それで部屋の中央には大きな黒い箱が積まれていて、その宿泊客は真ん中に座り、目を閉じて手を空中でバタバタ振っていました。',
+        'post.content3': '背筋が寒くなって、急いで物を置いて帰りました。',
+        'post.content4': '今日また物を届けに行きました。今回はドアは閉まっていましたが、ドアの前に立っているだけで気分が悪く、めまいがして吐き気がし、耳の中でブーンという音がしました。それに廊下の灯りがずっと点滅していて、あの…ピカピカっていう、すごく規則的な感じで。',
+        'post.content5': 'ホテルにはいろんな客がいるのは分かっていますし、私たちは余計なことはすべきじゃないのも分かっています。でも正直ちょっと怖いです。902号室には何か問題があるのでしょうか？それともあの宿泊客が何か変なことをしているのでしょうか？',
+        'post.content6': 'この部屋で以前何かあったか話せるベテラン従業員はいませんか？',
+        'post.deletionNotice': '投稿ステータス: 削除済み | この投稿はロックされています、返信はできません',
+        'post.replies': '返信 (6)',
+        'post.replyForm': '返信を投稿',
+        'post.replyDisabled': 'この投稿はロックされています、返信はできません',
+        'reply1.author': '警備部 - 林強',
+        'reply1.time': '2025/11/18 16:02',
+        'reply1.content': '張敏さん、考えすぎです。902号室は普通のプレジデンシャルスイートで、以前の宿泊客にも何も問題はありませんでした。あなたが言う症状は自分が疲れすぎているだけかもしれません、最近客室部は年末評価で忙しいんじゃないですか？休んでください。<br>あの宿泊客については、芸術家かもしれません、パフォーマンスアートか音楽創作をしているのかも。ホテルのルールは知ってるでしょう——詮索しない、余計なことは聞かない、自分の仕事をしっかりやるだけです。',
+        'reply2.author': 'フロント - 胡静',
+        'reply2.time': '2025/11/18 17:21',
+        'reply2.content': 'チェックイン時にあの客を見ました。サングラスと帽子をかけていましたが、分かりました——数年前に結構有名だった音楽家で、劉星辰という人です。彼の昔の歌は好きでしたが、その後消息不明になりました。<br>チェックイン時の態度は普通で、ただとても疲れているように見え、声もかすれていました。本当にインスピレーションを求めに来たのかもしれません？芸術家ですから、行動が少し変かもしれないです。',
+        'reply3.author': 'ルームサービス - 李華',
+        'reply3.time': '2025/11/18 19:47',
+        'reply3.content': '@張敏 私も数回届けに行きましたが、確かに変な感じがします。あの日行った時、ドアの隙間から低周波の音が聞こえてきました——はっきり聞こえないけど感じられる音で、胸が苦しくなりました。<br>それに、彼の部屋のドア前に置いてあったウィスキーと水が何日も取り込まれていないのに気づきました。今日新しいのを届けに行ったら、前回のがまだ積まれたままでした。彼は飲食していないのでしょうか？<br>正直、彼に何かあったんじゃないかと心配です。主管に報告して検査してもらった方がいいですか？',
+        'reply4.author': '客室主管 - 馬麗',
+        'reply4.time': '2025/11/18 21:03',
+        'reply4.content': '@張敏 @李華 お二人は自分の言動に注意してください。宿泊客のプライバシーは保護されており、フォーラムで客の行動を公開討論することはホテル規定違反です。<br>私はすでに902号室の状況を管理層に報告し、返答は「全て正常、特別な対応は不要」でした。宿泊客は免責声明に署名しており、部屋でのいかなる行為も彼の自由です。<br>あなた方は要求通りに物資を届けるだけで、余計なことを考えず、不必要なパニックを広めないでください。<br>また、この投稿は削除を申請します。皆さん、解散してください。',
+        'reply5.author': '（削除済みアカウント）',
+        'reply5.time': '2025/11/18 23:47',
+        'reply5.content': 'あなたたち本当に902号室がただの部屋だと思ってるんですか？<br><br>2022年の時、あの夏902号室に一人の女性が1ヶ月泊まりました。チェックアウトする時、彼女の歩き方は…どう言えばいいか、まるで人形みたいで、目は虚ろで、口はずっと笑っていましたが、その笑顔は見てると吐き気がするほどでした。<br><br>ベテラン従業員に聞いたことがありますが、彼らは902号室に泊まった客で正常に出て行った者は一人もいないと言いました。中に入るときは普通だったのに、出てくるときは魂を失ったようになった人もいれば、そもそも二度と出てこなかった人、蒸発した人もいます。<br><br>902号室の鏡には問題があるとも言われています。真夜中にその鏡をじっと見つめると、見るべきじゃないものが見えるそうです。<br><br>信じなくてもいいですが、あの部屋には近づかない方がいいとアドバイスします。特に今のあの宿泊客、何か召喚儀式をしていると聞きました。もし彼が本当に何かを召喚してしまったら…<br><br>まあ、これ以上言っても無駄です。とにかく私は辞めました。皆さんご自愛ください。',
+        'reply6.author': '管理者RIKI',
+        'reply6.time': '2025/11/19 00:12',
+        'reply6.content': 'R∞Mホテル設立以来、全ての部屋の安全記録は証拠として記録されており、異常な事件は一度も発生していません。902号室は当ホテルの豪華スイートの一つで、稼働率と顧客満足度は高いです。<br><br>従業員の皆様はデマを軽信せず、フォーラムで未確認情報を広めないでください。同様の投稿が再び発見された場合、投稿者は減点処分となります。<br><br>この投稿は24時間後に自動削除されます。皆様、仕事に戻ってください。',
+        'sidebar.categories': 'フォーラムカテゴリ',
+        'category.work': '仕事の連絡',
+        'category.data': 'データ分析',
+        'category.anomaly': '異常報告',
+        'category.system': 'システム更新',
+        'category.notice': '部門通知',
+        'category.leisure': 'レジャーと娯楽',
+        'sidebar.related': '関連投稿',
+        'relatedPost1.title': 'おすすめ！力丸の新アルバム「ROOM」が最高です！',
+        'relatedPost1.stats': '返信 23 · 閲覧 156',
+        'relatedPost2.title': 'ホテル監視システムメンテナンス通知',
+        'relatedPost2.stats': '返信 7 · 閲覧 42',
+        'relatedPost3.title': 'レストランの新メニューテイスティングフィードバック',
+        'relatedPost3.stats': '返信 18 · 閲覧 94',
+        'sidebar.rules': 'フォーラムルール',
+        'rule1': '• 機密性の高い顧客情報について議論しないでください',
+        'rule2': '• すべての分析は客観的なデータに基づく必要があります',
+        'rule3': '• 異常を発見したらすぐに管理者に報告してください',
+        'rule4': '• 専門的な態度を保ち、同僚を尊重してください',
+        'rule5': '• 会社の機密保持契約を遵守してください',
+        'system.note': '> システムメモ：すべての活動は記録されます',
+        'footer.system': '| 内部システム v2.1.4',
+        'footer.usage': '内部使用のみ - 機密レベル：高',
+        'footer.lastUpdate': '最終システム更新: 2025-11-12 11:02',
+        'footer.status': 'システムステータス:',
+        'footer.statusNormal': '正常に動作中'
+      },
+      'pt': {
+        'nav.internalSystem': '| Sistema Interno',
+        'user.name': 'Li Li',
+        'forum.title': 'Fórum de Funcionários',
+        'post.title': '[Ajuda] O 9º andar está um pouco estranho ultimamente?',
+        'post.timeAgo': '2 dias atrás',
+        'post.author': 'Serviço de Quarto - Zhang Min',
+        'post.category': 'Relatório de Anomalia',
+        'post.content': 'Algum colega esteve no 9º andar recentemente? Tenho me sentido estranha esses dias ao entregar itens no quarto 902.',
+        'post.content2': 'Dois dias atrás, entreguei uísque lá. A porta estava entreaberta, e eu acidentalmente vi dentro... como devo dizer? O chão estava coberto de padrões desenhados com giz branco, muito complexos, como aqueles círculos mágicos usados em rituais religiosos? Então, no centro do quarto, havia uma pilha de grandes caixas pretas, e o hóspede estava sentado no meio, de olhos fechados, balançando as mãos no ar.',
+        'post.content3': 'Imediatamente senti calafrios na espinha, deixei as coisas e saí rapidamente.',
+        'post.content4': 'Hoje fui entregar itens novamente. Desta vez a porta estava fechada, mas me senti mal apenas parando na porta—tonta, enjoada, com zumbido nos ouvidos. E as luzes do corredor ficavam piscando, daquele tipo... piscando, muito rítmico.',
+        'post.content5': 'Sei que o hotel tem todos os tipos de hóspedes, e não devemos nos intrometer. Mas, honestamente, estou com um pouco de medo. Há algo errado com o quarto 902? Ou aquele hóspede está fazendo algo estranho?',
+        'post.content6': 'Há algum funcionário antigo que possa falar se algo aconteceu nesse quarto antes?',
+        'post.deletionNotice': 'Status do post: Excluído | Este post está bloqueado, respostas desativadas',
+        'post.replies': 'Respostas (6)',
+        'post.replyForm': 'Postar uma Resposta',
+        'post.replyDisabled': 'Este post está bloqueado, respostas desativadas',
+        'reply1.author': 'Departamento de Segurança - Lin Qiang',
+        'reply1.time': '2025/11/18 16:02',
+        'reply1.content': 'Zhang Min, você está pensando demais. O quarto 902 é apenas uma suíte presidencial comum, e nada aconteceu com hóspedes anteriores. Esses sintomas que você mencionou podem ser apenas você estando muito cansada; o departamento de governança não está correndo com avaliações de fim de ano? Descanse um pouco.<br>Quanto àquele hóspede, ele pode ser um artista, fazendo arte performática ou criação musical. Você conhece as regras do nosso hotel—não bisbilhotar, não fazer muitas perguntas, apenas fazer bem seu trabalho.',
+        'reply2.author': 'Recepção - Hu Jing',
+        'reply2.time': '2025/11/18 17:21',
+        'reply2.content': 'Vi aquele hóspede durante o check-in. Ele usava óculos escuros e chapéu, mas eu o reconheci—deve ser um músico que era bastante famoso alguns anos atrás, chamado Liu Xingchen. Eu gostava das músicas dele, mas depois ele desapareceu.<br>Sua atitude durante o check-in era bem normal, apenas parecendo muito cansado e a voz rouca. Talvez ele realmente veio aqui em busca de inspiração? Artistas podem ser um pouco estranhos em seu comportamento.',
+        'reply3.author': 'Serviço de Quarto - Li Hua',
+        'reply3.time': '2025/11/18 19:47',
+        'reply3.content': '@Zhang Min Eu também entreguei algumas vezes, e realmente não parece certo. Quando fui naquele dia, havia um som de baixa frequência vindo da fresta da porta—aquele tipo que você não consegue ouvir claramente mas consegue sentir, deixando meu peito apertado.<br>E notei que o uísque e a água deixados na porta dele não foram recolhidos há vários dias. Hoje, quando entreguei novos, os anteriores ainda estavam empilhados lá. Ele não está comendo nem bebendo?<br>Honestamente, também estou um pouco preocupado se algo pode acontecer com ele. Devemos relatar ao supervisor e pedir para verificarem?',
+        'reply4.author': 'Supervisora de Governança - Ma Li',
+        'reply4.time': '2025/11/18 21:03',
+        'reply4.content': '@Zhang Min @Li Hua Vocês dois precisam vigiar suas palavras e ações. A privacidade do hóspede é protegida, e discutir publicamente o comportamento do hóspede no fórum viola os regulamentos do hotel.<br>Já relatei a situação do quarto 902 à gerência, e a resposta foi: tudo normal, nenhum tratamento especial necessário. O hóspede assinou um termo de responsabilidade; qualquer comportamento em seu quarto é sua liberdade.<br>Vocês só precisam entregar suprimentos conforme solicitado, não pensem demais e não espalhem pânico desnecessário.<br>Além disso, solicitarei a exclusão deste post. Todos, dispersem.',
+        'reply5.author': '(Conta Excluída)',
+        'reply5.time': '2025/11/18 23:47',
+        'reply5.content': 'Vocês realmente acham que o quarto 902 é apenas um quarto comum?<br><br>Em 2022, naquele verão, uma mulher ficou no 902 por um mês. Quando fez check-out, a maneira como ela andava... como devo dizer? Como uma marionete, seus olhos estavam vazios, sua boca continuava sorrindo, mas aquele sorriso dava vontade de vomitar.<br><br>Perguntei a funcionários antigos, eles disseram que nenhum hóspede que ficou no 902 saiu normalmente. Alguns entraram bem mas saíram como se tivessem perdido a alma; alguns simplesmente nunca mais saíram, desapareceram sem deixar vestígios.<br><br>Alguns também dizem que há algo errado com o espelho no 902. Dizem que se você encarar aquele espelho à meia-noite, verá coisas que não deveria ver.<br><br>Vocês podem escolher não acreditar, mas eu aconselho a ficarem longe daquele quarto. Especialmente agora com aquele hóspede, ouvi dizer que ele está fazendo algum ritual de invocação. Se ele realmente invocar algo...<br><br>Deixa pra lá, não adianta dizer mais. Enfim, eu já me demiti. Boa sorte a todos.',
+        'reply6.author': 'Administrador RIKI',
+        'reply6.time': '2025/11/19 00:12',
+        'reply6.content': 'Desde a fundação do Hotel R∞M, todos os registros de segurança dos quartos estão bem documentados, e nenhum incidente anormal ocorreu. O quarto 902 é uma de nossas suítes de luxo, com altas taxas de ocupação e satisfação do cliente.<br><br>Por favor, não acreditem em rumores e não espalhem informações não verificadas no fórum. Se posts semelhantes forem encontrados novamente, o autor receberá pontos de demérito.<br><br>Este post será automaticamente excluído em 24 horas. Todos, voltem ao trabalho.',
+        'sidebar.categories': 'Categorias do Fórum',
+        'category.work': 'Comunicação de Trabalho',
+        'category.data': 'Análise de Dados',
+        'category.anomaly': 'Relatórios de Anomalias',
+        'category.system': 'Atualizações do Sistema',
+        'category.notice': 'Avisos do Departamento',
+        'category.leisure': 'Lazer e Entretenimento',
+        'sidebar.related': 'Posts Relacionados',
+        'relatedPost1.title': 'Devo Recomendar! O Novo Álbum "ROOM" do Rikimaru é Incrível!',
+        'relatedPost1.stats': 'Respostas 23 · Visualizações 156',
+        'relatedPost2.title': 'Aviso de Manutenção do Sistema de Vigilância do Hotel',
+        'relatedPost2.stats': 'Respostas 7 · Visualizações 42',
+        'relatedPost3.title': 'Feedback de Degustação do Novo Menu do Restaurante',
+        'relatedPost3.stats': 'Respostas 18 · Visualizações 94',
+        'sidebar.rules': 'Regras do Fórum',
+        'rule1': '• Não discuta informações confidenciais do cliente',
+        'rule2': '• Todas as análises devem ser baseadas em dados objetivos',
+        'rule3': '• Reporte anomalias aos administradores imediatamente',
+        'rule4': '• Mantenha atitude profissional e respeite os colegas',
+        'rule5': '• Cumpra o acordo de confidencialidade da empresa',
+        'system.note': '> Nota do Sistema: Todas as suas atividades serão registradas',
+        'footer.system': '| Sistema Interno v2.1.4',
+        'footer.usage': 'Apenas para Uso Interno - Nível de Confidencialidade: Alto',
+        'footer.lastUpdate': 'Última Atualização do Sistema: 2025-11-12 11:02',
+        'footer.status': 'Status do Sistema:',
+        'footer.statusNormal': 'Executando Normalmente'
+      }
+    };
+
+    // 更新日期和时间
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+      document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+    }
+    
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // 语言切换功能
+    window.addEventListener('DOMContentLoaded', () => {
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+    });
+  </script>
+</body>
+</html>

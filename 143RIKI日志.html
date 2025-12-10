@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - RIKI工作日志</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .security-level-high {
+        border-left: 4px solid #ff4444;
+        background: rgba(255, 68, 68, 0.1);
+      }
+      .security-level-medium {
+        border-left: 4px solid #D4AF37;
+        background: rgba(212, 175, 55, 0.1);
+      }
+      .log-entry {
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+      .log-entry:hover {
+        background: rgba(42, 27, 61, 0.9);
+        border-color: rgba(138, 107, 190, 0.6);
+      }
+      .log-title {
+        color: #D4AF37;
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(138, 107, 190, 0.3);
+        padding-bottom: 5px;
+      }
+      .log-date {
+        color: #8A6BBE;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+      }
+      .log-section {
+        margin-bottom: 15px;
+      }
+      .log-section-title {
+        color: #D4AF37;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .log-list {
+        list-style-type: disc;
+        margin-left: 20px;
+      }
+      .log-list-item {
+        margin-bottom: 5px;
+      }
+      .log-rating {
+        color: #44ff44;
+        font-weight: bold;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M饲主系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 饲主系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">RIKI</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- RIKI工作日志 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">R∞M 酒店 饲主工作日志</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-22</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 143 - <span data-i18n="log.summary">周明哲</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="log.status">记录状态</span>: <span class="text-success" data-i18n="log.completed">已归档（供继任者参考）</span>
+            </div>
+          </div>
+          
+          <!-- 工作日志条目 -->
+          <div class="log-entry">
+            <div class="log-title" data-i18n="log.title">主菜：背叛的救赎</div>
+            <div class="log-date" data-i18n="log.date">记录日期：献祭完成后 24 小时</div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.ingredient">一、食材基础信息</div>
+              <div class="text-gray-300" data-i18n="log.ingredientContent">
+                食材编号：No.661<br>
+                姓名：周明哲<br>
+                身份：前调查记者，「涅槃共契」创业项目联合创始人<br>
+                核心执念：经历背叛的极致痛苦、对 "信任" 的极致渴望<br>
+                情感浓度（初始）：8.1/10（痛苦占比 70%，渴望占比 30%；情感纯度高，无杂糅，属于优质食材）<br><br>
+                筛选逻辑：<br>
+                1. 从匿名论坛监测到其执念强度 —— 多次提及 "背叛""信任""涅槃"，符合「背叛的救赎」菜品核心；<br>
+                2.其创业项目「涅槃共契」的核心（匿名信任 + 社交共感），与 "救赎" 主题高度契合，便于后续情感提纯；<br>
+                3. 经心理问卷评估，其精神状态处于 "崩溃边缘但未完全放弃"，易被幻觉引导，催化成本低。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.process">二、献祭流程记录</div>
+              <ul class="log-list">
+                <li class="log-list-item text-gray-300" data-i18n="log.process1">
+                  <strong>阶段 1：诱捕（入住前）</strong><br>
+                  在其常逛论坛投放精准推送，文案嵌入专属暗语（"凤凰不会死于灰烬，信任终将涅槃"）—— 暗语源自其创业口号，触发其执念；<br>
+                  目的：利用其 "渴望重生" 的心理，引导其主动入住，而非被动抓捕（主动入局的食材，情感更纯粹）；<br>
+                  结果：食材于 11 月 15 日入住，携带威士忌（沉沦状态），符合预期。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process2">
+                  <strong>阶段 2：沉沦（入住第 1-3 天）</strong><br>
+                  关闭房间对外联络通道（单向隔音、单向透光），不启动催化程序，仅提供威士忌和外卖服务；<br>
+                  目的：让其在绝对孤独中放大痛苦，降低心理防线（痛苦是情感提纯的基础）；<br>
+                  监测结果：食材每日仅饮酒、昏睡，红外检测显示其心率波动大，夜间频繁低吟 ，痛苦浓度提升至 75%。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process3">
+                  <strong>阶段 3：催化（入住第 4 天）</strong><br>
+                  中央空调释放微量氟硝西泮/苯乙胺/记忆回溯素，用于 "唤醒创伤 + 降低现实判断力"；<br>
+                  AI 合成 "无条件信任" 语气的女声（核心话术："你没错""我相信你""我们重新开始"）；<br>
+                  目的：构建 "完美救赎者" 幻觉，让其将对 "信任" 的渴望投射到幻觉上；<br>
+                  监测结果：食材开始与空座位对话，情绪从痛苦转向依赖，渴望浓度提升至 60%。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process4">
+                  <strong>阶段 4：提纯（入住第 5-6 天）</strong><br>
+                  幻觉中的 "她" 鼓励其重建「涅槃共契」项目 —— 让其撰写商业计划书《凤凰涅槃》，将 "信任渴望" 具象化；<br>
+                  目的：让痛苦（被背叛）与渴望（信任 / 重生）形成强烈对冲，提纯情感浓度；<br>
+                  监测结果：食材每日撰写计划书，情绪波动剧烈（兴奋与哽咽交替），情感浓度峰值达 9.5/10，风味达到 "献祭标准"。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process5">
+                  <strong>阶段 5：献祭（入住第7 天凌晨）</strong><br>
+                  在其完成计划书并 "交给" 幻觉中的 "她" 时，开始献祭<br>
+                  过程：食材在 "被信任" 的极致狂喜中，核心情感（背叛痛苦 + 信任渴望）被情饕完全吞噬；<br>
+                  结果：食材记忆碎片化，仅保留 "救赎成功" 的表层认知，于次日退房，成为无灵魂的空壳。
+                </li>
+              </ul>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.evaluation">三、风味评估</div>
+              <div class="text-gray-300" data-i18n="log.evaluationContent">
+                整体评分：<span class="log-rating">9.2/10</span>（优质主菜）<br><br>
+                风味解析：<br>
+                前调：酒精浸泡的苦涩，纯粹且浓烈，为后续风味铺垫；<br>
+                中调：白玫瑰的甜腻），与前调形成强烈反差，增加风味层次；<br>
+                后调：虚假救赎的空洞回甘，献祭瞬间的狂喜与幻灭，是 "背叛的救赎" 核心风味，符合情饕偏好；
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.summary">周明哲</div>
+              <div class="text-gray-300" data-i18n="log.summaryContent">
+                143 房「背叛的救赎」献祭成功。食材周明哲被最信任的合伙人背叛，又渴望通过信任获得重生，这种矛盾的情感让其成为情饕喜爱的完美 "主菜"。<br><br>
+                整个流程的关键的是 "顺势而为"：不强行改变其意志，而是利用其自身的创伤、梦想和渴望，构建一个让其主动沉沦的幻觉，最终在情感巅峰时完成吞噬。<br><br>
+                此案例可作为继任者的入门教材 —— 理解 "食材的执念即是弱点，亦是风味来源"，是成为合格饲主的基础。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">饲主系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供饲主使用 - 保密级别：绝密</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': 'R∞M 酒店 饲主工作日志',
+        'log.summary': '周明哲',
+        'log.status': '记录状态',
+        'log.completed': '已归档（供继任者参考）',
+        'log.title': '主菜：背叛的救赎',
+        'log.date': '记录日期：献祭完成后 24 小时',
+        'log.ingredient': '一、食材基础信息',
+        'log.ingredientContent': '食材编号：No.661<br>姓名：周明哲<br>身份：前调查记者，「涅槃共契」创业项目联合创始人<br>核心执念：经历背叛的极致痛苦、对 "信任" 的极致渴望<br>情感浓度（初始）：8.1/10（痛苦占比 70%，渴望占比 30%；情感纯度高，无杂糅，属于优质食材）<br><br>筛选逻辑：<br>1. 从匿名论坛监测到其执念强度 —— 多次提及 "背叛""信任""涅槃"，符合「背叛的救赎」菜品核心；<br>2.其创业项目「涅槃共契」的核心（匿名信任 + 社交共感），与 "救赎" 主题高度契合，便于后续情感提纯；<br>3. 经心理问卷评估，其精神状态处于 "崩溃边缘但未完全放弃"，易被幻觉引导，催化成本低。',
+        'log.process': '二、献祭流程记录',
+        'log.process1': '<strong>阶段 1：诱捕（入住前）</strong><br>在其常逛论坛投放精准推送，文案嵌入专属暗语（"凤凰不会死于灰烬，信任终将涅槃"）—— 暗语源自其创业口号，触发其执念；<br>目的：利用其 "渴望重生" 的心理，引导其主动入住，而非被动抓捕（主动入局的食材，情感更纯粹）；<br>结果：食材于 11 月 15 日入住，携带威士忌（沉沦状态），符合预期。',
+        'log.process2': '<strong>阶段 2：沉沦（入住第 1-3 天）</strong><br>关闭房间对外联络通道（单向隔音、单向透光），不启动催化程序，仅提供威士忌和外卖服务；<br>目的：让其在绝对孤独中放大痛苦，降低心理防线（痛苦是情感提纯的基础）；<br>监测结果：食材每日仅饮酒、昏睡，红外检测显示其心率波动大，夜间频繁低吟 ，痛苦浓度提升至 75%。',
+        'log.process3': '<strong>阶段 3：催化（入住第 4 天）</strong><br>中央空调释放微量氟硝西泮/苯乙胺/记忆回溯素，用于 "唤醒创伤 + 降低现实判断力"；<br>AI 合成 "无条件信任" 语气的女声（核心话术："你没错""我相信你""我们重新开始"）；<br>目的：构建 "完美救赎者" 幻觉，让其将对 "信任" 的渴望投射到幻觉上；<br>监测结果：食材开始与空座位对话，情绪从痛苦转向依赖，渴望浓度提升至 60%。',
+        'log.process4': '<strong>阶段 4：提纯（入住第 5-6 天）</strong><br>幻觉中的 "她" 鼓励其重建「涅槃共契」项目 —— 让其撰写商业计划书《凤凰涅槃》，将 "信任渴望" 具象化；<br>目的：让痛苦（被背叛）与渴望（信任 / 重生）形成强烈对冲，提纯情感浓度；<br>监测结果：食材每日撰写计划书，情绪波动剧烈（兴奋与哽咽交替），情感浓度峰值达 9.5/10，风味达到 "献祭标准"。',
+        'log.process5': '<strong>阶段 5：献祭（入住第7 天凌晨）</strong><br>在其完成计划书并 "交给" 幻觉中的 "她" 时，开始献祭<br>过程：食材在 "被信任" 的极致狂喜中，核心情感（背叛痛苦 + 信任渴望）被情饕完全吞噬；<br>结果：食材记忆碎片化，仅保留 "救赎成功" 的表层认知，于次日退房，成为无灵魂的空壳。',
+        'log.evaluation': '三、风味评估',
+        'log.evaluationContent': '整体评分：<span class="log-rating">9.2/10</span>（优质主菜）<br><br>风味解析：<br>前调：酒精浸泡的苦涩，纯粹且浓烈，为后续风味铺垫；<br>中调：白玫瑰的甜腻），与前调形成强烈反差，增加风味层次；<br>后调：虚假救赎的空洞回甘，献祭瞬间的狂喜与幻灭，是 "背叛的救赎" 核心风味，符合情饕偏好；',
+        'log.summary': '周明哲',
+        'log.summaryContent': '143 房「背叛的救赎」献祭成功。食材周明哲被最信任的合伙人背叛，又渴望通过信任获得重生，这种矛盾的情感让其成为情饕喜爱的完美 "主菜"。<br><br>整个流程的关键的是 "顺势而为"：不强行改变其意志，而是利用其自身的创伤、梦想和渴望，构建一个让其主动沉沦的幻觉，最终在情感巅峰时完成吞噬。<br><br>此案例可作为继任者的入门教材 —— 理解 "食材的执念即是弱点，亦是风味来源"，是成为合格饲主的基础。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '饲主系统',
+        'footer.confidential': '仅供饲主使用 - 保密级别：绝密',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'R∞M Hotel Feeder Work Log',
+        'log.summary': 'Zhou Mingzhe',
+        'log.status': 'Record Status',
+        'log.completed': 'Archived (For Successor Reference)',
+        'log.title': 'Main Course: Redemption of Betrayal',
+        'log.date': 'Record Date: 24 Hours After Sacrifice Completion',
+        'log.ingredient': 'I. Ingredient Basic Information',
+        'log.ingredientContent': 'Ingredient No.: No.661<br>Name: Zhou Mingzhe<br>Identity: Former investigative journalist, co-founder of "Nirvana Covenant" startup project<br>Core Obsession: Extreme pain from betrayal, extreme longing for "trust"<br>Emotional Concentration (Initial): 8.1/10 (Pain 70%, Longing 30%; High emotional purity, no mixing, premium ingredient)<br><br>Screening Logic:<br>1. Monitored obsession intensity from anonymous forums - frequent mentions of "betrayal", "trust", "nirvana", matching core of "Redemption of Betrayal" dish;<br>2. Core of his startup "Nirvana Covenant" (anonymous trust + social empathy) highly aligns with "redemption" theme, facilitating emotional purification;<br>3. Psychological assessment shows mental state at "brink of collapse but not completely giving up", easily guided by illusions, low catalysis cost.',
+        'log.process': 'II. Sacrifice Process Record',
+        'log.process1': '<strong>Stage 1: Trapping (Before Check-in)</strong><br>Placed targeted ads in forums he frequents, embedding exclusive code phrases ("Phoenix won\'t die in ashes, trust will eventually be reborn") - phrases derived from his startup slogan, triggering his obsession;<br>Purpose: Utilize his "desire for rebirth" psychology to guide him to check in voluntarily, rather than passive capture (ingredients entering voluntarily have purer emotions);<br>Result: Ingredient checked in on November 15, carrying whiskey (despair state), meeting expectations.',
+        'log.process2': '<strong>Stage 2: Despair (Days 1-3)</strong><br>Closed room external communication channels (one-way soundproofing, one-way lighting), no activation of catalysis procedures, only provided whiskey and delivery services;<br>Purpose: Amplify pain in absolute isolation, lower psychological defenses (pain is the foundation of emotional purification);<br>Monitoring Result: Ingredient only drank alcohol, slept daily, infrared detection showed large heart rate fluctuations, frequent low moans at night, pain concentration increased to 75%.',
+        'log.process3': '<strong>Stage 3: Catalysis (Day 4)</strong><br>Central AC released trace amounts of flunitrazepam/phenethylamine/memory regression agents for "awakening trauma + reducing reality judgment";<br>AI synthesized female voice with "unconditional trust" tone (core phrases: "You\'re not wrong", "I believe you", "Let\'s start over");<br>Purpose: Construct "perfect redeemer" illusion, projecting his longing for "trust" onto the illusion;<br>Monitoring Result: Ingredient began conversing with empty seats, emotions shifted from pain to dependence, longing concentration increased to 60%.',
+        'log.process4': '<strong>Stage 4: Purification (Days 5-6)</strong><br>"She" in the illusion encouraged him to rebuild the "Nirvana Covenant" project - had him write business plan "Phoenix Reborn", materializing "trust longing";<br>Purpose: Create strong contrast between pain (betrayal) and longing (trust/rebirth), purifying emotional concentration;<br>Monitoring Result: Ingredient wrote plan daily, intense emotional fluctuations (alternating excitement and sobbing), emotional concentration peaked at 9.5/10, flavor reached "sacrifice standard".',
+        'log.process5': '<strong>Stage 5: Sacrifice (Early Day 7)</strong><br>Initiated sacrifice when he completed the plan and "handed it" to "her" in the illusion;<br>Process: Ingredient\'s core emotions (betrayal pain + trust longing) completely consumed by emotion devourer in extreme ecstasy of "being trusted";<br>Result: Ingredient\'s memories fragmented, only retaining surface cognition of "successful redemption", checked out next day, becoming soulless empty shell.',
+        'log.evaluation': 'III. Flavor Assessment',
+        'log.evaluationContent': 'Overall Rating: <span class="log-rating">9.2/10</span> (Premium Main Course)<br><br>Flavor Analysis:<br>Initial: Alcohol-soaked bitterness, pure and intense, setting stage for subsequent flavors;<br>Middle: White rose sweetness, forming strong contrast with initial notes, adding flavor layers;<br>Aftertaste: Hollow sweetness of false redemption, ecstasy and disillusionment at sacrifice moment, core flavor of "Redemption of Betrayal", matching emotion devourer preferences;',
+        'log.summary': 'Zhou Mingzhe',
+        'log.summaryContent': 'Room 143 "Redemption of Betrayal" sacrifice successful. Ingredient Zhou Mingzhe was betrayed by his most trusted partner, yet longed for rebirth through trust - this contradictory emotion made him perfect "main course" beloved by emotion devourers.<br><br>The key to entire process is "going with the flow": Not forcibly changing his will, but utilizing his own trauma, dreams, and desires to construct an illusion where he actively sinks, finally completing consumption at emotional peak.<br><br>This case can serve as introductory material for successors - understanding "ingredient\'s obsession is both weakness and flavor source" is foundation of becoming qualified feeder.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Feeder System',
+        'footer.confidential': 'For Feeder Use Only - Confidentiality Level: Top Secret',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': 'R∞Mホテル 飼主作業ログ',
+        'log.summary': '周明哲',
+        'log.status': '記録ステータス',
+        'log.completed': 'アーカイブ済み（後任者参考用）',
+        'log.title': 'メインディッシュ：裏切りの救済',
+        'log.date': '記録日：供物完了後24時間',
+        'log.ingredient': '一、食材基本情報',
+        'log.ingredientContent': '食材番号：No.661<br>名前：周明哲<br>身分：元調査ジャーナリスト、「涅槃共契」起業プロジェクト共同創設者<br>核心執念：裏切りによる極致の苦痛、「信頼」への極致の渇望<br>感情濃度（初期）：8.1/10（苦痛70%、渇望30%；感情純度高く、混ざり気なし、優良食材）<br><br>選別ロジック：<br>1. 匿名フォーラムから執念強度を監視——「裏切り」「信頼」「涅槃」頻繁に言及、「裏切りの救済」料理核心に合致；<br>2. 起業プロジェクト「涅槃共契」の核心（匿名信頼＋社交共感）、「救済」テーマと高度に適合、後続感情精製に便利；<br>3. 心理アンケート評価、精神状態「崩壊寸前だが完全にあきらめていない」、幻覚誘導容易、触媒コスト低い。',
+        'log.process': '二、供物プロセス記録',
+        'log.process1': '<strong>段階1：誘引（宿泊前）</strong><br>頻繁閲覧フォーラムに精密プッシュ、専用暗号（「鳳凰は灰で死なず、信頼は最終的に涅槃する」）埋め込み——暗号は起業スローガン由来、執念引き起こす；<br>目的：「再生渴望」心理利用、自主宿泊誘導、受動捕捉ではなく（自主参加食材、感情より純粋）；<br>結果：食材11月15日宿泊、ウィスキー携帯（沈淪状態）、予想通り。',
+        'log.process2': '<strong>段階2：沈淪（宿泊1-3日目）</strong><br>部屋外部連絡通道閉鎖（単方向防音、単方向透光）、触媒程序起動せず、ウィスキーと出前のみ提供；<br>目的：絶対的孤独で苦痛増幅、心理防壁低下（苦痛は感情精製の基礎）；<br>監視結果：食材毎日飲酒のみ、昏睡、赤外線検出で心拍変動大、夜間頻繁低吟、苦痛濃度75%に上昇。',
+        'log.process3': '<strong>段階3：触媒（宿泊4日目）</strong><br>中央空調微量フルニトラゼパム/フェネチルアミン/記憶回帰素放出、「トラウマ覚醒＋現実判断力低下」用；<br>AI合成「無条件信頼」语气女性声（核心話術：「あなたは間違っていない」「信じる」「やり直そう」）；<br>目的：「完璧救済者」幻覚構築、「信頼」への渇望を幻覚に投影；<br>監視結果：食材空席と対話開始、感情苦痛から依存へ転換、渇望濃度60%に上昇。',
+        'log.process4': '<strong>段階4：精製（宿泊5-6日目）</strong><br>幻覚中「彼女」が「涅槃共契」プロジェクト再建励ます——事業計画書「鳳凰涅槃」執筆させ、「信頼渇望」具象化；<br>目的：苦痛（裏切り）と渇望（信頼/再生）強烈対冲形成、感情濃度精製；<br>監視結果：食材毎日計画書執筆、感情変動激烈（興奮と哽咽交互）、感情濃度ピーク9.5/10、風味「供物標準」到達。',
+        'log.process5': '<strong>段階5：供物（宿泊7日目未明）</strong><br>計画書完成し幻覚中「彼女」に「渡す」時、供物開始；<br>過程：食材「信頼される」極致歓喜中、核心感情（裏切り苦痛＋信頼渇望）情饕完全吞噬；<br>結果：食材記憶断片化、「救済成功」表層認知のみ保持、翌日チェックアウト、魂なし空殻となる。',
+        'log.evaluation': '三、風味評価',
+        'log.evaluationContent': '総合評価：<span class="log-rating">9.2/10</span>（優良メインディッシュ）<br><br>風味解析：<br>前味：アルコール浸漬苦味、純粋かつ濃烈、後続風味下準備；<br>中味：白バラ甘味、前味と強烈対照、風味層次増加；<br>後味：虚偽救済空虚余韻、供物瞬間歓喜と幻滅、「裏切りの救済」核心風味、情饕嗜好合致；',
+        'log.summary': '周明哲',
+        'log.summaryContent': '143号室「裏切りの救済」供物成功。食材周明哲は最も信頼するパートナーに裏切られ、また信頼を通じ再生渇望——この矛盾した感情が情饕好む完璧「メインディッシュ」とした。<br><br>全プロセス鍵は「流れに乗る」：意志強制変更せず、自身のトラウマ、夢、渇望利用し、自主沈淪する幻覚構築、最終感情的頂点で吞噬完了。<br><br>本案例は後任者入門教材として——「食材の執念は弱点であり、また風味源」理解、合格飼主となる基礎。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '飼主システム',
+        'footer.confidential': '飼主専用 - 機密レベル：極秘',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'R∞M Hotel Registro de Trabalho do Alimentador',
+        'log.summary': 'Zhou Mingzhe',
+        'log.status': 'Status do Registro',
+        'log.completed': 'Arquivado (Para Referência do Sucessor)',
+        'log.title': 'Prato Principal: Redenção da Traição',
+        'log.date': 'Data do Registro: 24 Horas Após Conclusão do Sacrifício',
+        'log.ingredient': 'I. Informações Básicas do Ingrediente',
+        'log.ingredientContent': 'Nº do Ingrediente: No.661<br>Nome: Zhou Mingzhe<br>Identidade: Ex-jornalista investigativo, co-fundador do projeto de startup "Pacto do Nirvana"<br>Obsessão Central: Dor extrema da traição, desejo extremo por "confiança"<br>Concentração Emocional (Inicial): 8.1/10 (Dor 70%, Desejo 30%; Alta pureza emocional, sem mistura, ingrediente premium)<br><br>Lógica de Seleção:<br>1. Monitorou intensidade da obsessão em fóruns anônimos - menções frequentes a "traição", "confiança", "nirvana", correspondendo ao núcleo do prato "Redenção da Traição";<br>2. Núcleo de sua startup "Pacto do Nirvana" (confiança anônima + empatia social) altamente alinhado com tema "redenção", facilitando purificação emocional;<br>3. Avaliação psicológica mostra estado mental à "beira do colapso mas não desistindo completamente", facilmente guiado por ilusões, baixo custo de catálise.',
+        'log.process': 'II. Registro do Processo de Sacrifício',
+        'log.process1': '<strong>Estágio 1: Captura (Antes do Check-in)</strong><br>Colocou anúncios segmentados em fóruns que frequenta, incorporando frases-código exclusivas ("A Fênix não morre nas cinzas, a confiança eventualmente renascerá") - frases derivadas de seu slogan de startup, acionando sua obsessão;<br>Propósito: Utilizar psicologia de "desejo de renascimento" para guiá-lo a fazer check-in voluntariamente, em vez de captura passiva (ingredientes entrando voluntariamente têm emoções mais puras);<br>Resultado: Ingrediente fez check-in em 15 de novembro, carregando uísque (estado de desespero), atendendo expectativas.',
+        'log.process2': '<strong>Estágio 2: Desespero (Dias 1-3)</strong><br>Fechou canais de comunicação externos do quarto (isolamento acústico unilateral, iluminação unilateral), nenhuma ativação de procedimentos de catálise, apenas forneceu uísque e serviços de entrega;<br>Propósito: Amplificar dor no isolamento absoluto, baixar defesas psicológicas (dor é a base da purificação emocional);<br>Resultado da Monitoração: Ingrediente apenas bebeu álcool, dormiu diariamente, detecção infravermelha mostrou grandes flutuações de frequência cardíaca, gemidos baixos frequentes à noite, concentração de dor aumentou para 75%.',
+        'log.process3': '<strong>Estágio 3: Catálise (Dia 4)</strong><br>Ar condicionado central liberou quantidades traço de flunitrazepam/feniletilamina/agentes de regressão de memória para "despertar trauma + reduzir julgamento da realidade";<br>Voz feminina sintetizada por IA com tom de "confiança incondicional" (frases centrais: "Você não está errado", "Eu acredito em você", "Vamos recomeçar");<br>Propósito: Construir ilusão de "redentor perfeito", projetando seu desejo por "confiança" na ilusão;<br>Resultado da Monitoração: Ingrediente começou a conversar com assentos vazios, emoções mudaram de dor para dependência, concentração de desejo aumentou para 60%.',
+        'log.process4': '<strong>Estágio 4: Purificação (Dias 5-6)</strong><br>"Ela" na ilusão encorajou-o a reconstruir projeto "Pacto do Nirvana" - fez-o escrever plano de negócios "Fênix Renascida", materializando "desejo por confiança";<br>Propósito: Criar forte contraste entre dor (traição) e desejo (confiança/renascimento), purificando concentração emocional;<br>Resultado da Monitoração: Ingrediente escreveu plano diariamente, flutuações emocionais intensas (alternando excitação e soluços), concentração emocional atingiu pico de 9.5/10, sabor atingiu "padrão de sacrifício".',
+        'log.process5': '<strong>Estágio 5: Sacrifício (Madrugada do Dia 7)</strong><br>Iniciou sacrifício quando ele completou o plano e "entregou" para "ela" na ilusão;<br>Processo: Emoções centrais do ingrediente (dor da traição + desejo por confiança) completamente consumidas por devorador de emoções em êxtase extremo de "ser confiado";<br>Resultado: Memórias do ingrediente fragmentadas, apenas retendo cognição superficial de "redenção bem-sucedida", fez check-out no dia seguinte, tornando-se casca vazia sem alma.',
+        'log.evaluation': 'III. Avaliação de Sabor',
+        'log.evaluationContent': 'Avaliação Geral: <span class="log-rating">9.2/10</span> (Prato Principal Premium)<br><br>Análise de Sabor:<br>Inicial: Amargura embebida em álcool, pura e intensa, preparando o paladar para sabores subsequentes;<br>Meio: Doçura de rosa branca, formando forte contraste com notas iniciais, adicionando camadas de sabor;<br>Final: Doçura oca da redenção falsa, êxtase e desilusão no momento do sacrifício, sabor central de "Redenção da Traição", correspondendo às preferências do devorador de emoções;',
+        'log.summary': 'Zhou Mingzhe',
+        'log.summaryContent': 'Quarto 143 "Redenção da Traição" sacrifício bem-sucedido. Ingrediente Zhou Mingzhe foi traído por seu parceiro mais confiável, ainda assim desejou renascimento através da confiança - esta emoção contraditória fez dele "prato principal" perfeito amado por devoradores de emoções.<br><br>A chave para todo o processo é "seguir o fluxo": Não forçar mudança de sua vontade, mas utilizar seu próprio trauma, sonhos e desejos para construir uma ilusão onde ele afunda ativamente, finalmente completando consumo no pico emocional.<br><br>Este caso pode servir como material introdutório para sucessores - entender "a obsessão do ingrediente é tanto fraqueza quanto fonte de sabor" é fundamento para se tornar alimentador qualificado.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema do Alimentador',
+        'footer.confidential': 'Uso do Alimentador Apenas - Nível de Confidencialidade: Ultra Secreto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能 - 修改为跳转到RIKI.html
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        window.location.href = 'RIKI工作台.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>细思恐极：昨晚监控里看到的影子 - R∞M酒店内部系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .warning-banner {
+        background: rgba(255, 68, 68, 0.1);
+        border: 1px solid rgba(255, 68, 68, 0.3);
+        color: #ff6b6b;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin: 10px 0;
+        font-size: 0.9rem;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block" data-i18n="nav.internalSystem">| 内部系统</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username" data-i18n="user.name">尹力</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white" data-i18n="forum.title">员工论坛</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2">
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <!-- 帖子内容 -->
+              <div class="mb-6">
+                <div class="flex justify-between items-start mb-4">
+                  <h2 class="text-2xl font-bold text-white" data-i18n="post.title">细思恐极：昨晚监控里看到的影子</h2>
+                  <span class="text-gray-400 text-sm" data-i18n="post.timeAgo">2周前</span>
+                </div>
+                <div class="flex items-center mb-4 text-gray-300">
+                  <i class="fa fa-user-circle mr-2"></i>
+                  <span data-i18n="post.author">安保部赵强</span>
+                  <span class="mx-2">•</span>
+                  <span class="text-accent" data-i18n="post.category">异常报告</span>
+                </div>
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <p class="text-gray-300 mb-4" data-i18n="post.content">有没有同事遇到过酒店里的怪事？昨晚凌晨三点多我值夜班，盯着监控大屏的时候，突然看见302房门口有个黑影滑过去——不是走路的样子，就贴着墙飘似的，速度快得离谱，连男女老少都分不清。我当时立马暂停倒回去看，结果那段监控里只有空走廊，灯光亮得晃眼，别说黑影了，连个脚印都没有！</p>
+                  <p class="text-gray-300" data-i18n="post.content2">监控设备上周才检修过，昨晚也没报故障，总不能是我看走眼了吧？而且这事儿让我想起前阵子好像有人说291房不对劲，有没有知道内情的？现在一想到夜班要盯着这些监控，后背就发毛...</p>
+                </div>
+              </div>
+              
+              <!-- 警告横幅 -->
+              <div class="warning-banner terminal-font">
+                <i class="fa fa-exclamation-triangle mr-2"></i>
+                <span data-i18n="post.deletionNotice">该贴禁止回复，该帖在1小时23分钟后被删除</span>
+              </div>
+              
+              <!-- 回复列表 -->
+              <div class="space-y-4 mt-6">
+                <h3 class="text-lg font-semibold text-white mb-4" data-i18n="post.replies">回复 (6)</h3>
+                
+                <!-- 回复1 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply1.author">餐饮部杨浩</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply1.time">2周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply1.content">"强哥你不是一个人！我之前就说291房客人奇怪，被RIKI警告后帖子都删了！我连续5天给他送咖啡，他每天都问'为什么不是橙汁'，但系统订单确实是咖啡啊！他还说我昨天穿蓝色工服，我入职到现在一直是黑色的！更邪门的是他说的入住天数永远比实际多"</p>
+                </div>
+                
+                <!-- 回复2 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply2.author">保洁张玉梅</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply2.time">2周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply2.content">"+1！291房我天天去打扫，里面的便利贴每天都一模一样，连上面的错别字都没改！我偷偷撕了一张留着，第二天去看，房间里的便利贴跟我手里的能对上，跟复制粘贴的似的，吓得我赶紧扔了"</p>
+                </div>
+                
+                <!-- 回复3 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply3.author">维修部刘国强</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply3.time">2周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply3.content">"你们说的291房，我上周去过！客人说窗户砸出裂纹让我修，我去了一看，那窗户结实得很，我拿工具敲都没反应，根本砸不坏！他还说我'上次来修过'，可我明明是第一次进291房！"</p>
+                </div>
+                
+                <!-- 回复4 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply4.author">安保部赵强（楼主）</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply4.time">2周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply4.content">"我的天！原来291房真有问题？那你们说我看到的302房黑影，会不会和291房有关联？现在不同楼层都出现怪事了？"</p>
+                </div>
+                
+                <!-- 回复5 -->
+                <div class="bg-primary/40 p-4 rounded-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply5.author">客房服务部李丽</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply5.time">2周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply5.content">"我补充一句...昨天给301房送洗漱用品，路过302房的时候，明明听见里面有奇怪的电流声，敲房门问要不要服务，里面又没动静了。当时没敢多想，现在看强哥说的，有点怕了"</p>
+                </div>
+                
+                <!-- 回复6 -->
+                <div class="bg-primary/40 p-4 rounded-sm border-l-4 border-warning">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply6.author">管理员RIKI</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply6.time">2周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply6.content">"无关人员禁止讨论客房隐私，涉及住客隐私保护，相关帖子将删除。重复讨论者按违纪处理。"</p>
+                </div>
+              </div>
+              
+              <!-- 禁止回复的表单 -->
+              <div class="mt-6 pt-6 border-t border-accent/20 opacity-50">
+                <h3 class="text-lg font-semibold text-white mb-4" data-i18n="post.replyForm">发表回复</h3>
+                <div class="bg-primary/30 border border-accent/30 rounded-sm p-4 text-gray-400 text-center terminal-font">
+                  <i class="fa fa-lock mr-2"></i>
+                  <span data-i18n="post.replyDisabled">此帖已锁定，禁止回复</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.categories">论坛分类</h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.work">工作交流</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">42</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.data">数据分析</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">28</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.anomaly">异常报告</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">15</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.system">系统更新</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">9</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.notice">部门通知</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">34</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.leisure">休闲娱乐</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">67</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.related">相关帖子</h3>
+              <div class="space-y-3">
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost1.title">必须安利！力丸新专辑《ROOM》太绝了！</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost1.stats">回复 23 · 查看 156</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost2.title">酒店监控系统维护通知</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost2.stats">回复 7 · 查看 42</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost3.title">餐厅新菜单试吃反馈</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost3.stats">回复 18 · 查看 94</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.rules">论坛规则</h3>
+              <ul class="text-gray-300 text-sm space-y-2">
+                <li data-i18n="rule1">• 禁止讨论敏感客户信息</li>
+                <li data-i18n="rule2">• 所有分析必须基于客观数据</li>
+                <li data-i18n="rule3">• 发现异常请立即报告管理员</li>
+                <li data-i18n="rule4">• 保持专业态度，尊重同事</li>
+                <li data-i18n="rule5">• 遵守公司保密协议</li>
+              </ul>
+              <div class="mt-4 pt-4 border-t border-accent/20">
+                <p class="text-gray-400 text-xs terminal-font" data-i18n="system.note">> 系统提示：您的所有活动都会被记录</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm" data-i18n="footer.system">| 内部系统 v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.usage">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p data-i18n="footer.lastUpdate">最后系统更新: 2025-11-12 11:02</p>
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态:</span> <span class="text-success" data-i18n="footer.statusNormal">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.internalSystem': '| 内部系统',
+        'user.name': '尹力',
+        'forum.title': '员工论坛',
+        'post.title': '细思恐极：昨晚监控里看到的影子',
+        'post.timeAgo': '2周前',
+        'post.author': '安保部赵强',
+        'post.category': '异常报告',
+        'post.content': '有没有同事遇到过酒店里的怪事？昨晚凌晨三点多我值夜班，盯着监控大屏的时候，突然看见302房门口有个黑影滑过去——不是走路的样子，就贴着墙飘似的，速度快得离谱，连男女老少都分不清。我当时立马暂停倒回去看，结果那段监控里只有空走廊，灯光亮得晃眼，别说黑影了，连个脚印都没有！',
+        'post.content2': '监控设备上周才检修过，昨晚也没报故障，总不能是我看走眼了吧？而且这事儿让我想起前阵子好像有人说291房不对劲，有没有知道内情的？现在一想到夜班要盯着这些监控，后背就发毛...',
+        'post.deletionNotice': '该贴禁止回复，该帖在1小时23分钟后被删除',
+        'post.replies': '回复 (6)',
+        'post.replyForm': '发表回复',
+        'post.replyDisabled': '此帖已锁定，禁止回复',
+        'reply1.author': '餐饮部杨浩',
+        'reply1.time': '2周前',
+        'reply1.content': '"强哥你不是一个人！我之前就说291房客人奇怪，被RIKI警告后帖子都删了！我连续5天给他送咖啡，他每天都问\'为什么不是橙汁\'，但系统订单确实是咖啡啊！他还说我昨天穿蓝色工服，我入职到现在一直是黑色的！更邪门的是他说的入住天数永远比实际多"',
+        'reply2.author': '保洁张玉梅',
+        'reply2.time': '2周前',
+        'reply2.content': '"+1！291房我天天去打扫，里面的便利贴每天都一模一样，连上面的错别字都没改！我偷偷撕了一张留着，第二天去看，房间里的便利贴跟我手里的能对上，跟复制粘贴的似的，吓得我赶紧扔了"',
+        'reply3.author': '维修部刘国强',
+        'reply3.time': '2周前',
+        'reply3.content': '"你们说的291房，我上周去过！客人说窗户砸出裂纹让我修，我去了一看，那窗户结实得很，我拿工具敲都没反应，根本砸不坏！他还说我\'上次来修过\'，可我明明是第一次进291房！"',
+        'reply4.author': '安保部赵强（楼主）',
+        'reply4.time': '2周前',
+        'reply4.content': '"我的天！原来291房真有问题？那你们说我看到的302房黑影，会不会和291房有关联？现在不同楼层都出现怪事了？"',
+        'reply5.author': '客房服务部李丽',
+        'reply5.time': '2周前',
+        'reply5.content': '"我补充一句...昨天给301房送洗漱用品，路过302房的时候，明明听见里面有奇怪的电流声，敲房门问要不要服务，里面又没动静了。当时没敢多想，现在看强哥说的，有点怕了"',
+        'reply6.author': '管理员RIKI',
+        'reply6.time': '2周前',
+        'reply6.content': '"无关人员禁止讨论客房隐私，涉及住客隐私保护，相关帖子将删除。重复讨论者按违纪处理。"',
+        'sidebar.categories': '论坛分类',
+        'category.work': '工作交流',
+        'category.data': '数据分析',
+        'category.anomaly': '异常报告',
+        'category.system': '系统更新',
+        'category.notice': '部门通知',
+        'category.leisure': '休闲娱乐',
+        'sidebar.related': '相关帖子',
+        'relatedPost1.title': '必须安利！力丸新专辑《ROOM》太绝了！',
+        'relatedPost1.stats': '回复 23 · 查看 156',
+        'relatedPost2.title': '酒店监控系统维护通知',
+        'relatedPost2.stats': '回复 7 · 查看 42',
+        'relatedPost3.title': '餐厅新菜单试吃反馈',
+        'relatedPost3.stats': '回复 18 · 查看 94',
+        'sidebar.rules': '论坛规则',
+        'rule1': '• 禁止讨论敏感客户信息',
+        'rule2': '• 所有分析必须基于客观数据',
+        'rule3': '• 发现异常请立即报告管理员',
+        'rule4': '• 保持专业态度，尊重同事',
+        'rule5': '• 遵守公司保密协议',
+        'system.note': '> 系统提示：您的所有活动都会被记录',
+        'footer.system': '| 内部系统 v2.1.4',
+        'footer.usage': '仅供内部使用 - 保密级别：高级',
+        'footer.lastUpdate': '最后系统更新: 2025-11-12 11:02',
+        'footer.status': '系统状态:',
+        'footer.statusNormal': '运行正常'
+      },
+      'en': {
+        'nav.internalSystem': '| Internal System',
+        'user.name': 'Yin Li',
+        'forum.title': 'Employee Forum',
+        'post.title': 'Chilling Thought: The Shadow I Saw in Last Night\'s Surveillance',
+        'post.timeAgo': '2 weeks ago',
+        'post.author': 'Security Dept - Zhao Qiang',
+        'post.category': 'Anomaly Reports',
+        'post.content': 'Has any colleague encountered strange things in the hotel? Last night around 3 AM during my night shift, while staring at the surveillance screen, I suddenly saw a black shadow sliding past room 302—not walking, but floating along the wall, moving incredibly fast, impossible to tell if it was male, female, young, or old. I immediately paused and rewound, but that segment of the surveillance only showed an empty corridor, the lights glaring brightly—no shadow, not even a footprint!',
+        'post.content2': 'The surveillance equipment was just inspected last week, and there were no reported malfunctions last night. Could I really have been mistaken? And this reminds me of something I heard recently about room 291 being unusual. Does anyone know the inside story? Now whenever I think about night shifts watching these monitors, I get chills down my spine...',
+        'post.deletionNotice': 'This post is locked, replies are disabled. The post was deleted 1 hour 23 minutes later.',
+        'post.replies': 'Replies (6)',
+        'post.replyForm': 'Post a Reply',
+        'post.replyDisabled': 'This post is locked, replies are disabled',
+        'reply1.author': 'Catering Dept - Yang Hao',
+        'reply1.time': '2 weeks ago',
+        'reply1.content': '"Brother Qiang, you\'re not alone! I said before that the guest in room 291 was strange, but my post got deleted after RIKI warned me! I delivered coffee to him for 5 consecutive days, and every day he asked \'Why isn\'t it orange juice?\', but the system order was clearly for coffee! He also said I wore a blue uniform yesterday, but I\'ve only worn black since I started! Even weirder, the number of days he said he stayed was always more than the actual count."',
+        'reply2.author': 'Housekeeping - Zhang Yumei',
+        'reply2.time': '2 weeks ago',
+        'reply2.content': '"+1! I clean room 291 every day, and the sticky notes inside are exactly the same every day, even the typos haven\'t been changed! I secretly tore one off and kept it, and the next day when I checked, the sticky notes in the room matched the one I had, as if they were copy-pasted. It scared me so much I threw it away immediately."',
+        'reply3.author': 'Maintenance Dept - Liu Guoqiang',
+        'reply3.time': '2 weeks ago',
+        'reply3.content': '"That room 291 you mentioned, I went there last week! The guest said the window had cracks and asked me to fix it. When I arrived, the window was perfectly sturdy—I hit it with tools and nothing happened, impossible to break! He also said I \'came to fix it last time\', but it was clearly my first time entering room 291!"',
+        'reply4.author': 'Security Dept - Zhao Qiang (OP)',
+        'reply4.time': '2 weeks ago',
+        'reply4.content': '"Oh my god! So room 291 really has problems? Then do you think the shadow I saw at room 302 could be related to room 291? Now strange things are happening on different floors?"',
+        'reply5.author': 'Room Service Dept - Li Li',
+        'reply5.time': '2 weeks ago',
+        'reply5.content': '"Let me add something... Yesterday when I delivered toiletries to room 301 and passed by room 302, I clearly heard strange electrical buzzing sounds inside. I knocked and asked if they needed service, but there was no response. I didn\'t think much of it at the time, but now hearing what Brother Qiang said, I\'m a bit scared."',
+        'reply6.author': 'Administrator RIKI',
+        'reply6.time': '2 weeks ago',
+        'reply6.content': '"Unauthorized personnel are prohibited from discussing guest room privacy. Posts involving guest privacy protection will be deleted. Repeat offenders will be subject to disciplinary action."',
+        'sidebar.categories': 'Forum Categories',
+        'category.work': 'Work Communication',
+        'category.data': 'Data Analysis',
+        'category.anomaly': 'Anomaly Reports',
+        'category.system': 'System Updates',
+        'category.notice': 'Department Notices',
+        'category.leisure': 'Leisure & Entertainment',
+        'sidebar.related': 'Related Posts',
+        'relatedPost1.title': 'Must Recommend! Rikimaru\'s New Album "ROOM" is Amazing!',
+        'relatedPost1.stats': 'Replies 23 · Views 156',
+        'relatedPost2.title': 'Hotel Surveillance System Maintenance Notice',
+        'relatedPost2.stats': 'Replies 7 · Views 42',
+        'relatedPost3.title': 'Restaurant New Menu Tasting Feedback',
+        'relatedPost3.stats': 'Replies 18 · Views 94',
+        'sidebar.rules': 'Forum Rules',
+        'rule1': '• Do not discuss sensitive customer information',
+        'rule2': '• All analysis must be based on objective data',
+        'rule3': '• Report anomalies to administrators immediately',
+        'rule4': '• Maintain professional attitude and respect colleagues',
+        'rule5': '• Comply with company confidentiality agreement',
+        'system.note': '> System Note: All your activities will be recorded',
+        'footer.system': '| Internal System v2.1.4',
+        'footer.usage': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.lastUpdate': 'Last System Update: 2025-11-12 11:02',
+        'footer.status': 'System Status:',
+        'footer.statusNormal': 'Running Normally'
+      },
+      'ja': {
+        'nav.internalSystem': '| 内部システム',
+        'user.name': '尹力',
+        'forum.title': '従業員フォーラム',
+        'post.title': '考えれば考えるほど恐ろしい：昨夜の監視カメラに映った影',
+        'post.timeAgo': '2週間前',
+        'post.author': '警備部 - 趙強',
+        'post.category': '異常報告',
+        'post.content': 'ホテルで怪しい出来事に遭遇した同僚はいますか？昨夜の午前3時過ぎに夜勤中、監視モニターを見つめていたら、突然302号室の前を黒い影が滑るように通り過ぎるのが見えました—歩いているのではなく、壁に沿って漂っているようで、信じられないほど速く、男性か女性か、子供か大人かもわかりませんでした。すぐに一時停止して巻き戻しましたが、その監視映像には空の廊下しか映っておらず、明るい光がまぶしくて—影どころか、足跡さえありませんでした！',
+        'post.content2': '監視装置は先週点検されたばかりで、昨夜も故障の報告はありませんでした。まさか私が見間違えたわけではないでしょう？そしてこの件は、最近291号室がおかしいという話を聞いたことを思い出させます。内部事情を知っている人はいますか？今では夜勤でこれらのモニターを見ることを考えると、背筋が寒くなります...',
+        'post.deletionNotice': 'この投稿はロックされています、返信はできません。この投稿は1時間23分後に削除されました。',
+        'post.replies': '返信 (6)',
+        'post.replyForm': '返信を投稿',
+        'post.replyDisabled': 'この投稿はロックされています、返信はできません',
+        'reply1.author': '飲食部 - 楊浩',
+        'reply1.time': '2週間前',
+        'reply1.content': '"強兄さん、あなただけじゃありません！前に291号室の客がおかしいと言いましたが、RIKIに警告されて投稿が削除されました！私は5日連続でコーヒーを届けましたが、毎日「なぜオレンジジュースじゃないのか」と聞かれましたが、システムの注文は確かにコーヒーでした！彼はまた私が昨日青い制服を着ていたと言いましたが、入社以来ずっと黒い制服です！さらに気味が悪いのは、彼が言う宿泊日数が常に実際より多いことです。"',
+        'reply2.author': '清掃 - 張玉梅',
+        'reply2.time': '2週間前',
+        'reply2.content': '"+1！291号室は毎日掃除に行きますが、中の付箋は毎日全く同じで、上の誤字さえ変わっていません！こっそり一枚破って取っておき、翌日見に行くと、部屋の付箋は私が持っているものと一致していて、コピペされたかのようでした。怖くなってすぐに捨てました。"',
+        'reply3.author': 'メンテナンス部 - 劉国強',
+        'reply3.time': '2週間前',
+        'reply3.content': '"あなたたちが言う291号室、先週行きました！客は窓にひびが入ったと言って直してほしいと言いましたが、行ってみるとその窓はとても頑丈で、工具で叩いても反応がなく、まったく壊れませんでした！彼はまた私が「前回来て直した」と言いましたが、明らかに私が291号室に入るのは初めてでした！"',
+        'reply4.author': '警備部 - 趙強（投稿者）',
+        'reply4.time': '2週間前',
+        'reply4.content': '"なんてこと！291号室に本当に問題があるの？じゃあ私が見た302号室の影は、291号室と関連があるかもしれない？今では異なる階で怪しいことが起きている？"',
+        'reply5.author': '客室サービス部 - 李麗',
+        'reply5.time': '2週間前',
+        'reply5.content': '"一言追加します...昨日301号室にアメニティを届けていて、302号室の前を通った時、明らかに中から奇妙な電流音が聞こえました。ドアをノックしてサービスが必要か尋ねましたが、中からは反応がありませんでした。その時はあまり考えませんでしたが、今強兄さんの話を聞いて、少し怖くなりました。"',
+        'reply6.author': '管理者RIKI',
+        'reply6.time': '2週間前',
+        'reply6.content': '"関係者のない客室のプライバシーについての議論は禁止します。宿泊客のプライバシー保護に関わる投稿は削除されます。繰り返し議論する者は懲戒処分の対象となります。"',
+        'sidebar.categories': 'フォーラムカテゴリ',
+        'category.work': '仕事の連絡',
+        'category.data': 'データ分析',
+        'category.anomaly': '異常報告',
+        'category.system': 'システム更新',
+        'category.notice': '部門通知',
+        'category.leisure': 'レジャーと娯楽',
+        'sidebar.related': '関連投稿',
+        'relatedPost1.title': 'おすすめ！力丸の新アルバム「ROOM」が最高です！',
+        'relatedPost1.stats': '返信 23 · 閲覧 156',
+        'relatedPost2.title': 'ホテル監視システムメンテナンス通知',
+        'relatedPost2.stats': '返信 7 · 閲覧 42',
+        'relatedPost3.title': 'レストランの新メニューテイスティングフィードバック',
+        'relatedPost3.stats': '返信 18 · 閲覧 94',
+        'sidebar.rules': 'フォーラムルール',
+        'rule1': '• 機密性の高い顧客情報について議論しないでください',
+        'rule2': '• すべての分析は客観的なデータに基づく必要があります',
+        'rule3': '• 異常を発見したらすぐに管理者に報告してください',
+        'rule4': '• 専門的な態度を保ち、同僚を尊重してください',
+        'rule5': '• 会社の機密保持契約を遵守してください',
+        'system.note': '> システムメモ：すべての活動は記録されます',
+        'footer.system': '| 内部システム v2.1.4',
+        'footer.usage': '内部使用のみ - 機密レベル：高',
+        'footer.lastUpdate': '最終システム更新: 2025-11-12 11:02',
+        'footer.status': 'システムステータス:',
+        'footer.statusNormal': '正常に動作中'
+      },
+      'pt': {
+        'nav.internalSystem': '| Sistema Interno',
+        'user.name': 'Yin Li',
+        'forum.title': 'Fórum de Funcionários',
+        'post.title': 'Pensamento Aterrorizante: A Sombra que Vi na Vigilância da Noite Passada',
+        'post.timeAgo': '2 semanas atrás',
+        'post.author': 'Departamento de Segurança - Zhao Qiang',
+        'post.category': 'Relatórios de Anomalias',
+        'post.content': 'Algum colega já encontrou coisas estranhas no hotel? Ontem à noite, por volta das 3h da manhã durante meu turno noturno, enquanto olhava para a tela de vigilância, de repente vi uma sombra escura deslizando pela porta do quarto 302—não andando, mas flutuando pela parede, movendo-se incrivelmente rápido, impossível dizer se era homem, mulher, jovem ou velho. Imediatamente pausei e retrocedi, mas aquele segmento da vigilância só mostrava um corredor vazio, as luzes brilhando intensamente—nenhuma sombra, nem mesmo uma pegada!',
+        'post.content2': 'O equipamento de vigilância foi inspecionado na semana passada, e não houve relatos de mau funcionamento na noite passada. Será que eu realmente me enganei? E isso me lembra algo que ouvi recentemente sobre o quarto 291 ser incomum. Alguém sabe a história por trás disso? Agora, sempre que penso em turnos noturnos assistindo a esses monitores, fico com arrepios na espinha...',
+        'post.deletionNotice': 'Esta postagem está bloqueada, as respostas estão desativadas. A postagem foi excluída 1 hora e 23 minutos depois.',
+        'post.replies': 'Respostas (6)',
+        'post.replyForm': 'Postar uma Resposta',
+        'post.replyDisabled': 'Esta postagem está bloqueada, as respostas estão desativadas',
+        'reply1.author': 'Departamento de Catering - Yang Hao',
+        'reply1.time': '2 semanas atrás',
+        'reply1.content': '"Irmão Qiang, você não está sozinho! Eu disse antes que o hóspede do quarto 291 era estranho, mas minha postagem foi excluída depois que o RIKI me avisou! Entreguei café para ele por 5 dias consecutivos, e todo dia ele perguntava \'Por que não é suco de laranja?\', mas o pedido do sistema era claramente de café! Ele também disse que eu usei uniforme azul ontem, mas só usei preto desde que comecei! Ainda mais estranho, o número de dias que ele disse que ficou era sempre maior que a contagem real."',
+        'reply2.author': 'Limpeza - Zhang Yumei',
+        'reply2.time': '2 semanas atrás',
+        'reply2.content': '"+1! Limpo o quarto 291 todos os dias, e os post-its lá dentro são exatamente os mesmos todos os dias, até os erros de digitação não mudaram! Rasguei um secretamente e guardei, e no dia seguinte quando verifiquei, os post-its no quarto combinavam com o que eu tinha, como se tivessem sido copiados e colados. Isso me assustou tanto que joguei fora imediatamente."',
+        'reply3.author': 'Departamento de Manutenção - Liu Guoqiang',
+        'reply3.time': '2 semanas atrás',
+        'reply3.content': '"Aquele quarto 291 que vocês mencionaram, eu fui lá na semana passada! O hóspede disse que a janela tinha rachaduras e me pediu para consertar. Quando cheguei, a janela estava perfeitamente resistente—bati com ferramentas e nada aconteceu, impossível quebrar! Ele também disse que eu \'vim consertar da última vez\', mas claramente era minha primeira vez entrando no quarto 291!"',
+        'reply4.author': 'Departamento de Segurança - Zhao Qiang (OP)',
+        'reply4.time': '2 semanas atrás',
+        'reply4.content': '"Meu Deus! Então o quarto 291 realmente tem problemas? Então vocês acham que a sombra que eu vi no quarto 302 poderia estar relacionada ao quarto 291? Agora coisas estranhas estão acontecendo em andares diferentes?"',
+        'reply5.author': 'Departamento de Serviço de Quarto - Li Li',
+        'reply5.time': '2 semanas atrás',
+        'reply5.content': '"Deixe-me acrescentar algo... Ontem, quando entreguei artigos de higiene no quarto 301 e passei pelo quarto 302, ouvi claramente sons estranhos de zumbido elétrico lá dentro. Bati na porta e perguntei se precisavam de serviço, mas não houve resposta. Não pensei muito na hora, mas agora ouvindo o que o irmão Qiang disse, estou com um pouco de medo."',
+        'reply6.author': 'Administrador RIKI',
+        'reply6.time': '2 semanas atrás',
+        'reply6.content': '"Pessoal não autorizado está proibido de discutir a privacidade dos quartos de hóspedes. Postagens envolvendo proteção de privacidade de hóspedes serão excluídas. Reincidentes estarão sujeitos a ação disciplinar."',
+        'sidebar.categories': 'Categorias do Fórum',
+        'category.work': 'Comunicação de Trabalho',
+        'category.data': 'Análise de Dados',
+        'category.anomaly': 'Relatórios de Anomalias',
+        'category.system': 'Atualizações do Sistema',
+        'category.notice': 'Avisos do Departamento',
+        'category.leisure': 'Lazer e Entretenimento',
+        'sidebar.related': 'Posts Relacionados',
+        'relatedPost1.title': 'Devo Recomendar! O Novo Álbum "ROOM" do Rikimaru é Incrível!',
+        'relatedPost1.stats': 'Respostas 23 · Visualizações 156',
+        'relatedPost2.title': 'Aviso de Manutenção do Sistema de Vigilância do Hotel',
+        'relatedPost2.stats': 'Respostas 7 · Visualizações 42',
+        'relatedPost3.title': 'Feedback de Degustação do Novo Menu do Restaurante',
+        'relatedPost3.stats': 'Respostas 18 · Visualizações 94',
+        'sidebar.rules': 'Regras do Fórum',
+        'rule1': '• Não discuta informações confidenciais do cliente',
+        'rule2': '• Todas as análises devem ser baseadas em dados objetivos',
+        'rule3': '• Reporte anomalias aos administradores imediatamente',
+        'rule4': '• Mantenha atitude profissional e respeite os colegas',
+        'rule5': '• Cumpra o acordo de confidencialidade da empresa',
+        'system.note': '> Nota do Sistema: Todas as suas atividades serão registradas',
+        'footer.system': '| Sistema Interno v2.1.4',
+        'footer.usage': 'Apenas para Uso Interno - Nível de Confidencialidade: Alto',
+        'footer.lastUpdate': 'Última Atualização do Sistema: 2025-11-12 11:02',
+        'footer.status': 'Status do Sistema:',
+        'footer.statusNormal': 'Executando Normalmente'
+      }
+    };
+
+    // 更新日期和时间
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+      document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+    }
+    
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // 语言切换功能
+    window.addEventListener('DOMContentLoaded', () => {
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+    });
+  </script>
+</body>
+</html>

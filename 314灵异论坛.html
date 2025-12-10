@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵异事件吧 - R∞M酒店诡异事件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background-color: #0d0d0d;
+            color: #cccccc;
+            line-height: 1.6;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(20, 20, 60, 0.3) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(60, 20, 20, 0.3) 0%, transparent 20%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(15, 15, 25, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+        
+        /* 头部样式 */
+        header {
+            background-color: #111122;
+            padding: 15px 20px;
+            border-bottom: 2px solid #3a1c5c;
+            position: relative;
+        }
+        
+        .forum-title {
+            font-size: 28px;
+            color: #9d7ae0;
+            text-shadow: 0 0 10px rgba(157, 122, 224, 0.5);
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .forum-title::before {
+            content: "👻";
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-links a {
+            color: #a0a0d0;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #9d7ae0;
+            text-shadow: 0 0 5px rgba(157, 122, 224, 0.7);
+        }
+        
+        /* 语言切换器 */
+        .language-switcher {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .lang-btn {
+            background-color: #222244;
+            color: #cccccc;
+            border: 1px solid #444466;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .lang-btn:hover {
+            background-color: #2a2a55;
+            border-color: #666688;
+        }
+        
+        .lang-options {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #222244;
+            border: 1px solid #444466;
+            border-radius: 4px;
+            min-width: 120px;
+            z-index: 100;
+            margin-top: 5px;
+        }
+        
+        .lang-option {
+            padding: 10px 15px;
+            color: #cccccc;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .lang-option:hover {
+            background-color: #2a2a55;
+        }
+        
+        .lang-option.active {
+            background-color: #3a1c5c;
+            color: #9d7ae0;
+        }
+        
+        /* 帖子内容区域 */
+        .post-container {
+            padding: 20px;
+        }
+        
+        .post-header {
+            border-bottom: 1px solid #333355;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .post-title {
+            font-size: 24px;
+            color: #d0d0ff;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .post-meta {
+            color: #8888aa;
+            font-size: 14px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .post-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .post-content {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #333355;
+        }
+        
+        .post-text {
+            white-space: pre-line;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        
+        /* 下一篇按钮样式 */
+        .next-post-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .next-post-btn {
+            background-color: #3a1c5c;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(58, 28, 92, 0.4);
+        }
+        
+        .next-post-btn:hover {
+            background-color: #4d2480;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(58, 28, 92, 0.6);
+        }
+        
+        .next-post-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(58, 28, 92, 0.4);
+        }
+        
+        .next-post-btn::after {
+            content: "→";
+            font-size: 18px;
+        }
+        
+        /* 回复区域 */
+        .replies-section h3 {
+            color: #9d7ae0;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-left: 4px solid #9d7ae0;
+            padding-left: 10px;
+        }
+        
+        .reply {
+            background-color: rgba(30, 30, 45, 0.7);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid #444466;
+            transition: border-color 0.3s;
+        }
+        
+        .reply:hover {
+            border-left-color: #9d7ae0;
+        }
+        
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #8888aa;
+            font-size: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .reply-user {
+            color: #a0a0d0;
+            font-weight: bold;
+        }
+        
+        .reply-content {
+            line-height: 1.6;
+        }
+        
+        .reply.deleted {
+            background-color: rgba(40, 30, 30, 0.7);
+            border-left-color: #aa3333;
+            color: #888888;
+        }
+        
+        .reply.locked {
+            background-color: rgba(40, 40, 30, 0.7);
+            border-left-color: #aaaa33;
+        }
+        
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666688;
+            font-size: 14px;
+            border-top: 1px solid #222244;
+            margin-top: 20px;
+        }
+        
+        /* 特殊效果 */
+        .spooky-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #9d7ae0, transparent);
+            margin: 20px 0;
+        }
+        
+        .warning-note {
+            background-color: rgba(90, 30, 30, 0.3);
+            border-left: 4px solid #aa3333;
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .highlight {
+            color: #e0a0a0;
+            font-weight: bold;
+        }
+        
+        .infinity-symbol {
+            color: #9d7ae0;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .post-container {
+                padding: 15px;
+            }
+            
+            .forum-title {
+                font-size: 22px;
+            }
+            
+            .post-title {
+                font-size: 20px;
+            }
+            
+            .header-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .lang-options {
+                right: auto;
+                left: 0;
+            }
+            
+            .next-post-btn {
+                padding: 10px 20px;
+                font-size: 15px;
+            }
+        }
+        
+        /* 闪烁效果 */
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        .flicker {
+            animation: flicker 3s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="forum-title flicker" id="forumName">灵异事件吧</h1>
+            <div class="header-info">
+                <div class="nav-links">
+                    <a href="#" id="navHome">首页</a>
+                    <a href="#" id="navForum">论坛</a>
+                    <a href="#" id="navHot">热门</a>
+                    <a href="#" id="navNew">最新</a>
+                    <a href="#" id="navAbout">关于</a>
+                </div>
+                
+                <div class="language-switcher">
+                    <button class="lang-btn" id="langBtn">
+                        <span>🌐</span>
+                        <span id="currentLang">中文</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="lang-options" id="langOptions">
+                        <div class="lang-option active" data-lang="zh">🇨🇳 中文</div>
+                        <div class="lang-option" data-lang="en">🇺🇸 English</div>
+                        <div class="lang-option" data-lang="ja">🇯🇵 日本語</div>
+                        <div class="lang-option" data-lang="pt">🇵🇹 Português</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="spooky-divider"></div>
+        
+        <div class="post-container">
+            <div class="post-header">
+                <h2 class="post-title" id="postTitle">有人听说过R∞M酒店吗？感觉很诡异……</h2>
+                <div class="post-meta">
+                    <span id="postAuthorLabel">👤 楼主：<strong id="postAuthor">好奇宝宝</strong></span>
+                    <span id="postTimeLabel">📅 发帖时间：<strong id="postTime">2025/12/03 22:30</strong></span>
+                    <span id="postViewsLabel">👁️ 浏览：<strong id="postViews">12478</strong></span>
+                    <span id="postRepliesLabel">💬 回复：<strong id="postReplies">11</strong></span>
+                </div>
+            </div>
+            
+            <div class="post-content">
+                <div class="post-text" id="postContent">
+事情是这样的，上个月我去滨海市出差，因为项目延期，临时需要多住几天，原先的酒店没房了，就在一个挺小众的旅行推荐网站上看到了这家R∞M酒店。风格很特别，现代感里混着点老派绅士俱乐部的调调，位置不算市中心但很安静，评价不多但清一色全是"终生难忘的体验"、"灵魂得到休憩"这种有点夸张的好评。我抱着试试看的心态订了一周。
+
+酒店本身确实不错，设计感强，服务生都彬彬有礼又保持距离，有个叫RIKI的管理员（应该是经理？），气质特别，看着温和但眼睛好像能看透人。这些都不是重点。
+
+重点是我住的房间在三楼，走廊尽头是314号房（对，我特意记了房号）。住进去的头两天没什么，第三天开始，我就总觉得不对劲。
+
+首先是声音。大概每晚11点到凌晨2点，都能隐约听到隔壁（或者是楼上楼下？但感觉最可能是314）传来音乐声，不是普通的播放音乐，更像是……现场演奏的黑胶唱片，放的都是古典芭蕾舞剧的曲子，《天鹅湖》、《睡美人》、《葛蓓莉娅》这类。声音不大，断断续续的，但在深夜的寂静里特别清晰。
+
+接着是有规律的敲击声，很轻，但很有节奏，哒、哒、哒…… 像是脚尖点地的声音，有时候会持续一两个小时。我一度怀疑是不是有人在深夜练舞。
+
+好奇心驱使我干了一件不太道德的事——有天深夜，我借着去自动贩卖机买水的机会，在314房外稍微停留了一下。房门隔音其实很好，但我把耳朵贴近门缝时，确实能听到里面传来清晰的舞步声和喘息声，还有轻微的、像是镜子轻轻震动的嗡鸣。更诡异的是，透过底下狭窄的门缝，能看到里面的灯光在很有规律地明暗变化，像舞台追光一样扫来扫去。
+
+我住的那几天，从来没在白天见过314的住客。只在前台瞥见过一次客房服务记录本（我不是故意看的！），314房点的餐食少得可怜，但每天都要补充大量的巧克力和冰块，备注写着"客人要求放置舞蹈室门口"。
+
+退房那天上午，我终于见到了314的客人。一个很瘦削、脸色苍白但眼睛异常亮的年轻女人，拖着行李箱从房间出来。她走路有点不稳，右脚踝缠着绷带，但脸上带着一种……怎么说呢，极度疲惫又极度满足的奇异笑容。她和那个RIKI管理员在前台简短交流了几句，我只听到她说"谢谢……最美好的一周"，声音很轻，像梦呓。
+
+我当时就觉得浑身发毛。一个脚受伤的人，在房间深夜练舞到凌晨？靠巧克力和冰块过活？离开时却是那种仿佛达成毕生心愿的表情？
+
+回来之后我总忍不住想这个事，搜了一下R∞M酒店，公开信息少得可怜，也没有314房作为"舞蹈主题房"的宣传。那个女人的状态，完全不像是度假或疗养，倒像是……完成了某种仪式。
+
+有没有本地人或者也住过这家酒店的坛友？是我的错觉，还是这家店（或者至少314房）真的有点邪门？我发誓我描述的都是真实经历，没有添油加醋。
+                </div>
+            </div>
+            
+            <!-- 新增的下一篇按钮 -->
+            <div class="next-post-container">
+                <button class="next-post-btn" id="nextPostBtn" onclick="window.location.href='902灵异论坛.html'">
+                    <span id="nextPostText">【下一篇】</span>
+                </button>
+            </div>
+            
+            <div class="warning-note" id="warningNote">
+                ⚠️ 温馨提示：本帖内容为网友个人经历分享，请理性看待，勿传播恐慌信息。
+            </div>
+            
+            <div class="replies-section">
+                <h3 id="replySection">回复列表</h3>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser1">午夜浪人</span>
+                        <span class="reply-time" id="replyTime1">回复时间：2025/12/03 22:45</span>
+                    </div>
+                    <div class="reply-content" id="replyContent1">
+                        沙发。楼主是不是恐怖片看多了？高端酒店有隔音好的舞蹈房不稀奇，有钱人怪癖多，喜欢深夜活动白天睡觉的也大有人在。巧克力补充能量，冰块敷伤脚，逻辑通啊。
+                    </div>
+                </div>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser2">青青子衿</span>
+                        <span class="reply-time" id="replyTime2">回复时间：2025/12/03 23:10</span>
+                    </div>
+                    <div class="reply-content" id="replyContent2">
+                        R∞M酒店……我好像有点印象。我闺蜜之前失恋，说想去个没人认识的地方静静，回来之后整个人气质都变了，安静得可怕。我问她去哪了，她含糊地说是个名字像无限符号的酒店，服务很好，让她"想通了很多事"。现在想想，有点后怕。
+                    </div>
+                </div>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser3">专业打假</span>
+                        <span class="reply-time" id="replyTime3">回复时间：2025/12/03 23:30</span>
+                    </div>
+                    <div class="reply-content" id="replyContent3">
+                        无图无真相。楼主连张酒店走廊或者房间的照片都没有，全靠脑补。深夜芭蕾音乐？可能是隔壁在看老电影。镜子嗡鸣？空调共振吧。过度解读了。
+                    </div>
+                </div>
+                
+                <div class="reply deleted">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser4">无限回廊</span>
+                        <span class="reply-time" id="replyTime4">回复时间：2025/12/04 00:15</span>
+                    </div>
+                    <div class="reply-content" id="replyContent4">
+                        （该用户已被禁言）<br>【此回复已被管理员折叠。内容涉及不实传闻与猜测。】
+                    </div>
+                </div>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser5">猫眼看世界</span>
+                        <span class="reply-time" id="replyTime5">回复时间：2025/12/04 01:02</span>
+                    </div>
+                    <div class="reply-content" id="replyContent5">
+                        @无限回廊 说了啥？我看到了缓存片段，好像提到了"镜子"和"不是一个人"？被秒删了啊……细思极恐。楼主，我不是住客，但我有个跑腿朋友给那家酒店送过东西，他说那酒店的员工协议严格到变态，而且流动率极低，尤其是管理层，好像几代人都管着那里。他送的最多的就是特殊订制的巧克力，和高纯度音频设备清洁剂（说是保养音响，但用量特大）。
+                    </div>
+                </div>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser6">旧唱片</span>
+                        <span class="reply-time" id="replyTime6">回复时间：2025/12/04 08:20</span>
+                    </div>
+                    <div class="reply-content" id="replyContent6">
+                        舞蹈……镜子……巧克力……我好像想起一个很老的本地传说，不是说这家酒店，是说那片区域早年有个私人俱乐部，据说能让失意的艺术家找回"灵感"，代价是会上瘾，离不开那里提供的某种"糖丸"，最后人都废了。俱乐部后来神秘关闭了。位置嘛……可能就在现在R∞M酒店那儿。
+                    </div>
+                </div>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser7">路过工程师</span>
+                        <span class="reply-time" id="replyTime7">回复时间：2025/12/04 10:11</span>
+                    </div>
+                    <div class="reply-content" id="replyContent7">
+                        从技术角度瞎猜一下：规律明暗的灯光，可能是某种高频闪光装置，结合特定音乐节奏，容易诱发视觉疲劳和轻微幻觉。长时间处于这种环境，加上睡眠剥夺（深夜活动）和单一高糖饮食（巧克力），确实可能导致精神状态异常，产生强烈的愉悦或满足错觉。如果酒店有意为之……那就不只是诡异，是危险了。
+                    </div>
+                </div>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser8">匿名用户</span>
+                        <span class="reply-time" id="replyTime8">回复时间：2025/12/04 14:30</span>
+                    </div>
+                    <div class="reply-content" id="replyContent8">
+                        别去。别打听。离远点。<br>我哥哥是记者，几年前他想调查一批集中在那片区域的失踪案，线索最后都模糊地指向一个高端住宿场所。他失踪前最后一通电话里，声音很兴奋，说"找到房间的规律了"，然后提到了"盛宴"和"饲养员"。之后再无音讯。警方调查无果。酒店背景很深，名字就是∞。
+                    </div>
+                </div>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser9">好奇宝宝（楼主）</span>
+                        <span class="reply-time" id="replyTime9">回复时间：2025/12/04 20:15</span>
+                    </div>
+                    <div class="reply-content" id="replyContent9">
+                        看了大家的回复，我汗毛都立起来了。尤其是@猫眼看世界 和@旧唱片 说的。我决定再也不靠近那里了。对了，补充一个细节：我退房时，RIKI管理员送了我一张酒店的黑色卡片，上面只有烫金的∞符号和一个邮箱。他说"如果您感到迷失，或渴望极致的体验，随时可以联系我们。" 我当时只觉得是营销手段，现在觉得那张卡烫手。
+                    </div>
+                </div>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser10">都市探灵爱好者</span>
+                        <span class="reply-time" id="replyTime10">回复时间：2025/12/04 21:40</span>
+                    </div>
+                    <div class="reply-content" id="replyContent10">
+                        楼主，求那张卡的照片（关键信息打码）！还有酒店具体地址或外观描述？这类有"仪式感"的都市传说我最感兴趣了。舞蹈、镜子、特定房间号……这听起来像某种隐喻很强的心理剧或者能量场设定。可能酒店在利用建筑结构和心理暗示，为特定需求的客人制造"量身定制的梦境"？当然，如果是真的，那制造梦境的目的就值得深究了。
+                    </div>
+                </div>
+                
+                <div class="reply locked">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser11">系统提示</span>
+                        <span class="reply-time" id="replyTime11">回复时间：2025/12/04 22:01</span>
+                    </div>
+                    <div class="reply-content" id="replyContent11">
+                        本帖因讨论内容包含未经证实的传闻，易引发不适，现已锁定。请大家理性讨论，勿传播恐慌信息。
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="spooky-divider"></div>
+        
+        <footer>
+            <p id="footerText">© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息</p>
+        </footer>
+    </div>
+
+    <script>
+        // 多语言文本数据
+        const translations = {
+            zh: {
+                forumName: "灵异事件吧",
+                navHome: "首页",
+                navForum: "论坛",
+                navHot: "热门",
+                navNew: "最新",
+                navAbout: "关于",
+                postTitle: "有人听说过R∞M酒店吗？感觉很诡异……",
+                postAuthorLabel: "👤 楼主：",
+                postTimeLabel: "📅 发帖时间：",
+                postViewsLabel: "👁️ 浏览：",
+                postRepliesLabel: "💬 回复：",
+                postAuthor: "好奇宝宝",
+                postTime: "2025/12/03 22:30",
+                postViews: "12478",
+                postReplies: "11",
+                postContent: `事情是这样的，上个月我去滨海市出差，因为项目延期，临时需要多住几天，原先的酒店没房了，就在一个挺小众的旅行推荐网站上看到了这家R∞M酒店。风格很特别，现代感里混着点老派绅士俱乐部的调调，位置不算市中心但很安静，评价不多但清一色全是"终生难忘的体验"、"灵魂得到休憩"这种有点夸张的好评。我抱着试试看的心态订了一周。
+
+酒店本身确实不错，设计感强，服务生都彬彬有礼又保持距离，有个叫RIKI的管理员（应该是经理？），气质特别，看着温和但眼睛好像能看透人。这些都不是重点。
+
+重点是我住的房间在三楼，走廊尽头是314号房（对，我特意记了房号）。住进去的头两天没什么，第三天开始，我就总觉得不对劲。
+
+首先是声音。大概每晚11点到凌晨2点，都能隐约听到隔壁（或者是楼上楼下？但感觉最可能是314）传来音乐声，不是普通的播放音乐，更像是……现场演奏的黑胶唱片，放的都是古典芭蕾舞剧的曲子，《天鹅湖》、《睡美人》、《葛蓓莉娅》这类。声音不大，断断续续的，但在深夜的寂静里特别清晰。
+
+接着是有规律的敲击声，很轻，但很有节奏，哒、哒、哒…… 像是脚尖点地的声音，有时候会持续一两个小时。我一度怀疑是不是有人在深夜练舞。
+
+好奇心驱使我干了一件不太道德的事——有天深夜，我借着去自动贩卖机买水的机会，在314房外稍微停留了一下。房门隔音其实很好，但我把耳朵贴近门缝时，确实能听到里面传来清晰的舞步声和喘息声，还有轻微的、像是镜子轻轻震动的嗡鸣。更诡异的是，透过底下狭窄的门缝，能看到里面的灯光在很有规律地明暗变化，像舞台追光一样扫来扫去。
+
+我住的那几天，从来没在白天见过314的住客。只在前台瞥见过一次客房服务记录本（我不是故意看的！），314房点的餐食少得可怜，但每天都要补充大量的巧克力和冰块，备注写着"客人要求放置舞蹈室门口"。
+
+退房那天上午，我终于见到了314的客人。一个很瘦削、脸色苍白但眼睛异常亮的年轻女人，拖着行李箱从房间出来。她走路有点不稳，右脚踝缠着绷带，但脸上带着一种……怎么说呢，极度疲惫又极度满足的奇异笑容。她和那个RIKI管理员在前台简短交流了几句，我只听到她说"谢谢……最美好的一周"，声音很轻，像梦呓。
+
+我当时就觉得浑身发毛。一个脚受伤的人，在房间深夜练舞到凌晨？靠巧克力和冰块过活？离开时却是那种仿佛达成毕生心愿的表情？
+
+回来之后我总忍不住想这个事，搜了一下R∞M酒店，公开信息少得可怜，也没有314房作为"舞蹈主题房"的宣传。那个女人的状态，完全不像是度假或疗养，倒像是……完成了某种仪式。
+
+有没有本地人或者也住过这家酒店的坛友？是我的错觉，还是这家店（或者至少314房）真的有点邪门？我发誓我描述的都是真实经历，没有添油加醋。`,
+                warningNote: "⚠️ 温馨提示：本帖内容为网友个人经历分享，请理性看待，勿传播恐慌信息。",
+                replySection: "回复列表",
+                replyTime1: "回复时间：2025/12/03 22:45",
+                replyContent1: "沙发。楼主是不是恐怖片看多了？高端酒店有隔音好的舞蹈房不稀奇，有钱人怪癖多，喜欢深夜活动白天睡觉的也大有人在。巧克力补充能量，冰块敷伤脚，逻辑通啊。",
+                replyTime2: "回复时间：2025/12/03 23:10",
+                replyContent2: "R∞M酒店……我好像有点印象。我闺蜜之前失恋，说想去个没人认识的地方静静，回来之后整个人气质都变了，安静得可怕。我问她去哪了，她含糊地说是个名字像无限符号的酒店，服务很好，让她'想通了很多事'。现在想想，有点后怕。",
+                replyTime3: "回复时间：2025/12/03 23:30",
+                replyContent3: "无图无真相。楼主连张酒店走廊或者房间的照片都没有，全靠脑补。深夜芭蕾音乐？可能是隔壁在看老电影。镜子嗡鸣？空调共振吧。过度解读了。",
+                replyTime4: "回复时间：2025/12/04 00:15",
+                replyContent4: "（该用户已被禁言）<br>【此回复已被管理员折叠。内容涉及不实传闻与猜测。】",
+                replyTime5: "回复时间：2025/12/04 01:02",
+                replyContent5: "@无限回廊 说了啥？我看到了缓存片段，好像提到了'镜子'和'不是一个人'？被秒删了啊……细思极恐。楼主，我不是住客，但我有个跑腿朋友给那家酒店送过东西，他说那酒店的员工协议严格到变态，而且流动率极低，尤其是管理层，好像几代人都管着那里。他送的最多的就是特殊订制的巧克力，和高纯度音频设备清洁剂（说是保养音响，但用量特大）。",
+                replyTime6: "回复时间：2025/12/04 08:20",
+                replyContent6: "舞蹈……镜子……巧克力……我好像想起一个很老的本地传说，不是说这家酒店，是说那片区域早年有个私人俱乐部，据说能让失意的艺术家找回'灵感'，代价是会上瘾，离不开那里提供的某种'糖丸'，最后人都废了。俱乐部后来神秘关闭了。位置嘛……可能就在现在R∞M酒店那儿。",
+                replyTime7: "回复时间：2025/12/04 10:11",
+                replyContent7: "从技术角度瞎猜一下：规律明暗的灯光，可能是某种高频闪光装置，结合特定音乐节奏，容易诱发视觉疲劳和轻微幻觉。长时间处于这种环境，加上睡眠剥夺（深夜活动）和单一高糖饮食（巧克力），确实可能导致精神状态异常，产生强烈的愉悦或满足错觉。如果酒店有意为之……那就不只是诡异，是危险了。",
+                replyTime8: "回复时间：2025/12/04 14:30",
+                replyContent8: "别去。别打听。离远点。<br>我哥哥是记者，几年前他想调查一批集中在那片区域的失踪案，线索最后都模糊地指向一个高端住宿场所。他失踪前最后一通电话里，声音很兴奋，说'找到房间的规律了'，然后提到了'盛宴'和'饲养员'。之后再无音讯。警方调查无果。酒店背景很深，名字就是∞。",
+                replyTime9: "回复时间：2025/12/04 20:15",
+                replyContent9: "看了大家的回复，我汗毛都立起来了。尤其是@猫眼看世界 和@旧唱片 说的。我决定再也不靠近那里了。对了，补充一个细节：我退房时，RIKI管理员送了我一张酒店的黑色卡片，上面只有烫金的∞符号和一个邮箱。他说'如果您感到迷失，或渴望极致的体验，随时可以联系我们。' 我当时只觉得是营销手段，现在觉得那张卡烫手。",
+                replyTime10: "回复时间：2025/12/04 21:40",
+                replyContent10: "楼主，求那张卡的照片（关键信息打码）！还有酒店具体地址或外观描述？这类有'仪式感'的都市传说我最感兴趣了。舞蹈、镜子、特定房间号……这听起来像某种隐喻很强的心理剧或者能量场设定。可能酒店在利用建筑结构和心理暗示，为特定需求的客人制造'量身定制的梦境'？当然，如果是真的，那制造梦境的目的就值得深究了。",
+                replyTime11: "回复时间：2025/12/04 22:01",
+                replyContent11: "本帖因讨论内容包含未经证实的传闻，易引发不适，现已锁定。请大家理性讨论，勿传播恐慌信息。",
+                footerText: "© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息",
+                replyUser1: "午夜浪人",
+                replyUser2: "青青子衿",
+                replyUser3: "专业打假",
+                replyUser4: "无限回廊",
+                replyUser5: "猫眼看世界",
+                replyUser6: "旧唱片",
+                replyUser7: "路过工程师",
+                replyUser8: "匿名用户",
+                replyUser9: "好奇宝宝（楼主）",
+                replyUser10: "都市探灵爱好者",
+                replyUser11: "系统提示",
+                nextPostText: "【下一篇】" // 新增的下一篇按钮翻译
+            },
+            en: {
+                forumName: "Paranormal Events Forum",
+                navHome: "Home",
+                navForum: "Forum",
+                navHot: "Hot",
+                navNew: "New",
+                navAbout: "About",
+                postTitle: "Has anyone heard of the R∞M Hotel? It feels really creepy...",
+                postAuthorLabel: "👤 Author: ",
+                postTimeLabel: "📅 Posted: ",
+                postViewsLabel: "👁️ Views: ",
+                postRepliesLabel: "💬 Replies: ",
+                postAuthor: "Curious Baby",
+                postTime: "2025/12/03 22:30",
+                postViews: "12478",
+                postReplies: "11",
+                postContent: `Here's what happened: last month I went on a business trip to Binhai City. Because the project was extended, I needed to stay a few extra days, but my original hotel was fully booked. I found this R∞M Hotel on a niche travel recommendation website. The style is very unique, a mix of modern and old-school gentlemen's club vibes. It's not exactly downtown but very quiet. There weren't many reviews, but they were all exaggerated praises like "unforgettable experience" and "soul found rest." I booked a week with a try-it-out attitude.
+
+The hotel itself was indeed nice, with strong design sense. The staff were polite yet kept their distance. There was an administrator named RIKI (probably the manager?) with a special demeanor—seemingly gentle but with eyes that seemed to see through people. But that's not the main point.
+
+The main point is my room was on the third floor, at the end of the corridor was room 314 (yes, I specifically noted the room number). The first two days were fine, but from the third day, I started feeling something was off.
+
+First were the sounds. Around 11 PM to 2 AM every night, I could faintly hear music from next door (or above/below? But it felt most likely from 314). It wasn't ordinary playing music but more like... live vinyl records, playing classical ballet pieces like "Swan Lake," "Sleeping Beauty," "Coppélia." The sound wasn't loud, intermittent, but particularly clear in the dead of night.
+
+Then there were rhythmic tapping sounds, very light but with a steady rhythm, tap, tap, tap... like the sound of toe-tapping, sometimes lasting for an hour or two. I once suspected if someone was practicing dance late at night.
+
+Curiosity drove me to do something not very ethical—one late night, using the excuse of buying water from the vending machine, I lingered outside room 314 for a moment. The door's soundproofing was actually good, but when I pressed my ear to the door crack, I could indeed hear clear dance steps and panting inside, along with a slight, mirror-like vibration hum. Even eerier, through the narrow gap under the door, I could see the light inside rhythmically brightening and dimming, like stage spotlights sweeping around.
+
+During my stay, I never saw the guest of room 314 during the day. Only once at the front desk I glimpsed a room service log (I didn't mean to peek!), room 314 ordered very little food but requested large amounts of chocolate and ice daily, with a note saying "guest requests placement outside dance room."
+
+On the morning of my checkout, I finally saw the guest from room 314. A very thin, pale-faced young woman with unusually bright eyes, dragging her suitcase out of the room. She walked unsteadily, her right ankle bandaged, but with a strange smile on her face... how to describe it, extremely exhausted yet extremely satisfied. She exchanged a few brief words with the RIKI administrator at the front desk; I only heard her say, "Thank you... the most wonderful week," her voice very soft, like a dream whisper.
+
+I immediately felt chills all over. A person with an injured foot, practicing dance in the room until early morning? Surviving on chocolate and ice? Yet leaving with such an expression as if achieving a lifelong wish?
+
+Since returning, I can't stop thinking about this. I searched for R∞M Hotel; publicly available information is scarce, and there's no promotion of room 314 as a "dance-themed room." That woman's state didn't seem like vacation or recuperation at all, more like... completing some kind of ritual.
+
+Are there any locals or fellow forum members who have stayed at this hotel? Is it my错觉, or is this place (or at least room 314) really a bit邪门? I swear what I described is my真实 experience, with no exaggeration.`,
+                warningNote: "⚠️ Reminder: This post contains personal experiences shared by users. Please view rationally and avoid spreading panic.",
+                replySection: "Replies",
+                replyTime1: "Reply time: 2025/12/03 22:45",
+                replyContent1: "First. OP, have you watched too many horror movies? High-end hotels having soundproof dance rooms isn't unusual. Rich people have many quirks; some like being active at night and sleeping during the day. Chocolate for energy, ice for injured feet—makes sense.",
+                replyTime2: "Reply time: 2025/12/03 23:10",
+                replyContent2: "R∞M Hotel... I think I have some impression. My girlfriend went through a breakup and said she wanted to go somewhere no one knew her to be alone. When she came back, her whole demeanor changed, eerily quiet. I asked where she went, and she vaguely mentioned a hotel with a name like an infinity symbol, said the service was great and helped her 'figure things out.' Thinking about it now, it's a bit scary.",
+                replyTime3: "Reply time: 2025/12/03 23:30",
+                replyContent3: "No pictures, no truth. OP doesn't even have a photo of the hotel corridor or room, just pure imagination. Late-night ballet music? Maybe the neighbor was watching an old movie. Mirror humming? Air conditioning resonance. Over-interpretation.",
+                replyTime4: "Reply time: 2025/12/04 00:15",
+                replyContent4: "(This user has been banned)<br>[This reply has been folded by the moderator. Content involves unverified rumors and speculation.]",
+                replyTime5: "Reply time: 2025/12/04 01:02",
+                replyContent5: "What did @无限回廊 say? I saw a cached fragment mentioning 'mirror' and 'not alone'? Deleted instantly... chills. OP, I'm not a guest, but I have a delivery friend who sent things to that hotel. He said their employee agreements are变态 strict, turnover is extremely low, especially management—seems like generations have been running it. He mostly delivers custom chocolate and high-purity audio equipment cleaner (supposedly for speaker maintenance, but用量特大).",
+                replyTime6: "Reply time: 2025/12/04 08:20",
+                replyContent6: "Dance... mirrors... chocolate... I remember an old local legend, not about this hotel but about that area having a private club long ago. It was said to help frustrated artists regain 'inspiration,' at the cost of addiction to some 'sugar pills' provided there, eventually ruining them. The club mysteriously closed later. Location? Probably where R∞M Hotel is now.",
+                replyTime7: "Reply time: 2025/12/04 10:11",
+                replyContent7: "Wild guess from a technical perspective: rhythmic dimming lights could be some high-frequency strobe device, combined with specific music rhythms, easily inducing visual fatigue and mild hallucinations. Long exposure, plus sleep deprivation (night activity) and single high-sugar diet (chocolate), could indeed cause abnormal mental states, creating strong pleasure or satisfaction illusions. If the hotel does this intentionally... that's not just creepy, it's dangerous.",
+                replyTime8: "Reply time: 2025/12/04 14:30",
+                replyContent8: "Don't go. Don't ask. Stay away.<br>My brother was a journalist. Years ago, he investigated a series of disappearances concentrated in that area. Clues vaguely pointed to a high-end accommodation. His last call, he sounded excited, said he 'found the room pattern,' then mentioned 'feast' and 'keeper.' No trace since. Police found nothing. Hotel has deep background, name is ∞.",
+                replyTime9: "Reply time: 2025/12/04 20:15",
+                replyContent9: "Reading your replies gives me goosebumps. Especially what @猫眼看世界 and @旧唱片 said. I've decided never to go near there again. BTW, one more detail: when I checked out, the RIKI manager gave me a black hotel card with only a gold ∞ symbol and an email. He said, 'If you ever feel lost, or crave an ultimate experience, contact us anytime.' I thought it was marketing then; now it feels烫手.",
+                replyTime10: "Reply time: 2025/12/04 21:40",
+                replyContent10: "OP, photo of that card please (sensitive info blurred)! Also hotel address or appearance description? I'm very interested in these 'ritualistic' urban legends. Dance, mirrors, specific room number... sounds like strongly metaphorical psychological theater or energy field setup. Maybe the hotel uses architecture and psychological暗示 to create 'custom dreams' for specific clients? Of course, if true, the purpose of creating dreams needs investigation.",
+                replyTime11: "Reply time: 2025/12/04 22:01",
+                replyContent11: "This thread has been locked due to content containing unverified rumors that may cause discomfort. Please discuss rationally and avoid spreading恐慌 information.",
+                footerText: "© 2025 Paranormal Events Forum - For entertainment discussion only, do not believe unverified information",
+                replyUser1: "Midnight Wanderer",
+                replyUser2: "Blue Scarf",
+                replyUser3: "Professional Debunker",
+                replyUser4: "Infinite Corridor",
+                replyUser5: "Cat's Eye View",
+                replyUser6: "Old Record",
+                replyUser7: "Passing Engineer",
+                replyUser8: "Anonymous User",
+                replyUser9: "Curious Baby (OP)",
+                replyUser10: "Urban Exploration Enthusiast",
+                replyUser11: "System Notice",
+                nextPostText: "【Next Post】" // 新增的下一篇按钮翻译
+            },
+            ja: {
+                forumName: "心霊事件掲示板",
+                navHome: "ホーム",
+                navForum: "掲示板",
+                navHot: "人気",
+                navNew: "新着",
+                navAbout: "について",
+                postTitle: "R∞Mホテルをご存知ですか？なんか不気味な感じがする……",
+                postAuthorLabel: "👤 投稿者：",
+                postTimeLabel: "📅 投稿時間：",
+                postViewsLabel: "👁️ 閲覧数：",
+                postRepliesLabel: "💬 返信数：",
+                postAuthor: "好奇寶寶",
+                postTime: "2025/12/03 22:30",
+                postViews: "12478",
+                postReplies: "11",
+                postContent: `事情はこうです。先月、私は濱海市に出張に行きました。プロジェクトが延期になったため、数日余分に滞在する必要がありましたが、元のホテルは満室でした。そこで、ちょっとマイナーな旅行推薦サイトでこのR∞Mホテルを見つけました。スタイルがとてもユニークで、モダンな中に古風な紳士クラブの雰囲気が混ざっています。市の中心部ではありませんが、とても静かです。レビューは多くありませんが、すべて「一生忘れられない体験」「魂が安らぐ」といった少し誇張された好評ばかりでした。試しに一週間予約しました。
+
+ホテル自体は確かに良く、デザイン性が強く、スタッフは礼儀正しくも距離を保っていました。RIKIという管理者（多分マネージャー？）がいて、特別な雰囲気で、温和そうに見えますが、人を見透かすような目をしていました。でも、これらは本題ではありません。
+
+本題は、私の部屋は三階にあり、廊下の突き当たりが314号室でした（はい、部屋番号をわざわざ覚えました）。最初の二日間は何もありませんでしたが、三日目から、何かおかしいと感じ始めました。
+
+まずは音です。毎晩11時から午前2時ごろ、隣（あるいは上か下？でも多分314号室からだと思います）からかすかに音楽が聞こえてきました。普通の音楽再生ではなく、もっと…生演奏のレコードのような感じで、クラシックバレエの曲、「白鳥の湖」、「眠れる森の美女」、「コッペリア」などを流していました。音は大きくなく、断続的ですが、夜の静寂の中では特に鮮明でした。
+
+それから規則的なタップ音、とても軽いですが、リズムがあり、トン、トン、トン… つま先で床を叩くような音で、時には1、2時間続くこともありました。深夜にダンスの練習をしている人がいるのではないかと一度疑いました。
+
+好奇心からあまり道德的ではないことをしてしまいました——ある深夜、自動販売機で水を買うついでに、314号室の外で少し立ち止まりました。ドアの防音は実際には良いのですが、耳をドアの隙間に近づけると、確かに中からはっきりとしたダンスのステップ音と息遣い、そして鏡が軽く振動するような微かなブーンという音が聞こえました。さらに不気味なことに、ドアの下の狭い隙間から、中の光が規則的に明暗を変化させているのが見えました。舞台のスポットライトが掃くように。
+
+滞在中、一度も昼間に314号室の宿泊客を見たことがありません。フロントで一度だけルームサービス記録帳をちらっと見ただけです（わざと見たわけではありません！）。314号室の食事の注文は非常に少なく、毎日大量のチョコレートと氷を補充していました。備考には「お客様よりダンス室前に置くように要求」と書かれていました。
+
+チェックアウトの日の朝、ついに314号室の客に会いました。とても痩せていて、顔色が青白いが目が異常に輝いている若い女性で、スーツケースを引きずって部屋から出てきました。彼女は歩くのが不安定で、右足首に包帯を巻いていましたが、顔には…どう表現すればいいか、極度に疲れているのに極度に満足している奇妙な笑みを浮かべていました。彼女はあのRIKI管理者とフロントで短い会話をし、私は「ありがとう…最高の一週間でした」と言うのを聞きました。声はとても小さく、夢の囁きのようでした。
+
+その時、全身の毛が逆立ちました。足を怪我している人が、部屋で深夜までダンスの練習？チョコレートと氷で生活？それで去るときにはまるで一生の願いを達成したような表情？
+
+戻ってから、このことが気になって仕方ありません。R∞Mホテルを検索しましたが、公開情報はほとんどなく、314号室が「ダンステーマルーム」として宣伝されていることもありません。あの女性の状態は、まったく休暇や療養のようではなく、むしろ…何かの儀式を完了したようでした。
+
+地元の人やこのホテルに泊まったことのある掲示板の友達はいませんか？私の錯覚でしょうか、それともこの店（少なくとも314号室）は本当にちょっと邪門なのでしょうか？私が描写したことはすべて真実の経験で、誇張はありません。`,
+                warningNote: "⚠️ 注意：この投稿はユーザーの個人的な体験談です。理性的に見て、パニックを広めないでください。",
+                replySection: "返信リスト",
+                replyTime1: "返信時間：2025/12/03 22:45",
+                replyContent1: "最初。OP、ホラー映画を見過ぎじゃない？高級ホテルに防音ダンスルームがあるのは珍しくない。金持ちは変な癖が多い、夜中に活動して昼間に寝るのもよくある。チョコレートはエネルギー補給、氷は足の怪我の湿布、論理的だ。",
+                replyTime2: "返信時間：2025/12/03 23:10",
+                replyContent2: "R∞Mホテル……少し覚えがある。私の女友達が失恋した時、誰にも知られないところで静かに過ごしたいと言って、帰ってきたら雰囲気が全く変わって、不気味なほど静かになった。どこに行ったか聞いたら、無限記号みたいな名前のホテルだと曖昧に言って、サービスが良くて『いろいろ考えがまとまった』と言っていた。今考えると、少し怖い。",
+                replyTime3: "返信時間：2025/12/03 23:30",
+                replyContent3: "証拠写真なしでは真実性なし。OPはホテルの廊下や部屋の写真さえなく、ただの想像。深夜のバレエ音楽？隣が古い映画を見てたかも。鏡の振動音？エアコンの共振。過剰解釈。",
+                replyTime4: "返信時間：2025/12/04 00:15",
+                replyContent4: "（このユーザーはBANされました）<br>【この返信は管理者により折り畳まれました。内容は未確認の噂と推測を含みます。】",
+                replyTime5: "返信時間：2025/12/04 01:02",
+                replyContent5: "@無限回廊 は何を言った？キャッシュされた断片を見たけど、『鏡』と『一人じゃない』って言ってた？即削除された……考えると恐ろしい。OP、私は宿泊客じゃないけど、あのホテルに配達してる友達がいる。彼によると、あのホテルの従業員契約は異常に厳しく、離職率が極端に低く、特に管理職は何世代も続いてるらしい。彼が一番配達するのは特別注文のチョコレートと高純度オーディオ機器クリーナー（スピーカー手入れ用らしいが、使用量が異常に多い）。",
+                replyTime6: "返信時間：2025/12/04 08:20",
+                replyContent6: "ダンス……鏡……チョコレート……古い地元の伝説を思い出した。このホテルじゃなくて、その地域に昔あったプライベートクラブの話で、失意のアーティストが『インスピレーション』を取り戻せると言われてたが、代償はそこが提供する『砂糖玉』に依存し、最後は廃人になる。クラブは後に謎の閉鎖。場所は……たぶん今のR∞Mホテルのあたり。",
+                replyTime7: "返信時間：2025/12/04 10:11",
+                replyContent7: "技術的な観点から推測：規則的な明滅ライトは、高頻点滅装置かも。特定音楽リズムと組み合わせると、視覚疲労と軽い幻覚を誘発しやすい。長時間暴露、睡眠不足（夜間活動）、単一高糖質食（チョコレート）で、精神状態異常を引き起こし、強い快楽・満足幻想を生む可能性あり。ホテルが意図的にやってるとしたら……不気味以上に危険。",
+                replyTime8: "返信時間：2025/12/04 14:30",
+                replyContent8: "行くな。聞くな。遠ざかれ。<br>兄は記者だった。数年前、その地域に集中する失踪事件を調査しようとして、手がかりは高級宿泊施設を漠然と示していた。最後の電話で、彼は興奮して『部屋のパターンを見つけた』と言い、『宴』と『飼育係』に言及した。その後音信不通。警察調査でも成果なし。ホテルの背景は深く、名前は∞。",
+                replyTime9: "返信時間：2025/12/04 20:15",
+                replyContent9: "皆さんの返信を読んで鳥肌が立った。特に@猫眼看世界と@旧唱片の話。もう二度と近づかないと決めた。ちなみに、もう一つ詳細：チェックアウト時、RIKI管理人に黒いホテルカードをもらった。金色の∞記号とメールアドレスだけ。『もし道に迷ったり、究極の体験を渇望するなら、いつでも連絡を』と言われた。当時はマーケティングだと思ったが、今ではそのカードが手に焼けつくようだ。",
+                replyTime10: "返信時間：2025/12/04 21:40",
+                replyContent10: "OP、そのカードの写真を（重要情報は隠して）！ホテルの具体的な住所や外観の説明も？こういう『儀式的』な都市伝説にすごく興味がある。ダンス、鏡、特定の部屋番号……強いメタファーを持つ心理劇やエネルギー場設定のように聞こえる。ホテルが建築構造と心理的暗示を利用して、特定の要求を持つ客に『カスタムメイドの夢』を作っているのかも？もちろん、もし本当なら、夢を作る目的は究明する価値あり。",
+                replyTime11: "返信時間：2025/12/04 22:01",
+                replyContent11: "本スレは未確認の噂を含む内容により不快感を引き起こす可能性があるためロックされました。理性的な議論をお願いし、パニック情報を広めないでください。",
+                footerText: "© 2025 心霊事件掲示板 - 娯楽討論のみを目的とし、未確認情報を軽信しないでください",
+                replyUser1: "真夜中の放浪者",
+                replyUser2: "青い襟",
+                replyUser3: "専門デバンカー",
+                replyUser4: "無限回廊",
+                replyUser5: "猫の目",
+                replyUser6: "古いレコード",
+                replyUser7: "通りすがりのエンジニア",
+                replyUser8: "匿名ユーザー",
+                replyUser9: "好奇寶寶（OP）",
+                replyUser10: "都市探検愛好家",
+                replyUser11: "システム通知",
+                nextPostText: "【次へ】" // 新增的下一篇按钮翻译
+            },
+            pt: {
+                forumName: "Fórum de Eventos Paranormais",
+                navHome: "Início",
+                navForum: "Fórum",
+                navHot: "Popular",
+                navNew: "Novo",
+                navAbout: "Sobre",
+                postTitle: "Alguém já ouviu falar do Hotel R∞M? Parece muito estranho...",
+                postAuthorLabel: "👤 Autor: ",
+                postTimeLabel: "📅 Postado: ",
+                postViewsLabel: "👁️ Visualizações: ",
+                postRepliesLabel: "💬 Respostas: ",
+                postAuthor: "Bebê Curioso",
+                postTime: "2025/12/03 22:30",
+                postViews: "12478",
+                postReplies: "11",
+                postContent: `Foi assim: no mês passado, fui a Binhai City a trabalho. Como o projeto foi prolongado, precisei ficar mais alguns dias, mas meu hotel original estava lotado. Encontrei este Hotel R∞M em um site de recomendações de viagem de nicho. O estilo é muito único, uma mistura de moderno com vibrações de clube de cavalheiros antigo. Não é exatamente no centro, mas muito silencioso. Não havia muitas avaliações, mas todas eram elogios exagerados como "experiência inesquecível" e "alma encontrou descanso." Reservei uma semana com atitude de experimentar.
+
+O hotel em si era realmente bom, com forte senso de design. A equipe era educada, mas mantinha distância. Havia um administrador chamado RIKI (provavelmente o gerente?) com uma postura especial—aparentemente gentil, mas com olhos que pareciam ver através das pessoas. Mas esse não é o ponto principal.
+
+O ponto principal é que meu quarto estava no terceiro andar, no fim do corredor estava o quarto 314 (sim, anotei o número do quarto). Os primeiros dois dias foram tranquilos, mas a partir do terceiro dia, comecei a sentir que algo estava errado.
+
+Primeiro foram os sons. Por volta das 23h às 2h todas as noites, eu ouvia fracamente música do quarto ao lado (ou de cima/baixo? Mas parecia mais provável do 314). Não era música comum, mas mais como... discos de vinil ao vivo, tocando peças de balé clássico como "Lago dos Cisnes", "Bela Adormecida", "Coppélia." O som não era alto, intermitente, mas particularmente claro no silêncio da noite.
+
+Depois vieram sons de batidas rítmicas, muito leves mas com ritmo constante, tique, tique, tique... como o som de pontas dos pés batendo, às vezes durando uma ou duas horas. Uma vez suspeitei se alguém estava praticando dança tarde da noite.
+
+A curiosidade me levou a fazer algo não muito ético—uma noite, usando a desculpa de comprar água no distribuidor automático, parei um momento fora do quarto 314. O isolamento acústico da porta era realmente bom, mas quando aproximei o ouvido da fresta da porta, pude de fato ouvir passos de dança claros e ofegar dentro, junto com um leve zumbido como vibração de espelho. Ainda mais assustador, através da estreita fresta sob a porta, pude ver a luz dentro brilhando e escurecendo ritmicamente, como holofotes de palco varrendo.
+
+Durante minha estadia, nunca vi o hóspede do quarto 314 durante o dia. Apenas uma vez na recepção, olhei de relance um registro de serviço de quarto (não foi de propósito!). O quarto 314 pedia muito pouca comida, mas solicitava grandes quantidades de chocolate e gelo diariamente, com uma nota dizendo "hóspede solicita colocação fora da sala de dança."
+
+Na manhã do meu check-out, finalmente vi a hóspede do quarto 314. Uma mulher jovem muito magra, com rosto pálido e olhos anormalmente brilhantes, arrastando sua mala para fora do quarto. Ela andava instável, tornozelo direito enfaixado, mas com um sorriso estranho no rosto... como descrever, extremamente exausta, mas extremamente satisfeita. Ela trocou algumas palavras breves com o administrador RIKI na recepção; só a ouvi dizer: "Obrigada... a semana mais maravilhosa," sua voz muito suave, como um sussurro de sonho.
+
+Imediatamente senti arrepios por todo o corpo. Uma pessoa com o pé machucado, praticando dança no quarto até a madrugada? Sobrevivendo de chocolate e gelo? Mas saindo com tal expressão como se alcançando um desejo de vida?
+
+Desde que voltei, não consigo parar de pensar nisso. Pesquisei sobre o Hotel R∞M; informações publicamente disponíveis são escassas, e não há promoção do quarto 314 como "quarto temático de dança." O estado daquela mulher não parecia férias ou recuperação, mais como... completando algum tipo de ritual.
+
+Há algum local ou membros do fórum que já ficaram neste hotel? É minha错觉, ou este lugar (ou pelo menos o quarto 314) é realmente um pouco邪门? Juro que o que descrevi é minha真实 experiência, sem exagero.`,
+                warningNote: "⚠️ Aviso: Este post contém experiências pessoais compartilhadas por usuários. Por favor, veja racionalmente e evite espalhar pânico.",
+                replySection: "Respostas",
+                replyTime1: "Hora da resposta: 2025/12/03 22:45",
+                replyContent1: "Primeiro. OP, você assistiu a muitos filmes de terror? Hotéis de luxo terem salas de dança à prova de som não é incomum. Ricos têm muitas manias; alguns gostam de ser ativos à noite e dormir de dia. Chocolate para energia, gelo para pé lesionado—faz sentido.",
+                replyTime2: "Hora da resposta: 2025/12/03 23:10",
+                replyContent2: "Hotel R∞M... Acho que tenho alguma impressão. Minha amiga passou por um término e disse que queria ir a um lugar onde ninguém a conhecesse para ficar sozinha. Quando voltou, todo seu comportamento mudou, assustadoramente quieta. Perguntei onde foi, e ela vagamente mencionou um hotel com nome como um símbolo de infinito, disse que o serviço era ótimo e a ajudou a 'entender as coisas'. Pensando agora, é um pouco assustador.",
+                replyTime3: "Hora da resposta: 2025/12/03 23:30",
+                replyContent3: "Sem fotos, sem verdade. OP nem tem foto do corredor ou quarto do hotel, só imaginação. Música de balé à meia-noite? Talvez o vizinho estava assistindo a um filme antigo. Zumbido do espelho? Ressonância do ar condicionado. Superinterpretação.",
+                replyTime4: "Hora da resposta: 2025/12/04 00:15",
+                replyContent4: "(Este usuário foi banido)<br>[Esta resposta foi recolhida pelo moderador. Conteúdo envolve rumores não verificados e especulação.]",
+                replyTime5: "Hora da resposta: 2025/12/04 01:02",
+                replyContent5: "O que @无限回廊 disse? Vi um fragmento em cache mencionando 'espelho' e 'não sozinho'? Excluído instantaneamente... arrepios. OP, não sou hóspede, mas tenho um amigo entregador que envia coisas para aquele hotel. Ele disse que os acordos dos funcionários são变态 estritos, rotatividade extremamente baixa, especialmente gerência—parece que gerações estão administrando. Ele mais entrega chocolate personalizado e limpador de equipamento de áudio de alta pureza (supostamente para manutenção de alto-falantes, mas用量特大).",
+                replyTime6: "Hora da resposta: 2025/12/04 08:20",
+                replyContent6: "Dança... espelhos... chocolate... Lembro de uma lenda local antiga, não sobre este hotel, mas sobre aquela área ter um clube privado há muito tempo. Dizia-se ajudar artistas frustrados a recuperar 'inspiração', ao custo de vício em algumas 'pílulas de açúcar' fornecidas lá, eventualmente arruinando-os. O clube fechou misteriosamente depois. Localização? Provavelmente onde o Hotel R∞M está agora.",
+                replyTime7: "Hora da resposta: 2025/12/04 10:11",
+                replyContent7: "Palpite técnico: luzes piscantes rítmicas podem ser algum dispositivo estroboscópico de alta frequência, combinado com ritmos musicais específicos, facilmente induzindo fadiga visual e alucinações leves. Exposição longa, mais privação de sono (atividade noturna) e dieta única de alto açúcar (chocolate), poderia de fato causar estados mentais anormais, criando fortes ilusões de prazer ou satisfação. Se o hotel faz isso intencionalmente... não é apenas estranho, é perigoso.",
+                replyTime8: "Hora da resposta: 2025/12/04 14:30",
+                replyContent8: "Não vá. Não pergunte. Fique longe.<br>Meu irmão era jornalista. Anos atrás, ele investigou uma série de desaparecimentos concentrados naquela área. Pistas apontavam vagamente para um alojamento de luxo. Sua última ligação, ele parecia animado, disse que 'encontrou o padrão das salas', então mencionou 'banquete' e 'guardião'. Nenhum traço desde então. Polícia não encontrou nada. Hotel tem fundo profundo, nome é ∞.",
+                replyTime9: "Hora da resposta: 2025/12/04 20:15",
+                replyContent9: "Lendo suas respostas me dá arrepios. Especialmente o que @猫眼看世界 e @旧唱片 disseram. Decidi nunca mais chegar perto de lá. Aliás, mais um detalhe: ao fazer check-out, o gerente RIKI me deu um cartão preto do hotel com apenas um símbolo ∞ dourado e um email. Ele disse: 'Se você se sentir perdido, ou desejar uma experiência suprema, entre em contato conosco a qualquer momento.' Pensei que era marketing na época; agora parece que a carta queima.",
+                replyTime10: "Hora da resposta: 2025/12/04 21:40",
+                replyContent10: "OP, foto desse cartão por favor (informações sensíveis borradas)! Também endereço do hotel ou descrição da aparência? Tenho muito interesse nessas lendas urbanas 'ritualísticas'. Dança, espelhos, número de quarto específico... soa como teatro psicológico fortemente metafórico ou configuração de campo de energia. Talvez o hotel use arquitetura e sugestão psicológica para criar 'sonhos personalizados' para clientes específicos? Claro, se verdade, o propósito de criar sonhos merece investigação.",
+                replyTime11: "Hora da resposta: 2025/12/04 22:01",
+                replyContent11: "Este tópico foi bloqueado devido a conteúdo contendo rumores não verificados que podem causar desconforto. Por favor, discuta racionalmente e evite espalhar informações de pânico.",
+                footerText: "© 2025 Fórum de Eventos Paranormais - Apenas para discussão de entretenimento, não acredite em informações não verificadas",
+                replyUser1: "Andarilho da Meia-Noite",
+                replyUser2: "Lenço Verde",
+                replyUser3: "Desmascarador Profissional",
+                replyUser4: "Corredor Infinito",
+                replyUser5: "Visão de Gato",
+                replyUser6: "Disco Antigo",
+                replyUser7: "Engenheiro de Passagem",
+                replyUser8: "Usuário Anônimo",
+                replyUser9: "Bebê Curioso (OP)",
+                replyUser10: "Entusiasta de Exploração Urbana",
+                replyUser11: "Aviso do Sistema",
+                nextPostText: "【Próximo Post】" // 新增的下一篇按钮翻译
+            }
+        };
+
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const langBtn = document.getElementById('langBtn');
+            const langOptions = document.getElementById('langOptions');
+            const currentLangSpan = document.getElementById('currentLang');
+            
+            // 默认语言
+            let currentLang = 'zh';
+            
+            // 切换语言选项显示/隐藏
+            langBtn.addEventListener('click', function() {
+                langOptions.style.display = langOptions.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // 点击语言选项
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    
+                    // 更新当前语言显示
+                    currentLang = lang;
+                    const langNames = {
+                        'zh': '中文',
+                        'en': 'English',
+                        'ja': '日本語',
+                        'pt': 'Português'
+                    };
+                    currentLangSpan.textContent = langNames[lang];
+                    
+                    // 更新活跃状态
+                    document.querySelectorAll('.lang-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 应用翻译
+                    applyTranslation(lang);
+                    
+                    // 隐藏选项
+                    langOptions.style.display = 'none';
+                    
+                    // 保存语言偏好到本地存储
+                    localStorage.setItem('preferredLanguage', lang);
+                });
+            });
+            
+            // 从本地存储获取语言偏好
+            const savedLang = localStorage.getItem('preferredLanguage');
+            if (savedLang && translations[savedLang]) {
+                currentLang = savedLang;
+                
+                // 更新UI
+                const langNames = {
+                    'zh': '中文',
+                    'en': 'English',
+                    'ja': '日本語',
+                    'pt': 'Português'
+                };
+                currentLangSpan.textContent = langNames[savedLang];
+                document.querySelectorAll('.lang-option').forEach(opt => {
+                    opt.classList.remove('active');
+                    if (opt.getAttribute('data-lang') === savedLang) {
+                        opt.classList.add('active');
+                    }
+                });
+                
+                // 应用翻译
+                applyTranslation(savedLang);
+            }
+            
+            // 应用翻译函数
+            function applyTranslation(lang) {
+                const langData = translations[lang];
+                
+                // 更新所有文本内容
+                for (const key in langData) {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.value = langData[key];
+                        } else {
+                            // 处理帖子内容和回复内容中的R∞M符号
+                            if (key === 'postContent' || key.startsWith('replyContent')) {
+                                const processedText = langData[key].replace(/R∞M/g, 'R<span class="infinity-symbol">∞</span>M');
+                                element.innerHTML = processedText;
+                            } else {
+                                element.textContent = langData[key];
+                            }
+                        }
+                    }
+                }
+                
+                // 更新页面标题
+                document.title = `${langData.forumName} - ${langData.postTitle}`;
+            }
+            
+            // 点击页面其他地方关闭语言选项
+            document.addEventListener('click', function(event) {
+                if (!langBtn.contains(event.target) && !langOptions.contains(event.target)) {
+                    langOptions.style.display = 'none';
+                }
+            });
+            
+            // 初始加载时，处理帖子内容中的R∞M符号
+            const postContentElement = document.getElementById('postContent');
+            if (postContentElement) {
+                postContentElement.innerHTML = postContentElement.innerHTML.replace(/R∞M/g, 'R<span class="infinity-symbol">∞</span>M');
+            }
+            
+            // 处理回复内容中的R∞M符号
+            for (let i = 1; i <= 11; i++) {
+                const replyContentElement = document.getElementById(`replyContent${i}`);
+                if (replyContentElement) {
+                    replyContentElement.innerHTML = replyContentElement.innerHTML.replace(/R∞M/g, 'R<span class="infinity-symbol">∞</span>M');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

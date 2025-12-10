@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>望海崖女尸案告破！画家陈逸风自首承认过失杀人 - 都市晚报</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0F3460', // 深蓝色主色调
+            secondary: '#E94560', // 强调色
+            neutral: '#F5F5F5', // 背景色
+            dark: '#1A1A2E', // 深色文本
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Georgia', 'serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      .article-para {
+        @apply mb-6 leading-relaxed text-gray-700;
+      }
+      .fade-in {
+        animation: fadeIn 0.8s ease-in forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-50 bg-white shadow-md transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <h1 class="text-primary font-bold text-2xl md:text-3xl" id="site-title">都市晚报</h1>
+        <div class="hidden md:block text-sm text-gray-500">
+          <span id="current-date">2025年11月28日</span>
+          <span class="mx-2">|</span>
+          <span id="current-day">星期五</span>
+        </div>
+      </div>
+      
+      <nav class="hidden md:flex space-x-6">
+        <a href="#" class="text-primary hover:text-secondary transition-colors font-medium" data-lang-key="home">首页</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="domestic">国内</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="international">国际</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="finance">财经</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="tech">科技</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="entertainment">文娱</a>
+      </nav>
+      
+      <div class="flex items-center space-x-3">
+        <!-- 语言切换下拉菜单 -->
+        <div class="relative group">
+          <button class="flex items-center text-gray-600 hover:text-primary transition-colors px-2 py-1 border border-gray-300 rounded">
+            <i class="fa fa-globe mr-1"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div class="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="zh">中文</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="en">English</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="ja">日本語</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="pt">Português</a>
+          </div>
+        </div>
+        
+        <button class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-search text-lg"></i>
+        </button>
+        <button class="md:hidden text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 移动端日期栏 -->
+  <div class="md:hidden bg-primary text-white py-2 px-4 text-center text-sm">
+    <span id="mobile-date">2025年11月28日 星期五</span>
+  </div>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 文章分类标签 -->
+    <div class="mb-4 flex items-center">
+      <span class="inline-block px-3 py-1 bg-secondary text-white text-sm font-medium rounded-full" data-lang-key="news-tag">案件追踪</span>
+      <span class="ml-3 text-gray-500 text-sm" data-lang-key="update-time">更新于 2025-11-28 14:00</span>
+    </div>
+    
+    <!-- 文章标题 -->
+    <div class="mb-8 fade-in" style="animation-delay: 0.1s">
+      <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark leading-tight" id="article-title">
+        望海崖女尸案告破！画家陈逸风自首承认过失杀人
+      </h2>
+    </div>
+    
+    <!-- 作者信息 -->
+    <div class="mb-8 flex items-center text-gray-600 fade-in" style="animation-delay: 0.2s">
+      <span class="font-medium" data-lang-key="reporter">本报记者 李静</span>
+      <span class="mx-2">|</span>
+      <span data-lang-key="reading-time">阅读时间：约 3 分钟</span>
+    </div>
+    
+    <!-- 分享按钮 -->
+    <div class="flex space-x-4 mb-8 fade-in" style="animation-delay: 0.3s">
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-weibo text-red-500 mr-2"></i>
+        <span data-lang-key="weibo">微博</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-wechat text-green-500 mr-2"></i>
+        <span data-lang-key="wechat">微信</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-share-alt text-gray-600 mr-2"></i>
+        <span data-lang-key="share">分享</span>
+      </button>
+    </div>
+    
+    <!-- 文章正文 -->
+    <article class="max-w-3xl mx-auto text-lg">
+      <!-- 主图片 -->
+      <div class="mb-8 fade-in" style="animation-delay: 0.4s">
+        <img src="4030新闻.jpg" alt="望海崖案发现场" class="w-full h-auto rounded-lg shadow-md">
+        <p class="text-sm text-gray-500 mt-2 text-center" data-lang-key="image-caption">警方在望海崖案发现场进行调查（资料图）</p>
+      </div>
+
+      <p class="article-para fade-in" style="animation-delay: 0.5s" data-lang-key="paragraph1">
+        备受关注的望海崖无名女尸案于今日告破，嫌疑人陈逸风（34 岁，自由画家）主动向警方自首，承认失手将女友林晓（死者）推下悬崖。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.6s" data-lang-key="paragraph2">
+        据警方透露，陈逸风于 11 月 24 日从 R∞M 酒店退房后，在邻市海滩被警方找到。其随身携带的绘画本中，夹有一份手写忏悔笔记，详细记录了案发经过：因版权纠纷与林晓爆发争吵，情绪失控失手伤人。此外，警方收到匿名邮件，附件包含陈逸风与林晓在案发现场的合照及未删除的聊天记录，成为关键证据。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.7s" data-lang-key="paragraph3">
+        目前，陈逸风因涉嫌过失致人死亡被刑事拘留，但其精神状态异常，警方已委托心理机构进行鉴定，初步判断为创伤后应激障碍引发的记忆紊乱。
+      </p>
+      
+      <div class="bg-gray-100 p-5 rounded-lg my-8 fade-in" style="animation-delay: 0.8s">
+        <p class="italic text-gray-700 border-l-4 border-primary pl-4" data-lang-key="police-statement">
+          <strong>警方声明：</strong>案件已取得重大进展，嫌疑人陈逸风已被刑事拘留。警方将继续调查案件细节，确保司法公正。
+        </p>
+      </div>
+    </article>
+    
+    <!-- 相关新闻推荐 -->
+    <section class="mt-16 max-w-5xl mx-auto">
+      <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-gray-200 pb-2" data-lang-key="related-news">相关新闻</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="#" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="新闻绿化.jpg" alt="城市绿化工程" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news1-title">城市绿化工程取得新进展，多个公园即将开放</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news1-date">2025-11-20</p>
+          </div>
+        </a>
+        
+        <a href="#" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="科技.jpg" alt="科技博览会" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news2-title">科技博览会下周开幕，将展示最新人工智能产品</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news2-date">2025-11-25</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- 返回顶部按钮 -->
+  <button id="backToTop" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-secondary">
+    <i class="fa fa-arrow-up"></i>
+  </button>
+
+  <!-- 页脚 -->
+  <footer class="bg-primary text-white mt-16">
+    <div class="container mx-auto px-4 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4" id="footer-title">都市晚报</h4>
+          <p class="text-gray-300 text-sm" data-lang-key="footer-desc">
+            创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。
+          </p>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="navigation">栏目导航</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="important-news">要闻</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="depth">深度</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="comments">评论</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="finance">财经</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="culture">文化</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="contact">联系我们</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><i class="fa fa-envelope-o mr-2"></i>contact@citynews.com</li>
+            <li><i class="fa fa-phone mr-2"></i>010-12345678</li>
+            <li><i class="fa fa-map-marker mr-2"></i><span data-lang-key="address">北京市朝阳区新闻大厦</span></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="follow-us">关注我们</h5>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-wechat text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-twitter text-xl"></i>
+            </a>
+          </div>
+          <p class="mt-4 text-gray-300 text-sm" data-lang-key="download-app">扫描二维码下载客户端</p>
+          <div class="text-center mt-6">
+            <img src="二维码.jpg" alt="二维码" class="w-32 h-32 mx-auto object-contain" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-white/20 mt-8 pt-6 text-center text-gray-400 text-sm">
+        <p data-lang-key="copyright">© 2025 都市晚报 版权所有 | 京ICP备12345678号</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 导航栏滚动效果
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('py-2', 'shadow-lg');
+        navbar.classList.remove('py-3', 'shadow-md');
+      } else {
+        navbar.classList.add('py-3', 'shadow-md');
+        navbar.classList.remove('py-2', 'shadow-lg');
+      }
+    });
+    
+    // 返回顶部按钮
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'invisible');
+        backToTopBtn.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopBtn.classList.add('opacity-0', 'invisible');
+        backToTopBtn.classList.remove('opacity-100', 'visible');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // 多语言支持
+    const translations = {
+      'zh': {
+        'site-title': '都市晚报',
+        'home': '首页',
+        'domestic': '国内',
+        'international': '国际',
+        'finance': '财经',
+        'tech': '科技',
+        'entertainment': '文娱',
+        'current-date': '2025年11月28日',
+        'current-day': '星期五',
+        'mobile-date': '2025年11月28日 星期五',
+        'news-tag': '案件追踪',
+        'update-time': '更新于 2025-11-28 14:00',
+        'article-title': '望海崖女尸案告破！画家陈逸风自首承认过失杀人',
+        'reporter': '本报记者 李静',
+        'reading-time': '阅读时间：约 3 分钟',
+        'weibo': '微博',
+        'wechat': '微信',
+        'share': '分享',
+        'image-caption': '警方在望海崖案发现场进行调查（资料图）',
+        'paragraph1': '备受关注的望海崖无名女尸案于今日告破，嫌疑人陈逸风（34 岁，自由画家）主动向警方自首，承认失手将女友林晓（死者）推下悬崖。',
+        'paragraph2': '据警方透露，陈逸风于 11 月 24 日从 R∞M 酒店退房后，在邻市海滩被警方找到。其随身携带的绘画本中，夹有一份手写忏悔笔记，详细记录了案发经过：因版权纠纷与林晓爆发争吵，情绪失控失手伤人。此外，警方收到匿名邮件，附件包含陈逸风与林晓在案发现场的合照及未删除的聊天记录，成为关键证据。',
+        'paragraph3': '目前，陈逸风因涉嫌过失致人死亡被刑事拘留，但其精神状态异常，警方已委托心理机构进行鉴定，初步判断为创伤后应激障碍引发的记忆紊乱。',
+        'police-statement': '警方声明：案件已取得重大进展，嫌疑人陈逸风已被刑事拘留。警方将继续调查案件细节，确保司法公正。',
+        'related-news': '相关新闻',
+        'related-news1-title': '城市绿化工程取得新进展，多个公园即将开放',
+        'related-news1-date': '2025-11-20',
+        'related-news2-title': '科技博览会下周开幕，将展示最新人工智能产品',
+        'related-news2-date': '2025-11-25',
+        'footer-title': '都市晚报',
+        'footer-desc': '创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。',
+        'navigation': '栏目导航',
+        'important-news': '要闻',
+        'depth': '深度',
+        'comments': '评论',
+        'finance': '财经',
+        'culture': '文化',
+        'contact': '联系我们',
+        'address': '北京市朝阳区新闻大厦',
+        'follow-us': '关注我们',
+        'download-app': '扫描二维码下载客户端',
+        'copyright': '© 2025 都市晚报 版权所有 | 京ICP备12345678号'
+      },
+      'en': {
+        'site-title': 'City Evening News',
+        'home': 'Home',
+        'domestic': 'Domestic',
+        'international': 'International',
+        'finance': 'Finance',
+        'tech': 'Technology',
+        'entertainment': 'Entertainment',
+        'current-date': 'November 28, 2025',
+        'current-day': 'Friday',
+        'mobile-date': 'November 28, 2025 Friday',
+        'news-tag': 'Case Tracking',
+        'update-time': 'Updated 2025-11-28 14:00',
+        'article-title': 'Wanghai Cliff Female Body Case Solved! Painter Chen Yifeng Confesses to Manslaughter',
+        'reporter': 'Reporter Li Jing',
+        'reading-time': 'Reading time: about 3 minutes',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Share',
+        'image-caption': 'Police investigating at the Wanghai Cliff crime scene (file photo)',
+        'paragraph1': 'The highly-anticipated Wanghai Cliff unidentified female body case was solved today. Suspect Chen Yifeng (34 years old, freelance painter) voluntarily surrendered to the police, admitting to accidentally pushing his girlfriend Lin Xiao (the deceased) off the cliff.',
+        'paragraph2': 'According to police, Chen Yifeng checked out of R∞M Hotel on November 24 and was found by police on a beach in a neighboring city. A handwritten confession note in his sketchbook detailed the incident: an argument with Lin Xiao over copyright issues escalated, and he lost control of his emotions, accidentally causing harm. Additionally, police received an anonymous email with attached photos of Chen Yifeng and Lin Xiao at the crime scene and undeleted chat records, which became key evidence.',
+        'paragraph3': 'Currently, Chen Yifeng has been criminally detained on suspicion of negligent homicide, but his mental state is abnormal. Police have commissioned a psychological institution for evaluation, with initial assessment indicating memory disorder triggered by post-traumatic stress disorder.',
+        'police-statement': 'Police Statement: The case has made significant progress, suspect Chen Yifeng has been criminally detained. Police will continue to investigate case details to ensure judicial fairness.',
+        'related-news': 'Related News',
+        'related-news1-title': 'Urban Greening Project Makes New Progress, Multiple Parks to Open Soon',
+        'related-news1-date': '2025-11-20',
+        'related-news2-title': 'Technology Expo Opens Next Week, Will Showcase Latest AI Products',
+        'related-news2-date': '2025-11-25',
+        'footer-title': 'City Evening News',
+        'footer-desc': 'Founded in 1985, it is an influential comprehensive evening newspaper in China, known for its in-depth reporting and news commentary.',
+        'navigation': 'Navigation',
+        'important-news': 'Important News',
+        'depth': 'In-depth',
+        'comments': 'Comments',
+        'finance': 'Finance',
+        'culture': 'Culture',
+        'contact': 'Contact Us',
+        'address': 'News Building, Chaoyang District, Beijing',
+        'follow-us': 'Follow Us',
+        'download-app': 'Scan QR code to download the app',
+        'copyright': '© 2025 City Evening News All Rights Reserved | Jing ICP No. 12345678'
+      },
+      'ja': {
+        'site-title': '都市晩報',
+        'home': 'ホーム',
+        'domestic': '国内',
+        'international': '国際',
+        'finance': '金融',
+        'tech': 'テクノロジー',
+        'entertainment': 'エンタメ',
+        'current-date': '2025年11月28日',
+        'current-day': '金曜日',
+        'mobile-date': '2025年11月28日 金曜日',
+        'news-tag': '事件追跡',
+        'update-time': '更新 2025-11-28 14:00',
+        'article-title': '望海崖女性遺体事件解決！画家陳逸風が過失致死を自首',
+        'reporter': '本紙記者 李静',
+        'reading-time': '読了時間：約3分',
+        'weibo': '微博',
+        'wechat': 'WeChat',
+        'share': 'シェア',
+        'image-caption': '望海崖事件現場で調査を行う警察（資料写真）',
+        'paragraph1': '注目を集めていた望海崖の身元不明女性遺体事件が本日解決した。容疑者陳逸風（34歳、フリーランス画家）が自ら警察に出頭し、交際相手の林暁（故人）を誤って崖から押し落としたことを認めた。',
+        'paragraph2': '警察によると、陳逸風は11月24日にR∞Mホテルをチェックアウトし、隣接市の海岸で警察に発見された。彼のスケッチブックにあった手書きの自白メモには、著作権問題をめぐる林暁との口論がエスカレートし、感情の制御を失って誤って危害を加えたという事件の経緯が詳細に記されていた。さらに、警察は陳逸風と林暁の事件現場での写真と未削除のチャット記録が添付された匿名メールを受信し、これが重要な証拠となった。',
+        'paragraph3': '現在、陳逸風は過失致死の疑いで刑事拘留されているが、彼の精神状態は異常である。警察は心理機関に鑑定を委託し、心的外傷後ストレス障害による記憶障害との暫定判断を得ている。',
+        'police-statement': '警察声明：事件は大きな進展を遂げ、容疑者陳逸風は刑事拘留されました。警察は事件の詳細を引き続き調査し、司法の公正を確保します。',
+        'related-news': '関連ニュース',
+        'related-news1-title': '都市緑化プロジェクトが新たな進展、複数の公園がまもなくオープン',
+        'related-news1-date': '2025-11-20',
+        'related-news2-title': 'テクノロジー博覧会が来週開幕、最新AI製品を展示',
+        'related-news2-date': '2025-11-25',
+        'footer-title': '都市晩報',
+        'footer-desc': '1985年創刊。中国で広範な影響力を持つ総合夕刊紙で、深度報道とニュース評論で知られる。',
+        'navigation': 'ナビゲーション',
+        'important-news': '重要ニュース',
+        'depth': '深度',
+        'comments': '評論',
+        'finance': '金融',
+        'culture': '文化',
+        'contact': 'お問い合わせ',
+        'address': '北京市朝陽区ニュースビル',
+        'follow-us': 'フォローする',
+        'download-app': 'QRコードをスキャンしてアプリをダウンロード',
+        'copyright': '© 2025 都市晩報 版権所有 | 京ICP備12345678号'
+      },
+      'pt': {
+        'site-title': 'Jornal da Cidade',
+        'home': 'Início',
+        'domestic': 'Nacional',
+        'international': 'Internacional',
+        'finance': 'Finanças',
+        'tech': 'Tecnologia',
+        'entertainment': 'Entretenimento',
+        'current-date': '28 de Novembro de 2025',
+        'current-day': 'Sexta-feira',
+        'mobile-date': '28 de Novembro de 2025 Sexta-feira',
+        'news-tag': 'Acompanhamento de Caso',
+        'update-time': 'Atualizado 2025-11-28 14:00',
+        'article-title': 'Caso do Corpo Feminino no Penhasco Wanghai Resolvido! Pintor Chen Yifeng Confessa Homicídio Culposo',
+        'reporter': 'Repórter Li Jing',
+        'reading-time': 'Tempo de leitura: cerca de 3 minutos',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Compartilhar',
+        'image-caption': 'Polícia investigando na cena do crime do Penhasco Wanghai (foto de arquivo)',
+        'paragraph1': 'O aguardado caso do corpo feminino não identificado no Penhasco Wanghai foi resolvido hoje. Suspeito Chen Yifeng (34 anos, pintor freelance) entregou-se voluntariamente à polícia, admitindo ter acidentalmente empurrado sua namorada Lin Xiao (a falecida) do penhasco.',
+        'paragraph2': 'De acordo com a polícia, Chen Yifeng fez check-out do Hotel R∞M em 24 de novembro e foi encontrado pela polícia em uma praia em cidade vizinha. Uma nota de confissão manuscrita em seu caderno de desenhos detalhou o incidente: uma discussão com Lin Xiao sobre questões de direitos autorais escalou, e ele perdeu o controle de suas emoções, acidentalmente causando danos. Além disso, a polícia recebeu um e-mail anônimo com fotos anexadas de Chen Yifeng e Lin Xiao na cena do crime e registros de chat não excluídos, que se tornaram evidência chave.',
+        'paragraph3': 'Atualmente, Chen Yifeng foi detido criminalmente sob suspeita de homicídio culposo, mas seu estado mental é anormal. A polícia comissionou uma instituição psicológica para avaliação, com avaliação inicial indicando transtorno de memória desencadeado por transtorno de estresse pós-traumático.',
+        'police-statement': 'Declaração da Polícia: O caso obteve progresso significativo, suspeito Chen Yifeng foi detido criminalmente. A polícia continuará investigando detalhes do caso para garantir justiça judicial.',
+        'related-news': 'Notícias Relacionadas',
+        'related-news1-title': 'Projeto de Verdejamento Urbano Faz Novo Progresso, Vários Parques a Abrir em Breve',
+        'related-news1-date': '2025-11-20',
+        'related-news2-title': 'Exposição de Tecnologia Abre na Próxima Semana, Mostrará Últimos Produtos de IA',
+        'related-news2-date': '2025-11-25',
+        'footer-title': 'Jornal da Cidade',
+        'footer-desc': 'Fundado em 1985, é um jornal vespertino abrangente influente na China, conhecido por sua reportagem aprofundada e comentário de notícias.',
+        'navigation': 'Navegação',
+        'important-news': 'Notícias Importantes',
+        'depth': 'Em Profundidade',
+        'comments': 'Comentários',
+        'finance': 'Finanças',
+        'culture': 'Cultura',
+        'contact': 'Contate-Nos',
+        'address': 'Edifício de Notícias, Distrito de Chaoyang, Pequim',
+        'follow-us': 'Siga-Nos',
+        'download-app': 'Escaneie o código QR para baixar o aplicativo',
+        'copyright': '© 2025 Jornal da Cidade Todos os Direitos Reservados | Jing ICP No. 12345678'
+      }
+    };
+
+    // 语言切换功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 设置默认语言为中文
+      let currentLang = 'zh';
+      updateLanguage(currentLang);
+      
+      // 为语言切换按钮添加事件监听器
+      document.querySelectorAll('[data-lang]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const lang = this.getAttribute('data-lang');
+          currentLang = lang;
+          updateLanguage(lang);
+          
+          // 更新当前语言显示
+          document.getElementById('current-lang').textContent = 
+            lang === 'zh' ? '中文' : 
+            lang === 'en' ? 'English' : 
+            lang === 'ja' ? '日本語' : 
+            'Português';
+        });
+      });
+    });
+
+    function updateLanguage(lang) {
+      // 更新所有带有data-lang-key属性的元素
+      document.querySelectorAll('[data-lang-key]').forEach(element => {
+        const key = element.getAttribute('data-lang-key');
+        if (translations[lang] && translations[lang][key]) {
+          element.textContent = translations[lang][key];
+        }
+      });
+      
+      // 更新特殊元素
+      if (translations[lang] && translations[lang]['site-title']) {
+        document.getElementById('site-title').textContent = translations[lang]['site-title'];
+        document.getElementById('footer-title').textContent = translations[lang]['site-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['article-title']) {
+        document.getElementById('article-title').textContent = translations[lang]['article-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-date']) {
+        document.getElementById('current-date').textContent = translations[lang]['current-date'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-day']) {
+        document.getElementById('current-day').textContent = translations[lang]['current-day'];
+      }
+      
+      if (translations[lang] && translations[lang]['mobile-date']) {
+        document.getElementById('mobile-date').textContent = translations[lang]['mobile-date'];
+      }
+    }
+  </script>
+</body>
+</html>

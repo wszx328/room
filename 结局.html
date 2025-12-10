@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R∞M酒店日记 - 最后的抉择</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Nanum+Pen+Script&family=Yomogi&family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Ma Shan Zheng', cursive;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a0a0a"/><path d="M0,50 Q25,40 50,50 T100,50" stroke="%231a1a1a" fill="none" stroke-width="0.5"/><path d="M0,30 Q25,20 50,30 T100,30" stroke="%231a1a1a" fill="none" stroke-width="0.5"/><path d="M0,70 Q25,60 50,70 T100,70" stroke="%231a1a1a" fill="none" stroke-width="0.5"/></svg>');
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        /* 语言切换按钮 */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .lang-btn {
+            background-color: #3a3329;
+            color: #d4c9b8;
+            border: 1px solid #5a4a3a;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 16px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .lang-btn:hover {
+            background-color: #5a4a3a;
+            transform: translateY(-2px);
+        }
+        
+        .lang-options {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: none;
+            overflow: hidden;
+            min-width: 150px;
+            border: 1px solid #3a3329;
+        }
+        
+        .lang-options.show {
+            display: block;
+        }
+        
+        .lang-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-family: 'Ma Shan Zheng', cursive;
+            color: #d4c9b8;
+        }
+        
+        .lang-option:hover {
+            background-color: #2a2a2a;
+        }
+        
+        .lang-option.active {
+            background-color: #3a3329;
+            font-weight: bold;
+        }
+        
+        /* 日记页面样式 */
+        .diary-container {
+            perspective: 1500px;
+            margin-top: 80px;
+        }
+        
+        .diary-page {
+            background-color: #121212;
+            border: 1px solid #3a3329;
+            border-radius: 2px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5), 
+                        inset 0 0 30px rgba(50, 40, 30, 0.2);
+            padding: 40px 50px;
+            min-height: 700px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+            opacity: 1;
+            transform: rotateY(0deg);
+            transition: transform 0.8s ease, opacity 0.8s ease;
+        }
+        
+        .diary-page::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background-image: linear-gradient(to bottom, transparent 95%, rgba(255,255,255,0.03) 100%);
+            pointer-events: none;
+        }
+        
+        .diary-page::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 30px;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.1) 90%, transparent);
+        }
+        
+        .date-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #5a4a3a;
+            color: #8b7355;
+            font-size: 22px;
+            letter-spacing: 2px;
+            font-family: monospace;
+        }
+        
+        .diary-content {
+            font-size: 20px;
+            line-height: 1.8;
+            text-align: justify;
+            color: #d4c9b8;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .diary-content p {
+            margin-bottom: 20px;
+            text-indent: 2em;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #3a3329;
+            color: #8b7355;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 14px;
+        }
+        
+        /* 深色系统对话框 */
+        .system-dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .system-dialog-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .system-dialog {
+            background-color: #121212;
+            border: 2px solid #3a3329;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+        }
+        
+        .system-dialog-overlay.active .system-dialog {
+            transform: translateY(0);
+        }
+        
+        .dialog-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            color: #c9b37e;
+            font-size: 22px;
+        }
+        
+        .dialog-icon {
+            margin-right: 15px;
+            font-size: 28px;
+        }
+        
+        .dialog-content {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #d4c9b8;
+            margin-bottom: 30px;
+        }
+        
+        .dialog-message {
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 3px solid #8b7355;
+            padding-bottom: 10px;
+        }
+        
+        .dialog-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .dialog-btn {
+            background-color: #8b7355;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+        
+        .dialog-btn:hover {
+            background-color: #6d5c46;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
+        
+        /* 语言特定的字体 */
+        body.lang-zh {
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        
+        body.lang-en {
+            font-family: 'Nanum Pen Script', cursive;
+        }
+        
+        body.lang-ja {
+            font-family: 'Yomogi', cursive;
+        }
+        
+        body.lang-pt {
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .diary-page {
+                padding: 30px;
+                min-height: 600px;
+            }
+            
+            .date-header {
+                font-size: 18px;
+            }
+            
+            .diary-content {
+                font-size: 18px;
+            }
+            
+            .language-switcher {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .system-dialog {
+                padding: 30px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .diary-page {
+                padding: 20px;
+                min-height: 500px;
+            }
+            
+            .date-header {
+                font-size: 16px;
+            }
+            
+            .diary-content {
+                font-size: 16px;
+            }
+            
+            .system-dialog {
+                padding: 20px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .flicker {
+            animation: flicker 3s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+    </style>
+</head>
+<body class="lang-zh">
+    <div class="container">
+        <!-- 语言切换按钮 -->
+        <div class="language-switcher">
+            <button class="lang-btn" id="langBtn">
+                <i class="fas fa-language"></i> <span class="lang-text">语言 / Language</span>
+            </button>
+            <div class="lang-options" id="langOptions">
+                <div class="lang-option active" data-lang="zh">简体中文</div>
+                <div class="lang-option" data-lang="en">English</div>
+                <div class="lang-option" data-lang="ja">日本語</div>
+                <div class="lang-option" data-lang="pt">Português</div>
+            </div>
+        </div>
+        
+        <!-- 日记容器 -->
+        <div class="diary-container">
+            <!-- 最后一页日记 -->
+            <div class="diary-page active">
+                <div class="page-content lang-zh">
+                    <div class="date-header glitch">##$%^&*()_+~`|}{[]\:";?><,./</div>
+                    <div class="diary-content">
+                        <p>如果你能读到这一页，说明你已经知道了一切。</p>
+                        <p>恭喜你，或者说，很遗憾。</p>
+                        <p>你通过了所有的测试——你破解了加密系统，拼凑出了六个房间的真相，理解了这座酒店的本质。你展现出了超凡的洞察力、逻辑推理能力，以及……某种特殊的精神特质。</p>
+                        <p>你就是我要找的人。</p>
+                        <p>现在，摆在你面前的有三条路。每一条都通向不同的结局，每一个选择都会永久地改变你的命运。</p>
+                        <p>我不会欺骗你——这三个选项都不轻松，都不是什么"正确答案"。它们只是三种不同的代价，三种不同的诅咒。</p>
+                        <p>仔细想想。你看到的那些故事——周明哲、李文轩、陈逸风、王天宇、赵雨婷、刘星辰——他们每个人都曾面临选择，而他们都选错了。</p>
+                        <p>但你不一样。</p>
+                        <p>因为你知道真相。</p>
+                    </div>
+                </div>
+                
+                <div class="page-content lang-en" style="display: none;">
+                    <div class="date-header glitch">##$%^&*()_+~`|}{[]\:";?><,./</div>
+                    <div class="diary-content">
+                        <p>If you can read this page, it means you already know everything.</p>
+                        <p>Congratulations, or rather, my condolences.</p>
+                        <p>You passed all the tests—you cracked the encryption system, pieced together the truth of the six rooms, understood the nature of this hotel. You demonstrated extraordinary insight, logical reasoning, and... a certain special mental quality.</p>
+                        <p>You are the one I've been looking for.</p>
+                        <p>Now, three paths lie before you. Each leads to a different ending, and each choice will permanently change your fate.</p>
+                        <p>I won't deceive you—none of these three options are easy, none are "correct answers." They are just three different prices, three different curses.</p>
+                        <p>Think carefully. Those stories you saw—Zhou Mingzhe, Li Wenxuan, Chen Yifeng, Wang Tianyu, Zhao Yuting, Liu Xingchen—each of them faced choices, and each chose wrong.</p>
+                        <p>But you are different.</p>
+                        <p>Because you know the truth.</p>
+                    </div>
+                </div>
+                
+                <div class="page-content lang-ja" style="display: none;">
+                    <div class="date-header glitch">##$%^&*()_+~`|}{[]\:";?><,./</div>
+                    <div class="diary-content">
+                        <p>このページを読めるなら、あなたはすでにすべてを知っている。</p>
+                        <p>おめでとう、あるいは、お悔やみ申し上げる。</p>
+                        <p>あなたはすべてのテストに合格した——暗号化システムを解読し、六つの部屋の真実を組み立て、このホテルの本質を理解した。あなたは非凡な洞察力、論理的推理力、そして……ある特別な精神的特性を示した。</p>
+                        <p>あなたは私が探していた人だ。</p>
+                        <p>今、あなたの前に三つの道がある。それぞれが異なる結末へと続き、それぞれの選択があなたの運命を永久に変える。</p>
+                        <p>あなたを欺くつもりはない——これらの三つの選択肢のどれも簡単ではない、「正解」などない。それらはただ三つの異なる代価、三つの異なる呪いだ。</p>
+                        <p>よく考えてほしい。あなたが見たあの物語——周明哲、李文軒、陳逸風、王天宇、趙雨婷、劉星辰——彼らはそれぞれ選択に直面し、それぞれ間違った選択をした。</p>
+                        <p>だがあなたは違う。</p>
+                        <p>なぜならあなたは真実を知っているからだ。</p>
+                    </div>
+                </div>
+                
+                <div class="page-content lang-pt" style="display: none;">
+                    <div class="date-header glitch">##$%^&*()_+~`|}{[]\:";?><,./</div>
+                    <div class="diary-content">
+                        <p>Se você pode ler esta página, significa que você já sabe tudo.</p>
+                        <p>Parabéns, ou melhor, meus pêsames.</p>
+                        <p>Você passou em todos os testes—você quebrou o sistema de criptografia, montou a verdade dos seis quartos, entendeu a natureza deste hotel. Você demonstrou insight extraordinário, raciocínio lógico, e... uma certa qualidade mental especial.</p>
+                        <p>Você é a pessoa que eu estava procurando.</p>
+                        <p>Agora, três caminhos estão diante de você. Cada um leva a um final diferente, e cada escolha mudará permanentemente seu destino.</p>
+                        <p>Eu não vou enganar você—nenhuma dessas três opções é fácil, nenhuma são "respostas corretas." Elas são apenas três preços diferentes, três maldições diferentes.</p>
+                        <p>Pense com cuidado. Aquelas histórias que você viu—Zhou Mingzhe, Li Wenxuan, Chen Yifeng, Wang Tianyu, Zhao Yuting, Liu Xingchen—cada um deles enfrentou escolhas, e cada um escolheu errado.</p>
+                        <p>Mas você é diferente.</p>
+                        <p>Porque você sabe a verdade.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <div class="footer">
+            R∞M酒店内部记录 - 最终抉择 | 最后更新: 2025年12月1日
+        </div>
+    </div>
+    
+    <!-- 系统对话框 -->
+    <div class="system-dialog-overlay" id="dialogOverlay">
+        <div class="system-dialog">
+            <div class="dialog-header">
+                <i class="fas fa-exclamation-triangle dialog-icon flicker"></i>
+                <span class="dialog-title" id="dialogTitle">SYSTEM MESSAGE</span>
+            </div>
+            <div class="dialog-content">
+                <div class="dialog-message" id="message1">RIKI: 你好，继任者。</div>
+                <div class="dialog-message" id="message2">RIKI: 1102号房的门已经为你打开。</div>
+                <div class="dialog-message" id="message3">RIKI: 来见我吧。</div>
+                <div class="dialog-message" id="message4">RIKI: 是时候做出选择了。</div>
+            </div>
+            <div class="dialog-footer">
+                <button class="dialog-btn" id="dialogBtn">前往1102号房</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言对话框内容
+        const dialogMessages = {
+            zh: {
+                title: "系统消息",
+                messages: [
+                    "RIKI: 你好，继任者。",
+                    "RIKI: 1102号房的门已经为你打开。",
+                    "RIKI: 来见我吧。",
+                    "RIKI: 是时候做出选择了。"
+                ],
+                button: "前往1102号房"
+            },
+            en: {
+                title: "SYSTEM MESSAGE",
+                messages: [
+                    "RIKI: Hello, successor.",
+                    "RIKI: The door to Room 1102 is now open for you.",
+                    "RIKI: Come to me.",
+                    "RIKI: It's time to make a choice."
+                ],
+                button: "Go to Room 1102"
+            },
+            ja: {
+                title: "システムメッセージ",
+                messages: [
+                    "RIKI: こんにちは、後継者。",
+                    "RIKI: 1102号室のドアがあなたのために開かれました。",
+                    "RIKI: 私に会いに来てください。",
+                    "RIKI: 選択する時が来ました。"
+                ],
+                button: "1102号室へ行く"
+            },
+            pt: {
+                title: "MENSAGEM DO SISTEMA",
+                messages: [
+                    "RIKI: Olá, sucessor.",
+                    "RIKI: A porta do Quarto 1102 está agora aberta para você.",
+                    "RIKI: Venha até mim.",
+                    "RIKI: É hora de fazer uma escolha."
+                ],
+                button: "Ir para o Quarto 1102"
+            }
+        };
+
+        // 初始化变量
+        let currentLanguage = 'zh';
+        let dialogTimeout;
+
+        // DOM元素
+        const langBtn = document.getElementById('langBtn');
+        const langOptions = document.getElementById('langOptions');
+        const langOptionElements = document.querySelectorAll('.lang-option');
+        const body = document.body;
+        const dialogOverlay = document.getElementById('dialogOverlay');
+        const dialogTitle = document.getElementById('dialogTitle');
+        const message1 = document.getElementById('message1');
+        const message2 = document.getElementById('message2');
+        const message3 = document.getElementById('message3');
+        const message4 = document.getElementById('message4');
+        const dialogBtn = document.getElementById('dialogBtn');
+
+        // 初始化页面
+        function initPage() {
+            // 设置30秒后显示对话框
+            dialogTimeout = setTimeout(showDialog, 15000);
+            
+            // 更新按钮文本
+            updateLangButton();
+            
+            // 添加点击外部关闭语言菜单的事件
+            document.addEventListener('click', (e) => {
+                if (!langBtn.contains(e.target) && !langOptions.contains(e.target)) {
+                    langOptions.classList.remove('show');
+                }
+            });
+            
+            // 为乱码日期添加随机闪烁效果
+            const dateHeaders = document.querySelectorAll('.date-header');
+            setInterval(() => {
+                dateHeaders.forEach(header => {
+                    if (Math.random() > 0.7) {
+                        header.classList.add('glitch');
+                        setTimeout(() => {
+                            header.classList.remove('glitch');
+                        }, 300);
+                    }
+                });
+            }, 1000);
+        }
+
+        // 显示对话框
+        function showDialog() {
+            updateDialogContent();
+            dialogOverlay.classList.add('active');
+            
+            // 阻止滚动
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 隐藏对话框
+        function hideDialog() {
+            dialogOverlay.classList.remove('active');
+            
+            // 恢复滚动
+            document.body.style.overflow = 'auto';
+        }
+
+        // 更新对话框内容
+        function updateDialogContent() {
+            const messages = dialogMessages[currentLanguage];
+            dialogTitle.textContent = messages.title;
+            message1.textContent = messages.messages[0];
+            message2.textContent = messages.messages[1];
+            message3.textContent = messages.messages[2];
+            message4.textContent = messages.messages[3];
+            dialogBtn.textContent = messages.button;
+        }
+
+        // 切换语言
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // 更新body的类以应用正确的字体
+            body.className = `lang-${lang}`;
+            
+            // 更新页面内容显示
+            const allContents = document.querySelectorAll('.page-content');
+            allContents.forEach(content => {
+                content.style.display = content.classList.contains(`lang-${lang}`) ? 'block' : 'none';
+            });
+            
+            // 更新语言选择器中的活动选项
+            langOptionElements.forEach(option => {
+                if (option.dataset.lang === lang) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            // 更新语言按钮文本
+            updateLangButton();
+            
+            // 更新对话框内容
+            updateDialogContent();
+            
+            // 隐藏语言选项菜单
+            langOptions.classList.remove('show');
+        }
+
+        // 更新语言按钮文本
+        function updateLangButton() {
+            const langTextMap = {
+                zh: "语言 / Language",
+                en: "Language / 语言",
+                ja: "言語 / Language",
+                pt: "Idioma / Language"
+            };
+            
+            document.querySelector('.lang-text').textContent = langTextMap[currentLanguage];
+        }
+
+        // 事件监听器
+        langBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langOptions.classList.toggle('show');
+        });
+
+        // 语言选项点击事件
+        langOptionElements.forEach(option => {
+            option.addEventListener('click', () => {
+                const selectedLang = option.dataset.lang;
+                switchLanguage(selectedLang);
+            });
+        });
+
+        // 对话框按钮点击事件
+        dialogBtn.addEventListener('click', () => {
+            // 跳转到1102号房.html
+            window.location.href = '1102号房.html';
+        });
+
+        // 初始化页面
+        initPage();
+    </script>
+</body>
+</html>

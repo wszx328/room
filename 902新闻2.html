@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【独家】知名音乐人刘星辰近照曝光 形容枯槁疑似患病 - 都市晚报</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0F3460', // 深蓝色主色调
+            secondary: '#E94560', // 强调色
+            neutral: '#F5F5F5', // 背景色
+            dark: '#1A1A2E', // 深色文本
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Georgia', 'serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      .article-para {
+        @apply mb-6 leading-relaxed text-gray-700;
+      }
+      .fade-in {
+        animation: fadeIn 0.8s ease-in forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-50 bg-white shadow-md transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <h1 class="text-primary font-bold text-2xl md:text-3xl" id="site-title">都市晚报</h1>
+        <div class="hidden md:block text-sm text-gray-500">
+          <span id="current-date">2025年11月29日</span>
+          <span class="mx-2">|</span>
+          <span id="current-day">星期六</span>
+        </div>
+      </div>
+      
+      <nav class="hidden md:flex space-x-6">
+        <a href="#" class="text-primary hover:text-secondary transition-colors font-medium" data-lang-key="home">首页</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="domestic">国内</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="international">国际</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="finance">财经</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="tech">科技</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="entertainment">文娱</a>
+      </nav>
+      
+      <div class="flex items-center space-x-3">
+        <!-- 语言切换下拉菜单 -->
+        <div class="relative group">
+          <button class="flex items-center text-gray-600 hover:text-primary transition-colors px-2 py-1 border border-gray-300 rounded">
+            <i class="fa fa-globe mr-1"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div class="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="zh">中文</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="en">English</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="ja">日本語</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="pt">Português</a>
+          </div>
+        </div>
+        
+        <button class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-search text-lg"></i>
+        </button>
+        <button class="md:hidden text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 移动端日期栏 -->
+  <div class="md:hidden bg-primary text-white py-2 px-4 text-center text-sm">
+    <span id="mobile-date">2025年11月29日 星期六</span>
+  </div>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 文章分类标签 -->
+    <div class="mb-4 flex items-center">
+      <span class="inline-block px-3 py-1 bg-secondary text-white text-sm font-medium rounded-full" data-lang-key="focus-news">焦点新闻</span>
+      <span class="ml-3 text-gray-500 text-sm" data-lang-key="update-time">发布时间：2025/11/29 14:56</span>
+    </div>
+    
+    <!-- 文章标题 -->
+    <div class="mb-8 fade-in" style="animation-delay: 0.1s">
+      <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark leading-tight" id="article-title" data-lang-key="article-title">
+        【独家】知名音乐人刘星辰近照曝光 形容枯槁疑似患病
+      </h2>
+    </div>
+    
+    <!-- 作者信息 -->
+    <div class="mb-8 flex items-center text-gray-600 fade-in" style="animation-delay: 0.2s">
+      <span class="font-medium" data-lang-key="reporter">本报记者 李然</span>
+      <span class="mx-2">|</span>
+      <span data-lang-key="reading-time">阅读时间：约 4 分钟</span>
+    </div>
+    
+    <!-- 分享按钮 -->
+    <div class="flex space-x-4 mb-8 fade-in" style="animation-delay: 0.3s">
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-weibo text-red-500 mr-2"></i>
+        <span data-lang-key="weibo">微博</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-wechat text-green-500 mr-2"></i>
+        <span data-lang-key="wechat">微信</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-share-alt text-gray-600 mr-2"></i>
+        <span data-lang-key="share">分享</span>
+      </button>
+    </div>
+    
+    <!-- 文章正文 -->
+    <article class="max-w-3xl mx-auto text-lg">
+      <!-- 新增文章图片 -->
+      <div class="mb-8 fade-in" style="animation-delay: 0.4s">
+        <img src="902新闻2.jpg" alt="废弃仓库外景" class="w-full h-auto rounded-lg shadow-md">
+        <p class="text-center text-gray-500 text-sm mt-2" data-lang-key="image-caption">记者在市郊废弃仓库附近拍到的刘星辰（视频截图）</p>
+      </div>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.5s" data-lang-key="paragraph1">
+        【独家】知名音乐人刘星辰近照曝光 形容枯槁疑似患病
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.6s" data-lang-key="paragraph2">
+        报道时间：2025/11/29 14:56
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.7s" data-lang-key="paragraph3">
+        本报记者昨日在市郊某废弃仓库附近,偶然拍到了已消失公众视野近两年的音乐人刘星辰。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.8s" data-lang-key="paragraph4">
+        照片中的刘星辰形容枯槁，与两年前判若两人。他头发蓬乱、胡子拉碴，身形消瘦,眼窝深陷。更令人担忧的是，他的行为举止十分异常——独自站在仓库外，对着空气做出指挥动作,嘴里念念有词。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.9s" data-lang-key="paragraph5">
+        记者尝试上前询问，但刘星辰对外界完全没有反应，似乎沉浸在自己的世界里。约十分钟后，他突然停止了动作，转身快步离开，消失在小巷深处。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.0s" data-lang-key="paragraph6">
+        据知情人士透露，刘星辰自2024年"教堂事件"后一直下落不明。警方曾多次试图联系他配合调查，但始终无法找到其行踪。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.1s" data-lang-key="paragraph7">
+        有接近刘星辰的朋友表示，他疑似患有严重的精神疾病，建议其尽快就医。但也有粉丝认为，他可能是在为新专辑做准备，"艺术家嘛，总是与众不同的"。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.2s" data-lang-key="paragraph8">
+        截至发稿，记者未能联系到刘星辰本人进行回应。
+      </p>
+    </article>
+    
+    <!-- 相关新闻推荐 -->
+    <section class="mt-16 max-w-5xl mx-auto">
+      <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-gray-200 pb-2" data-lang-key="related-news">相关新闻</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="javascript:void(0)" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="教堂.jpg" alt="教堂事件现场" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news1-title">深度追踪：教堂事件唯一失踪者刘星辰的神秘关联</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news1-date">2025/11/28</p>
+          </div>
+        </a>
+        
+        <a href="javascript:void(0)" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="音乐界讨论" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news2-title">音乐界人士表达关切：呼吁社会关注艺术家心理健康</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news2-date">2025/11/27</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-primary text-white mt-16">
+    <div class="container mx-auto px-4 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4" id="footer-title">都市晚报</h4>
+          <p class="text-gray-300 text-sm" data-lang-key="footer-desc">
+            创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。
+          </p>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="navigation">栏目导航</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="important-news">要闻</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="depth">深度</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="comments">评论</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="finance">财经</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="culture">文化</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="contact">联系我们</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><i class="fa fa-envelope-o mr-2"></i>contact@citynews.com</li>
+            <li><i class="fa fa-phone mr-2"></i>010-12345678</li>
+            <li><i class="fa fa-map-marker mr-2"></i><span data-lang-key="address">北京市朝阳区新闻大厦</span></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="follow-us">关注我们</h5>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-wechat text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-twitter text-xl"></i>
+            </a>
+          </div>
+          <p class="mt-4 text-gray-300 text-sm" data-lang-key="download-app">扫描二维码下载客户端</p>
+          <div class="text-center mt-6">
+            <img src="二维码.jpg" alt="二维码" class="w-32 h-32 mx-auto object-contain" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-white/20 mt-8 pt-6 text-center text-gray-400 text-sm">
+        <p data-lang-key="copyright">© 2025 都市晚报 版权所有 | 京ICP备12345678号</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 返回顶部按钮 -->
+  <button id="backToTop" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-secondary">
+    <i class="fa fa-arrow-up"></i>
+  </button>
+
+  <script>
+    // 导航栏滚动效果
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('py-2', 'shadow-lg');
+        navbar.classList.remove('py-3', 'shadow-md');
+      } else {
+        navbar.classList.add('py-3', 'shadow-md');
+        navbar.classList.remove('py-2', 'shadow-lg');
+      }
+    });
+    
+    // 返回顶部按钮
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'invisible');
+        backToTopBtn.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopBtn.classList.add('opacity-0', 'invisible');
+        backToTopBtn.classList.remove('opacity-100', 'visible');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // 多语言支持
+    const translations = {
+      'zh': {
+        'site-title': '都市晚报',
+        'current-date': '2025年11月29日',
+        'current-day': '星期六',
+        'mobile-date': '2025年11月29日 星期六',
+        'home': '首页',
+        'domestic': '国内',
+        'international': '国际',
+        'finance': '财经',
+        'tech': '科技',
+        'entertainment': '文娱',
+        'focus-news': '焦点新闻',
+        'update-time': '发布时间：2025/11/29 14:56',
+        'article-title': '【独家】知名音乐人刘星辰近照曝光 形容枯槁疑似患病',
+        'reporter': '本报记者 李然',
+        'reading-time': '阅读时间：约 4 分钟',
+        'weibo': '微博',
+        'wechat': '微信',
+        'share': '分享',
+        'paragraph1': '【独家】知名音乐人刘星辰近照曝光 形容枯槁疑似患病',
+        'paragraph2': '报道时间：2025/11/29 14:56',
+        'paragraph3': '本报记者昨日在市郊某废弃仓库附近,偶然拍到了已消失公众视野近两年的音乐人刘星辰。',
+        'paragraph4': '照片中的刘星辰形容枯槁，与两年前判若两人。他头发蓬乱、胡子拉碴，身形消瘦,眼窝深陷。更令人担忧的是，他的行为举止十分异常——独自站在仓库外，对着空气做出指挥动作,嘴里念念有词。',
+        'paragraph5': '记者尝试上前询问，但刘星辰对外界完全没有反应，似乎沉浸在自己的世界里。约十分钟后，他突然停止了动作，转身快步离开，消失在小巷深处。',
+        'paragraph6': '据知情人士透露，刘星辰自2024年"教堂事件"后一直下落不明。警方曾多次试图联系他配合调查，但始终无法找到其行踪。',
+        'paragraph7': '有接近刘星辰的朋友表示，他疑似患有严重的精神疾病，建议其尽快就医。但也有粉丝认为，他可能是在为新专辑做准备，"艺术家嘛，总是与众不同的"。',
+        'paragraph8': '截至发稿，记者未能联系到刘星辰本人进行回应。',
+        'image-caption': '记者在市郊废弃仓库附近拍到的刘星辰（视频截图）',
+        'related-news': '相关新闻',
+        'related-news1-title': '深度追踪：教堂事件唯一失踪者刘星辰的神秘关联',
+        'related-news1-date': '2025/11/28',
+        'related-news2-title': '音乐界人士表达关切：呼吁社会关注艺术家心理健康',
+        'related-news2-date': '2025/11/27',
+        'footer-title': '都市晚报',
+        'footer-desc': '创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。',
+        'navigation': '栏目导航',
+        'important-news': '要闻',
+        'depth': '深度',
+        'comments': '评论',
+        'culture': '文化',
+        'contact': '联系我们',
+        'address': '北京市朝阳区新闻大厦',
+        'follow-us': '关注我们',
+        'download-app': '扫描二维码下载客户端',
+        'copyright': '© 2025 都市晚报 版权所有 | 京ICP备12345678号'
+      },
+      'en': {
+        'site-title': 'City Evening News',
+        'current-date': 'November 29, 2025',
+        'current-day': 'Saturday',
+        'mobile-date': 'November 29, 2025 Saturday',
+        'home': 'Home',
+        'domestic': 'Domestic',
+        'international': 'International',
+        'finance': 'Finance',
+        'tech': 'Technology',
+        'entertainment': 'Entertainment',
+        'focus-news': 'Focus News',
+        'update-time': 'Release time: 2025/11/29 14:56',
+        'article-title': '[Exclusive] Recent Photos of Famous Musician Liu Xingchen Exposed, Gaunt Appearance Suspected Illness',
+        'reporter': 'Reporter Li Ran',
+        'reading-time': 'Reading time: about 4 minutes',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Share',
+        'paragraph1': '[Exclusive] Recent Photos of Famous Musician Liu Xingchen Exposed, Gaunt Appearance Suspected Illness',
+        'paragraph2': 'Report time: 2025/11/29 14:56',
+        'paragraph3': 'Our reporter accidentally photographed musician Liu Xingchen near an abandoned warehouse on the outskirts of the city yesterday. Liu had disappeared from the public eye for nearly two years.',
+        'paragraph4': 'In the photo, Liu Xingchen looks haggard, completely different from two years ago. His hair is messy, he has a scruffy beard, his body is emaciated, and his eye sockets are sunken. More worryingly, his behavior is very abnormal—standing alone outside the warehouse, conducting gestures into the air while murmuring words.',
+        'paragraph5': 'The reporter attempted to approach and ask questions, but Liu Xingchen showed no reaction to the outside world, seemingly immersed in his own world. About ten minutes later, he suddenly stopped his movements, turned around, and quickly walked away, disappearing into the depths of the alley.',
+        'paragraph6': 'According to informed sources, Liu Xingchen has been missing since the 2024 "church incident." Police have tried to contact him multiple times to cooperate with the investigation but have been unable to find his whereabouts.',
+        'paragraph7': 'Friends close to Liu Xingchen stated that he is suspected of having a serious mental illness and recommended that he seek medical treatment as soon as possible. However, some fans believe he might be preparing for a new album, "Artists are always different, after all."',
+        'paragraph8': 'As of publication, the reporter has been unable to contact Liu Xingchen himself for a response.',
+        'image-caption': 'Liu Xingchen photographed by reporter near abandoned warehouse (video screenshot)',
+        'related-news': 'Related News',
+        'related-news1-title': 'In-depth Tracking: The Mysterious Connection of Liu Xingchen, the Only Missing Person in the Church Incident',
+        'related-news1-date': '2025/11/28',
+        'related-news2-title': 'Music Industry Expresses Concern: Calls for Social Attention to Artists Mental Health',
+        'related-news2-date': '2025/11/27',
+        'footer-title': 'City Evening News',
+        'footer-desc': 'Founded in 1985, it is an influential comprehensive evening newspaper in China, known for its in-depth reporting and news commentary.',
+        'navigation': 'Navigation',
+        'important-news': 'Important News',
+        'depth': 'In-depth',
+        'comments': 'Comments',
+        'culture': 'Culture',
+        'contact': 'Contact Us',
+        'address': 'News Building, Chaoyang District, Beijing',
+        'follow-us': 'Follow Us',
+        'download-app': 'Scan QR code to download the app',
+        'copyright': '© 2025 City Evening News All Rights Reserved | Jing ICP No. 12345678'
+      },
+      'ja': {
+        'site-title': '都市晩報',
+        'current-date': '2025年11月29日',
+        'current-day': '土曜日',
+        'mobile-date': '2025年11月29日 土曜日',
+        'home': 'ホーム',
+        'domestic': '国内',
+        'international': '国際',
+        'finance': '金融',
+        'tech': 'テクノロジー',
+        'entertainment': 'エンタメ',
+        'focus-news': '注目ニュース',
+        'update-time': '発表時間：2025/11/29 14:56',
+        'article-title': '【独占】著名音楽家劉星辰の近影公開 憔悴した姿で病気疑惑',
+        'reporter': '本紙記者 李然',
+        'reading-time': '読了時間：約4分',
+        'weibo': '微博',
+        'wechat': 'WeChat',
+        'share': 'シェア',
+        'paragraph1': '【独占】著名音楽家劉星辰の近影公開 憔悴した姿で病気疑惑',
+        'paragraph2': '報道時間：2025/11/29 14:56',
+        'paragraph3': '本紙記者は昨日、郊外の廃倉庫付近で、公の場から約2年間姿を消していた音楽家の劉星辰を偶然撮影した。',
+        'paragraph4': '写真の中の劉星辰は憔悴しきっており、2年前とは別人のようだ。彼の髪は乱れ、あごひげは伸び放題、体は痩せこけ、目は落ち窪んでいる。さらに心配なのは、彼の行動が非常に異常であること——倉庫の外に一人立ち、空中に向かって指揮をするような動作をしながら、口の中で何かをつぶやいている。',
+        'paragraph5': '記者が近づいて尋ねようとしたが、劉星辰は外界に全く反応せず、自分の世界に没頭しているようだった。約10分後、彼は突然動作を止め、くるりと向きを変えて急ぎ足で立ち去り、路地の奥に消えていった。',
+        'paragraph6': '関係者によると、劉星辰は2024年の「教会事件」以来、行方不明になっていた。警察は何度も彼に連絡を取って捜査に協力するよう試みたが、彼の行方はついに見つからなかった。',
+        'paragraph7': '劉星辰に近い友人は、彼が深刻な精神疾患を患っている疑いがあり、できるだけ早く医療機関を受診するよう勧めている。しかし、一部のファンは、彼が新しいアルバムの準備をしているのではないかと考えている。「アーティストって、いつも普通じゃないからね」',
+        'paragraph8': '記事掲載時点で、記者は劉星辰本人への連絡に成功していない。',
+        'image-caption': '記者が郊外の廃倉庫付近で撮影した劉星辰（ビデオスクリーンショット）',
+        'related-news': '関連ニュース',
+        'related-news1-title': '深層追跡：教会事件の唯一の失踪者劉星辰の神秘的な関連性',
+        'related-news1-date': '2025/11/28',
+        'related-news2-title': '音楽界関係者が懸念表明：アーティストの精神的健康への社会的関心を呼びかけ',
+        'related-news2-date': '2025/11/27',
+        'footer-title': '都市晩報',
+        'footer-desc': '1985年創刊。中国で広範な影響力を持つ総合夕刊紙で、深度報道とニュース評論で知られる。',
+        'navigation': 'ナビゲーション',
+        'important-news': '重要ニュース',
+        'depth': '深度',
+        'comments': '評論',
+        'culture': '文化',
+        'contact': 'お問い合わせ',
+        'address': '北京市朝陽区ニュースビル',
+        'follow-us': 'フォローする',
+        'download-app': 'QRコードをスキャンしてアプリをダウンロード',
+        'copyright': '© 2025 都市晩報 版権所有 | 京ICP備12345678号'
+      },
+      'pt': {
+        'site-title': 'Jornal da Cidade',
+        'current-date': '29 de Novembro de 2025',
+        'current-day': 'Sábado',
+        'mobile-date': '29 de Novembro de 2025 Sábado',
+        'home': 'Início',
+        'domestic': 'Nacional',
+        'international': 'Internacional',
+        'finance': 'Finanças',
+        'tech': 'Tecnologia',
+        'entertainment': 'Entretenimento',
+        'focus-news': 'Notícias em Destaque',
+        'update-time': 'Hora de publicação: 2025/11/29 14:56',
+        'article-title': '[Exclusivo] Fotos Recentes do Famoso Músico Liu Xingchen Expostas, Aparência Abatida Suspeita de Doença',
+        'reporter': 'Repórter Li Ran',
+        'reading-time': 'Tempo de leitura: cerca de 4 minutos',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Compartilhar',
+        'paragraph1': '[Exclusivo] Fotos Recentes do Famoso Músico Liu Xingchen Expostas, Aparência Abatida Suspeita de Doença',
+        'paragraph2': 'Hora do relatório: 2025/11/29 14:56',
+        'paragraph3': 'Nosso repórter acidentalmente fotografou o músico Liu Xingchen perto de um armazém abandonado nos arredores da cidade ontem. Liu havia desaparecido do olhar público por quase dois anos.',
+        'paragraph4': 'Na foto, Liu Xingchen parece abatido, completamente diferente de dois anos atrás. Seu cabelo está desarrumado, ele tem uma barba por fazer, seu corpo está emaciado e suas órbitas oculares estão afundadas. Mais preocupante ainda, seu comportamento é muito anormal—ficando sozinho fora do armazém, fazendo gestos de regência para o ar enquanto murmurava palavras.',
+        'paragraph5': 'O repórter tentou se aproximar e fazer perguntas, mas Liu Xingchen não mostrou reação ao mundo exterior, aparentemente imerso em seu próprio mundo. Cerca de dez minutos depois, ele parou subitamente seus movimentos, virou-se e saiu rapidamente, desaparecendo nas profundezas do beco.',
+        'paragraph6': 'De acordo com fontes informadas, Liu Xingchen está desaparecido desde o "incidente da igreja" de 2024. A polícia tentou contatá-lo várias vezes para cooperar com a investigação, mas não conseguiu encontrar seu paradeiro.',
+        'paragraph7': 'Amigos próximos de Liu Xingchen afirmaram que ele é suspeito de ter uma doença mental grave e recomendaram que ele procurasse tratamento médico o mais rápido possível. No entanto, alguns fãs acreditam que ele pode estar se preparando para um novo álbum, "Artistas são sempre diferentes, afinal".',
+        'paragraph8': 'Até a publicação, o repórter não conseguiu contatar o próprio Liu Xingchen para uma resposta.',
+        'image-caption': 'Liu Xingchen fotografado pelo repórter perto de armazém abandonado (captura de tela de vídeo)',
+        'related-news': 'Notícias Relacionadas',
+        'related-news1-title': 'Aprofundamento: A Conexão Misteriosa de Liu Xingchen, a Única Pessoa Desaparecida no Incidente da Igreja',
+        'related-news1-date': '2025/11/28',
+        'related-news2-title': 'Indústria Musical Expressa Preocupação: Pede Atenção Social à Saúde Mental dos Artistas',
+        'related-news2-date': '2025/11/27',
+        'footer-title': 'Jornal da Cidade',
+        'footer-desc': 'Fundado em 1985, é um jornal vespertino abrangente com ampla influência na China, conhecido por reportagens aprofundadas e comentários jornalísticos.',
+        'navigation': 'Navegação',
+        'important-news': 'Notícias Importantes',
+        'depth': 'Aprofundamento',
+        'comments': 'Comentários',
+        'culture': 'Cultura',
+        'contact': 'Contate-Nos',
+        'address': 'Edifício de Notícias, Distrito de Chaoyang, Pequim',
+        'follow-us': 'Siga-Nos',
+        'download-app': 'Digitalize o código QR para baixar o aplicativo',
+        'copyright': '© 2025 Jornal da Cidade Todos os Direitos Reservados | Jing ICP No. 12345678'
+      }
+    };
+
+    // 语言切换功能
+    document.querySelectorAll('[data-lang]').forEach(elem => {
+      elem.addEventListener('click', function(e) {
+        e.preventDefault();
+        const lang = this.getAttribute('data-lang');
+        document.getElementById('current-lang').textContent = this.textContent;
+        
+        // 更新所有带data-lang-key的元素
+        document.querySelectorAll('[data-lang-key]').forEach(el => {
+          const key = el.getAttribute('data-lang-key');
+          if (translations[lang] && translations[lang][key]) {
+            el.textContent = translations[lang][key];
+          }
+        });
+        
+        // 更新页面标题
+        document.title = translations[lang]['article-title'] + ' - ' + translations[lang]['site-title'];
+      });
+    });
+  </script>
+</body>
+</html>

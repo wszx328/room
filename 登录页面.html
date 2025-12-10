@@ -1,0 +1,722 @@
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 登录</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Playfair Display', 'serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .special-purple-text {
+        font-family: 'Playfair Display', serif;
+        color: #8A6BBE;
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.7);
+        font-weight: 600;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest">LOADING<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-display text-xl md:text-2xl tracking-wider">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 酒店</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <a href="index.html" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.home">首页</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+      </nav>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <a href="index.html" class="text-gray-300 hover:text-white py-2 transition-colors" data-i18n="nav.home">首页</a>
+        
+        <!-- 移动端语言切换 -->
+        <div class="border-t border-gray-700 pt-4 mt-4">
+          <div class="px-4 py-2 text-sm text-gray-400">语言</div>
+          <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+          <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+          <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+          <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 登录区域 -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <!-- 背景装饰 -->
+    <div class="absolute inset-0 z-0 bg-cover bg-center" style="background-image: url('酒店.jpg')">
+      <div class="w-full h-full bg-gradient-to-br from-primary to-dark opacity-10"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black"></div>
+    </div>
+    
+    <!-- 主登录表单 -->
+    <div class="container mx-auto px-4 z-10">
+      <div class="max-w-md mx-auto">
+        <!-- 标题 -->
+        <div class="text-center mb-10">
+          <h1 class="text-[clamp(2rem,5vw,3rem)] font-display font-bold text-white leading-tight text-shadow mb-4">
+            <span class="text-accent text-glow">R∞M</span> <span data-i18n="login.title">登录</span>
+          </h1>
+          <p class="text-gray-300" data-i18n="login.subtitle">请输入您的账号和密码以访问您的专属空间</p>
+        </div>
+        
+        <!-- 登录表单 -->
+        <div class="bg-primary/60 backdrop-blur-sm p-8 rounded-sm border border-accent/20 shadow-lg">
+          <form id="login-form" class="space-y-6">
+            <!-- 账号输入 -->
+            <div>
+              <label class="block text-sm font-medium mb-2" data-i18n="login.username">账号</label>
+              <input type="text" id="username" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white transition-all duration-300" placeholder="请输入您的账号" required>
+            </div>
+            
+            <!-- 密码输入 -->
+            <div>
+              <label class="block text-sm font-medium mb-2" data-i18n="login.password">密码</label>
+              <input type="password" id="password" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white transition-all duration-300" placeholder="请输入您的密码" required>
+            </div>
+            
+            <!-- 密码提示 -->
+            <div class="bg-primary/40 p-4 rounded-sm border border-accent/20">
+              <p class="text-sm text-gray-300" data-i18n="login.passwordHint">初始密码默认为123456，首次登录后请尽快修改密码</p>
+            </div>
+            
+            <!-- 错误提示 -->
+            <div id="error-message" class="hidden bg-warning/20 p-4 rounded-sm border border-warning/30">
+              <p class="text-sm text-warning" data-i18n="login.error">账号或密码错误，请重新输入</p>
+            </div>
+            
+            <!-- 登录按钮 -->
+            <div class="pt-4">
+              <button type="submit" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 px-6 rounded-sm transition-all duration-300 hover-lift">
+                <span data-i18n="login.submit">登录</span>
+              </button>
+            </div>
+          </form>
+          
+          <!-- 其他选项 -->
+          <div class="mt-6 pt-6 border-t border-accent/20">
+            <div class="flex justify-between items-center">
+              <a href="#" class="text-accent hover:text-white transition-colors text-sm" data-i18n="login.forgotPassword">忘记密码？</a>
+              <a href="#" class="text-accent hover:text-white transition-colors text-sm" data-i18n="login.register">注册新账号</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 装饰元素：像素黑猫 -->
+        <div class="absolute bottom-10 right-10 pixel-cat w-12 h-12 md:w-16 md:h-16 opacity-70 hover:opacity-100 transition-opacity breathing" id="login-cat">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+            <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+            <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+            <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+            <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+            <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-10 relative">
+    <!-- 顶部装饰线 -->
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent"></div>
+    
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-display text-xl tracking-wider">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.hotel">酒店</span></span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.tagline">探索内心的隐秘空间</p>
+        </div>
+        
+        <div class="flex space-x-6">
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-twitter"></i></a>
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-instagram"></i></a>
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-envelope"></i></a>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+        <p data-i18n="footer.copyright">© 2025 R∞M酒店. 保留所有权利.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 多语言翻译数据 -->
+  <script>
+    const translations = {
+      'zh-CN': {
+        'nav.home': '首页',
+        'login.title': '登录',
+        'login.subtitle': '请输入您的账号和密码以访问您的专属空间',
+        'login.username': '账号',
+        'login.password': '密码',
+        'login.passwordHint': '初始密码默认为123456，首次登录后请尽快修改密码',
+        'login.error': '账号或密码错误，请重新输入',
+        'login.networkError': '网络连接错误请稍后重试',
+        'login.submit': '登录',
+        'login.forgotPassword': '忘记密码？',
+        'login.register': '注册新账号',
+        'footer.hotel': '酒店',
+        'footer.tagline': '探索内心的隐秘空间',
+        'footer.copyright': '© 2025 R∞M酒店. 保留所有权利.'
+      },
+      'en': {
+        'nav.home': 'Home',
+        'login.title': 'Login',
+        'login.subtitle': 'Please enter your username and password to access your exclusive space',
+        'login.username': 'Username',
+        'login.password': 'Password',
+        'login.passwordHint': 'Default password is 123456, please change it after first login',
+        'login.error': 'Incorrect username or password, please try again',
+        'login.networkError': 'Network connection error, please try again later',
+        'login.submit': 'Login',
+        'login.forgotPassword': 'Forgot password?',
+        'login.register': 'Register new account',
+        'footer.hotel': 'Hotel',
+        'footer.tagline': 'Explore the hidden space within',
+        'footer.copyright': '© 2025 R∞M Hotel. All Rights Reserved.'
+      },
+      'ja': {
+        'nav.home': 'ホーム',
+        'login.title': 'ログイン',
+        'login.subtitle': 'あなたの専用スペースにアクセスするには、ユーザー名とパスワードを入力してください',
+        'login.username': 'ユーザー名',
+        'login.password': 'パスワード',
+        'login.passwordHint': '初期パスワードは123456です。初回ログイン後はできるだけ早く変更してください',
+        'login.error': 'ユーザー名またはパスワードが正しくありません。もう一度入力してください',
+        'login.networkError': 'ネットワーク接続エラーです。後で再試行してください',
+        'login.submit': 'ログイン',
+        'login.forgotPassword': 'パスワードをお忘れですか？',
+        'login.register': '新規アカウント登録',
+        'footer.hotel': 'ホテル',
+        'footer.tagline': '内なる隠された空間を探求する',
+        'footer.copyright': '© 2025 R∞Mホテル. 全著作権所有.'
+      },
+      'pt': {
+        'nav.home': 'Início',
+        'login.title': 'Entrar',
+        'login.subtitle': 'Por favor, insira seu nome de usuário e senha para acessar seu espaço exclusivo',
+        'login.username': 'Nome de usuário',
+        'login.password': 'Senha',
+        'login.passwordHint': 'A senha padrão é 123456, por favor altere após o primeiro login',
+        'login.error': 'Nome de usuário ou senha incorretos, por favor tente novamente',
+        'login.networkError': 'Erro de conexão com a rede, tente novamente mais tarde',
+        'login.submit': 'Entrar',
+        'login.forgotPassword': 'Esqueceu a senha?',
+        'login.register': 'Registrar nova conta',
+        'footer.hotel': 'Hotel',
+        'footer.tagline': 'Explore o espaço escondido dentro',
+        'footer.copyright': '© 2025 Hotel R∞M. Todos os direitos reservados.'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 登录表单处理
+      const loginForm = document.getElementById('login-form');
+      const errorMessage = document.getElementById('error-message');
+      const errorText = errorMessage.querySelector('p');
+      
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const currentLanguage = document.documentElement.getAttribute('lang');
+        
+        // 验证账号密码
+        if (username === 'yinli' && password === '123456') {
+          // 登录成功，跳转到指定页面
+          window.location.href = '玩家个人页面.html';
+        } else if (username === 'liuwan' && password === '19931120') {
+          // 刘婉账号
+          window.location.href = '刘婉.html';
+        } else if (username === 'lili' && password === '2021001') {
+          // 李丽账号
+          window.location.href = '李丽.html';
+        } else if (username === 'zhaoqiang' && password === '123456') {
+          // 赵强账号
+          window.location.href = '赵强.html';
+        } else if (username === 'wangfang' && password === '20051118') {
+          // 特定账号密码，显示网络连接错误
+          window.location.href = '143前台记录.html';
+          errorText.textContent = translations[currentLanguage]['login.networkError'];
+          errorMessage.classList.remove('hidden');
+        } else if (username === 'RIKIMARU' && password === 'ROOM1102') {
+          // RIKI账号
+          window.location.href = 'RIKI工作台.html';
+          errorText.textContent = translations[currentLanguage]['login.networkError'];
+          errorMessage.classList.remove('hidden');
+          
+          // 3秒后自动隐藏错误提示
+          setTimeout(() => {
+            errorMessage.classList.add('hidden');
+          }, 3000);
+        } else {
+          // 显示账号密码错误提示
+          errorText.textContent = translations[currentLanguage]['login.error'];
+          errorMessage.classList.remove('hidden');
+          
+          // 3秒后自动隐藏错误提示
+          setTimeout(() => {
+            errorMessage.classList.add('hidden');
+          }, 3000);
+        }
+      });
+      
+      // 点击黑猫触发效果
+      const loginCat = document.getElementById('login-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset-0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      loginCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = loginCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        loginCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              loginCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电脑版微信 - 赵雨婷</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .wechat-container {
+            width: 1000px;
+            height: 700px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* 左侧导航栏 */
+        .left-nav {
+            width: 70px;
+            background-color: #2e3238;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        
+        .nav-item {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #b0b0b0;
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: #3a3f47;
+            color: #07c160;
+        }
+        
+        /* 左侧消息列表 */
+        .left-sidebar {
+            width: 280px;
+            background-color: #f5f5f5;
+            border-right: 1px solid #e6e6e6;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .search-bar {
+            padding: 15px;
+            background-color: white;
+            border-bottom: 1px solid #e6e6e6;
+        }
+        
+        .search-box {
+            background-color: #f5f5f5;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-box i {
+            color: #999;
+            margin-right: 8px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+        
+        .contact-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .contact-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        
+        .contact-item:hover {
+            background-color: #eaeaea;
+        }
+        
+        .contact-item.active {
+            background-color: #e5e5e5;
+        }
+        
+        /* 统一头像尺寸 */
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 6px;
+            margin-right: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .contact-info {
+            flex: 1;
+            min-width: 0; /* 防止内容溢出 */
+        }
+        
+        .contact-name {
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .last-message {
+            font-size: 13px;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* 右侧聊天区域 */
+        .right-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            padding: 15px 20px;
+            background-color: white;
+            border-bottom: 1px solid #e6e6e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-contact-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header .avatar {
+            width: 40px;
+            height: 40px;
+            margin-right: 12px;
+        }
+        
+        .chat-contact-name {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .chat-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-action-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #666;
+            margin-left: 5px;
+            font-size: 18px;
+        }
+        
+        .chat-action-btn:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+        
+        .message-date {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin: 20px 0;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+        }
+        
+        .message.received .message-content {
+            background-color: white;
+            border-top-left-radius: 0;
+        }
+        
+        .message.sent {
+            justify-content: flex-end;
+        }
+        
+        .message.sent .message-content {
+            background-color: #95ec69;
+            border-top-right-radius: 0;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .message-failed {
+            color: #ff4d4f;
+            font-size: 12px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .message-failed i {
+            margin-right: 5px;
+        }
+        
+        .chat-input-area {
+            padding: 15px 20px;
+            background-color: white;
+            border-top: 1px solid #e6e6e6;
+        }
+        
+        .message-input {
+            width: 100%;
+            border: 1px solid #e6e6e6;
+            border-radius: 5px;
+            padding: 12px 15px;
+            font-size: 14px;
+            resize: none;
+            height: 60px;
+            outline: none;
+        }
+        
+        .message-input:focus {
+            border-color: #07c160;
+        }
+        
+        /* 语言切换菜单 */
+        .language-switcher {
+            position: relative;
+        }
+        
+        .language-btn {
+            background-color: #07c160;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .language-btn i {
+            margin-right: 5px;
+        }
+        
+        .language-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 150px;
+            z-index: 100;
+            display: none;
+            margin-top: 5px;
+        }
+        
+        .language-menu.show {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        
+        .language-option:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .language-flag {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        
+        /* 联系人头像颜色 - 统一尺寸后保持原有颜色 */
+        .avatar-mother {
+            background-color: #ff9800;
+        }
+        
+        .avatar-dance {
+            background-color: #e91e63;
+        }
+        
+        .avatar-psychologist {
+            background-color: #2196f3;
+        }
+        
+        .avatar-manager {
+            background-color: #4caf50;
+        }
+        
+        .avatar-friend1 {
+            background-color: #9c27b0;
+        }
+        
+        .avatar-friend2 {
+            background-color: #00bcd4;
+        }
+        
+        .avatar-group1 {
+            background-color: #ff5722;
+        }
+        
+        .avatar-group2 {
+            background-color: #795548;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* 分割线样式 */
+        .divider {
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #e6e6e6;
+            z-index: 1;
+        }
+        
+        .divider-text {
+            background-color: #f9f9f9;
+            padding: 0 15px;
+            position: relative;
+            z-index: 2;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 1100px) {
+            .wechat-container {
+                width: 95%;
+                height: 90vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wechat-container">
+        <!-- 左侧导航栏 -->
+        <div class="left-nav">
+            <div class="nav-item active">
+                <i class="fas fa-comment-alt"></i>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-address-book"></i>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-compass"></i>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-cloud"></i>
+            </div>
+        </div>
+        
+        <!-- 左侧消息列表 -->
+        <div class="left-sidebar">
+            <div class="search-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="搜索" id="searchInput">
+                </div>
+            </div>
+            
+            <div class="contact-list" id="contactList">
+                <!-- 联系人将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 右侧聊天区域 -->
+        <div class="right-main">
+            <div class="chat-header">
+                <div class="chat-contact-info">
+                    <div class="avatar avatar-mother" id="currentAvatar">
+                        <i class="fas fa-female"></i>
+                    </div>
+                    <div>
+                        <div class="chat-contact-name" id="currentContactName">妈妈</div>
+                    </div>
+                </div>
+                
+                <div class="chat-actions">
+                    <div class="language-switcher">
+                        <button class="language-btn" id="languageBtn">
+                            <i class="fas fa-language"></i>
+                            <span id="currentLanguage">中文</span>
+                        </button>
+                        <div class="language-menu" id="languageMenu">
+                            <div class="language-option" data-lang="zh">
+                                <span class="language-flag">🇨🇳</span>
+                                <span>中文</span>
+                            </div>
+                            <div class="language-option" data-lang="en">
+                                <span class="language-flag">🇺🇸</span>
+                                <span>English</span>
+                            </div>
+                            <div class="language-option" data-lang="ja">
+                                <span class="language-flag">🇯🇵</span>
+                                <span>日本語</span>
+                            </div>
+                            <div class="language-option" data-lang="pt">
+                                <span class="language-flag">🇵🇹</span>
+                                <span>Português</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-action-btn">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="chat-action-btn">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="chat-action-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- 聊天记录将通过JavaScript动态生成 -->
+            </div>
+            
+            <div class="chat-input-area">
+                <textarea class="message-input" placeholder="输入消息..." id="messageInput"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 联系人数据
+        const contacts = [
+            {
+                id: 1,
+                name: "妈妈",
+                avatarClass: "avatar-mother",
+                avatarIcon: "fas fa-female",
+                lastMessage: "婷婷，什么时候回家？妈妈给你煲了汤。",
+                time: "19:35",
+                active: true
+            },
+            {
+                id: 2,
+                name: "舞团-陈老师",
+                avatarClass: "avatar-dance",
+                avatarIcon: "fas fa-music",
+                lastMessage: "雨婷，下周舞团有重要活动，你方便来吗？",
+                time: "14:20"
+            },
+            {
+                id: 3,
+                name: "心理医生-王",
+                avatarClass: "avatar-psychologist",
+                avatarIcon: "fas fa-user-md",
+                lastMessage: "请记得按时服药",
+                time: "11:10"
+            },
+            {
+                id: 4,
+                name: "广告公司-李经理",
+                avatarClass: "avatar-manager",
+                avatarIcon: "fas fa-briefcase",
+                lastMessage: "最近你的状态不太好，好好调整一下",
+                time: "16:35"
+            },
+            {
+                id: 5,
+                name: "闺蜜-小雅",
+                avatarClass: "avatar-friend1",
+                avatarIcon: "fas fa-heart",
+                lastMessage: "婷婷，你最近还好吗？",
+                time: "昨天"
+            },
+            {
+                id: 6,
+                name: "同学-张明",
+                avatarClass: "avatar-friend2",
+                avatarIcon: "fas fa-user-graduate",
+                lastMessage: "雨婷，同学聚会你来吗？",
+                time: "昨天"
+            },
+            {
+                id: 7,
+                name: "高中同学群",
+                avatarClass: "avatar-group1",
+                avatarIcon: "fas fa-users",
+                lastMessage: "班长：下周六同学聚会，大家记得来",
+                time: "昨天"
+            },
+            {
+                id: 8,
+                name: "舞蹈爱好者群",
+                avatarClass: "avatar-group2",
+                avatarIcon: "fas fa-heartbeat",
+                lastMessage: "陈老师：分享了一个舞蹈视频",
+                time: "前天"
+            }
+        ];
+
+        // 聊天记录数据 - 根据《Sugar》故事更新
+        const chatHistories = {
+            1: [ // 妈妈
+                {
+                    date: "2025/11/20",
+                    messages: [
+                        {
+                            sender: "妈妈",
+                            time: "19:35",
+                            content: "婷婷，什么时候回家？妈妈给你煲了汤。",
+                            isSent: false
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/22",
+                    messages: [
+                        {
+                            sender: "我",
+                            time: "02:30",
+                            content: "妈，我找到了。我找到那个感觉了。我又能跳舞了。",
+                            isSent: true,
+                            failed: true
+                        }
+                    ]
+                }
+            ],
+            2: [ // 舞团-陈老师
+                {
+                    date: "2025/11/15",
+                    messages: [
+                        {
+                            sender: "舞团-陈老师",
+                            time: "10:00",
+                            content: "雨婷，下个月舞团有纪念演出，想邀请你作为嘉宾出席，有兴趣吗？",
+                            isSent: false
+                        },
+                        {
+                            sender: "我",
+                            time: "10:15",
+                            content: "陈老师，谢谢您还记得我。但我可能...还没准备好。",
+                            isSent: true
+                        },
+                        {
+                            sender: "舞团-陈老师",
+                            time: "10:20",
+                            content: "别这么说，你的才华大家有目共睹。脚伤恢复得怎么样了？",
+                            isSent: false
+                        },
+                        {
+                            sender: "我",
+                            time: "10:25",
+                            content: "还在恢复中...医生说要慢慢来。",
+                            isSent: true
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/20",
+                    messages: [
+                        {
+                            sender: "舞团-陈老师",
+                            time: "09:00",
+                            content: "雨婷，听说你请假去海边了？好好休息，但别忘了我们的约定。",
+                            isSent: false
+                        },
+                        {
+                            sender: "舞团-陈老师",
+                            time: "11:30",
+                            content: "昨晚我梦到你又在跳《天鹅湖》了，还是那么美。",
+                            isSent: false
+                        }
+                    ]
+                }
+            ],
+            3: [ // 心理医生-王
+                {
+                    date: "2025/11/15",
+                    messages: [
+                        {
+                            sender: "心理医生-王",
+                            time: "10:20",
+                            content: "赵女士，您今天的咨询取消了吗？我在诊所等您。",
+                            isSent: false
+                        },
+                        {
+                            sender: "我",
+                            time: "11:05",
+                            content: "抱歉王医生，我临时有事。能改到下周吗？",
+                            isSent: true
+                        },
+                        {
+                            sender: "心理医生-王",
+                            time: "11:10",
+                            content: "可以。但请记得按时服药。您最近的状态让我有些担心。",
+                            isSent: false
+                        },
+                        {
+                            sender: "我",
+                            time: "11:15",
+                            content: "我很好，真的。只是想出去散散心。",
+                            isSent: true
+                        }
+                    ]
+                }
+            ],
+            4: [ // 广告公司-李经理
+                {
+                    date: "2025/11/14",
+                    messages: [
+                        {
+                            sender: "我",
+                            time: "16:30",
+                            content: "李经理，我想请一周年假，可以吗？",
+                            isSent: true
+                        },
+                        {
+                            sender: "广告公司-李经理",
+                            time: "16:35",
+                            content: "可以，注意休息。最近你的状态不太好，好好调整一下。",
+                            isSent: false
+                        },
+                        {
+                            sender: "我",
+                            time: "16:40",
+                            content: "谢谢。",
+                            isSent: true
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/23",
+                    messages: [
+                        {
+                            sender: "广告公司-李经理",
+                            time: "09:30",
+                            content: "赵雨婷，假期结束了吗？公司有个新项目需要你。",
+                            isSent: false
+                        }
+                    ]
+                }
+            ],
+            5: [ // 闺蜜-小雅
+                {
+                    date: "2025/11/16",
+                    messages: [
+                        {
+                            sender: "闺蜜-小雅",
+                            time: "18:00",
+                            content: "婷婷，周末一起去逛街吗？我发现一家超棒的甜品店！",
+                            isSent: false
+                        },
+                        {
+                            sender: "我",
+                            time: "18:15",
+                            content: "小雅，我这周去海边度假了，回来再约~",
+                            isSent: true
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/19",
+                    messages: [
+                        {
+                            sender: "闺蜜-小雅",
+                            time: "20:15",
+                            content: "婷婷，海边好玩吗？怎么都不发朋友圈？",
+                            isSent: false
+                        },
+                        {
+                            sender: "闺蜜-小雅",
+                            time: "22:30",
+                            content: "看到消息回我一下哦，有点担心你。",
+                            isSent: false
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/22",
+                    messages: [
+                        {
+                            sender: "闺蜜-小雅",
+                            time: "21:30",
+                            content: "婷婷，你妈妈说你一周没联系她了，很担心你。你在哪？",
+                            isSent: false
+                        }
+                    ]
+                }
+            ],
+            6: [ // 同学-张明
+                {
+                    date: "2025/11/17",
+                    messages: [
+                        {
+                            sender: "同学-张明",
+                            time: "16:45",
+                            content: "赵雨婷，下周末高中同学聚会，你来吗？大家都想见见你。",
+                            isSent: false
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/18",
+                    messages: [
+                        {
+                            sender: "同学-张明",
+                            time: "09:30",
+                            content: "特别是知道你受伤后，都关心你的恢复情况。",
+                            isSent: false
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/20",
+                    messages: [
+                        {
+                            sender: "同学-张明",
+                            time: "19:00",
+                            content: "怎么不说话？来不了也没关系，说一声就行。",
+                            isSent: false
+                        }
+                    ]
+                }
+            ],
+            7: [ // 高中同学群
+                {
+                    date: "2025/11/15",
+                    messages: [
+                        {
+                            sender: "班长",
+                            time: "20:00",
+                            content: "大家，下周末同学聚会，地点在XX酒店，能来的接龙。",
+                            isSent: false
+                        },
+                        {
+                            sender: "同学A",
+                            time: "20:05",
+                            content: "我报名！",
+                            isSent: false
+                        },
+                        {
+                            sender: "同学B",
+                            time: "20:10",
+                            content: "+1，好久没见大家了",
+                            isSent: false
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/17",
+                    messages: [
+                        {
+                            sender: "班长",
+                            time: "10:00",
+                            content: "@赵雨婷 雨婷，你来吗？大家都很想你。",
+                            isSent: false
+                        },
+                        {
+                            sender: "同学C",
+                            time: "10:15",
+                            content: "雨婷是不是受伤了？现在恢复得怎么样？",
+                            isSent: false
+                        }
+                    ]
+                }
+            ],
+            8: [ // 舞蹈爱好者群
+                {
+                    date: "2025/11/16",
+                    messages: [
+                        {
+                            sender: "群主",
+                            time: "08:30",
+                            content: "分享了一个视频《天鹅湖经典片段》",
+                            isSent: false
+                        },
+                        {
+                            sender: "成员A",
+                            time: "09:00",
+                            content: "这个版本的天鹅湖太美了！",
+                            isSent: false
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/18",
+                    messages: [
+                        {
+                            sender: "陈老师",
+                            time: "21:00",
+                            content: "最近在教《葛蓓莉娅》，有谁想看教学视频吗？",
+                            isSent: false
+                        },
+                        {
+                            sender: "成员B",
+                            time: "21:30",
+                            content: "想看！陈老师什么时候发？",
+                            isSent: false
+                        }
+                    ]
+                },
+                {
+                    date: "2025/11/20",
+                    messages: [
+                        {
+                            sender: "成员C",
+                            time: "14:00",
+                            content: "有人知道好的康复教练吗？我朋友脚踝受伤了。",
+                            isSent: false
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // 多语言文本 - 根据故事更新翻译
+        const translations = {
+            zh: {
+                searchPlaceholder: "搜索",
+                messageInputPlaceholder: "输入消息...",
+                currentLanguage: "中文",
+                failedMessage: "发送失败",
+                contacts: {
+                    "妈妈": "妈妈",
+                    "舞团-陈老师": "舞团-陈老师",
+                    "心理医生-王": "心理医生-王",
+                    "广告公司-李经理": "广告公司-李经理",
+                    "闺蜜-小雅": "闺蜜-小雅",
+                    "同学-张明": "同学-张明",
+                    "高中同学群": "高中同学群",
+                    "舞蹈爱好者群": "舞蹈爱好者群"
+                },
+                messages: {
+                    // 妈妈
+                    "婷婷，什么时候回家？妈妈给你煲了汤。": "婷婷，什么时候回家？妈妈给你煲了汤。",
+                    "妈，我找到了。我找到那个感觉了。我又能跳舞了。": "妈，我找到了。我找到那个感觉了。我又能跳舞了。",
+                    
+                    // 舞团-陈老师
+                    "雨婷，下个月舞团有纪念演出，想邀请你作为嘉宾出席，有兴趣吗？": "雨婷，下个月舞团有纪念演出，想邀请你作为嘉宾出席，有兴趣吗？",
+                    "陈老师，谢谢您还记得我。但我可能...还没准备好。": "陈老师，谢谢您还记得我。但我可能...还没准备好。",
+                    "别这么说，你的才华大家有目共睹。脚伤恢复得怎么样了？": "别这么说，你的才华大家有目共睹。脚伤恢复得怎么样了？",
+                    "还在恢复中...医生说要慢慢来。": "还在恢复中...医生说要慢慢来。",
+                    "雨婷，听说你请假去海边了？好好休息，但别忘了我们的约定。": "雨婷，听说你请假去海边了？好好休息，但别忘了我们的约定。",
+                    "昨晚我梦到你又在跳《天鹅湖》了，还是那么美。": "昨晚我梦到你又在跳《天鹅湖》了，还是那么美。",
+                    
+                    // 心理医生-王
+                    "赵女士，您今天的咨询取消了吗？我在诊所等您。": "赵女士，您今天的咨询取消了吗？我在诊所等您。",
+                    "抱歉王医生，我临时有事。能改到下周吗？": "抱歉王医生，我临时有事。能改到下周吗？",
+                    "可以。但请记得按时服药。您最近的状态让我有些担心。": "可以。但请记得按时服药。您最近的状态让我有些担心。",
+                    "我很好，真的。只是想出去散散心。": "我很好，真的。只是想出去散散心。",
+                    
+                    // 广告公司-李经理
+                    "李经理，我想请一周年假，可以吗？": "李经理，我想请一周年假，可以吗？",
+                    "可以，注意休息。最近你的状态不太好，好好调整一下。": "可以，注意休息。最近你的状态不太好，好好调整一下。",
+                    "谢谢。": "谢谢。",
+                    "赵雨婷，假期结束了吗？公司有个新项目需要你。": "赵雨婷，假期结束了吗？公司有个新项目需要你。",
+                    
+                    // 闺蜜-小雅
+                    "婷婷，周末一起去逛街吗？我发现一家超棒的甜品店！": "婷婷，周末一起去逛街吗？我发现一家超棒的甜品店！",
+                    "小雅，我这周去海边度假了，回来再约~": "小雅，我这周去海边度假了，回来再约~",
+                    "婷婷，海边好玩吗？怎么都不发朋友圈？": "婷婷，海边好玩吗？怎么都不发朋友圈？",
+                    "看到消息回我一下哦，有点担心你。": "看到消息回我一下哦，有点担心你。",
+                    "婷婷，你妈妈说你一周没联系她了，很担心你。你在哪？": "婷婷，你妈妈说你一周没联系她了，很担心你。你在哪？",
+                    
+                    // 同学-张明
+                    "赵雨婷，下周末高中同学聚会，你来吗？大家都想见见你。": "赵雨婷，下周末高中同学聚会，你来吗？大家都想见见你。",
+                    "特别是知道你受伤后，都关心你的恢复情况。": "特别是知道你受伤后，都关心你的恢复情况。",
+                    "怎么不说话？来不了也没关系，说一声就行。": "怎么不说话？来不了也没关系，说一声就行。",
+                    
+                    // 高中同学群
+                    "大家，下周末同学聚会，地点在XX酒店，能来的接龙。": "大家，下周末同学聚会，地点在XX酒店，能来的接龙。",
+                    "我报名！": "我报名！",
+                    "+1，好久没见大家了": "+1，好久没见大家了",
+                    "@赵雨婷 雨婷，你来吗？大家都很想你。": "@赵雨婷 雨婷，你来吗？大家都很想你。",
+                    "雨婷是不是受伤了？现在恢复得怎么样？": "雨婷是不是受伤了？现在恢复得怎么样？",
+                    
+                    // 舞蹈爱好者群
+                    "分享了一个视频《天鹅湖经典片段》": "分享了一个视频《天鹅湖经典片段》",
+                    "这个版本的天鹅湖太美了！": "这个版本的天鹅湖太美了！",
+                    "最近在教《葛蓓莉娅》，有谁想看教学视频吗？": "最近在教《葛蓓莉娅》，有谁想看教学视频吗？",
+                    "想看！陈老师什么时候发？": "想看！陈老师什么时候发？",
+                    "有人知道好的康复教练吗？我朋友脚踝受伤了。": "有人知道好的康复教练吗？我朋友脚踝受伤了。"
+                }
+            },
+            en: {
+                searchPlaceholder: "Search",
+                messageInputPlaceholder: "Type a message...",
+                currentLanguage: "English",
+                failedMessage: "Send failed",
+                contacts: {
+                    "妈妈": "Mom",
+                    "舞团-陈老师": "Dance Group - Teacher Chen",
+                    "心理医生-王": "Psychologist - Wang",
+                    "广告公司-李经理": "Ad Company - Manager Li",
+                    "闺蜜-小雅": "Bestie - Xiaoya",
+                    "同学-张明": "Classmate - Zhang Ming",
+                    "高中同学群": "High School Classmates",
+                    "舞蹈爱好者群": "Dance Enthusiasts Group"
+                },
+                messages: {
+                    // 妈妈
+                    "婷婷，什么时候回家？妈妈给你煲了汤。": "Tingting, when are you coming home? I made soup for you.",
+                    "妈，我找到了。我找到那个感觉了。我又能跳舞了。": "Mom, I found it. I found that feeling. I can dance again.",
+                    
+                    // 舞团-陈老师
+                    "雨婷，下个月舞团有纪念演出，想邀请你作为嘉宾出席，有兴趣吗？": "Yuting, the dance group has a commemorative performance next month. Would you like to attend as a guest?",
+                    "陈老师，谢谢您还记得我。但我可能...还没准备好。": "Teacher Chen, thank you for remembering me. But I might... not be ready yet.",
+                    "别这么说，你的才华大家有目共睹。脚伤恢复得怎么样了？": "Don't say that. Everyone recognizes your talent. How's your foot injury recovery going?",
+                    "还在恢复中...医生说要慢慢来。": "Still recovering... The doctor said to take it slow.",
+                    "雨婷，听说你请假去海边了？好好休息，但别忘了我们的约定。": "Yuting, I heard you took leave to go to the seaside? Rest well, but don't forget our agreement.",
+                    "昨晚我梦到你又在跳《天鹅湖》了，还是那么美。": "Last night I dreamed you were dancing 'Swan Lake' again, still so beautiful.",
+                    
+                    // 心理医生-王
+                    "赵女士，您今天的咨询取消了吗？我在诊所等您。": "Ms. Zhao, did you cancel your appointment today? I'm waiting for you at the clinic.",
+                    "抱歉王医生，我临时有事。能改到下周吗？": "Sorry Dr. Wang, something came up. Can we reschedule for next week?",
+                    "可以。但请记得按时服药。您最近的状态让我有些担心。": "Sure. But please remember to take your medication on time. I'm a bit worried about your recent condition.",
+                    "我很好，真的。只是想出去散散心。": "I'm fine, really. Just want to go out and relax.",
+                    
+                    // 广告公司-李经理
+                    "李经理，我想请一周年假，可以吗？": "Manager Li, I'd like to take a week off, is that okay?",
+                    "可以，注意休息。最近你的状态不太好，好好调整一下。": "Sure, take a good rest. Your recent condition hasn't been great, take some time to adjust.",
+                    "谢谢。": "Thank you.",
+                    "赵雨婷，假期结束了吗？公司有个新项目需要你。": "Zhao Yuting, is your vacation over? The company has a new project that needs you.",
+                    
+                    // 闺蜜-小雅
+                    "婷婷，周末一起去逛街吗？我发现一家超棒的甜品店！": "Tingting, want to go shopping together this weekend? I found an amazing dessert shop!",
+                    "小雅，我这周去海边度假了，回来再约~": "Xiaoya, I'm going to the seaside for vacation this week, let's meet when I'm back~",
+                    "婷婷，海边好玩吗？怎么都不发朋友圈？": "Tingting, is the seaside fun? Why aren't you posting on social media?",
+                    "看到消息回我一下哦，有点担心你。": "Reply when you see this, I'm a bit worried about you.",
+                    "婷婷，你妈妈说你一周没联系她了，很担心你。你在哪？": "Tingting, your mom said you haven't contacted her for a week, she's very worried. Where are you?",
+                    
+                    // 同学-张明
+                    "赵雨婷，下周末高中同学聚会，你来吗？大家都想见见你。": "Zhao Yuting, there's a high school class reunion next weekend, are you coming? Everyone wants to see you.",
+                    "特别是知道你受伤后，都关心你的恢复情况。": "Especially after learning about your injury, everyone is concerned about your recovery.",
+                    "怎么不说话？来不了也没关系，说一声就行。": "Why aren't you saying anything? It's okay if you can't come, just let us know.",
+                    
+                    // 高中同学群
+                    "大家，下周末同学聚会，地点在XX酒店，能来的接龙。": "Everyone, there's a class reunion next weekend at XX Hotel, please join if you can.",
+                    "我报名！": "I'm in!",
+                    "+1，好久没见大家了": "+1, haven't seen everyone in a long time",
+                    "@赵雨婷 雨婷，你来吗？大家都很想你。": "@Zhao Yuting Yuting, are you coming? Everyone misses you.",
+                    "雨婷是不是受伤了？现在恢复得怎么样？": "Did Yuting get injured? How's her recovery going now?",
+                    
+                    // 舞蹈爱好者群
+                    "分享了一个视频《天鹅湖经典片段》": "Shared a video 'Swan Lake Classic Clip'",
+                    "这个版本的天鹅湖太美了！": "This version of Swan Lake is so beautiful!",
+                    "最近在教《葛蓓莉娅》，有谁想看教学视频吗？": "Recently teaching 'Coppélia', anyone want to see the teaching video?",
+                    "想看！陈老师什么时候发？": "Yes! When will Teacher Chen post it?",
+                    "有人知道好的康复教练吗？我朋友脚踝受伤了。": "Does anyone know a good rehab coach? My friend injured her ankle."
+                }
+            },
+            ja: {
+                searchPlaceholder: "検索",
+                messageInputPlaceholder: "メッセージを入力...",
+                currentLanguage: "日本語",
+                failedMessage: "送信に失敗しました",
+                contacts: {
+                    "妈妈": "母",
+                    "舞团-陈老师": "ダンスグループ-陳先生",
+                    "心理医生-王": "心理医師-王",
+                    "广告公司-李经理": "広告会社-李マネージャー",
+                    "闺蜜-小雅": "親友-小雅",
+                    "同学-张明": "クラスメート-張明",
+                    "高中同学群": "高校のクラスメート",
+                    "舞蹈爱好者群": "ダンス愛好家グループ"
+                },
+                messages: {
+                    // 妈妈
+                    "婷婷，什么时候回家？妈妈给你煲了汤。": "婷婷、いつ帰ってくるの？お母さんがスープを作ったよ。",
+                    "妈，我找到了。我找到那个感觉了。我又能跳舞了。": "お母さん、見つけたよ。あの感覚を見つけた。また踊れるよ。",
+                    
+                    // 舞团-陈老师
+                    "雨婷，下个月舞团有纪念演出，想邀请你作为嘉宾出席，有兴趣吗？": "雨婷、来月ダンスグループに記念公演があります。ゲストとして参加しませんか？",
+                    "陈老师，谢谢您还记得我。但我可能...还没准备好。": "陳先生、覚えていてくれてありがとう。でも私は...まだ準備ができていないかもしれません。",
+                    "别这么说，你的才华大家有目共睹。脚伤恢复得怎么样了？": "そんなこと言わないで。あなたの才能は誰もが認めています。足の怪我の回復はどうですか？",
+                    "还在恢复中...医生说要慢慢来。": "まだ回復中です...医者はゆっくりやるように言っています。",
+                    "雨婷，听说你请假去海边了？好好休息，但别忘了我们的约定。": "雨婷、海辺に休暇を取ったと聞きましたか？よく休んでください。でも私たちの約束を忘れないでください。",
+                    "昨晚我梦到你又在跳《天鹅湖》了，还是那么美。": "昨晩、あなたがまた『白鳥の湖』を踊っている夢を見ました。やはりとても美しかったです。",
+                    
+                    // 心理医生-王
+                    "赵女士，您今天的咨询取消了吗？我在诊所等您。": "趙さん、今日のカウンセリングはキャンセルしましたか？クリニックでお待ちしています。",
+                    "抱歉王医生，我临时有事。能改到下周吗？": "王先生、すみません、急用ができました。来週に変更できますか？",
+                    "可以。但请记得按时服药。您最近的状态让我有些担心。": "いいですよ。ただし、時間通りに服薬することを忘れないでください。最近のあなたの状態が少し心配です。",
+                    "我很好，真的。只是想出去散散心。": "私は大丈夫、本当に。ただ外に出て気分転換したいだけです。",
+                    
+                    // 广告公司-李经理
+                    "李经理，我想请一周年假，可以吗？": "李マネージャー、一週間の休暇を取得したいのですが、よろしいですか？",
+                    "可以，注意休息。最近你的状态不太好，好好调整一下。": "いいですよ、しっかり休んでください。最近あなたの調子があまり良くないので、しっかり調整してください。",
+                    "谢谢。": "ありがとうございます。",
+                    "赵雨婷，假期结束了吗？公司有个新项目需要你。": "趙雨婷、休暇は終わりましたか？会社に新しいプロジェクトがあってあなたが必要です。",
+                    
+                    // 闺蜜-小雅
+                    "婷婷，周末一起去逛街吗？我发现一家超棒的甜品店！": "婷婷、週末一緒に買い物に行きませんか？すごくいいスイーツ店を見つけた！",
+                    "小雅，我这周去海边度假了，回来再约~": "小雅、今週海辺に休暇に行くから、帰ってから会おうね～",
+                    "婷婷，海边好玩吗？怎么都不发朋友圈？": "婷婷、海辺は楽しい？どうしてSNSに投稿しないの？",
+                    "看到消息回我一下哦，有点担心你。": "メッセージを見たら返事してね。少し心配だよ。",
+                    "婷婷，你妈妈说你一周没联系她了，很担心你。你在哪？": "婷婷、お母さんが一週間連絡がないってすごく心配してるよ。どこにいるの？",
+                    
+                    // 同学-张明
+                    "赵雨婷，下周末高中同学聚会，你来吗？大家都想见见你。": "趙雨婷、来週末高校の同窓会があるけど、来る？みんなあなたに会いたがっているよ。",
+                    "特别是知道你受伤后，都关心你的恢复情况。": "特にあなたが怪我したと知ってから、みんなあなたの回復を気にしているんだ。",
+                    "怎么不说话？来不了也没关系，说一声就行。": "どうして話さないの？来られなくてもいいよ、一言言ってくれればいいんだから。",
+                    
+                    // 高中同学群
+                    "大家，下周末同学聚会，地点在XX酒店，能来的接龙。": "みんな、来週末同窓会です。場所はXXホテルです。来られる人は続けてください。",
+                    "我报名！": "私参加します！",
+                    "+1，好久没见大家了": "+1、みんなに会うの久しぶりだね",
+                    "@赵雨婷 雨婷，你来吗？大家都很想你。": "@趙雨婷 雨婷、来る？みんなあなたに会いたがっているよ。",
+                    "雨婷是不是受伤了？现在恢复得怎么样？": "雨婷は怪我したの？今回復はどう？",
+                    
+                    // 舞蹈爱好者群
+                    "分享了一个视频《天鹅湖经典片段》": "動画『白鳥の湖クラシッククリップ』を共有しました",
+                    "这个版本的天鹅湖太美了！": "このバージョンの白鳥の湖はとても美しい！",
+                    "最近在教《葛蓓莉娅》，有谁想看教学视频吗？": "最近『コッペリア』を教えていますが、誰かレッスンビデオを見たい人はいますか？",
+                    "想看！陈老师什么时候发？": "見たい！陳先生はいつ投稿するの？",
+                    "有人知道好的康复教练吗？我朋友脚踝受伤了。": "誰かいいリハビリコーチを知っていますか？私の友人が足首を怪我しました。"
+                }
+            },
+            pt: {
+                searchPlaceholder: "Pesquisar",
+                messageInputPlaceholder: "Digite uma mensagem...",
+                currentLanguage: "Português",
+                failedMessage: "Falha ao enviar",
+                contacts: {
+                    "妈妈": "Mãe",
+                    "舞团-陈老师": "Grupo de Dança - Professor Chen",
+                    "心理医生-王": "Psicólogo - Wang",
+                    "广告公司-李经理": "Empresa de Publicidade - Gerente Li",
+                    "闺蜜-小雅": "Melhor Amiga - Xiaoya",
+                    "同学-张明": "Colega - Zhang Ming",
+                    "高中同学群": "Colegas do Ensino Médio",
+                    "舞蹈爱好者群": "Grupo de Entusiastas de Dança"
+                },
+                messages: {
+                    // 妈妈
+                    "婷婷，什么时候回家？妈妈给你煲了汤。": "Tingting, quando você volta para casa? Fiz sopa para você.",
+                    "妈，我找到了。我找到那个感觉了。我又能跳舞了。": "Mãe, eu encontrei. Encontrei aquela sensação. Posso dançar novamente.",
+                    
+                    // 舞团-陈老师
+                    "雨婷，下个月舞团有纪念演出，想邀请你作为嘉宾出席，有兴趣吗？": "Yuting, o grupo de dança tem uma apresentação comemorativa no próximo mês. Você gostaria de participar como convidada?",
+                    "陈老师，谢谢您还记得我。但我可能...还没准备好。": "Professor Chen, obrigada por se lembrar de mim. Mas eu posso... não estar pronta ainda.",
+                    "别这么说，你的才华大家有目共睹。脚伤恢复得怎么样了？": "Não diga isso. Todos reconhecem seu talento. Como está a recuperação da sua lesão no pé?",
+                    "还在恢复中...医生说要慢慢来。": "Ainda me recuperando... O médico disse para ir com calma.",
+                    "雨婷，听说你请假去海边了？好好休息，但别忘了我们的约定。": "Yuting, ouvi que você tirou licença para ir à praia? Descanse bem, mas não esqueça nosso acordo.",
+                    "昨晚我梦到你又在跳《天鹅湖》了，还是那么美。": "Ontem à noite sonhei que você estava dançando 'O Lago dos Cisnes' novamente, ainda tão linda.",
+                    
+                    // 心理医生-王
+                    "赵女士，您今天的咨询取消了吗？我在诊所等您。": "Senhora Zhao, você cancelou sua consulta de hoje? Estou esperando por você na clínica.",
+                    "抱歉王医生，我临时有事。能改到下周吗？": "Desculpe Dr. Wang, algo surgiu. Podemos remarcar para a próxima semana?",
+                    "可以。但请记得按时服药。您最近的状态让我有些担心。": "Claro. Mas lembre-se de tomar seu medicamento na hora. Estou um pouco preocupado com sua condição recente.",
+                    "我很好，真的。只是想出去散散心。": "Estou bem, realmente. Só quero sair e relaxar.",
+                    
+                    // 广告公司-李经理
+                    "李经理，我想请一周年假，可以吗？": "Gerente Li, gostaria de tirar uma semana de folga, está bem?",
+                    "可以，注意休息。最近你的状态不太好，好好调整一下。": "Claro, descanse bem. Sua condição recente não tem sido boa, tome um tempo para se ajustar.",
+                    "谢谢。": "Obrigada.",
+                    "赵雨婷，假期结束了吗？公司有个新项目需要你。": "Zhao Yuting, suas férias terminaram? A empresa tem um novo projeto que precisa de você.",
+                    
+                    // 闺蜜-小雅
+                    "婷婷，周末一起去逛街吗？我发现一家超棒的甜品店！": "Tingting, quer ir fazer compras juntas no fim de semana? Encontrei uma loja de doces incrível!",
+                    "小雅，我这周去海边度假了，回来再约~": "Xiaoya, estou indo para a praia esta semana, nos encontramos quando eu voltar~",
+                    "婷婷，海边好玩吗？怎么都不发朋友圈？": "Tingting, a praia é divertida? Por que você não posta nas redes sociais?",
+                    "看到消息回我一下哦，有点担心你。": "Responda quando ver esta mensagem, estou um pouco preocupada com você.",
+                    "婷婷，你妈妈说你一周没联系她了，很担心你。你在哪？": "Tingting, sua mãe disse que você não a contatou há uma semana, ela está muito preocupada. Onde você está?",
+                    
+                    // 同学-张明
+                    "赵雨婷，下周末高中同学聚会，你来吗？大家都想见见你。": "Zhao Yuting, há uma reunião de colegas do ensino médio no próximo fim de semana, você vem? Todos querem te ver.",
+                    "特别是知道你受伤后，都关心你的恢复情况。": "Especialmente depois de saber da sua lesão, todos estão preocupados com sua recuperação.",
+                    "怎么不说话？来不了也没关系，说一声就行。": "Por que não está falando? Tudo bem se não puder vir, é só nos avisar.",
+                    
+                    // 高中同学群
+                    "大家，下周末同学聚会，地点在XX酒店，能来的接龙。": "Pessoal, há uma reunião de colegas no próximo fim de semana no Hotel XX, por favor confirmem se podem vir.",
+                    "我报名！": "Eu vou!",
+                    "+1，好久没见大家了": "+1, há muito tempo que não vejo todo mundo",
+                    "@赵雨婷 雨婷，你来吗？大家都很想你。": "@Zhao Yuting Yuting, você vem? Todos sentem sua falta.",
+                    "雨婷是不是受伤了？现在恢复得怎么样？": "Yuting se machucou? Como está sua recuperação agora?",
+                    
+                    // 舞蹈爱好者群
+                    "分享了一个视频《天鹅湖经典片段》": "Compartilhou um vídeo 'Clássico do Lago dos Cisnes'",
+                    "这个版本的天鹅湖太美了！": "Esta versão do Lago dos Cisnes é tão linda!",
+                    "最近在教《葛蓓莉娅》，有谁想看教学视频吗？": "Recentemente ensinando 'Coppélia', alguém quer ver o vídeo de ensino?",
+                    "想看！陈老师什么时候发？": "Sim! Quando o Professor Chen vai postar?",
+                    "有人知道好的康复教练吗？我朋友脚踝受伤了。": "Alguém conhece um bom treinador de reabilitação? Minha amiga machucou o tornozelo."
+                }
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'zh';
+        // 当前选中的联系人ID
+        let currentContactId = 1;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderContacts();
+            renderChat(currentContactId);
+            setupEventListeners();
+        });
+
+        // 渲染联系人列表
+        function renderContacts() {
+            const contactList = document.getElementById('contactList');
+            contactList.innerHTML = '';
+            
+            contacts.forEach(contact => {
+                const contactItem = document.createElement('div');
+                contactItem.className = `contact-item ${contact.active ? 'active' : ''}`;
+                contactItem.dataset.id = contact.id;
+                
+                contactItem.innerHTML = `
+                    <div class="avatar ${contact.avatarClass}">
+                        <i class="${contact.avatarIcon}"></i>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-name">${translations[currentLang].contacts[contact.name] || contact.name}</div>
+                        <div class="last-message">${translations[currentLang].messages[contact.lastMessage] || contact.lastMessage}</div>
+                    </div>
+                    <div class="message-time">${contact.time}</div>
+                `;
+                
+                contactList.appendChild(contactItem);
+            });
+        }
+
+        // 渲染聊天记录
+        function renderChat(contactId) {
+            const chatMessages = document.getElementById('chatMessages');
+            const contact = contacts.find(c => c.id === contactId);
+            
+            // 更新当前联系人信息
+            document.getElementById('currentContactName').textContent = 
+                translations[currentLang].contacts[contact.name] || contact.name;
+            document.getElementById('currentAvatar').className = `avatar ${contact.avatarClass}`;
+            document.getElementById('currentAvatar').innerHTML = `<i class="${contact.avatarIcon}"></i>`;
+            
+            // 清空聊天区域
+            chatMessages.innerHTML = '';
+            
+            // 显示聊天记录
+            if (chatHistories[contactId]) {
+                chatHistories[contactId].forEach(day => {
+                    // 添加日期分隔
+                    const dateDivider = document.createElement('div');
+                    dateDivider.className = 'divider';
+                    dateDivider.innerHTML = `<span class="divider-text">${day.date}</span>`;
+                    chatMessages.appendChild(dateDivider);
+                    
+                    // 添加消息
+                    day.messages.forEach(msg => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message ${msg.isSent ? 'sent' : 'received'}`;
+                        
+                        const messageContent = document.createElement('div');
+                        messageContent.className = 'message-content';
+                        messageContent.textContent = translations[currentLang].messages[msg.content] || msg.content;
+                        
+                        const messageTime = document.createElement('div');
+                        messageTime.className = 'message-time';
+                        messageTime.textContent = msg.time;
+                        
+                        messageDiv.appendChild(messageContent);
+                        messageDiv.appendChild(messageTime);
+                        
+                        // 如果是发送失败的消息，添加失败提示
+                        if (msg.failed) {
+                            const failedDiv = document.createElement('div');
+                            failedDiv.className = 'message-failed';
+                            failedDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i>${translations[currentLang].failedMessage}`;
+                            messageDiv.appendChild(failedDiv);
+                        }
+                        
+                        chatMessages.appendChild(messageDiv);
+                    });
+                });
+            } else {
+                // 如果没有聊天记录
+                const noMessages = document.createElement('div');
+                noMessages.className = 'no-messages';
+                noMessages.style.textAlign = 'center';
+                noMessages.style.padding = '50px 20px';
+                noMessages.style.color = '#999';
+                noMessages.textContent = currentLang === 'zh' ? '暂无聊天记录' : 
+                                         currentLang === 'en' ? 'No chat history' :
+                                         currentLang === 'ja' ? 'チャット履歴がありません' :
+                                         'Nenhum histórico de chat';
+                chatMessages.appendChild(noMessages);
+            }
+            
+            // 滚动到底部
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 联系人点击事件
+            document.getElementById('contactList').addEventListener('click', function(e) {
+                const contactItem = e.target.closest('.contact-item');
+                if (contactItem) {
+                    // 移除所有active类
+                    document.querySelectorAll('.contact-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // 添加active类到当前联系人
+                    contactItem.classList.add('active');
+                    
+                    // 更新当前联系人ID并渲染聊天
+                    currentContactId = parseInt(contactItem.dataset.id);
+                    renderChat(currentContactId);
+                }
+            });
+            
+            // 语言切换按钮
+            const languageBtn = document.getElementById('languageBtn');
+            const languageMenu = document.getElementById('languageMenu');
+            
+            languageBtn.addEventListener('click', function() {
+                languageMenu.classList.toggle('show');
+            });
+            
+            // 语言选项点击事件
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.dataset.lang;
+                    switchLanguage(lang);
+                    languageMenu.classList.remove('show');
+                });
+            });
+            
+            // 点击页面其他地方关闭语言菜单
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.language-switcher')) {
+                    languageMenu.classList.remove('show');
+                }
+            });
+            
+            // 搜索框输入事件
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                filterContacts(searchTerm);
+            });
+            
+            // 消息输入框回车发送
+            document.getElementById('messageInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+
+        // 切换语言
+        function switchLanguage(lang) {
+            currentLang = lang;
+            
+            // 更新当前语言显示
+            document.getElementById('currentLanguage').textContent = translations[lang].currentLanguage;
+            
+            // 更新搜索框和消息输入框占位符
+            document.getElementById('searchInput').placeholder = translations[lang].searchPlaceholder;
+            document.getElementById('messageInput').placeholder = translations[lang].messageInputPlaceholder;
+            
+            // 重新渲染联系人列表和聊天记录
+            renderContacts();
+            renderChat(currentContactId);
+        }
+
+        // 过滤联系人
+        function filterContacts(searchTerm) {
+            const contactItems = document.querySelectorAll('.contact-item');
+            
+            contactItems.forEach(item => {
+                const contactName = item.querySelector('.contact-name').textContent.toLowerCase();
+                const lastMessage = item.querySelector('.last-message').textContent.toLowerCase();
+                
+                if (contactName.includes(searchTerm) || lastMessage.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // 发送消息
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (message === '') return;
+            
+            // 获取当前时间
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            // 创建新消息对象
+            const newMessage = {
+                sender: "我",
+                time: timeString,
+                content: message,
+                isSent: true
+            };
+            
+            // 将新消息添加到聊天记录中
+            const today = new Date().toISOString().split('T')[0].replace(/-/g, '/');
+            const formattedDate = `${today.split('/')[0]}/${today.split('/')[1]}/${today.split('/')[2]}`;
+            
+            if (!chatHistories[currentContactId]) {
+                chatHistories[currentContactId] = [];
+            }
+            
+            // 检查是否已有今天的聊天记录
+            let todayChat = chatHistories[currentContactId].find(day => day.date === formattedDate);
+            if (!todayChat) {
+                todayChat = { date: formattedDate, messages: [] };
+                chatHistories[currentContactId].push(todayChat);
+            }
+            
+            todayChat.messages.push(newMessage);
+            
+            // 更新对应联系人的最后一条消息
+            const contact = contacts.find(c => c.id === currentContactId);
+            contact.lastMessage = message;
+            contact.time = timeString;
+            
+            // 清空输入框并重新渲染
+            messageInput.value = '';
+            renderContacts();
+            renderChat(currentContactId);
+        }
+    </script>
+</body>
+</html>

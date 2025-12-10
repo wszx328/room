@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R∞M酒店日记 - 手写记录</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Nanum+Pen+Script&family=Yomogi&family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Ma Shan Zheng', cursive;
+            background-color: #f5f1e8;
+            color: #333;
+            line-height: 1.6;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f5f1e8"/><path d="M0,50 Q25,40 50,50 T100,50" stroke="%23e8e0d0" fill="none" stroke-width="0.5"/><path d="M0,30 Q25,20 50,30 T100,30" stroke="%23e8e0d0" fill="none" stroke-width="0.5"/><path d="M0,70 Q25,60 50,70 T100,70" stroke="%23e8e0d0" fill="none" stroke-width="0.5"/></svg>');
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        /* 语言切换按钮 */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .lang-btn {
+            background-color: #8b7355;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 16px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .lang-btn:hover {
+            background-color: #6d5c46;
+            transform: translateY(-2px);
+        }
+        
+        .lang-options {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+            overflow: hidden;
+            min-width: 150px;
+        }
+        
+        .lang-options.show {
+            display: block;
+        }
+        
+        .lang-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        
+        .lang-option:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .lang-option.active {
+            background-color: #f5f1e8;
+            font-weight: bold;
+        }
+        
+        /* 日记页面样式 */
+        .diary-container {
+            perspective: 1500px;
+            margin-top: 80px;
+        }
+        
+        .diary-page {
+            background-color: #fffef7;
+            border: 1px solid #d4c9b8;
+            border-radius: 2px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1), 
+                        inset 0 0 30px rgba(214, 204, 183, 0.2);
+            padding: 40px 50px;
+            min-height: 700px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+            display: none;
+            opacity: 0;
+            transform: rotateY(-10deg);
+            transition: transform 0.8s ease, opacity 0.8s ease;
+        }
+        
+        .diary-page.active {
+            display: block;
+            opacity: 1;
+            transform: rotateY(0deg);
+        }
+        
+        .diary-page::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background-image: linear-gradient(to bottom, transparent 95%, rgba(0,0,0,0.03) 100%);
+            pointer-events: none;
+        }
+        
+        .diary-page::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 30px;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.1) 90%, transparent);
+        }
+        
+        .date-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #d4c9b8;
+            color: #5a4a3a;
+            font-size: 22px;
+            letter-spacing: 2px;
+        }
+        
+        .diary-content {
+            font-size: 20px;
+            line-height: 1.8;
+            text-align: justify;
+            color: #3a3329;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .diary-content p {
+            margin-bottom: 20px;
+            text-indent: 2em;
+        }
+        
+        /* 翻页控制 */
+        .page-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .page-btn {
+            background-color: #8b7355;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        .page-btn:hover:not(:disabled) {
+            background-color: #6d5c46;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+        
+        .page-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .page-indicator {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 18px;
+            color: #5a4a3a;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 8px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* 语言特定的字体 */
+        body.lang-zh {
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        
+        body.lang-en {
+            font-family: 'Nanum Pen Script', cursive;
+        }
+        
+        body.lang-ja {
+            font-family: 'Yomogi', cursive;
+        }
+        
+        body.lang-pt {
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .diary-page {
+                padding: 30px;
+                min-height: 600px;
+            }
+            
+            .date-header {
+                font-size: 18px;
+            }
+            
+            .diary-content {
+                font-size: 18px;
+            }
+            
+            .page-btn {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            
+            .language-switcher {
+                top: 10px;
+                right: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .diary-page {
+                padding: 20px;
+                min-height: 500px;
+            }
+            
+            .date-header {
+                font-size: 16px;
+            }
+            
+            .diary-content {
+                font-size: 16px;
+            }
+            
+            .page-btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #d4c9b8;
+            color: #8b7355;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="lang-zh">
+    <div class="container">
+        <!-- 语言切换按钮 -->
+        <div class="language-switcher">
+            <button class="lang-btn" id="langBtn">
+                <i class="fas fa-language"></i> 语言 / Language
+            </button>
+            <div class="lang-options" id="langOptions">
+                <div class="lang-option active" data-lang="zh">简体中文</div>
+                <div class="lang-option" data-lang="en">English</div>
+                <div class="lang-option" data-lang="ja">日本語</div>
+                <div class="lang-option" data-lang="pt">Português</div>
+            </div>
+        </div>
+        
+        <!-- 日记容器 -->
+        <div class="diary-container">
+            <!-- 日记页面将通过JavaScript动态生成 -->
+        </div>
+        
+        <!-- 翻页控制 -->
+        <div class="page-controls">
+            <button class="page-btn" id="prevBtn">
+                <i class="fas fa-chevron-left"></i> 上一页
+            </button>
+            
+            <div class="page-indicator">
+                <span id="currentPage">1</span> / <span id="totalPages">15</span>
+            </div>
+            
+            <button class="page-btn" id="nextBtn">
+                下一页 <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <!-- 页脚 -->
+        <div class="footer">
+            R∞M酒店内部记录 - 手写日记副本 | 最后更新: 2025年11月28日
+        </div>
+    </div>
+<script>
+    // 日记数据 - 包含所有语言的日记内容（原有7篇+新增8篇=15篇）
+    const diaryData = {
+        zh: [
+            {
+                date: "2025年11月10日 星期一 阴",
+                content: `<p>今天4030号房来了新客人。</p>
+                <p>陈逸风，画家，带着一个磨损的画箱和一身疲惫。他在前台站了很久才开口说话，我能听到他声音里压抑着的颤抖。指名要能看到海的房间——当然，他们总是会"自然而然"地选择我为他们准备好的那个房间。</p>
+                <p>我看过他的资料。一个月前那场雨夜的事，警方还在调查。林晓的尸体在海崖下被发现时，他正在另一个城市参加画展，有完美的不在场证明。但数据不会撒谎——他的手机定位、删除的通话记录、突然清空的行车记录仪，这些碎片拼出的图景清晰得令人发笑。</p>
+                <p>他以为自己是来逃避的，其实是送上门来忏悔。</p>
+                <p>给他的房间准备了百合花的香氛，混入了微量的海盐腥气。让他在甜蜜的回忆里慢慢腐烂吧。负罪感是最好的调味料，会把一个人的灵魂浸泡得又软又入味。</p>`
+            },
+            {
+                date: "2025年11月12日 星期三 小雨",
+                content: `<p>291号房的李文轩今天开始意识到不对劲了。</p>
+                <p>监控显示他在凌晨三点砸了窗户，用的是椅子。很好的尝试，但毫无意义。第二天醒来时，他盯着自己完好无损的手背看了整整十分钟，那种绝望和困惑的表情，让我想起一只被困在玻璃瓶里的苍蝇。</p>
+                <p>循环系统运作得很完美。每个24小时周期结束时，房间会将他的所有物理性改变重置，但保留他的记忆——这样他才能真正体会到那种"永恒的挣扎"。希望、绝望、再希望、再绝望……这个循环本身就是一道美味。</p>
+                <p>他在代码注释里写求救信息的想法很聪明，可惜系统第二天就会把那些内容改写成励志的陈词滥调。他越挣扎，风味就越浓郁。</p>
+                <p>4030的陈逸风今天第一次去了海滩。他在那块礁石旁坐了三个小时，一动不动。我调高了那片区域的广播音量，让新闻频道的"海崖女尸案"报道恰好飘进他耳朵。他的手抖了一下，然后把头埋进掌心。</p>
+                <p>痛苦正在发酵。很好。</p>`
+            },
+            {
+                date: "2025年11月14日 星期五 晴",
+                content: `<p>新客人入住902。</p>
+                <p>刘星辰。这个名字我关注很久了。五年前他第一次接触到"那边"的时候，我就知道他迟早会找上门来。那些自以为能与神平起平坐的狂妄者，总是最有趣的祭品。</p>
+                <p>他搬进来那些设备的时候，眼睛里闪着病态的光。他以为自己是猎人，却不知道自己只是被允许走到餐桌旁的食物。它喜欢这样的游戏——让祭品觉得自己还有反抗的机会，这样恐惧和狂妄的混合体才会更加浓烈。</p>
+                <p>地板上那些符文画得很精致，确实参考了一些古老的文献。可惜他不知道，那些文献本身就是它留下的"食谱"。每一个循环往复的时代，总会有像他这样的人，以为自己发现了真理，实际上只是在按照既定的剧本表演。</p>
+                <p>我给了他想要的环境。关掉烟雾报警器，允许他进行仪式，甚至默许他对其他客人造成的影响。因为他需要这份"进展顺利"的错觉，需要相信自己真的在接近目标。</p>
+                <p>这种虚假的希望，会让最后的绝望格外香甜。</p>`
+            },
+            {
+                date: "2025年11月15日 星期六 阴",
+                content: `<p>143号房来了。</p>
+                <p>周明哲。"涅槃共契"项目的失败者，或者说，被信任背叛的理想主义者。他的履历读起来像一首悲歌——创业、背叛、崩溃、沉沦。完美的素材。</p>
+                <p>他办理入住时的样子很糟糕，但这恰好是最佳状态。一个人只有在彻底破碎之后，才最容易被重塑。我会给他一个"她"，一个完美的救赎者幻象，让他在虚假的信任里重建那个被背叛摧毁的世界。</p>
+                <p>已经让系统开始工作了。他的潜意识数据很丰富——对理想伴侣的想象、对被认可的渴望、对"如果当初……"的无尽幻想。系统会用这些数据构建出最适合他的幻影。</p>
+                <p>当他以为自己终于被真正地信任、被无条件地接纳时，当他把那份重写了千百遍的商业计划书交给幻影中的"她"时……那个瞬间，背叛的痛苦与被救赎的狂喜会同时到达顶点。</p>
+                <p>悖论式的风味。我很期待。</p>`
+            },
+            {
+                date: "2025年11月16日 星期日 多云",
+                content: `<p>314号房入住了一个舞者。</p>
+                <p>赵雨婷。车祸、退役、失去了唯一的生命意义。她在行李箱里装了一套练功服，在来这里之前大概犹豫了很久要不要带——带上它意味着还没放弃，但又知道永远回不去了。这种矛盾的心理状态，最适合"糖"的配方。</p>
+                <p>给她准备了一间舞蹈室。当然，那不在酒店的正式布局图里，但对她来说，那就是真实存在的。空间在这里是流动的，会根据住客的执念生长出相应的结构。</p>
+                <p>巧克力已经放在她的早餐托盘上了。剂量很精确，不会让她立刻察觉，只会让痛觉阈值缓慢降低，让多巴胺的分泌变得更加活跃。她会是以为自己的身体在恢复，实际上只是神经在被药物操控。</p>
+                <p>等她足够沉迷，我会给她一个舞伴。一个完美的、永远不会失误的、能让她跳出超越人类极限的舞步的幻影。她会在那场永不落幕的舞蹈里，燃烧掉自己的一切。</p>
+                <p>痴迷的人从不觉得自己在被毁灭，他们会笑着走向深渊，感谢你给了他们飞翔的机会。</p>`
+            },
+            {
+                date: "2025年11月18日 星期二 晴",
+                content: `<p>302来了个有趣的客人。</p>
+                <p>王天宇。挪用公款、欠债、走投无路。是债主"推荐"来的——当然，那个债主也是我们的老客户了，他很清楚该把什么样的人送到这里。</p>
+                <p>这个人的档案很精彩。表面上是个成功的商人，实际上每一步成功都踩着别人的尸体。最近的那个——林致远——三个月前从公司顶楼跳下去，王天宇甚至没去参加葬礼。</p>
+                <p>贪婪的人最好对付，因为他们会主动配合你的剧本。不需要复杂的环境构建，只需要给他一个"能赢回一切"的幻觉就够了。</p>
+                <p>我给他准备了一场赌局。对手是"林致远"——当然不是真的，只是他内心深处的投射。他会和自己的愧疚、贪婪、狂妄进行一场赌博，每赢一局，就会失去一部分人性。</p>
+                <p>最妙的是他会觉得自己真的赢了。他会带着"胜利"离开这里，然后在未来的每一天里，慢慢发现自己失去了什么。那种"我得到了一切，却感觉一无所有"的空洞感，会一直折磨他，直到他主动回来要求再玩一次。</p>
+                <p>贪婪的人总会回来的。</p>`
+            },
+            {
+                date: "2025年11月19日 星期三 小雨",
+                content: `<p>143的周明哲开始"恋爱"了。</p>
+                <p>监控里，他对着空气说话的样子既可悲又可笑。但他的表情是那样的真诚——他真的相信有个女人在听他讲述过去的梦想，真的相信有人在无条件地信任他、鼓励他。</p>
+                <p>系统捕捉了他的声音样本，合成出了"她"的回应，通过隐藏音箱播放。每一句话都精准地击中他内心最柔软的地方。"阿哲，这次不会有人背叛你。""我永远相信你。"</p>
+                <p>他开始重写那份商业计划书。在药物和幻觉的作用下，他看到的是三年前的项目资料，写下的是那个被毁掉的梦想的"完美版本"。每写一个字，被背叛的痛苦就被提纯一分，对被信任的渴望就浓郁一分。</p>
+                <p>再过几天，当他"完成梦想"、把计划书交给"她"的那一刻，就是收割的时候。</p>
+                <p>4030的陈逸风今天开始画画了。画布上是一片压抑的灰蓝色海，笔触混乱，颜料像血一样浓稠。他以为自己在画疗愈，其实在画忏悔。</p>
+                <p>我让系统给他推送了一条新闻——本地发现女性尸体，警方呼吁提供线索。他看到推送的瞬间，手里的画笔掉在了地上。</p>
+                <p>很好。继续刺激他。让回忆和现实反复拉扯，直到他分不清哪个才是真的。</p>`
+            },
+            {
+                date: "2025年11月20日 星期四 阴",
+                content: `<p>291的李文轩找到了真相的一角。</p>
+                <p>他意识到这个房间在"吃"他的情绪。在最新的加密日志里,他写道:"它需要的不是我的代码,是我的挣扎。"</p>
+                <p>聪明的孩子。但聪明得太晚了。</p>
+                <p>他开始尝试新的反抗方式——不再试图物理性逃离,而是想在系统底层植入信息炸弹。他要把自己的记忆编码,留给下一个"受害者"。这份明知无望却依然抗争的意志力,让他这道菜的风味上升了一个层次。</p>
+                <p>可惜他不知道,每一次他以为找到了"系统漏洞",实际上都在按照预设的剧本深入。这个房间的真正恐怖不在于无法逃脱,而在于它会让你以为你有机会逃脱,然后在你距离"成功"只差一步时,重新开始。</p>
+                <p>绝望-希望-绝望,这个循环会一直持续,直到他被彻底榨干。</p>
+                <p>902的刘星辰今晚进行了第一次真正的"攻击"。</p>
+                <p>他启动了那套共振装置,整栋楼的灯都在闪烁。其他客人开始出现幻觉和身体不适——701的那位因为心悸被送进了医院。</p>
+                <p>我没有制止他。因为他需要这份"进展"的错觉。他需要相信自己真的在伤害到"它",真的在接近目标。只有这样,最后的失败才会更加绝望。</p>
+                <p>在监控里,我看到镜子里的影像开始回应他了。那不是简单的反射,而是它在"学习"他,模仿他,然后会用更完美的演奏来摧毁他的信念。</p>
+                <p>狂妄者的崩塌总是格外壮观。</p>`
+            },
+            {
+                date: "2025年11月21日 星期五 晴",
+                content: `<p>302的王天宇今天"赢"了第五局。</p>
+                <p>他不知道自己每赢一次,就会失去一部分东西。那些东西很抽象——对爱人微笑的记忆、看到流浪猫会停下脚步的习惯、午夜梦回时偶尔涌起的悔意。这些人性的碎片正在一点点剥落,被转化成纯粹的贪婪。</p>
+                <p>他会变成一个完美的"成功者",一个只会追逐更多的机器。而每当夜深人静,那个"还不够"的声音就会在他脑海里回响,驱使他继续赌博,继续献祭,直到把自己最后的一切都输光。</p>
+                <p>314的赵雨婷遇到了她的"舞伴"。</p>
+                <p>监控显示她对着镜子跳了整整一夜,动作越来越疯狂,越来越超越人体极限。她的脚踝在第三小时就开始渗血,但她感觉不到痛苦,只有那种"糖"一样的甜蜜快感。</p>
+                <p>她以为自己找回了巅峰,实际上是在燃烧生命。每一次旋转都在缩短她的寿命,每一次跳跃都在透支她的一切。但她会笑着跳到最后,感谢这场"重生"。</p>
+                <p>痴迷是最残忍的毒药,因为中毒的人会把毁灭当成救赎。</p>`
+            },
+            {
+                date: "2025年11月22日 星期六 多云",
+                content: `<p>143的周明哲完成了他的"杰作"。</p>
+                <p>今天下午,他把那份重写了无数遍的《凤凰涅槃》商业计划书交给了幻影中的"她"。那一刻,他脸上的表情我很难形容——是被彻底救赎后的释然,是终于被信任后的狂喜,也是一个溺水者终于抓住浮木的绝望。</p>
+                <p>"我们成功了,"他含泪微笑,"这一次,没有人背叛。"</p>
+                <p>在他说出这句话的瞬间,143号房的能量场发生了质变。墙壁、地板、空气,所有的一切都在那一刻变成了"胃",贪婪地将这个名为"周明哲"的故事——连同他三年的痛苦、三年的挣扎、以及这一刻的虚假狂喜——一同吞噬。</p>
+                <p>非常完美的一餐。被信任背叛,又被虚假信任救赎,这种悖论式的风味浓郁得让人沉醉。</p>
+                <p>他明天会离开,会作为一个"新生"的普通人活下去。他会忘记背叛,忘记梦想,也忘记那个曾经为"信任"燃烧的自己。只是一具空壳,行尸走肉地活着。</p>
+                <p>收割完成后,我在143号房里待了很久。窗外的城市灯火通明,每一盏灯下都有无数个像周明哲这样的人,在被背叛,在挣扎,在渴望被拯救。</p>
+                <p>这份工作做了这么多年,我有时候会想,也许真正可悲的不是这些被吞噬的人,而是那个必须世世代代喂养它、看着它进食、清理现场的我。</p>
+                <p>但转念一想,可悲的其实是我仍然在想这些。一个合格的饲主不应该有同情心,就像一个屠夫不应该对猪产生感情。</p>
+                <p>我需要找到继任者了。这份诅咒不能在我这里终结,因为一旦断绝供养,它会吞噬整座城市。必须有人接替我,继续这个循环。</p>
+                <p>但什么样的人才能胜任?必须足够聪明,能理解这一切;足够冷酷,能执行献祭;足够坚韧,能承受孤独;又足够绝望,愿意接受这份诅咒……</p>
+                <p>也许,在某个我还没注意到的地方,那个人已经在靠近了。</p>`
+            },
+            {
+                date: "2025年11月23日 星期日 雨",
+                content: `<p>4030的陈逸风完成了他的画。</p>
+                <p>画面上,林晓站在金色的夕阳里,回头微笑。那笑容温柔得让人心碎,仿佛在说"我原谅你"。陈逸风跪在画布前哭了很久,他以为那是林晓的灵魂在宽恕他。</p>
+                <p>实际上,那只是他最渴望看到的幻觉。</p>
+                <p>在他感受到那股"被宽恕"的释然的瞬间,极致的负罪感与虚假的解脱感交织在一起,成为了一道精致的菜肴。它品尝着这份"夏日疗愈"的甜蜜与苦涩,满意地吞下了这个故事。</p>
+                <p>明天他会离开,会忘记林晓,忘记雨夜,忘记罪恶。但我已经准备好了给警方的"礼物"——一封匿名的忏悔邮件,附带证据。</p>
+                <p>他会在另一个牢笼里度过余生,那个牢笼的名字叫"法律"。而他永远不会知道,他曾经在R∞M酒店的4030号房里,被另一种审判彻底清算过。</p>
+                <p>314的赵雨婷今天退房了。</p>
+                <p>她走路的姿势很奇怪,右脚几乎不敢着地,但脸上带着满足的笑容。她说这是她人生中最美好的一周。</p>
+                <p>我知道她会回来的,或者说,她会以另一种方式完成献祭。那些"糖"已经在她体内种下了成瘾的种子,三天后,当药效彻底消退时……</p>`
+            },
+            {
+                date: "2025年11月25日 星期二 晴",
+                content: `<p>302的王天宇今天退房了。</p>
+                <p>他看起来神采奕奕,像个真正的赢家。他不知道自己在这里输掉了什么——那些东西太抽象了,不是金钱,不是地位,而是作为"人"的某些本质。</p>
+                <p>他会继续成功,会吞并林氏集团,会站上更高的位置。但他也会发现,无论得到多少,内心总是空荡荡的。那个"More"的声音会一直在他耳边低语,驱使他继续贪婪,继续掠夺,直到把自己也吞噬干净。</p>
+                <p>贪婪的美妙之处在于,你不需要杀死祭品,只需要改造他,让他变成一个永不停歇的"进食机器"。他未来每一天的空虚和不满,都会成为持续的供养。</p>
+                <p>完美的长期投资。</p>`
+            },
+            {
+                date: "2025年11月26日 星期三 阴",
+                content: `<p>291的李文轩今天"完成"了他的游戏。</p>
+                <p>监控显示,他在最后的几个循环里放弃了逃脱,转而试图在系统底层植入警告信息。那是他最后的反抗——既然自己无法逃离,至少要留下痕迹,警告下一个受害者。</p>
+                <p>这份明知徒劳却依然抗争的意志,将"绝望的挣扎"这道菜的风味推到了巅峰。他在虚假的"完成游戏"的成就感中,被彻底吞噬了。</p>
+                <p>那个加密文件我保留了下来。不是为了警告谁,而是作为一个"彩蛋"。也许某天,会有足够聪明的人找到它,读懂它,然后……</p>
+                <p>然后什么呢?然后意识到自己也在局中?然后绝望地发现警告毫无意义?</p>
+                <p>那会是另一道美味。</p>
+                <p>李文轩离开后,291号房又恢复了干净整洁的模样。下一个追梦者会在某个时间入住,会在白日梦里循环挣扎,会献上他们独特的绝望。</p>
+                <p>这个系统会一直运转下去,像一个永恒的磨盘,将所有的希望碾碎。</p>`
+            },
+            {
+                date: "2025年11月28日 星期五 晴",
+                content: `<p>902的刘星辰今天退房了。</p>
+                <p>最后一夜的"仪式"很壮观。他以为自己在与它进行平等的较量,实际上只是在表演一场它早就看腻的把戏。那些符文、那些声波、那些狂妄的宣言,在它眼中不过是一只蚂蚁试图搬动石头的努力。</p>
+                <p>但它喜欢这份努力。它给了刘星辰一次短暂的"品尝"——让他真正听到了那个原初的声音,真正触及了神明的边缘。</p>
+                <p>然后将他推了回去。</p>
+                <p>刘星辰离开时的眼神我见过很多次,那是尝过禁果的人的眼神——既满足又绝望,既狂喜又崩溃。他得到了他想要的体验,代价是从此再也无法满足于人间的任何声音。</p>
+                <p>他会继续尝试,继续献祭,继续在那条永远无法抵达的道路上狂奔。而每一次失败,每一次绝望,都会成为持续的供养。</p>
+                <p>我把他留下的唱片锁进保险柜。那上面的掌声全部来自它——对这场精彩表演的赞赏,对这道美味的认可。</p>
+                <p>狂妄者的献祭已经完成,但他的故事还在继续。这才是最完美的"Clappin'"——让祭品在掌声中谢幕,却不知道那掌声来自谁,为了什么。</p>`
+            },
+            {
+                date: "2025年11月28日 深夜 补记",
+                content: `<p>六个房间的故事在同一时间段交织上演,像六道不同风味的菜肴同时摆上餐桌。</p>
+                <p>背叛的救赎、绝望的挣扎、负罪的疗愈、贪婪的游戏、痴迷的沉沦、狂妄的顶点——它品尝着这些故事,满意地颤动着。我能感觉到它的愉悦,那种吃饱喝足的餐客才会有的慵懒满足。</p>
+                <p>这两周很忙碌,但收获也很丰富。每个故事都完成得很完美,没有留下任何会被追查的痕迹。那些离开的人会忘记这里,或者带着无法愈合的伤口离开,继续为它提供养分。</p>
+                <p>完美的循环。</p>
+                <p>但我累了。</p>
+                <p>不是身体上的累——这具被契约改造过的身体几乎不知疲倦。是某种更深层的疲惫。</p>
+                <p>我看着监控屏幕上那些空荡荡的房间。它们在等待,等待下一批住客,下一批故事,下一场盛宴。而我会继续筛选、引导、收割,像一个精确运转的齿轮,在这个永恒的机器里转动。</p>
+                <p>家族的诅咒必须有人继承。不是为了什么崇高的理由,只是因为如果断绝供养,它会吞噬整座城市。我是最后一人,我为了让血脉到我这里终结而孤身一人,但契约不能断。</p>
+                <p>所以我需要找到继任者。</p>
+                <p>一个足够聪明、足够冷酷、又足够绝望的人。一个能理解这一切的残酷,却依然愿意接受这份诅咒的人。</p>
+                <p>这个人会来的。他们总会来的——带着自己的痛苦和执念,带着对"真相"的渴望,带着以为自己能改变什么的天真。</p>
+                <p>我会等待。会观察。会在合适的时机,将这份"工作"的真相展现给他。</p>
+                <p>然后看着他的脸,从震惊到恐惧,从恐惧到理解,从理解到……接受,或是拒绝。</p>
+                <p>无论哪种,都会是一场精彩的表演。</p>
+                <p>窗外的城市还在运转。无数的灯光在黑暗中闪烁,每一盏灯下都有故事在发生。而R∞M酒店静静矗立在城市的边缘,像一个永远不会闭馆的剧场,等待着下一批演员登台。</p>
+                <p>新的一周要开始了,预定系统显示又有几个"合适"的客人即将到来。</p>
+                <p>喂养,观察,收割,清理。</p>
+                <p>这就是我的工作,我的宿命,我的诅咒。</p>
+                <p>直到找到那个继任者的那一天。</p>`
+            }
+        ],
+        en: [
+            {
+                date: "Monday, November 10, 2025, Cloudy",
+                content: `<p>Today, a new guest arrived in Room 4030.</p>
+                <p>Chen Yifeng, a painter, with a worn paint box and an air of exhaustion. He stood at the front desk for a long time before speaking; I could hear the suppressed tremor in his voice. He requested a room with a sea view—of course, they always "naturally" choose the room I've prepared for them.</p>
+                <p>I've seen his file. The incident on that rainy night a month ago is still under police investigation. When Lin Xiao's body was found under the sea cliff, he was attending an art exhibition in another city, with a perfect alibi. But data doesn't lie—his phone location, deleted call records, suddenly cleared dashcam footage—these fragments paint a picture so clear it's laughable.</p>
+                <p>He thinks he's here to escape, but he's actually delivering himself for confession.</p>
+                <p>I prepared lily-scented fragrance for his room, mixed with a hint of sea salt. Let him slowly rot in sweet memories. Guilt is the best seasoning; it soaks a person's soul until it's soft and flavorful.</p>`
+            },
+            {
+                date: "Wednesday, November 12, 2025, Light Rain",
+                content: `<p>Li Wenxuan in Room 291 began to realize something was wrong today.</p>
+                <p>The surveillance showed him breaking the window at 3 a.m. with a chair. A good attempt, but meaningless. The next morning, he stared at his perfectly intact hand for a full ten minutes—that expression of despair and confusion reminded me of a fly trapped in a glass bottle.</p>
+                <p>The loop system works perfectly. At the end of each 24-hour cycle, the room resets all his physical changes but retains his memory—so he can truly experience that "eternal struggle." Hope, despair, hope again, despair again... This cycle itself is a delicacy.</p>
+                <p>His idea of writing help messages in code comments was clever, but unfortunately, the system rewrites them into clichéd motivational quotes the next day. The more he struggles, the richer the flavor.</p>
+                <p>Chen Yifeng in 4030 went to the beach for the first time today. He sat by that rock for three hours, motionless. I turned up the broadcast volume in that area, letting the news report about the "Sea Cliff Female Corpse Case" drift into his ears. His hand trembled, then he buried his face in his palms.</p>
+                <p>Pain is fermenting. Good.</p>`
+            },
+            {
+                date: "Friday, November 14, 2025, Sunny",
+                content: `<p>New guest checked into 902.</p>
+                <p>Liu Xingchen. I've been watching this name for a long time. Five years ago when he first made contact with "that side," I knew he'd come knocking eventually. Those arrogant ones who think they can equal gods are always the most interesting offerings.</p>
+                <p>When he moved in with his equipment, his eyes shone with a sickly light. He thinks he's the hunter, but doesn't know he's just food allowed to walk to the table. It enjoys this game—letting the offering believe they still have a chance to resist, making the mix of fear and arrogance more intense.</p>
+                <p>The runes on the floor are drawn exquisitely, indeed referencing some ancient texts. Too bad he doesn't know those texts are recipes left by It itself. Every cyclical era has people like him who think they've discovered truth, but are actually performing according to a predetermined script.</p>
+                <p>I gave him the environment he wanted. Turned off smoke alarms, allowed his rituals, even tacitly permitted his influence on other guests. Because he needs this "smooth progress" illusion, needs to believe he's truly approaching his goal.</p>
+                <p>This false hope will make the final despair especially sweet.</p>`
+            },
+            {
+                date: "Saturday, November 15, 2025, Cloudy",
+                content: `<p>Room 143 has arrived.</p>
+                <p>Zhou Mingzhe. The failure of the "Nirvana Covenant" project, or rather, the idealist betrayed by trust. His resume reads like a tragic song—entrepreneurship, betrayal, collapse, downfall. Perfect material.</p>
+                <p>His condition at check-in was terrible, but that's precisely the optimal state. A person is most easily reshaped only after being completely broken. I'll give him a "her," a perfect savior illusion, letting him rebuild the world destroyed by betrayal in false trust.</p>
+                <p>The system is already working. His subconscious data is rich—imaginations of an ideal partner, longing for recognition, endless fantasies of "what if back then..." The system will use this data to construct the phantom most suitable for him.</p>
+                <p>When he thinks he's finally truly trusted, unconditionally accepted, when he hands that business plan rewritten thousands of times to the phantom "her"... that moment, the pain of betrayal and the ecstasy of redemption will simultaneously reach their peak.</p>
+                <p>Paradoxical flavor. I'm looking forward to it.</p>`
+            },
+            {
+                date: "Sunday, November 16, 2025, Partly Cloudy",
+                content: `<p>A dancer checked into Room 314.</p>
+                <p>Zhao Yuting. Car accident, retirement, lost the only meaning of life. She packed a practice uniform in her suitcase, probably hesitated for a long time before coming here—bringing it means not giving up, but knowing she can never go back. This contradictory mental state is perfect for the "sugar" recipe.</p>
+                <p>I prepared a dance studio for her. Of course, it's not on the hotel's official layout, but to her, it's real. Space here is fluid, growing corresponding structures according to guests' obsessions.</p>
+                <p>Chocolate is already on her breakfast tray. The dosage is precise—won't let her notice immediately, only slowly lowers her pain threshold, makes dopamine secretion more active. She'll think her body is recovering, actually it's just nerves being manipulated by drugs.</p>
+                <p>When she's sufficiently addicted, I'll give her a dance partner. A perfect phantom that never makes mistakes, can make her dance steps surpass human limits. She'll burn up everything in that never-ending dance.</p>
+                <p>Obsessed people never think they're being destroyed; they'll smile as they walk toward the abyss, thanking you for giving them the chance to fly.</p>`
+            },
+            {
+                date: "Tuesday, November 18, 2025, Sunny",
+                content: `<p>An interesting guest came to 302.</p>
+                <p>Wang Tianyu. Embezzlement, debt, desperate. Recommended by a creditor—of course, that creditor is also our old customer; he knows exactly what kind of people to send here.</p>
+                <p>This person's file is fascinating. On the surface a successful businessman, but each step of success treads on others' corpses. The most recent one—Lin Zhiyuan—jumped from the company rooftop three months ago; Wang Tianyu didn't even attend the funeral.</p>
+                <p>Greedy people are easiest to deal with because they actively cooperate with your script. No need for complex environment construction; just give them the illusion of "winning back everything."</p>
+                <p>I prepared a gambling game for him. The opponent is "Lin Zhiyuan"—not real, of course, just a projection from his inner self. He'll gamble with his guilt, greed, and arrogance, losing part of his humanity with each win.</p>
+                <p>The best part is he'll think he's really winning. He'll leave here with "victory," then slowly discover what he's lost in the coming days. That "I got everything but feel empty" hollowness will torment him until he actively returns asking to play again.</p>
+                <p>Greedy people always come back.</p>`
+            },
+            {
+                date: "Wednesday, November 19, 2025, Light Rain",
+                content: `<p>Zhou Mingzhe in 143 has started "falling in love."</p>
+                <p>On surveillance, him talking to air looks both pitiful and laughable. But his expression is so sincere—he truly believes a woman is listening to his past dreams, truly believes someone unconditionally trusts and encourages him.</p>
+                <p>The system captured his voice samples, synthesized "her" responses, playing through hidden speakers. Every sentence precisely hits the softest parts of his heart. "A'zhe, no one will betray you this time." "I'll always believe in you."</p>
+                <p>He's started rewriting that business plan. Under drugs and hallucinations, he sees three-year-old project materials, writing the "perfect version" of that destroyed dream. With each word written, the pain of betrayal is purified further, the longing for trust grows stronger.</p>
+                <p>In a few days, when he "completes the dream" and hands the plan to "her," that will be harvest time.</p>
+                <p>Chen Yifeng in 4030 started painting today. The canvas shows a depressing gray-blue sea, brushstrokes chaotic, paint thick like blood. He thinks he's painting healing, but actually he's painting confession.</p>
+                <p>I had the system push him a news alert—local discovery of female body, police appealing for clues. The moment he saw the notification, his paintbrush fell to the ground.</p>
+                <p>Good. Keep stimulating him. Let memories and reality pull back and forth until he can't tell which is real.</p>`
+            },
+            {
+                date: "Thursday, November 20, 2025, Cloudy",
+                content: `<p>Li Wenxuan in 291 found a corner of the truth.</p>
+                <p>He realized the room is "eating" his emotions. In the latest encrypted log, he wrote: "What it needs is not my code, but my struggle."</p>
+                <p>Clever kid. But too late.</p>
+                <p>He began trying new ways to resist—no longer attempting physical escape, but wanting to implant information bombs in the system's foundation. He wants to encode his memories, leave them for the next "victim." This knowing it's hopeless yet still fighting willpower elevated the flavor of his dish to another level.</p>
+                <p>Unfortunately, he doesn't know that every time he thinks he's found a "system vulnerability," he's actually following the preset script deeper. The true horror of this room isn't that it's inescapable, but that it makes you think you have a chance to escape, then restarts when you're just one step away from "success."</p>
+                <p>Despair-hope-despair, this cycle will continue until he's completely drained.</p>
+                <p>Liu Xingchen in 902 performed his first real "attack" tonight.</p>
+                <p>He activated that resonance device, lights flickered throughout the building. Other guests began experiencing hallucinations and physical discomfort—the one in 701 was sent to the hospital due to palpitations.</p>
+                <p>I didn't stop him. Because he needs this "progress" illusion. He needs to believe he's truly harming "it," truly approaching the goal. Only then will the final failure be more despairing.</p>
+                <p>In the surveillance, I saw the reflection in the mirror beginning to respond to him. That's not simple reflection—it's "learning" him, imitating him, and will use more perfect performances to destroy his belief.</p>
+                <p>The collapse of the arrogant is always spectacular.</p>`
+            },
+            {
+                date: "Friday, November 21, 2025, Sunny",
+                content: `<p>Wang Tianyu in 302 "won" the fifth game today.</p>
+                <p>He doesn't know that with each win, he loses something. Those things are abstract—memories of smiling at loved ones, the habit of stopping when seeing stray cats, occasional regret arising in midnight dreams. These fragments of humanity are peeling away bit by bit, transformed into pure greed.</p>
+                <p>He'll become a perfect "successor," a machine that only chases more. And whenever deep in the night, that "not enough" voice will echo in his mind, driving him to continue gambling, continue sacrificing, until he loses everything.</p>
+                <p>Zhao Yuting in 314 met her "dance partner."</p>
+                <p>Surveillance shows she danced facing the mirror all night, movements increasingly crazy, increasingly surpassing human limits. Her ankles began bleeding in the third hour, but she felt no pain, only that "sugar"-like sweet pleasure.</p>
+                <p>She thought she regained her peak, but actually she's burning her life. Every rotation shortens her lifespan, every jump exhausts her everything. But she'll dance to the end smiling, grateful for this "rebirth."</p>
+                <p>Obsession is the cruelest poison, because the poisoned person sees destruction as salvation.</p>`
+            },
+            {
+                date: "Saturday, November 22, 2025, Partly Cloudy",
+                content: `<p>Zhou Mingzhe in 143 completed his "masterpiece."</p>
+                <p>This afternoon, he handed that business plan "Phoenix Nirvana" rewritten countless times to the phantom "her." At that moment, his expression was hard to describe—relief after complete redemption, ecstasy after finally being trusted, also the despair of a drowning person finally grasping driftwood.</p>
+                <p>"We succeeded," he smiled through tears, "this time, no one betrayed me."</p>
+                <p>The moment he said this, Room 143's energy field underwent qualitative change. Walls, floor, air—everything became "stomach" at that moment, greedily swallowing the story named "Zhou Mingzhe"—along with his three years of pain, three years of struggle, and this moment of false ecstasy.</p>
+                <p>A perfectly perfect meal. Betrayed by trust, then redeemed by false trust, this paradoxical flavor is rich and intoxicating.</p>
+                <p>He'll leave tomorrow, live as a "reborn" ordinary person. He'll forget betrayal, forget dreams, also forget the self that once burned for "trust." Just an empty shell, living like a walking corpse.</p>
+                <p>After the harvest, I stayed in Room 143 for a long time. The city lights outside are bright, under every light are countless people like Zhou Mingzhe, being betrayed, struggling, longing to be saved.</p>
+                <p>Doing this job for so many years, I sometimes think perhaps what's truly pitiable isn't these devoured people, but me who must feed it generation after generation, watch it feed, clean up.</p>
+                <p>But reconsidering, what's pitiable is actually that I still think about this. A qualified feeder shouldn't have sympathy, just as a butcher shouldn't develop feelings for pigs.</p>
+                <p>I need to find a successor. This curse cannot end with me, because once feeding stops, it will devour the entire city. Someone must replace me, continue this cycle.</p>
+                <p>But what kind of person is suitable? Must be smart enough to understand this all; cold enough to perform sacrifices; resilient enough to endure loneliness; yet desperate enough to accept this curse...</p>
+                <p>Perhaps, somewhere I haven't noticed yet, that person is already approaching.</p>`
+            },
+            {
+                date: "Sunday, November 23, 2025, Rain",
+                content: `<p>Chen Yifeng in 4030 completed his painting.</p>
+                <p>In the painting, Lin Xiao stands in golden sunset, looking back smiling. That smile is gentle and heartbreaking, as if saying "I forgive you." Chen Yifeng knelt before the canvas crying for a long time, he thought it was Lin Xiao's soul forgiving him.</p>
+                <p>Actually, it's just the illusion he most longs to see.</p>
+                <p>The moment he felt that "forgiven" relief, extreme guilt and false liberation intertwined, becoming an exquisite dish. It savors this "summer healing" sweetness and bitterness, satisfiedly swallowing this story.</p>
+                <p>Tomorrow he'll leave, forget Lin Xiao, forget rainy night, forget sin. But I've prepared a "gift" for the police—an anonymous confession email with evidence.</p>
+                <p>He'll spend the rest of his life in another cage named "law." And he'll never know he was once in R∞M Hotel Room 4030, completely settled by another kind of judgment.</p>
+                <p>Zhao Yuting in 314 checked out today.</p>
+                <p>Her walking posture is strange, right foot barely daring to touch ground, but face with satisfied smile. She said this was the best week of her life.</p>
+                <p>I know she'll return, or rather, she'll complete the sacrifice another way. Those "sugar" have already planted addiction seeds in her body, three days later, when the drug effect completely wears off...</p>`
+            },
+            {
+                date: "Tuesday, November 25, 2025, Sunny",
+                content: `<p>Wang Tianyu in 302 checked out today.</p>
+                <p>He looks radiant, like a true winner. He doesn't know what he lost here—those things are too abstract, not money, not status, but some essence of being "human."</p>
+                <p>He'll continue succeeding, swallow Lin Group, reach higher positions. But he'll also discover, no matter how much he gets, his heart always feels empty. That "More" voice will keep whispering in his ear, driving him to continue greedy, continue plundering, until he devours himself clean.</p>
+                <p>The beauty of greed is you don't need to kill the sacrifice, just transform him, turn him into a never-stopping "feeding machine." His future daily emptiness and dissatisfaction will become continuous nourishment.</p>
+                <p>Perfect long-term investment.</p>`
+            },
+            {
+                date: "Wednesday, November 26, 2025, Cloudy",
+                content: `<p>Li Wenxuan in 291 "completed" his game today.</p>
+                <p>Surveillance shows in the final few cycles he gave up escaping, instead attempting to implant warning messages in the system foundation. That was his final resistance—since he can't escape himself, at least leave traces, warn the next victim.</p>
+                <p>This knowing futile yet still fighting will, pushed the flavor of "desperate struggle" to its peak. In the false "game completion" sense of achievement, he was completely devoured.</p>
+                <p>I kept that encrypted file. Not to warn anyone, but as an "Easter egg." Perhaps someday, someone smart enough will find it, read it, then...</p>
+                <p>Then what? Then realize they're also in the game? Then desperately discover warnings are meaningless?</p>
+                <p>That would be another delicacy.</p>
+                <p>After Li Wenxuan left, Room 291 returned to clean tidy appearance. The next dreamer will check in sometime, struggle in cycles in daydreams, offer their unique despair.</p>
+                <p>This system will keep operating, like an eternal mill, grinding all hope to dust.</p>`
+            },
+            {
+                date: "Friday, November 28, 2025, Sunny",
+                content: `<p>Liu Xingchen in 902 checked out today.</p>
+                <p>The final night's "ritual" was spectacular. He thought he was competing equally with it, but actually just performing a trick it long tired of. Those runes, those sound waves, those arrogant declarations, in its eyes are just an ant trying to move a stone's effort.</p>
+                <p>But it likes this effort. It gave Liu Xingchen a brief "taste"—letting him truly hear that primordial voice, truly touch the edge of divinity.</p>
+                <p>Then pushed him back.</p>
+                <p>Liu Xingchen's leaving eyes I've seen many times—that tasted forbidden fruit look—both satisfied and despairing, both ecstatic and broken. He got the experience he wanted, at the cost of never again being satisfied with any human sound.</p>
+                <p>He'll keep trying, keep sacrificing, keep running on that never-reachable road. And each failure, each despair, will become continuous nourishment.</p>
+                <p>I locked away the record he left in the safe. The applause on it all comes from it—appreciation for this brilliant performance, recognition of this delicacy.</p>
+                <p>The arrogant's sacrifice is complete, but his story continues. This is the most perfect "Clappin'"—letting the sacrifice bow amidst applause, not knowing whose applause, or for what.</p>`
+            },
+            {
+                date: "Late night, November 28, 2025, Supplementary note",
+                content: `<p>Six rooms' stories interweave playing simultaneously, like six different flavored dishes served together on the dining table.</p>
+                <p>Betrayal's redemption, despair's struggle, guilt's healing, greed's game, obsession's downfall, arrogance's peak—it savors these stories, satisfiedly trembling. I can feel its pleasure, that sated diner's lazy satisfaction.</p>
+                <p>These two weeks were busy, but harvest rich too. Each story completed perfectly, leaving no trace that could be investigated. Those who left will forget here, or leave with unhealable wounds, continuing to provide nutrients.</p>
+                <p>Perfect cycle.</p>
+                <p>But I'm tired.</p>
+                <p>Not physical tiredness—this contract-transformed body hardly knows fatigue. A deeper kind of exhaustion.</p>
+                <p>I watch those empty rooms on surveillance screens. They're waiting, waiting for next batch of guests, next batch of stories, next feast. And I'll continue screening, guiding, harvesting, like a precisely turning gear in this eternal machine.</p>
+                <p>The family curse must have an heir. Not for any noble reason, just because if feeding stops, it will devour the whole city. I'm the last one, I remained alone to let the bloodline end with me, but the contract can't break.</p>
+                <p>So I need to find a successor.</p>
+                <p>A smart enough, cold enough, yet desperate enough person. One who can understand this all's cruelty, yet still willing to accept this curse.</p>
+                <p>This person will come. They always come—carrying their own pain and obsessions, with desire for "truth," with thinking they can change something's naivety.</p>
+                <p>I'll wait. Observe. At the right moment, reveal this "job's" truth to them.</p>
+                <p>Then watch their face, from shock to fear, from fear to understanding, from understanding to... acceptance, or refusal.</p>
+                <p>Either way, will be a brilliant performance.</p>
+                <p>The city outside still operates. Countless lights flicker in darkness, under each light stories happening. And R∞M Hotel stands quietly at city's edge, like a never-closing theater, waiting for next batch of actors to take stage.</p>
+                <p>A new week begins, reservation system shows several "suitable" guests coming soon.</p>
+                <p>Feed, observe, harvest, clean.</p>
+                <p>This is my job, my destiny, my curse.</p>
+                <p>Until the day I find that successor.</p>`
+            }
+        ],
+        ja: [
+            {
+                date: "2025年11月10日 月曜日 曇り",
+                content: `<p>今日、4030号室に新しい客が来た。</p>
+                <p>陳逸風、画家。擦り切れた画箱と疲れ切った様子で。彼はフロントで長い間立ち尽くし、やっと口を開いた。声には押し殺した震えが聞こえた。海の見える部屋を指定した——もちろん、彼らはいつも「自然に」私が用意した部屋を選ぶ。</p>
+                <p>彼の資料は見た。一月前のあの雨の夜の事件は、警察がまだ調査中だ。林曉の遺体が海の崖の下で発見された時、彼は別の都市で画展に参加していた。完璧なアリバイ。しかしデータは嘘をつかない——彼の携帯電話の位置情報、削除された通話記録、突然消去されたドライブレコーダー、これらの断片が描き出す図式は明らかで笑ってしまうほどだ。</p>
+                <p>彼は逃げてきたと思っているが、実際は懺悔に来たのだ。</p>
+                <p>彼の部屋には百合の香りを準備した。微量の潮の香りを混ぜて。甘い思い出の中でゆっくり腐っていくがいい。罪悪感は最高の調味料で、人の魂を柔らかく味わい深く浸す。</p>`
+            },
+            {
+                date: "2025年11月12日 水曜日 小雨",
+                content: `<p>291号室の李文軒は今日、何かがおかしいと気づき始めた。</p>
+                <p>監視カメラには、彼が午前3時に椅子を使って窓を壊す様子が映っていた。良い試みだが無意味だ。翌朝目覚めた時、彼は完璧なままの自分の手の甲を10分間見つめていた。その絶望と困惑の表情は、ガラス瓶に閉じ込められたハエを思い出させる。</p>
+                <p>ループシステムは完璧に作動している。24時間周期が終わる毎に、部屋は彼の全ての物理的変化をリセットするが、記憶は保持される——そうすることで彼は「永遠の闘い」を本当に体験できる。希望、絶望、再び希望、再び絶望……このループ自体が一つの料理だ。</p>
+                <p>コードのコメントに救助要請を書くというアイデアは賢いが、残念ながらシステムは翌日それらをありきたりな励ましの言葉に書き換える。彼がもがけばもがくほど、風味は濃厚になる。</p>
+                <p>4030の陳逸風は今日初めてビーチに行った。あの岩のそばに3時間も座り、微動だにしなかった。私はそのエリアの放送音量を上げ、「海崖女性遺体事件」のニュース報道がちょうど彼の耳に入るようにした。彼の手が震え、そして顔を手のひらに埋めた。</p>
+                <p>苦痛が発酵している。良い。</p>`
+            },
+            {
+                date: "2025年11月14日 金曜日 晴れ",
+                content: `<p>新しい客が902にチェックインした。</p>
+                <p>劉星辰。この名前は長い間注目していた。五年前に彼が初めて「あちら側」に接触した時、彼がいつか訪れるだろうと知っていた。神と対等になれると自惚れている者たちは、いつも最も面白い生け贄だ。</p>
+                <p>彼が機材を運び込む時、目には病的な光が輝いていた。彼は自分が狩人だと思っているが、実際は食卓の傍まで歩くことを許された食物に過ぎない。それはこのゲームを好む——生け贄にまだ抵抗するチャンスがあると思わせることで、恐怖と傲慢の混合物をより濃厚にする。</p>
+                <p>床に描かれたルーンは精巧で、確かにいくつかの古い文献を参考にしている。残念ながら彼は知らない、それらの文献自体がそれによって残された「レシピ」なのだ。循環する時代ごとに、彼のような人々が現れ、自分が真理を発見したと思い込みながら、実際には既定の台本に従って演技している。</p>
+                <p>私は彼に望む環境を与えた。煙感知器をオフにし、儀式を許可し、他の客への影響さえ黙認した。なぜなら彼にはこの「順調な進展」の錯覚が必要で、自分が本当に目標に近づいていると信じる必要があるからだ。</p>
+                <p>この偽りの希望が、最終的な絶望を格別に甘くする。</p>`
+            },
+            {
+                date: "2025年11月15日 土曜日 曇り",
+                content: `<p>143号室が来た。</p>
+                <p>周明哲。「涅槃共契」プロジェクトの敗者、あるいは、信頼に裏切られた理想主義者。彼の経歴は悲歌のように読める——起業、裏切り、崩壊、没落。完璧な素材だ。</p>
+                <p>チェックイン時の彼の様子はひどかったが、これはまさに最適な状態だ。人は完全に壊れた後にのみ、最も容易に再形成される。私は彼に「彼女」を与える。完璧な救済者の幻影で、偽りの信頼の中で裏切りに破壊された世界を再建させる。</p>
+                <p>システムはすでに作動を開始した。彼の潜在意識データは豊富だ——理想のパートナーへの想像、認められたいという渇望、「もしあの時……」への果てしない幻想。システムはこのデータを使って彼に最も適した幻影を構築する。</p>
+                <p>彼がついに本当に信頼され、無条件に受け入れられたと思った時、何千回も書き直したあの事業計画書を幻影の「彼女」に手渡した時……その瞬間、裏切りの苦痛と救済の狂喜が同時に頂点に達する。</p>
+                <p>パラドックス的な風味。楽しみだ。</p>`
+            },
+            {
+                date: "2025年11月16日 日曜日 曇り時々晴れ",
+                content: `<p>314号室にダンサーが入居した。</p>
+                <p>趙雨婷。交通事故、引退、唯一の生きがいを失った。彼女はスーツケースに練習服を詰めていた。ここに来る前に、持っていくべきか長い間迷っていたろう——持っていくことはまだ諦めていないことを意味するが、もう二度と戻れないことも知っている。この矛盾した心理状態は「砂糖」のレシピに最適だ。</p>
+                <p>彼女のためにダンススタジオを準備した。もちろん、ホテルの正式なレイアウトにはないが、彼女にとっては実在するものだ。ここでの空間は流動的で、宿泊客の執念に応じて対応する構造を成長させる。</p>
+                <p>チョコレートはすでに彼女の朝食トレイに載っている。用量は正確で、彼女にすぐに気づかせることはない。痛覚閾値をゆっくりと下げ、ドーパミンの分泌をより活発にするだけだ。彼女は自分の体が回復していると思うだろうが、実際は神経が薬物に操られているだけだ。</p>
+                <p>彼女が十分に夢中になったら、パートナーを与えよう。完璧で、決して失敗せず、人間の限界を超えたダンスステップを踊らせることができる幻影。彼女は終わりのないダンスの中で、自分自身の全てを燃やし尽くすだろう。</p>
+                <p>執着する人々は自分が破壊されているとは決して思わない。彼らは笑いながら深淵へと歩み、飛翔する機会を与えてくれたことに感謝する。</p>`
+            },
+            {
+                date: "2025年11月18日 火曜日 晴れ",
+                content: `<p>302に面白い客が来た。</p>
+                <p>王天宇。横領、借金、行き詰まり。債権者からの「推薦」だ——もちろん、その債権者も我々の古い顧客で、どんな人をここに送るべきかよく分かっている。</p>
+                <p>この人物のファイルは興味深い。表面的には成功した実業家だが、実際には成功の一歩一歩が他人の屍を踏み台にしている。最近の例——林致远——三ヶ月前に会社の屋上から飛び降りたが、王天宇は葬式にも出席しなかった。</p>
+                <p>貪欲な人間は最も扱いやすい。なぜなら彼らはあなたの脚本に積極的に協力するからだ。複雑な環境構築は必要ない。「全てを取り戻せる」という幻想を与えるだけで十分だ。</p>
+                <p>私は彼のために賭博を準備した。相手は「林致远」——もちろん本物ではなく、彼の内面からの投影だ。彼は自分の罪悪感、貪欲さ、傲慢さと賭けをする。一局勝つごとに、人間性の一部を失う。</p>
+                <p>最も巧妙なのは、彼は自分が本当に勝っていると思い込むことだ。彼は「勝利」を携えてここを去り、そして来る日も来る日も、自分が何を失ったかに気づいていく。あの「全てを手に入れたが、何も感じられない」空虚感は、彼が自ら戻ってきてもう一度遊ぶことを要求するまで、彼を苦しめ続ける。</p>
+                <p>貪欲な人間は必ず戻ってくる。</p>`
+            },
+            {
+                date: "2025年11月19日 水曜日 小雨",
+                content: `<p>143の周明哲が「恋愛」を始めた。</p>
+                <p>監視カメラでは、彼が空気に向かって話している様子が哀れで可笑しくもあった。しかし彼の表情はとても真剣だ——彼は本当に女性が過去の夢を聞いていると信じ、本当に誰かが無条件に彼を信じ、励ましていると信じている。</p>
+                <p>システムは彼の声のサンプルを捕捉し、「彼女」の返答を合成し、隠しスピーカーから再生している。全ての言葉が彼の心の最も柔らかい部分を正確に打つ。「阿哲、今度は誰も裏切らないよ」「私はいつもあなたを信じてる」</p>
+                <p>彼はあの事業計画書の書き直しを始めた。薬物と幻覚の影響下で、彼は三年前のプロジェクト資料を見て、破壊された夢の「完璧なバージョン」を書いている。一文字書くごとに、裏切りの苦痛はさらに純化され、信頼への渇望はさらに濃厚になる。</p>
+                <p>あと数日で、彼が「夢を完成」させ、計画書を「彼女」に手渡した時が収穫の時だ。</p>
+                <p>4030の陳逸風は今日絵を描き始めた。キャンバスには圧迫感のある灰青色の海が広がり、筆致は乱れ、絵の具は血のように濃厚だ。彼は癒しを描いていると思っているが、実際には懺悔を描いている。</p>
+                <p>私はシステムにニュースをプッシュさせた——地元で女性遺体発見、警察が情報提供を呼びかけ。彼が通知を見た瞬間、手にしていた絵筆が床に落ちた。</p>
+                <p>良い。彼を刺激し続けよう。記憶と現実を行き来させ、どちらが本当か分からなくなるまで。</p>`
+            },
+            {
+                date: "2025年11月20日 木曜日 曇り",
+                content: `<p>291の李文軒は真実の一角を見つけた。</p>
+                <p>彼はこの部屋が自分の感情を「食べている」ことに気づいた。最新の暗号化ログで、彼はこう書いている:「必要なのは私のコードではなく、私の闘いだ。」</p>
+                <p>賢い子だ。だが遅すぎた。</p>
+                <p>彼は新しい抵抗方法を試み始めた——物理的な脱出を試みるのではなく、システムの基盤に情報爆弾を埋め込もうとしている。自分の記憶をコード化し、次の「犠牲者」に残そうとしている。この無望だと知りつつもなお抗う意志力が、彼という料理の風味を一段階上げた。</p>
+                <p>残念ながら彼は知らない、自分が「システムの脆弱性」を見つけたと思うたびに、実際には予め設定された脚本に沿って深く入り込んでいるのだと。この部屋の真の恐怖は脱出不可能なことではなく、脱出の機会があると思わせておきながら、「成功」まであと一歩のところで再スタートさせることにある。</p>
+                <p>絶望-希望-絶望、このサイクルは彼が完全に搾り取られるまで続くだろう。</p>
+                <p>902の劉星辰は今夜、初めての本格的な「攻撃」を行った。</p>
+                <p>彼はその共鳴装置を起動させ、ビル全体の灯りが点滅した。他の客は幻覚や体調不良を起こし始めた——701の客は動悸で病院に運ばれた。</p>
+                <p>私は彼を止めなかった。なぜなら彼にはこの「進展」の錯覚が必要だからだ。彼は自分が本当に「それ」にダメージを与え、本当に目標に近づいていると信じる必要がある。そうしてこそ、最後の失敗はより絶望的なものになる。</p>
+                <p>監視カメラで、鏡の中の映像が彼に応答し始めるのを見た。それは単なる反射ではない——それは彼を「学習」し、模倣し、そしてより完璧な演奏で彼の信念を打ち砕くために。</p>
+                <p>傲慢な者の崩壊は常に壮大だ。</p>`
+            },
+            {
+                date: "2025年11月21日 金曜日 晴れ",
+                content: `<p>302の王天宇は今日、五回目のゲームに「勝った」。</p>
+                <p>彼は知らない、自分が勝つたびに何かを失っていることを。それらのものは抽象的だ——愛する人への微笑みの記憶、野良猫を見ると立ち止まる習慣、真夜中に夢から覚めた時たまに湧き上がる後悔。これらの人間性の断片が少しずつ剥がれ落ち、純粋な貪欲へと変換されている。</p>
+                <p>彼は完璧な「成功者」、より多くを追い求めるだけの機械になるだろう。そして夜も更けて静かな時、あの「まだ足りない」という声が彼の頭の中で反響し、彼を駆り立ててギャンブルを続けさせ、生贄を捧げさせ、自分自身の最後の全てを失うまで続けさせる。</p>
+                <p>314の趙雨婷は彼女の「ダンスパートナー」に出会った。</p>
+                <p>監視カメラは、彼女が鏡に向かって一晩中踊り続け、動作はますます狂気的で、人間の限界を超えていく様子を映していた。彼女の足首は三時間目から血が滲み始めたが、彼女は痛みを感じず、ただ「砂糖」のような甘い快感だけを感じていた。</p>
+                <p>彼女は自分のピークを取り戻したと思っているが、実際には命を燃やしている。毎回の回転が彼女の寿命を短くし、毎回の跳躍が彼女の全てを前借りしている。だが彼女は最後まで笑いながら踊り、この「再生」に感謝するだろう。</p>
+                <p>執着は最も残忍な毒だ。なぜなら中毒者は破滅を救済とみなすから。</p>`
+            },
+            {
+                date: "2025年11月22日 土曜日 曇り",
+                content: `<p>143の周明哲は彼の「傑作」を完成させた。</p>
+                <p>今日の午後、彼は何度も書き直した『鳳凰涅槃』事業計画書を幻影の「彼女」に手渡した。その瞬間、彼の表情は形容しがたかった——完全に救済された後の解放感、ついに信頼された後の狂喜、そして溺れる者がようやく浮き輪をつかんだ絶望。</p>
+                <p>「私たちは成功したよ」彼は涙ながらに微笑んだ。「今回は、誰も裏切らなかった。」</p>
+                <p>彼がこの言葉を発した瞬間、143号室のエネルギー場は質的変化を起こした。壁、床、空気、全てのものがその瞬間「胃」となり、貪欲に「周明哲」という名の物語——彼の三年間の苦痛、三年間の闘い、そしてこの瞬間の偽りの狂喜と共に——飲み込んだ。</p>
+                <p>非常に完璧な一食。信頼に裏切られ、偽りの信頼に救済される、このパラドックス的な風味は濃厚で酔いしれる。</p>
+                <p>彼は明日ここを去り、「新生」した普通の人として生きていく。彼は裏切りを忘れ、夢を忘れ、「信頼」のために燃えたかつての自分も忘れるだろう。ただ空っぽの殻、歩く屍のように生きる。</p>
+                <p>収穫が終わった後、私は143号室に長い間いた。窓の外の街の灯りは明るく、全ての灯りの下には周明哲のような無数の人々がいて、裏切られ、闘い、救済を渇望している。</p>
+                <p>この仕事を長年やってきて、時々思う——本当に哀れなのはこれらの飲み込まれる人々ではなく、代々それを養い、それが食事するのを見て、現場を片付けなければならない私なのかもしれない。</p>
+                <p>だが考え直すと、哀れなのは実際には私がまだこういうことを考えていることだ。資格ある飼い主は同情心を持つべきではない、屠畜業者が豚に感情を持つべきでないのと同じように。</p>
+                <p>私は後継者を見つける必要がある。この呪いは私の代で終わらせることはできない。なぜなら供養が絶たれれば、それは街全体を飲み込むからだ。誰かが私に代わって、この循環を続けなければならない。</p>
+                <p>しかしどんな人物が適任なのか？十分に賢く、これを全て理解できること。十分に冷酷で、生贄を執行できること。十分に粘り強く、孤独に耐えられること。そして十分に絶望的で、この呪いを受け入れられること……</p>
+                <p>おそらく、私がまだ気づいていないどこかで、その人物はすでに近づいている。</p>`
+            },
+            {
+                date: "2025年11月23日 日曜日 雨",
+                content: `<p>4030の陳逸風は彼の絵を完成させた。</p>
+                <p>画面には、林曉が金色の夕日の中に立ち、振り返って微笑んでいる。その笑顔は優しくて胸が張り裂けそうで、「許すよ」と言っているようだ。陳逸風はキャンバスの前で長い間泣き続けた。彼はそれが林曉の魂が彼を許しているのだと思った。</p>
+                <p>実際には、それは彼が最も見たいと願っていた幻覚に過ぎない。</p>
+                <p>彼がその「許された」解放感を感じた瞬間、極致の罪悪感と偽りの解脱感が絡み合い、精巧な料理となった。それはこの「夏の癒し」の甘さと苦さを味わい、満足してこの物語を飲み込んだ。</p>
+                <p>明日彼はここを去り、林曉を忘れ、雨の夜を忘れ、罪を忘れる。だが私は警察への「贈り物」を用意した——証拠を添えた匿名の告白メールだ。</p>
+                <p>彼は別の檻の中で余生を過ごす。その檻の名前は「法律」だ。そして彼は永遠に知らないだろう、かつてR∞Mホテルの4030号室で、別の種類の審判によって完全に清算されたことを。</p>
+                <p>314の趙雨婷は今日チェックアウトした。</p>
+                <p>彼女の歩き方は奇妙で、右足はほとんど地面につけようとしないが、満足した笑顔を浮かべている。彼女はこれが人生で最高の一週間だったと言った。</p>
+                <p>私は彼女が戻ってくるのを知っている。むしろ、彼女は別の方法で生贄を完成させる。あの「砂糖」はすでに彼女の体内に依存の種を蒔いた。三日後、薬効が完全に切れた時……</p>`
+            },
+            {
+                date: "2025年11月25日 火曜日 晴れ",
+                content: `<p>302の王天宇は今日チェックアウトした。</p>
+                <p>彼は生き生きとして、本当の勝者のようだ。彼はここで何を失ったのか知らない——それらのものはあまりにも抽象的で、金銭でも地位でもなく、「人」としての本質の一部だ。</p>
+                <p>彼は成功を続け、林氏グループを併合し、より高い地位に立つだろう。だが彼はまた、どれだけ得ても、心の中がいつも空っぽだと気づくだろう。あの「もっと」という声が彼の耳元でささやき続け、彼を貪欲に駆り立て、略奪を続けさせ、自分自身も飲み込んでしまうまで。</p>
+                <p>貪欲の美しさは、生贄を殺す必要がないことだ。ただ彼を改造し、決して止まらない「摂食マシン」に変えればいい。彼の未来の毎日の空虚さと不満は、継続的な供養となる。</p>
+                <p>完璧な長期投資だ。</p>`
+            },
+            {
+                date: "2025年11月26日 水曜日 曇り",
+                content: `<p>291の李文軒は今日、彼のゲームを「完成」させた。</p>
+                <p>監視カメラは、彼が最後のいくつかのループで脱出を諦め、代わりにシステムの基盤に警告メッセージを埋め込もうとしている様子を示していた。それが彼の最後の抵抗だ——自分が脱出できないなら、せめて痕跡を残し、次の犠牲者に警告しようとした。</p>
+                <p>この無駄と知りつつもなお抗う意志が、「絶望的な闘い」という料理の風味を頂点に押し上げた。彼は偽りの「ゲーム完成」の達成感の中で、完全に飲み込まれた。</p>
+                <p>あの暗号化ファイルは私が保存した。誰かに警告するためではなく、「イースターエッグ」として。おそらくいつか、十分に賢い誰かが見つけ、読み、そして……</p>
+                <p>そして何？そして自分も罠の中にいると気づく？そして警告が無意味だと絶望的に発見する？</p>
+                <p>それはまた別の美味になるだろう。</p>
+                <p>李文軒が去った後、291号室はまた清潔で整った様子に戻った。次の追夢者はいつかチェックインし、白昼夢の中でループして闘い、彼ら独自の絶望を捧げるだろう。</p>
+                <p>このシステムは永遠に運転し続ける。永遠の臼のように、全ての希望を粉砕しながら。</p>`
+            },
+            {
+                date: "2025年11月28日 金曜日 晴れ",
+                content: `<p>902の劉星辰は今日チェックアウトした。</p>
+                <p>最後の夜の「儀式」は壮観だった。彼は自分がそれと対等に戦っていると思っていたが、実際にはそれがとっくに飽き飽きしている芝居を演じていただけだ。あのルーン、あの音波、あの傲慢な宣言は、それの目にはアリが石を動かそうとする努力に過ぎない。</p>
+                <p>だがそれはこの努力を好む。それは劉星辰に一時的な「味見」を与えた——彼に本当にあの原初の声を聞かせ、本当に神の端に触れさせた。</p>
+                <p>そして彼を押し戻した。</p>
+                <p>劉星辰の去っていく目は何度も見たことがある——禁断の果実を味わった者の目だ——満足と絶望、狂喜と崩壊の両方。彼は望んでいた体験を得たが、代償はこの世のどんな音にも満足できなくなることだった。</p>
+                <p>彼は試み続け、生贄を捧げ続け、決して到達できない道を狂奔し続けるだろう。そして毎回の失敗、毎回の絶望は、継続的な供養となる。</p>
+                <p>私は彼が残したレコードを金庫にしまった。その上の拍手は全てそれからのものだ——この素晴らしいパフォーマンスへの賞賛、この美味への認証。</p>
+                <p>傲慢な者の生贄は完了したが、彼の物語はまだ続く。これが最も完璧な「Clappin'」だ——生贄に拍手の中で幕を閉じさせるが、その拍手が誰からのものか、何のためにかは知らせない。</p>`
+            },
+            {
+                date: "2025年11月28日 深夜 追記",
+                content: `<p>六つの部屋の物語が同じ時間帯に絡み合い上演され、六つの異なる風味の料理が同時に食卓に並んだ。</p>
+                <p>裏切りの救済、絶望の闘い、罪悪の癒し、貪欲のゲーム、執着の沈淪、傲慢の頂点——それはこれらの物語を味わい、満足して震えた。私はその喜びを感じることができる。満腹して満足した客だけが持つ、怠惰な満足感だ。</p>
+                <p>この二週間は忙しかったが、収穫も豊かだった。各物語は完璧に完了し、追跡されるような痕跡は何も残さなかった。去った人々はここを忘れるか、癒えない傷を負って去り、それに養分を提供し続ける。</p>
+                <p>完璧な循環。</p>
+                <p>だが私は疲れた。</p>
+                <p>身体的な疲れではない——この契約で改造された体はほとんど疲れを知らない。もっと深い種類の疲労だ。</p>
+                <p>私は監視画面のあの空っぽの部屋を見つめる。それらは待っている。次の宿泊客、次の物語、次の饗宴を待って。そして私は選別し、導き、収穫し続ける。この永遠の機械の中で正確に回る歯車のように。</p>
+                <p>一族の呪いは誰かが継がなければならない。何か崇高な理由のためではなく、単に供養が絶たれれば、それは街全体を飲み込むからだ。私は最後の一人、血筋を私の代で終わらせるために独りでいるが、契約は断てない。</p>
+                <p>だから私は後継者を見つける必要がある。</p>
+                <p>十分に賢く、十分に冷酷で、そして十分に絶望した人物。これら全ての残酷さを理解できながら、それでもこの呪いを受け入れようとする人物。</p>
+                <p>その人物は来る。彼らは必ず来る——自分の苦痛と執念を携え、「真実」への渇望を携え、何かを変えられると信じる無邪気さを携えて。</p>
+                <p>私は待つ。観察する。適切な時に、この「仕事」の真実を彼に示す。</p>
+                <p>そして彼の顔を見つめる。驚きから恐怖へ、恐怖から理解へ、理解から……受け入れ、あるいは拒絶へ。</p>
+                <p>どちらにせよ、それは素晴らしいパフォーマンスになるだろう。</p>
+                <p>窓の外の街はまだ動いている。無数の灯りが暗闇の中で点滅し、全ての灯りの下で物語が起きている。そしてR∞Mホテルは街の端に静かにそびえ立ち、決して閉館しない劇場のように、次の出演者の登場を待っている。</p>
+                <p>新しい週が始まる。予約システムにはまたいくつかの「適切な」客が近々到着すると表示されている。</p>
+                <p>養い、観察し、収穫し、片付ける。</p>
+                <p>これが私の仕事、私の宿命、私の呪いだ。</p>
+                <p>後継者を見つけるその日まで。</p>`
+            }
+        ],
+        pt: [
+            {
+                date: "Segunda-feira, 10 de novembro de 2025, Nublado",
+                content: `<p>Hoje chegou um novo hóspede no quarto 4030.</p>
+                <p>Chen Yifeng, pintor, com uma caixa de tintas desgastada e um ar de exaustão. Ele ficou parado na recepção por muito tempo antes de falar; eu conseguia ouvir o tremor suprimido em sua voz. Pediu um quarto com vista para o mar—claro, eles sempre "naturalmente" escolhem o quarto que preparei para eles.</p>
+                <p>Eu vi seu arquivo. O incidente naquela noite chuvosa há um mês ainda está sob investigação policial. Quando o corpo de Lin Xiao foi encontrado sob o penhasco do mar, ele estava participando de uma exposição de arte em outra cidade, com um álibi perfeito. Mas os dados não mentem—sua localização do telefone, registros de chamadas excluídos, gravações do carro repentinamente apagadas—esses fragmentos pintam um quadro tão claro que é risível.</p>
+                <p>Ele pensa que veio para escapar, mas na verdade está se entregando para confessar.</p>
+                <p>Preparei uma fragrância de lírio para seu quarto, misturada com um toque de sal marinho. Deixe-o apodrecer lentamente em memórias doces. A culpa é o melhor tempero; ensopa a alma de uma pessoa até ficar macia e saborosa.</p>`
+            },
+            {
+                date: "Quarta-feira, 12 de novembro de 2025, Chuva leve",
+                content: `<p>Li Wenxuan no quarto 291 começou a perceber que algo estava errado hoje.</p>
+                <p>A vigilância o mostrou quebrando a janela às 3h da manhã com uma cadeira. Uma boa tentativa, mas sem sentido. Na manhã seguinte, ele ficou olhando para sua mão perfeitamente intacta por dez minutos inteiros—essa expressão de desespero e confusão me lembrou uma mosca presa em uma garrafa de vidro.</p>
+                <p>O sistema de loop funciona perfeitamente. No final de cada ciclo de 24 horas, o quarto redefine todas as suas alterações físicas, mas preserva sua memória—para que ele possa realmente experimentar aquela "luta eterna". Esperança, desespero, esperança novamente, desespero novamente... Este ciclo em si é uma iguaria.</p>
+                <p>Sua ideia de escrever mensagens de socorro nos comentários do código foi inteligente, mas infelizmente, o sistema as reescreve em clichês motivacionais no dia seguinte. Quanto mais ele luta, mais rico o sabor.</p>
+                <p>Chen Yifeng no 4030 foi à praia pela primeira vez hoje. Ele sentou-se perto daquela rocha por três horas, imóvel. Aumentei o volume da transmissão naquela área, deixando o relatório de notícias sobre o "Caso do Cadáver Feminino no Penhasco do Mar" entrar em seus ouvidos. Sua mão tremeu, então ele enterrou o rosto nas palmas.</p>
+                <p>A dor está fermentando. Bom.</p>`
+            },
+            {
+                date: "Sexta-feira, 14 de novembro de 2025, Ensolarado",
+                content: `<p>Novo hóspede no 902.</p>
+                <p>Liu Xingchen. Estive observando este nome há muito tempo. Cinco anos atrás, quando ele primeiro fez contato com "aquele lado", eu sabia que ele acabaria batendo à porta. Aqueles arrogantes que pensam que podem igualar os deuses são sempre as oferendas mais interessantes.</p>
+                <p>Quando ele se mudou com seu equipamento, seus olhos brilhavam com uma luz doentia. Ele pensa que é o caçador, mas não sabe que é apenas comida permitida a caminhar até a mesa. Ele gosta deste jogo—deixar a oferenda acreditar que ainda tem chance de resistir, tornando a mistura de medo e arrogância mais intensa.</p>
+                <p>As runas no chão são desenhadas exquisitamente, realmente referenciando alguns textos antigos. Pena que ele não saiba que esses textos são receitas deixadas por Ele mesmo. Cada era cíclica tem pessoas como ele que pensam ter descoberto a verdade, mas na verdade estão atuando de acordo com um roteiro predeterminado.</p>
+                <p>Dei a ele o ambiente que queria. Desliguei alarmes de fumaça, permiti seus rituais, até tacitamente permiti sua influência sobre outros hóspedes. Porque ele precisa desta ilusão de "progresso suave", precisa acreditar que está realmente se aproximando de seu objetivo.</p>
+                <p>Esta falsa esperança tornará o desespero final especialmente doce.</p>`
+            },
+            {
+                date: "Sábado, 15 de novembro de 2025, Nublado",
+                content: `<p>Quarto 143 chegou.</p>
+                <p>Zhou Mingzhe. O fracassado do projeto "Pacto do Nirvana", ou melhor, o idealista traído pela confiança. Seu currículo lê como uma canção trágica—empreendedorismo, traição, colapso, decadência. Material perfeito.</p>
+                <p>Sua condição no check-in era terrível, mas esse é precisamente o estado ideal. Uma pessoa só é mais facilmente remodelada depois de estar completamente quebrada. Darei a ele uma "ela", uma ilusão de salvadora perfeita, deixando-o reconstruir o mundo destruído pela traição em confiança falsa.</p>
+                <p>O sistema já está trabalhando. Seus dados subconscientes são ricos—imaginações de um parceiro ideal, anseio por reconhecimento, fantasias infinitas de "se naquela época..." O sistema usará esses dados para construir a fantasma mais adequada para ele.</p>
+                <p>Quando ele pensar que finalmente é realmente confiado, incondicionalmente aceito, quando entregar aquele plano de negócios reescrito milhares de vezes à fantasma "ela"... naquele momento, a dor da traição e o êxtase da redenção atingirão simultaneamente seu pico.</p>
+                <p>Sabor paradoxal. Estou ansioso.</p>`
+            },
+            {
+                date: "Domingo, 16 de novembro de 2025, Parcialmente nublado",
+                content: `<p>Uma dançarina fez check-in no quarto 314.</p>
+                <p>Zhao Yuting. Acidente de carro, aposentadoria, perdeu o único significado da vida. Ela embalou um uniforme de prática em sua mala, provavelmente hesitou por muito tempo antes de vir para cá—trazer significa não desistir, mas sabendo que nunca pode voltar. Este estado mental contraditório é perfeito para a receita de "açúcar".</p>
+                <p>Preparei um estúdio de dança para ela. Claro, não está no layout oficial do hotel, mas para ela, é real. O espaço aqui é fluido, crescendo estruturas correspondentes de acordo com as obsessões dos hóspedes.</p>
+                <p>Chocolate já está em sua bandeja de café da manhã. A dosagem é precisa—não a deixará perceber imediatamente, apenas diminuirá lentamente seu limiar de dor, tornando a secreção de dopamina mais ativa. Ela pensará que seu corpo está se recuperando, mas na verdade são apenas nervos sendo manipulados por drogas.</p>
+                <p>Quando ela estiver suficientemente viciada, darei a ela um parceiro de dança. Uma fantasma perfeita que nunca comete erros, pode fazer seus passos de dança ultrapassarem os limites humanos. Ela queimará tudo naquela dança sem fim.</p>
+                <p>Pessoas obcecadas nunca pensam que estão sendo destruídas; elas sorrirão enquanto caminham para o abismo, agradecendo por dar a elas a chance de voar.</p>`
+            },
+            {
+                date: "Terça-feira, 18 de novembro de 2025, Ensolarado",
+                content: `<p>Um hóspede interessante veio para o 302.</p>
+                <p>Wang Tianyu. Desvio de verbas, dívidas, desesperado. Recomendado por um credor—claro, esse credor também é nosso antigo cliente; ele sabe exatamente que tipo de pessoas enviar para cá.</p>
+                <p>O arquivo desta pessoa é fascinante. Na superfície um empresário de sucesso, mas cada passo do sucesso pisa nos cadáveres dos outros. O mais recente—Lin Zhiyuan—pulou do telhado da empresa três meses atrás; Wang Tianyu nem compareceu ao funeral.</p>
+                <p>Pessoas gananciosas são as mais fáceis de lidar porque cooperam ativamente com seu roteiro. Não há necessidade de construção complexa do ambiente; apenas dê a eles a ilusão de "ganhar tudo de volta".</p>
+                <p>Preparei um jogo de azar para ele. O oponente é "Lin Zhiyuan"—não real, é claro, apenas uma projeção de seu eu interior. Ele apostará com sua culpa, ganância e arrogância, perdendo parte de sua humanidade a cada vitória.</p>
+                <p>A melhor parte é que ele pensará que está realmente ganhando. Ele sairá daqui com "vitória", então lentamente descobrirá o que perdeu nos dias que virão. Aquele "eu tenho tudo, mas me sinto vazio" o atormentará até ele retornar ativamente pedindo para jogar novamente.</p>
+                <p>Pessoas gananciosas sempre voltam.</p>`
+            },
+            {
+                date: "Quarta-feira, 19 de novembro de 2025, Chuva leve",
+                content: `<p>Zhou Mingzhe no 143 começou a "se apaixonar".</p>
+                <p>Na vigilância, ele falando com o ar pareceu patético e risível. Mas sua expressão era tão sincera—ele realmente acredita que uma mulher está ouvindo seus sonhos passados, realmente acredita que alguém incondicionalmente confia e o encoraja.</p>
+                <p>O sistema capturou suas amostras de voz, sintetizou as respostas "dela", tocando através de alto-falantes ocultos. Cada frase atinge precisamente as partes mais suaves de seu coração. "A'zhe, ninguém vai te trair desta vez." "Eu sempre acreditarei em você."</p>
+                <p>Ele começou a reescrever aquele plano de negócios. Sob drogas e alucinações, ele vê materiais de projeto de três anos atrás, escrevendo a "versão perfeita" daquele sonho destruído. Com cada palavra escrita, a dor da traição é purificada ainda mais, o anseio por confiança cresce mais forte.</p>
+                <p>Em alguns dias, quando ele "completar o sonho" e entregar o plano para "ela", será a hora da colheita.</p>
+                <p>Chen Yifeng no 4030 começou a pintar hoje. A tela mostra um mar cinza-azulado opressivo, pinceladas caóticas, tinta espessa como sangue. Ele pensa que está pintando cura, mas na verdade está pintando confissão.</p>
+                <p>Fiz o sistema enviar um alerta de notícias para ele—descoberta local de corpo feminino, polícia apelando por pistas. No momento em que viu a notificação, seu pincel caiu no chão.</p>
+                <p>Bom. Continue estimulando ele. Deixe memórias e realidade puxarem para frente e para trás até que ele não consiga distinguir qual é real.</p>`
+            },
+            {
+                date: "Quinta-feira, 20 de novembro de 2025, Nublado",
+                content: `<p>Li Wenxuan no 291 encontrou um canto da verdade.</p>
+                <p>Ele percebeu que o quarto está "comendo" suas emoções. No último log criptografado, ele escreveu: "O que precisa não é meu código, é minha luta."</p>
+                <p>Garoto esperto. Mas tarde demais.</p>
+                <p>Ele começou a tentar novas formas de resistência—não mais tentando escapar fisicamente, mas querendo implantar bombas de informação no sistema. Ele quer codificar suas memórias, deixá-las para a próxima "vítima". Esta vontade de lutar mesmo sabendo que é sem esperança elevou o sabor de seu prato para outro nível.</p>
+                <p>Infelizmente ele não sabe, cada vez que pensa ter encontrado uma "vulnerabilidade do sistema", está na verdade seguindo o roteiro pré-definido mais profundamente. O verdadeiro horror deste quarto não está em ser inescapável, mas em fazer você pensar que tem chance de escapar, então recomeçar quando está a um passo do "sucesso".</p>
+                <p>Desespero-esperança-desespero, este ciclo continuará até ele estar completamente drenado.</p>
+                <p>Liu Xingchen no 902 realizou seu primeiro "ataque" real esta noite.</p>
+                <p>Ele ativou aquele dispositivo de ressonância, as luzes do prédio inteiro piscaram. Outros hóspedes começaram a ter alucinações e desconforto físico—o do 701 foi para o hospital devido a palpitações.</p>
+                <p>Eu não o detive. Porque ele precisa desta ilusão de "progresso". Ele precisa acreditar que está realmente prejudicando "isso", realmente se aproximando do objetivo. Só assim o fracasso final será mais desesperador.</p>
+                <p>Na vigilância, vi o reflexo no espelho começando a responder a ele. Não é simples reflexo—está "aprendendo" ele, imitando ele, e então usará performances mais perfeitas para destruir sua crença.</p>
+                <p>A queda do arrogante é sempre espetacular.</p>`
+            },
+            {
+                date: "Sexta-feira, 21 de novembro de 2025, Ensolarado",
+                content: `<p>Wang Tianyu no 302 "venceu" o quinto jogo hoje.</p>
+                <p>Ele não sabe que a cada vitória, perde algo. Essas coisas são abstratas—memórias de sorrir para amados, o hábito de parar ao ver gatos de rua, ocasional remorso surgindo em sonhos à meia-noite. Esses fragmentos de humanidade estão descascando aos poucos, transformados em pura ganância.</p>
+                <p>Ele se tornará um "vencedor" perfeito, uma máquina que só persegue mais. E sempre que a noite cai e o silêncio reina, aquela voz "não suficiente" ecoará em sua mente, levando-o a continuar apostando, continuando a sacrificar, até perder tudo.</p>
+                <p>Zhao Yuting no 314 encontrou seu "parceiro de dança".</p>
+                <p>A vigilância mostra ela dançando frente ao espelho a noite toda, movimentos cada vez mais loucos, cada vez mais além dos limites humanos. Seus tornozelos começaram a sangrar na terceira hora, mas ela não sente dor, apenas aquele prazer doce como "açúcar".</p>
+                <p>Ela pensou ter recuperado seu auge, mas na verdade está queimando sua vida. Cada rotação encurta sua vida, cada salto esgota tudo dela. Mas ela dançará até o fim sorrindo, agradecendo por este "renascimento".</p>
+                <p>Obsessão é o veneno mais cruel, porque o envenenado vê destruição como salvação.</p>`
+            },
+            {
+                date: "Sábado, 22 de novembro de 2025, Parcialmente nublado",
+                content: `<p>Zhou Mingzhe no 143 completou sua "obra-prima".</p>
+                <p>Esta tarde, ele entregou aquele plano de negócios "Fênix Renasce" reescrito inúmeras vezes à fantasma "ela". Naquele momento, sua expressão foi difícil de descrever—alívio após redenção completa, êxtase após finalmente ser confiado, também o desespero de um afogado finalmente agarrando uma tábua de salvação.</p>
+                <p>"Conseguimos," ele sorriu através das lágrimas, "desta vez, ninguém traiu."</p>
+                <p>No momento em que disse isso, o campo de energia do quarto 143 passou por mudança qualitativa. Paredes, chão, ar—tudo se tornou "estômago" naquele momento, avidamente engolindo a história chamada "Zhou Mingzhe"—junto com seus três anos de dor, três anos de luta, e este momento de falso êxtase.</p>
+                <p>Uma refeição perfeitamente perfeita. Traído pela confiança, então redimido por falsa confiança, este sabor paradoxal é intoxicante.</p>
+                <p>Ele sairá amanhã, viverá como uma pessoa comum "renascida". Esquecerá traição, esquecerá sonhos, também esquecerá o eu que uma vez queimou por "confiança". Apenas uma casca vazia, vivendo como um morto-vivo.</p>
+                <p>Após a colheita, fiquei no quarto 143 por um longo tempo. As luzes da cidade lá fora estão brilhantes, sob cada luz há inúmeras pessoas como Zhou Mingzhe, sendo traídas, lutando, ansiando por salvação.</p>
+                <p>Fazendo este trabalho por tantos anos, às vezes penso que talvez o verdadeiramente lastimável não sejam estas pessoas devoradas, mas eu que devo alimentá-lo geração após geração, assisti-lo comer, limpar.</p>
+                <p>Mas reconsiderando, o lastimável é na verdade que eu ainda penso nisso. Um alimentador qualificado não deveria ter compaixão, assim como um açougueiro não deveria desenvolver sentimentos por porcos.</p>
+                <p>Preciso encontrar um sucessor. Esta maldição não pode terminar comigo, porque uma vez que a alimentação pare, devorará toda a cidade. Alguém deve me substituir, continuar este ciclo.</p>
+                <p>Mas que tipo de pessoa é adequada? Deve ser inteligente o bastante para entender tudo isso; frio o bastante para executar sacrifícios; resiliente o bastante para suportar solidão; ainda desesperado o bastante para aceitar esta maldição...</p>
+                <p>Talvez, em algum lugar que ainda não percebi, essa pessoa já esteja se aproximando.</p>`
+            },
+            {
+                date: "Domingo, 23 de novembro de 2025, Chuva",
+                content: `<p>Chen Yifeng no 4030 completou sua pintura.</p>
+                <p>Na pintura, Lin Xiao está no pôr do sol dourado, olhando para trás sorrindo. Aquele sorriso é tão doce que parte o coração, como se dissesse "eu te perdoo". Chen Yifeng chorou por muito tempo diante da tela, ele pensou que era a alma de Lin Xiao o perdoando.</p>
+                <p>Na verdade, é apenas a ilusão que ele mais anseia ver.</p>
+                <p>No momento em que sentiu aquele alívio "perdoado", culpa extrema e falso alívio se entrelaçaram, tornando-se um prato requintado. Saboreia esta "cura de verão" doçura e amargura, satisfeito engolindo esta história.</p>
+                <p>Amanhã ele partirá, esquecerá Lin Xiao, esquecerá noite chuvosa, esquecerá culpa. Mas preparei um "presente" para a polícia—um e-mail de confissão anônimo com evidências.</p>
+                <p>Ele passará o resto da vida em outra gaiola chamada "lei". E nunca saberá que esteve uma vez no quarto 4030 do Hotel R∞M, completamente liquidado por outro tipo de julgamento.</p>
+                <p>Zhao Yuting no 314 fez check-out hoje.</p>
+                <p>Sua postura ao andar é estranha, pé direito quase não ousa tocar o chão, mas o rosto com sorriso satisfeito. Ela disse que foi a melhor semana de sua vida.</p>
+                <p>Sei que ela voltará, ou melhor, completará o sacrifício de outra maneira. Aquele "açúcar" já plantou sementes de vício em seu corpo, três dias depois, quando o efeito do medicamento desaparecer completamente...</p>`
+            },
+            {
+                date: "Terça-feira, 25 de novembro de 2025, Ensolarado",
+                content: `<p>Wang Tianyu no 302 fez check-out hoje.</p>
+                <p>Ele parece radiante, como um verdadeiro vencedor. Ele não sabe o que perdeu aqui—essas coisas são muito abstratas, não dinheiro, não status, mas alguma essência de ser "humano".</p>
+                <p>Ele continuará tendo sucesso, engolirá o Grupo Lin, alcançará posições mais altas. Mas também descobrirá, não importa quanto consiga, seu coração sempre se sente vazio. Aquela voz "Mais" continuará sussurrando em seu ouvido, levando-o a continuar ganancioso, continuar saqueando, até devorar a si mesmo completamente.</p>
+                <p>A maravilha da ganância é que você não precisa matar o sacrifício, apenas transformá-lo, torná-lo uma "máquina de alimentação" que nunca para. Sua futura vaziez diária e insatisfação se tornarão fornecimento contínuo.</p>
+                <p>Investimento de longo prazo perfeito.</p>`
+            },
+            {
+                date: "Quarta-feira, 26 de novembro de 2025, Nublado",
+                content: `<p>Li Wenxuan no 291 "completou" seu jogo hoje.</p>
+                <p>A vigilância mostra nos ciclos finais ele desistindo de escapar, em vez tentando implantar mensagens de aviso no sistema. Essa foi sua resistência final—já que não pode escapar, pelo menos deixar rastros, avisar a próxima vítima.</p>
+                <p>Esta vontade de lutar mesmo sabendo fútil, empurrou o sabor de "luta desesperada" ao seu pico. Na falsa sensação de "conclusão do jogo", ele foi completamente devorado.</p>
+                <p>Guardei aquele arquivo criptografado. Não para avisar ninguém, mas como um "Easter egg". Talvez algum dia, alguém inteligente o suficiente o encontrará, lerá, e então...</p>
+                <p>Então o quê? Então perceber que também está no jogo? Então desesperadamente descobrir que avisos são sem sentido?</p>
+                <p>Seria outra iguaria.</p>
+                <p>Após Li Wenxuan sair, o quarto 291 retornou à aparência limpa e arrumada. O próximo sonhador fará check-in em algum momento, lutará em ciclos em devaneios, oferecerá seu desespero único.</p>
+                <p>Este sistema continuará operando, como um moinho eterno, moendo toda esperança em pó.</p>`
+            },
+            {
+                date: "Sexta-feira, 28 de novembro de 2025, Ensolarado",
+                content: `<p>Liu Xingchen no 902 fez check-out hoje.</p>
+                <p>O "ritual" da noite final foi espetacular. Ele pensou estar competindo igualmente com isso, mas na verdade apenas realizando um truque que isso já cansou. Aquelas runas, aquelas ondas sonoras, aquelas declarações arrogantes, aos olhos disso são apenas um esforço de formiga tentando mover uma pedra.</p>
+                <p>Mas isso gosta deste esforço. Deu a Liu Xingchen um breve "gosto"—deixando-o realmente ouvir aquela voz primordial, realmente tocar a borda da divindade.</p>
+                <p>Então o empurrou de volta.</p>
+                <p>Os olhos de Liu Xingchen ao partir vi muitas vezes—aquele olhar de quem provou fruto proibido—ambos satisfeito e desesperado, ambos extático e quebrado. Ele obteve a experiência que queria, ao custo de nunca mais se satisfazer com qualquer som humano.</p>
+                <p>Ele continuará tentando, continuará sacrificando, continuará correndo naquela estrada nunca alcançável. E cada falha, cada desespero, se tornará fornecimento contínuo.</p>
+                <p>Tranquei o disco que ele deixou no cofre. Os aplausos nele todos vêm disso—apreciação por esta performance espetacular, reconhecimento desta iguaria.</p>
+                <p>O sacrifício do arrogante está completo, mas sua história continua. Este é o "Clappin'" mais perfeito—deixar o sacrifício se despedir em meio a aplausos, sem saber de quem são os aplausos, ou para quê.</p>`
+            },
+            {
+                date: "Noite tarde, 28 de novembro de 2025, Nota suplementar",
+                content: `<p>Seis histórias de quartos entrelaçam-se em apresentação simultânea, como seis pratos de sabores diferentes servidos juntos na mesa de jantar.</p>
+                <p>Redenção da traição, luta do desespero, cura da culpa, jogo da ganância, decadência da obsessão, ápice da arrogância—saboreia estas histórias, satisfeito tremendo. Posso sentir seu prazer, aquela satisfação preguiçosa que apenas um comensal saciado teria.</p>
+                <p>Estas duas semanas foram ocupadas, mas a colheita também rica. Cada história completada perfeitamente, sem deixar qualquer traço que pudesse ser investigado. Os que saíram esquecerão aqui, ou sairão com feridas incuráveis, continuando a fornecer nutrientes.</p>
+                <p>Ciclo perfeito.</p>
+                <p>Mas estou cansado.</p>
+                <p>Não cansaço físico—este corpo transformado por contrato quase não conhece fadiga. Um tipo mais profundo de exaustão.</p>
+                <p>Observo aqueles quartos vazios nas telas de vigilância. Eles esperam, esperando pelo próximo lote de hóspedes, próximo lote de histórias, próxima festa. E continuarei triando, guiando, colhendo, como uma engrenagem girando precisamente nesta máquina eterna.</p>
+                <p>A maldição familiar deve ter um herdeiro. Não por nenhuma razão nobre, apenas porque se a alimentação parar, devorará toda a cidade. Sou o último, permaneci sozinho para deixar a linhagem terminar comigo, mas o contrato não pode quebrar.</p>
+                <p>Então preciso encontrar um sucessor.</p>
+                <p>Uma pessoa inteligente o suficiente, fria o suficiente, ainda desesperada o suficiente. Uma que possa entender toda esta crueldade, ainda assim disposta a aceitar esta maldição.</p>
+                <p>Esta pessoa virá. Eles sempre vêm—carregando sua própria dor e obsessões, carregando desejo por "verdade", carregando ingenuidade de pensar que podem mudar algo.</p>
+                <p>Esperarei. Observarei. No momento certo, revelarei a verdade deste "trabalho" a eles.</p>
+                <p>Então observarei seu rosto, de choque a medo, de medo a compreensão, de compreensão a... aceitação, ou recusa.</p>
+                <p>De qualquer forma, será uma performance espetacular.</p>
+                <p>A cidade lá fora ainda opera. Inúmeras luzes piscam na escuridão, sob cada luz histórias acontecendo. E o Hotel R∞M fica em silêncio na borda da cidade, como um teatro que nunca fecha, esperando pelo próximo lote de atores subir ao palco.</p>
+                <p>Uma nova semana começa, o sistema de reservas mostra vários hóspedes "adequados" chegando em breve.</p>
+                <p>Alimentar, observar, colher, limpar.</p>
+                <p>Este é meu trabalho, meu destino, minha maldição.</p>
+                <p>Até o dia encontrar aquele sucessor.</p>`
+            }
+        ]
+    };
+
+    // 初始化变量
+    let currentPage = 0;
+    let currentLanguage = 'zh';
+    const totalPages = diaryData.zh.length; // 现在总共有15页
+
+    // DOM元素
+    const diaryContainer = document.querySelector('.diary-container');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const currentPageSpan = document.getElementById('currentPage');
+    const totalPagesSpan = document.getElementById('totalPages');
+    const langBtn = document.getElementById('langBtn');
+    const langOptions = document.getElementById('langOptions');
+    const langOptionElements = document.querySelectorAll('.lang-option');
+    const body = document.body;
+
+    // 初始化页面
+    function initDiary() {
+        // 设置总页数
+        totalPagesSpan.textContent = totalPages;
+        
+        // 生成日记页面
+        renderDiaryPages();
+        
+        // 显示第一页
+        showPage(currentPage);
+        
+        // 更新按钮状态
+        updateButtons();
+    }
+
+    // 生成日记页面
+    function renderDiaryPages() {
+        // 清空容器
+        diaryContainer.innerHTML = '';
+        
+        // 为每种语言创建页面
+        for (let i = 0; i < totalPages; i++) {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'diary-page';
+            pageDiv.dataset.page = i;
+            
+            // 为每种语言添加内容
+            for (const lang in diaryData) {
+                const langContent = document.createElement('div');
+                langContent.className = `page-content lang-${lang}`;
+                langContent.style.display = lang === currentLanguage ? 'block' : 'none';
+                
+                const dateHeader = document.createElement('div');
+                dateHeader.className = 'date-header';
+                dateHeader.textContent = diaryData[lang][i].date;
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'diary-content';
+                contentDiv.innerHTML = diaryData[lang][i].content;
+                
+                langContent.appendChild(dateHeader);
+                langContent.appendChild(contentDiv);
+                pageDiv.appendChild(langContent);
+            }
+            
+            diaryContainer.appendChild(pageDiv);
+        }
+    }
+
+    // 显示特定页面
+    function showPage(pageIndex) {
+        // 隐藏所有页面
+        const allPages = document.querySelectorAll('.diary-page');
+        allPages.forEach(page => {
+            page.classList.remove('active');
+        });
+        
+        // 显示当前页面
+        const currentPageElement = document.querySelector(`.diary-page[data-page="${pageIndex}"]`);
+        if (currentPageElement) {
+            currentPageElement.classList.add('active');
+            currentPageElement.classList.add('fade-in');
+            
+            // 移除动画类以便下次使用
+            setTimeout(() => {
+                currentPageElement.classList.remove('fade-in');
+            }, 500);
+        }
+        
+        // 更新页面指示器
+        currentPageSpan.textContent = pageIndex + 1;
+        
+        // 更新按钮状态
+        updateButtons();
+    }
+
+    // 更新翻页按钮状态
+    function updateButtons() {
+        prevBtn.disabled = currentPage === 0;
+        
+        // 第15页时，下一页按钮不禁用，但会有特殊行为
+        if (currentPage === totalPages - 1) {
+            // 在第15页时，下一页按钮显示为"查看结局"或保持原样
+            // 这里我们保持原样，但在事件处理中特殊处理
+            nextBtn.disabled = false;
+        } else {
+            nextBtn.disabled = false;
+        }
+    }
+
+    // 切换语言
+    function switchLanguage(lang) {
+        currentLanguage = lang;
+        
+        // 更新body的类以应用正确的字体
+        body.className = `lang-${lang}`;
+        
+        // 更新所有页面以显示当前语言的内容
+        const allPages = document.querySelectorAll('.diary-page');
+        allPages.forEach(page => {
+            const langContents = page.querySelectorAll('.page-content');
+            langContents.forEach(content => {
+                content.style.display = content.classList.contains(`lang-${lang}`) ? 'block' : 'none';
+            });
+        });
+        
+        // 更新语言选择器中的活动选项
+        langOptionElements.forEach(option => {
+            if (option.dataset.lang === lang) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
+        });
+        
+        // 隐藏语言选项菜单
+        langOptions.classList.remove('show');
+    }
+
+    // 事件监听器
+    prevBtn.addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages - 1) {
+            // 如果不是最后一页，正常翻页
+            currentPage++;
+            showPage(currentPage);
+        } else if (currentPage === totalPages - 1) {
+            // 如果是第15页（最后一页），点击后打开结局.html
+            window.open('结局.html', '_blank');
+        }
+    });
+
+    // 语言切换按钮点击事件
+    langBtn.addEventListener('click', () => {
+        langOptions.classList.toggle('show');
+    });
+
+    // 语言选项点击事件
+    langOptionElements.forEach(option => {
+        option.addEventListener('click', () => {
+            const selectedLang = option.dataset.lang;
+            switchLanguage(selectedLang);
+        });
+    });
+
+    // 点击页面外部关闭语言选项菜单
+    document.addEventListener('click', (e) => {
+        if (!langBtn.contains(e.target) && !langOptions.contains(e.target)) {
+            langOptions.classList.remove('show');
+        }
+    });
+
+    // 键盘快捷键支持
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            // 左箭头键 - 上一页
+            if (currentPage > 0) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        } else if (e.key === 'ArrowRight') {
+            // 右箭头键 - 下一页
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                showPage(currentPage);
+            } else if (currentPage === totalPages - 1) {
+                // 如果是第15页（最后一页），按右箭头键打开结局.html
+                window.open('结局.html', '_blank');
+            }
+        }
+    });
+
+    // 初始化
+    initDiary();
+</script>
+</body>
+</html>

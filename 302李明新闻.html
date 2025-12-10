@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创业新星陨落！李明项目遭泄后破产跳楼，业内震惊 - 都市晚报</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0F3460', // 深蓝色主色调
+            secondary: '#E94560', // 强调色
+            neutral: '#F5F5F5', // 背景色
+            dark: '#1A1A2E', // 深色文本
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Georgia', 'serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      .article-para {
+        @apply mb-6 leading-relaxed text-gray-700;
+      }
+      .fade-in {
+        animation: fadeIn 0.8s ease-in forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-50 bg-white shadow-md transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <h1 class="text-primary font-bold text-2xl md:text-3xl" id="site-title">都市晚报</h1>
+        <div class="hidden md:block text-sm text-gray-500">
+          <span id="current-date">2015年7月18日</span>
+          <span class="mx-2">|</span>
+          <span id="current-day">星期六</span>
+        </div>
+      </div>
+      
+      <nav class="hidden md:flex space-x-6">
+        <a href="#" class="text-primary hover:text-secondary transition-colors font-medium" data-lang-key="home">首页</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="domestic">国内</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="international">国际</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="finance">财经</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="tech">科技</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="entertainment">文娱</a>
+      </nav>
+      
+      <div class="flex items-center space-x-3">
+        <!-- 语言切换下拉菜单 -->
+        <div class="relative group">
+          <button class="flex items-center text-gray-600 hover:text-primary transition-colors px-2 py-1 border border-gray-300 rounded">
+            <i class="fa fa-globe mr-1"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div class="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="zh">中文</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="en">English</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="ja">日本語</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="pt">Português</a>
+          </div>
+        </div>
+        
+        <button class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-search text-lg"></i>
+        </button>
+        <button class="md:hidden text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 移动端日期栏 -->
+  <div class="md:hidden bg-primary text-white py-2 px-4 text-center text-sm">
+    <span id="mobile-date">2015年7月18日 星期六</span>
+  </div>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 文章分类标签 -->
+    <div class="mb-4 flex items-center">
+      <span class="inline-block px-3 py-1 bg-secondary text-white text-sm font-medium rounded-full" data-lang-key="focus-news">焦点新闻</span>
+      <span class="ml-3 text-gray-500 text-sm" data-lang-key="update-time">更新于 2015-07-18 10:15</span>
+    </div>
+    
+    <!-- 文章标题 -->
+    <div class="mb-8 fade-in" style="animation-delay: 0.1s">
+      <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark leading-tight" id="article-title">
+        创业新星陨落！李明项目遭泄后破产跳楼，业内震惊
+      </h2>
+    </div>
+    
+    <!-- 作者信息 -->
+    <div class="mb-8 flex items-center text-gray-600 fade-in" style="animation-delay: 0.2s">
+      <span class="font-medium" data-lang-key="reporter">本报记者 王晨</span>
+      <span class="mx-2">|</span>
+      <span data-lang-key="reading-time">阅读时间：约 3 分钟</span>
+    </div>
+    
+    <!-- 分享按钮 -->
+    <div class="flex space-x-4 mb-8 fade-in" style="animation-delay: 0.3s">
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-weibo text-red-500 mr-2"></i>
+        <span data-lang-key="weibo">微博</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-wechat text-green-500 mr-2"></i>
+        <span data-lang-key="wechat">微信</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-share-alt text-gray-600 mr-2"></i>
+        <span data-lang-key="share">分享</span>
+      </button>
+    </div>
+    
+    <!-- 文章正文 -->
+    <article class="max-w-3xl mx-auto text-lg">
+      <!-- 主图片 -->
+      <div class="mb-8 fade-in" style="animation-delay: 0.4s">
+        <img src="新闻李明.jpg" alt="星途科技办公场景" class="w-full h-auto rounded-lg shadow-md">
+        <p class="text-sm text-gray-500 mt-2 text-center" data-lang-key="image-caption">星途科技曾充满活力的办公区（资料图）</p>
+      </div>
+
+      <p class="article-para fade-in" style="animation-delay: 0.5s" data-lang-key="paragraph1">
+        昨日清晨，传来一则令人扼腕的消息：年仅 28 岁的科技创业者李明，在其创办的 “星途科技” 公司宣布破产后的第三日，于租住的公寓楼天台跳楼身亡。警方现场勘查后排除他杀可能，确认系自杀。这起悲剧迅速引发业内广泛讨论，而关于其核心项目 “智能交互系统” 疑似遭内部人员泄露的传闻，更让事件蒙上一层疑云。
+      </p>
+      
+      <h3 class="text-xl font-bold mt-8 mb-4 fade-in" style="animation-delay: 0.6s" data-lang-key="subtitle1">从创业新星到破产轻生，两年梦想轰然倒塌</h3>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.7s" data-lang-key="paragraph2">
+        据了解，李明与好友王天宇于 2013 年共同创立 “星途科技”，前者担任首席技术官，主导核心技术研发，后者负责市场运营。该公司推出的 “智能交互系统” 原型曾获得业内高度认可，2014 年底更是拿到了一笔千万级别的天使轮融资意向，前景被普遍看好。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.8s" data-lang-key="paragraph3">
+        然而就在融资签约前夕，该系统的核心源代码突然在行业内流传，多家大型科技公司迅速推出功能相似的产品，导致 “星途科技” 的融资计划彻底搁浅，订单量骤降，公司陷入资金链断裂的绝境。2015年7月15日，星途科技正式宣布破产清算。
+      </p>
+      
+      <div class="bg-gray-100 p-5 rounded-lg my-8 fade-in" style="animation-delay: 0.9s">
+        <p class="italic text-gray-700 border-l-4 border-primary pl-4" data-lang-key="quote">
+          "李明是个纯粹的技术人，把项目当成自己的孩子。项目泄露后，他整个人都垮了，天天泡在公司试图挽回损失，但客户和资金都已经流失，破产是必然结果。"
+          <span class="block mt-2 text-right font-medium" data-lang-key="quote-author">—— 曾与李明合作的投资人 陈先生</span>
+        </p>
+      </div>
+      
+      <h3 class="text-xl font-bold mt-8 mb-4 fade-in" style="animation-delay: 1.0s" data-lang-key="subtitle2">"被最信任的人背叛"，疑云指向昔日合伙人</h3>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.1s" data-lang-key="paragraph4">
+        有知情人士爆料，李明在自杀前曾向身边人提及 “被最信任的人背叛”，但未明确指出具体对象。而其合伙人王天宇在公司破产后迅速离职，不久便入职一家大型地产公司，其个人发展轨迹与李明的悲剧形成鲜明对比。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.2s" data-lang-key="paragraph5">
+        业内人士分析，核心源代码的泄露具有高度针对性，极有可能是内部人员所为。"智能交互系统的核心算法是李明团队耗时一年多研发的成果，保密级别极高，只有少数核心成员能够接触。" 一位不愿具名的科技公司高管表示，"在融资即将落地的关键节点发生泄露，时机太过蹊跷。"
+      </p>
+      
+      <h3 class="text-xl font-bold mt-8 mb-4 fade-in" style="animation-delay: 1.3s" data-lang-key="subtitle3">家人拒谈，调查仍在进行</h3>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.4s" data-lang-key="paragraph6">
+        事发后，李明的家人拒绝接受采访，仅通过律师发表简短声明，称 “希望逝者安息，不愿再被打扰”。截至目前，项目泄露的具体原因仍在调查中，警方表示暂无直接证据表明存在商业犯罪行为。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.5s" data-lang-key="paragraph7">
+        这起悲剧引发了业内对创业者权益保护的广泛讨论。不少人士呼吁，应加强创业项目知识产权保护，完善相关法律法规，同时关注创业者的心理状态，为其提供必要的心理疏导和支持，避免类似悲剧重演。
+      </p>
+    </article>
+    
+    <!-- 相关新闻推荐 -->
+    <section class="mt-16 max-w-5xl mx-auto">
+      <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-gray-200 pb-2" data-lang-key="related-news">相关新闻</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="#" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="https://picsum.photos/id/48/600/400" alt="创业项目知识产权保护研讨会" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news1-title">创业项目知识产权保护研讨会召开，业内呼吁加强立法</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news1-date">2015/07/10</p>
+          </div>
+        </a>
+        
+        <a href="#" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="https://picsum.photos/id/201/600/400" alt="科技创业者心理支持" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news2-title">高压环境下的科技创业者：心理危机如何应对？</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news2-date">2015/06/28</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-primary text-white mt-16">
+    <div class="container mx-auto px-4 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4" id="footer-title">都市晚报</h4>
+          <p class="text-gray-300 text-sm" data-lang-key="footer-desc">
+            创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。
+          </p>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="navigation">栏目导航</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="important-news">要闻</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="depth">深度</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="comments">评论</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="finance">财经</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="culture">文化</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="contact">联系我们</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><i class="fa fa-envelope-o mr-2"></i>contact@citynews.com</li>
+            <li><i class="fa fa-phone mr-2"></i>010-12345678</li>
+            <li><i class="fa fa-map-marker mr-2"></i><span data-lang-key="address">北京市朝阳区新闻大厦</span></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="follow-us">关注我们</h5>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-wechat text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-twitter text-xl"></i>
+            </a>
+          </div>
+          <p class="mt-4 text-gray-300 text-sm" data-lang-key="download-app">扫描二维码下载客户端</p>
+          <div class="text-center mt-6">
+            <img src="二维码.jpg" alt="二维码" class="w-32 h-32 mx-auto object-contain" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-white/20 mt-8 pt-6 text-center text-gray-400 text-sm">
+        <p data-lang-key="copyright">© 2015 都市晚报 版权所有 | 京ICP备12345678号</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 返回顶部按钮 -->
+  <button id="backToTop" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-secondary">
+    <i class="fa fa-arrow-up"></i>
+  </button>
+
+  <script>
+    // 导航栏滚动效果
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('py-2', 'shadow-lg');
+        navbar.classList.remove('py-3', 'shadow-md');
+      } else {
+        navbar.classList.add('py-3', 'shadow-md');
+        navbar.classList.remove('py-2', 'shadow-lg');
+      }
+    });
+    
+    // 返回顶部按钮
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'invisible');
+        backToTopBtn.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopBtn.classList.add('opacity-0', 'invisible');
+        backToTopBtn.classList.remove('opacity-100', 'visible');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // 多语言支持
+    const translations = {
+      'zh': {
+        'site-title': '都市晚报',
+        'current-date': '2015年7月18日',
+        'current-day': '星期六',
+        'mobile-date': '2015年7月18日 星期六',
+        'home': '首页',
+        'domestic': '国内',
+        'international': '国际',
+        'finance': '财经',
+        'tech': '科技',
+        'entertainment': '文娱',
+        'focus-news': '焦点新闻',
+        'update-time': '更新于 2015-07-18 10:15',
+        'article-title': '创业新星陨落！李明项目遭泄后破产跳楼，业内震惊',
+        'reporter': '本报记者 王晨',
+        'reading-time': '阅读时间：约 3 分钟',
+        'weibo': '微博',
+        'wechat': '微信',
+        'share': '分享',
+        'image-caption': '星途科技曾充满活力的办公区（资料图）',
+        'paragraph1': '昨日清晨，传来一则令人扼腕的消息：年仅 28 岁的科技创业者李明，在其创办的 “星途科技” 公司宣布破产后的第三日，于租住的公寓楼天台跳楼身亡。警方现场勘查后排除他杀可能，确认系自杀。这起悲剧迅速引发业内广泛讨论，而关于其核心项目 “智能交互系统” 疑似遭内部人员泄露的传闻，更让事件蒙上一层疑云。',
+        'subtitle1': '从创业新星到破产轻生，两年梦想轰然倒塌',
+        'paragraph2': '据了解，李明与好友王天宇于 2013 年共同创立 “星途科技”，前者担任首席技术官，主导核心技术研发，后者负责市场运营。该公司推出的 “智能交互系统” 原型曾获得业内高度认可，2014 年底更是拿到了一笔千万级别的天使轮融资意向，前景被普遍看好。',
+        'paragraph3': '然而就在融资签约前夕，该系统的核心源代码突然在行业内流传，多家大型科技公司迅速推出功能相似的产品，导致 “星途科技” 的融资计划彻底搁浅，订单量骤降，公司陷入资金链断裂的绝境。2015年7月15日，星途科技正式宣布破产清算。',
+        'quote': '"李明是个纯粹的技术人，把项目当成自己的孩子。项目泄露后，他整个人都垮了，天天泡在公司试图挽回损失，但客户和资金都已经流失，破产是必然结果。"',
+        'quote-author': '—— 曾与李明合作的投资人 陈先生',
+        'subtitle2': '"被最信任的人背叛"，疑云指向昔日合伙人',
+        'paragraph4': '有知情人士爆料，李明在自杀前曾向身边人提及 “被最信任的人背叛”，但未明确指出具体对象。而其合伙人王天宇在公司破产后迅速离职，不久便入职一家大型地产公司，其个人发展轨迹与李明的悲剧形成鲜明对比。',
+        'paragraph5': '业内人士分析，核心源代码的泄露具有高度针对性，极有可能是内部人员所为。"智能交互系统的核心算法是李明团队耗时一年多研发的成果，保密级别极高，只有少数核心成员能够接触。" 一位不愿具名的科技公司高管表示，"在融资即将落地的关键节点发生泄露，时机太过蹊跷。"',
+        'subtitle3': '家人拒谈，调查仍在进行',
+        'paragraph6': '事发后，李明的家人拒绝接受采访，仅通过律师发表简短声明，称 “希望逝者安息，不愿再被打扰”。截至目前，项目泄露的具体原因仍在调查中，警方表示暂无直接证据表明存在商业犯罪行为。',
+        'paragraph7': '这起悲剧引发了业内对创业者权益保护的广泛讨论。不少人士呼吁，应加强创业项目知识产权保护，完善相关法律法规，同时关注创业者的心理状态，为其提供必要的心理疏导和支持，避免类似悲剧重演。',
+        'related-news': '相关新闻',
+        'related-news1-title': '创业项目知识产权保护研讨会召开，业内呼吁加强立法',
+        'related-news1-date': '2015/07/10',
+        'related-news2-title': '高压环境下的科技创业者：心理危机如何应对？',
+        'related-news2-date': '2015/06/28',
+        'footer-title': '都市晚报',
+        'footer-desc': '创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。',
+        'navigation': '栏目导航',
+        'important-news': '要闻',
+        'depth': '深度',
+        'comments': '评论',
+        'culture': '文化',
+        'contact': '联系我们',
+        'address': '北京市朝阳区新闻大厦',
+        'follow-us': '关注我们',
+        'download-app': '扫描二维码下载客户端',
+        'copyright': '© 2015 都市晚报 版权所有 | 京ICP备12345678号'
+      },
+      'en': {
+        'site-title': 'City Evening News',
+        'current-date': 'July 18, 2015',
+        'current-day': 'Saturday',
+        'mobile-date': 'July 18, 2015 Saturday',
+        'home': 'Home',
+        'domestic': 'Domestic',
+        'international': 'International',
+        'finance': 'Finance',
+        'tech': 'Technology',
+        'entertainment': 'Entertainment',
+        'focus-news': 'Focus News',
+        'update-time': 'Updated 2015-07-18 10:15',
+        'article-title': 'Rising Star Entrepreneur Falls! Li Ming Commits Suicide After Project Leak and Bankruptcy, Shocking the Industry',
+        'reporter': 'Reporter Wang Chen',
+        'reading-time': 'Reading time: about 3 minutes',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Share',
+        'image-caption': 'The once vibrant office of Xingtu Technology (file photo)',
+        'paragraph1': 'In the early morning of yesterday, a distressing piece of news emerged: Li Ming, a 28-year-old tech entrepreneur, committed suicide by jumping off the roof of his rented apartment building three days after his founded company "Xingtu Technology" declared bankruptcy. After on-site investigation, the police ruled out homicide and confirmed it was a suicide. This tragedy quickly sparked widespread discussion in the industry, and rumors that his core project "Intelligent Interactive System" was allegedly leaked by insiders have added a layer of suspicion to the incident.',
+        'subtitle1': 'From Rising Star to Suicide After Bankruptcy, Two-Year Dream Collapses',
+        'paragraph2': 'It is understood that Li Ming co-founded "Xingtu Technology" with his good friend Wang Tianyu in 2013. Li served as Chief Technology Officer, leading core technology research and development, while Wang was responsible for marketing and operations. The prototype of the company\'s "Intelligent Interactive System" was highly recognized in the industry, and in late 2014, it even secured an intention for a ten-million-yuan angel round of financing, with generally optimistic prospects.',
+        'paragraph3': 'However, shortly before the financing signing, the core source code of the system suddenly circulated in the industry. Several large tech companies quickly launched products with similar functions, leading to the complete collapse of Xingtu Technology\'s financing plan, a sharp drop in orders, and the company falling into a desperate situation of broken capital chain. On July 15, 2015, Xingtu Technology officially declared bankruptcy and liquidation.',
+        'quote': '"Li Ming was a pure technologist who treated the project like his own child. After the project was leaked, he completely collapsed. He stayed in the company every day trying to recover losses, but customers and funds had already been lost—bankruptcy was inevitable."',
+        'quote-author': '—— Mr. Chen, an investor who once collaborated with Li Ming',
+        'subtitle2': '"Betrayed by the Most Trusted Person", Suspicion Points to Former Partner',
+        'paragraph4': 'Informed sources revealed that before committing suicide, Li Ming mentioned to people around him that he "was betrayed by the most trusted person", but did not specify who it was. His partner Wang Tianyu resigned immediately after the company\'s bankruptcy and soon joined a large real estate company, his personal development trajectory forming a stark contrast to Li Ming\'s tragedy.',
+        'paragraph5': 'Industry insiders analyzed that the leak of the core source code was highly targeted and most likely perpetrated by insiders. "The core algorithm of the Intelligent Interactive System was the result of more than a year of research and development by Li Ming\'s team, with an extremely high level of confidentiality—only a few core members could access it," said an anonymous senior executive of a tech company. "The leak occurred at a crucial juncture when financing was about to be finalized, and the timing is too suspicious."',
+        'subtitle3': 'Family Refuses to Comment, Investigation Ongoing',
+        'paragraph6': 'After the incident, Li Ming\'s family refused to be interviewed and only issued a brief statement through their lawyer, saying "We hope the deceased can rest in peace and not be disturbed again." As of now, the specific cause of the project leak is still under investigation, and the police stated that there is no direct evidence of commercial criminal activity.',
+        'paragraph7': 'This tragedy has triggered extensive discussions in the industry on the protection of entrepreneurs\' rights and interests. Many people have called for strengthening the protection of intellectual property rights of startup projects, improving relevant laws and regulations, and at the same time paying attention to the psychological state of entrepreneurs, providing them with necessary psychological counseling and support to avoid similar tragedies from happening again.',
+        'related-news': 'Related News',
+        'related-news1-title': 'Symposium on Intellectual Property Protection for Startup Projects Held, Industry Calls for Strengthened Legislation',
+        'related-news1-date': '2015/07/10',
+        'related-news2-title': 'Tech Entrepreneurs Under High Pressure: How to Cope with Psychological Crises?',
+        'related-news2-date': '2015/06/28',
+        'footer-title': 'City Evening News',
+        'footer-desc': 'Founded in 1985, it is an influential comprehensive evening newspaper in China, known for its in-depth reporting and news commentary.',
+        'navigation': 'Navigation',
+        'important-news': 'Important News',
+        'depth': 'In-depth',
+        'comments': 'Comments',
+        'culture': 'Culture',
+        'contact': 'Contact Us',
+        'address': 'News Building, Chaoyang District, Beijing',
+        'follow-us': 'Follow Us',
+        'download-app': 'Scan QR code to download the app',
+        'copyright': '© 2015 City Evening News All Rights Reserved | Jing ICP No. 12345678'
+      },
+      'ja': {
+        'site-title': '都市晩報',
+        'current-date': '2015年7月18日',
+        'current-day': '土曜日',
+        'mobile-date': '2015年7月18日 土曜日',
+        'home': 'ホーム',
+        'domestic': '国内',
+        'international': '国際',
+        'finance': '金融',
+        'tech': 'テクノロジー',
+        'entertainment': 'エンタメ',
+        'focus-news': '注目ニュース',
+        'update-time': '更新 2015-07-18 10:15',
+        'article-title': '起業新星の陨落！李明、プロジェクト流出後破産で自殺、業界を震撼',
+        'reporter': '本紙記者 王晨',
+        'reading-time': '読了時間：約3分',
+        'weibo': '微博',
+        'wechat': 'WeChat',
+        'share': 'シェア',
+        'image-caption': '星途科技がかつて活気あふれたオフィス（資料写真）',
+        'paragraph1': '昨日の明け方、悲痛なニュースが伝わった：28歳のテクノロジー起業家・李明氏が、自身が創設した「星途科技」が破産を宣言した3日後、貸しアパートの屋上から飛び降り自殺した。警察の現場捜査の結果、他殺の可能性は排除され、自殺と確認された。この悲劇は速やかに業界で広く議論を巻き起こし、その中核プロジェクト「スマートインタラクティブシステム」が内部者によって流出した疑いの噂が、事件に一層の疑念を投げかけている。',
+        'subtitle1': '起業新星から破産自殺まで、2年間の夢が突然崩壊',
+        'paragraph2': '事情によると、李明氏は2013年に親友の王天宇氏と共に「星途科技」を創設し、李氏が最高技術責任者（CTO）として中核技術の研究開発を主導し、王氏が市場運営を担当した。同社が発表した「スマートインタラクティブシステム」のプロトタイプは業界から高い評価を受け、2014年末には千万円級のエンジェルラウンド融資の内諾を獲得するなど、前途は明るいと見なされていた。',
+        'paragraph3': 'しかし、融資契約締結の直前、同システムの中核ソースコードが突如業界内に流出した。複数の大型テクノロジー企業が速やかに類似機能の製品を発売したことで、「星途科技」の融資計画は完全に頓挫し、受注量が急落、同社は資金繋がり断絶の絶望的状況に陥った。2015年7月15日、星途科技は正式に破産清算を宣言した。',
+        'quote': '"李明氏は純粋な技術者で、プロジェクトを自分の子供のように大切にしていた。プロジェクト流出後、彼は完全に崩れてしまい、毎日会社にいて損失の挽回に努めたが、顧客も資金も既に流失していたため、破産は避けられなかった。"',
+        'quote-author': '—— 李明氏と協力したことのある投資家 陳氏',
+        'subtitle2': '"最も信頼していた人に裏切られた"、疑いは元パートナーに',
+        'paragraph4': '関係者の情報によると、李明氏は自殺前に身近な人に「最も信頼していた人に裏切られた」と話したが、具体的な人物は明かさなかった。一方、パートナーである王天宇氏は同社破産後すぐに退社し、間もなく大型不動産会社に入社した。その個人のキャリアの軌跡は、李明氏の悲劇と鮮明な対照をなしている。',
+        'paragraph5': '業界関係者の分析によると、中核ソースコードの流出は高度な目的志向性を持っており、極めて内部者による可能性が高い。「スマートインタラクティブシステムの中核アルゴリズムは李明チームが1年以上かけて開発した成果で、機密保護レベルは非常に高く、少数の中核メンバーしかアクセスできなかった」と匿名のテクノロジー企業幹部は語る。「融資が間もなく決定する重要な節目で流出が発生したことは、時期があまりに不自然だ」。',
+        'subtitle3': '家族は取材拒否、捜査は進行中',
+        'paragraph6': '事件発生後、李明氏の家族は取材を拒否し、弁護士を通じて「故人が安らかに眠ることを願い、これ以上邪魔をされたくない」という簡単な声明を発表した。現時点では、プロジェクト流出の具体的な原因は依然として捜査中で、警察は商業犯罪行為の直接的な証拠は現在のところないと表明している。',
+        'paragraph7': 'この悲劇は、起業家の権利保護に関する業界内での広範な議論を引き起こした。多くの関係者は、起業プロジェクトの知的財産権保護を強化し、関連法令を整備するとともに、起業家の心理状態に注目し、必要な心理カウンセリングと支援を提供し、類似の悲劇の再発を防ぐべきだと呼びかけている。',
+        'related-news': '関連ニュース',
+        'related-news1-title': '起業プロジェクトの知的財産権保護シンポジウム開催、業界は立法強化を呼びかけ',
+        'related-news1-date': '2015/07/10',
+        'related-news2-title': '高圧環境下のテクノロジー起業家：心理危機に如何应对？',
+        'related-news2-date': '2015/06/28',
+        'footer-title': '都市晩報',
+        'footer-desc': '1985年創刊。中国で広範な影響力を持つ総合夕刊紙で、深度報道とニュース評論で知られる。',
+        'navigation': 'ナビゲーション',
+        'important-news': '重要ニュース',
+        'depth': '深度',
+        'comments': '評論',
+        'culture': '文化',
+        'contact': 'お問い合わせ',
+        'address': '北京市朝陽区ニュースビル',
+        'follow-us': 'フォローする',
+        'download-app': 'QRコードをスキャンしてアプリをダウンロード',
+        'copyright': '© 2015 都市晩報 版権所有 | 京ICP備12345678号'
+      },
+      'pt': {
+        'site-title': 'Jornal da Cidade',
+        'current-date': '18 de Julho de 2015',
+        'current-day': 'Sábado',
+        'mobile-date': '18 de Julho de 2015 Sábado',
+        'home': 'Início',
+        'domestic': 'Nacional',
+        'international': 'Internacional',
+        'finance': 'Finanças',
+        'tech': 'Tecnologia',
+        'entertainment': 'Entretenimento',
+        'focus-news': 'Notícias em Destaque',
+        'update-time': 'Atualizado 2015-07-18 10:15',
+        'article-title': 'Estrela Empreendedora Cai! Li Ming Se Suicida Após Fuga de Projeto e Falência, Chocando a Indústria',
+        'reporter': 'Repórter Wang Chen',
+        'reading-time': 'Tempo de leitura: cerca de 3 minutos',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Compartilhar',
+        'image-caption': 'O escritório outrora vibrante da Xingtu Technology (foto de arquivo)',
+        'paragraph1': 'Na manhã de ontem, uma notícia angustiante surgiu: Li Ming, um empreendedor de tecnologia de 28 anos, se suicidou pulando do telhado de seu apartamento alugado três dias após a empresa que fundou, "Xingtu Technology", declarar falência. Após investigação no local, a polícia descartou homicídio e confirmou que foi um suicídio. Esta tragédia rapidamente causou ampla discussão na indústria, e rumores de que seu projeto core "Sistema Interativo Inteligente" teria sido vazado por funcionários internos adicionaram uma camada de suspeita ao incidente.',
+        'subtitle1': 'De Estrela Empreendedora a Suicídio Após Falência, Sonho de Dois Anos Colapsa',
+        'paragraph2': 'Segundo informações, Li Ming co-fundou a "Xingtu Technology" com seu bom amigo Wang Tianyu em 2013. Li atuou como Diretor de Tecnologia, liderando a pesquisa e desenvolvimento de tecnologias core, enquanto Wang foi responsável por marketing e operações. O protótipo do "Sistema Interativo Inteligente" da empresa foi amplamente reconhecido na indústria, e no final de 2014, ela até garantiu uma intenção de financiamento de rodada anjo de dez milhões de yuans, com perspectivas geralmente otimistas.',
+        'paragraph3': 'No entanto, pouco antes da assinatura do financiamento, o código-fonte core do sistema repentinamente circulou na indústria. Várias grandes empresas de tecnologia lançaram rapidamente produtos com funções semelhantes, levando ao completo colapso do plano de financiamento da Xingtu Technology, uma queda acentuada nos pedidos e a empresa caiu em uma situação desesperadora de quebra de fluxo de caixa. Em 15 de julho de 2015, a Xingtu Technology oficialmente declarou falência e liquidação.',
+        'quote': '"Li Ming era um tecnólogo puro que tratava o projeto como seu próprio filho. Após a fuga do projeto, ele completamente colapsou. Ele ficou na empresa todos os dias tentando recuperar perdas, mas clientes e recursos já haviam sido perdidos — a falência era inevitável."',
+        'quote-author': '—— Sr. Chen, investidor que já colaborou com Li Ming',
+        'subtitle2': '"Traído pelo Pessoa Mais Confiada", Suspeita Recai sobre Ex-Partner',
+        'paragraph4': 'Fontes informadas revelaram que antes de se suicidar, Li Ming mencionou a pessoas próximas que havia sido "traído pelo pessoa mais confiada", mas não especificou quem era. Seu parceiro Wang Tianyu demitiu-se imediatamente após a falência da empresa e logo ingressou em uma grande empresa imobiliária, sua trajetória de desenvolvimento pessoal formando um contraste marcante com a tragédia de Li Ming.',
+        'paragraph5': 'Analistas da indústria afirmaram que a fuga do código-fonte core foi altamente alvo e provavelmente perpetrada por funcionários internos. "O algoritmo core do Sistema Interativo Inteligente foi resultado de mais de um ano de pesquisa e desenvolvimento pela equipe de Li Ming, com um nível extremamente alto de confidencialidade — apenas alguns membros core tinham acesso a ele", disse um executivo sênior anônimo de uma empresa de tecnologia. "A fuga ocorreu em um momento crucial quando o financiamento estava para ser finalizado, e o timing é muito suspeito."',
+        'subtitle3': 'Família Recusa Comentar, Investigação em Andamento',
+        'paragraph6': 'Após o incidente, a família de Li Ming recusou-se a ser entrevistada e apenas emitiu um comunicado breve por meio de seu advogado, dizendo "Esperamos que o falecido descanse em paz e não seja perturbado novamente". Atualmente, a causa específica da fuga do projeto ainda está sob investigação, e a polícia declarou que não há evidências diretas de atividade criminal comercial.',
+        'paragraph7': 'Esta tragédia desencadeou amplas discussões na indústria sobre a proteção dos direitos e interesses dos empreendedores. Muitas pessoas pediram para fortalecer a proteção de propriedade intelectual de projetos de startup, melhorar leis e regulamentações relacionadas, e ao mesmo tempo prestar atenção ao estado psicológico dos empreendedores, fornecendo-lhes aconselhamento psicológico e suporte necessários para evitar que tragedias semelhantes se repitam.',
+        'related-news': 'Notícias Relacionadas',
+        'related-news1-title': 'Simpósio sobre Proteção de Propriedade Intelectual para Projetos de Startup Realizado, Indústria Pede Fortalecimento da Legislação',
+        'related-news1-date': '2015/07/10',
+        'related-news2-title': 'Empreendedores de Tecnologia sob Alta Pressão: Como Lidar com Crises Psicológicas?',
+        'related-news2-date': '2015/06/28',
+        'footer-title': 'Jornal da Cidade',
+        'footer-desc': 'Fundado em 1985, é um jornal vespertino abrangente influente na China, conhecido por sua reportagem aprofundada e comentário de notícias.',
+        'navigation': 'Navegação',
+        'important-news': 'Notícias Importantes',
+        'depth': 'Em Profundidade',
+        'comments': 'Comentários',
+        'culture': 'Cultura',
+        'contact': 'Contate-Nos',
+        'address': 'Edifício de Notícias, Distrito de Chaoyang, Pequim',
+        'follow-us': 'Siga-Nos',
+        'download-app': 'Escaneie o código QR para baixar o aplicativo',
+        'copyright': '© 2015 Jornal da Cidade Todos os Direitos Reservados | Jing ICP No. 12345678'
+      }
+    };
+
+    // 语言切换功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 设置默认语言为中文
+      let currentLang = 'zh';
+      updateLanguage(currentLang);
+      
+      // 为语言切换按钮添加事件监听器
+      document.querySelectorAll('[data-lang]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const lang = this.getAttribute('data-lang');
+          currentLang = lang;
+          updateLanguage(lang);
+          
+          // 更新当前语言显示
+          document.getElementById('current-lang').textContent = 
+            lang === 'zh' ? '中文' : 
+            lang === 'en' ? 'English' : 
+            lang === 'ja' ? '日本語' : 
+            'Português';
+        });
+      });
+    });
+
+    function updateLanguage(lang) {
+      // 更新所有带有data-lang-key属性的元素
+      document.querySelectorAll('[data-lang-key]').forEach(element => {
+        const key = element.getAttribute('data-lang-key');
+        if (translations[lang] && translations[lang][key]) {
+          element.textContent = translations[lang][key];
+        }
+      });
+      
+      // 更新特殊元素
+      if (translations[lang] && translations[lang]['site-title']) {
+        document.getElementById('site-title').textContent = translations[lang]['site-title'];
+        document.getElementById('footer-title').textContent = translations[lang]['site-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['article-title']) {
+        document.getElementById('article-title').textContent = translations[lang]['article-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-date']) {
+        document.getElementById('current-date').textContent = translations[lang]['current-date'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-day']) {
+        document.getElementById('current-day').textContent = translations[lang]['current-day'];
+      }
+      
+      if (translations[lang] && translations[lang]['mobile-date']) {
+        document.getElementById('mobile-date').textContent = translations[lang]['mobile-date'];
+      }
+    }
+  </script>
+</body>
+</html>

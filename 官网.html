@@ -1,0 +1,2153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 探索内心的隐秘空间</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Playfair Display', 'serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .special-purple-text {
+        font-family: 'Playfair Display', serif;
+        color: #8A6BBE;
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.7);
+        font-weight: 600;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest">LOADING<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-display text-xl md:text-2xl tracking-wider">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 酒店</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <a href="#home" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.home">首页</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#introduction" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.introduction">酒店介绍</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#rooms" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.rooms">客房</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#facilities" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.facilities">设施</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#notice" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.notice">入住须知</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <button id="open-feedback-btn" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.feedback">意见反馈</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+        <button id="open-message-board-btn" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.messageBoard">留言板</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+        
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 搜索框 -->
+        <div class="relative group">
+          <input type="text" id="search-input" placeholder="搜索..." class="bg-primary/40 border border-accent/30 rounded-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent w-40 transition-all duration-300 group-hover:w-52">
+          <i class="fa fa-search text-accent absolute right-3 top-1/2 transform -translate-y-1/2"></i>
+        </div>
+        <!-- 预订按钮 -->
+        <a href="javascript:;" onclick="window.location.href='登录页面.html'" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 hover-lift inline-block">
+                        <span data-i18n="nav.book">登录</span>
+                    </a>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <a href="#home" class="text-gray-300 hover:text-white py-2 transition-colors" data-i18n="nav.home">首页</a>
+        <a href="#introduction" class="text-gray-300 hover:text-white py-2 transition-colors" data-i18n="nav.introduction">酒店介绍</a>
+        <a href="#rooms" class="text-gray-300 hover:text-white py-2 transition-colors" data-i18n="nav.rooms">客房</a>
+        <a href="#facilities" class="text-gray-300 hover:text-white py-2 transition-colors" data-i18n="nav.facilities">设施</a>
+        <a href="#notice" class="text-gray-300 hover:text-white py-2 transition-colors" data-i18n="nav.notice">入住须知</a>
+        <button id="open-feedback-btn-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left" data-i18n="nav.feedback">意见反馈</button>
+        <button id="open-message-board-btn-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left" data-i18n="nav.messageBoard">留言板</button>
+        <a href="javascript:;" onclick="window.location.href='新页面路径'" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 text-center block" data-i18n="nav.book">登录</a>
+        
+        <!-- 移动端语言切换 -->
+        <div class="border-t border-gray-700 pt-4 mt-4">
+          <div class="px-4 py-2 text-sm text-gray-400">语言</div>
+          <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+          <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+          <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+          <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 英雄区域 -->
+  <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
+    <!-- 豪华酒店宣传图 -->
+    <div class="absolute inset-0 z-0 bg-cover bg-center" style="background-image: url('酒店.jpg')">
+      <div class="w-full h-full bg-gradient-to-br from-primary to-dark opacity-10"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black"></div>
+    </div>
+    
+    <!-- 主标题 -->
+    <div class="container mx-auto px-4 z-10 text-center">
+      <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-display font-bold text-white leading-tight text-shadow mb-6">
+        <span data-i18n="hero.title1">欢迎来到</span> <span class="text-accent text-glow text-glitch" data-text="R∞M">R∞M</span> <span data-i18n="hero.title2">酒店</span>
+      </h1>
+      <p class="text-[clamp(1rem,3vw,1.5rem)] max-w-2xl mx-auto mb-10 text-gray-200 leading-relaxed" data-i18n="hero.subtitle">
+        一座隐匿于城市角落的独特空间，<br class="md:hidden">等待着善于观察的你
+      </p>
+      
+      <!-- 大型立即预订按钮 -->
+      <div class="mb-10">
+        <button id="hero-booking-btn" class="bg-accent hover:bg-accent/90 text-white font-bold py-4 px-12 rounded-sm transition-all duration-300 hover-lift text-xl shadow-lg">
+          <span data-i18n="hero.book">立即预订</span>
+        </button>
+      </div>
+      
+      <!-- 快速预订表单 -->
+      <div class="bg-primary/60 backdrop-blur-sm p-6 rounded-sm border border-accent/20 max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.checkIn">入住日期</label>
+            <input type="date" class="w-full px-3 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.checkOut">退房日期</label>
+            <input type="date" class="w-full px-3 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.roomType">房型</label>
+            <select class="w-full px-3 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white">
+              <option data-i18n="booking.allRooms">所有房型</option>
+              <option data-i18n="roomTypes.standard">标准客房</option>
+              <option data-i18n="roomTypes.deluxe">豪华客房</option>
+              <option data-i18n="roomTypes.suite">主题套房</option>
+              <option data-i18n="roomTypes.presidential">总统套房</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.guests">人数</label>
+            <select class="w-full px-3 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white">
+              <option>1 成人</option>
+              <option>2 成人</option>
+              <option>2 成人, 1 儿童</option>
+              <option>2 成人, 2 儿童</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button id="check-availability-btn" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 hover-lift">
+              <span data-i18n="booking.checkAvailability">查询空房</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 装饰元素：像素黑猫（添加呼吸动画） -->
+    <div class="absolute bottom-10 right-10 pixel-cat w-12 h-12 md:w-16 md:h-16 opacity-70 hover:opacity-100 transition-opacity breathing" id="hero-cat">
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+        <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+        <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+        <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+        <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+        <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+      </svg>
+    </div>
+    
+    <!-- 向下滚动提示（更隐晦） -->
+    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-white/70 hover:text-white transition-colors">
+      <i class="fa fa-angle-down text-2xl animate-bounce"></i>
+    </div>
+    
+    <!-- 左上角隐藏的歌词片段 -->
+    <div class="absolute top-10 left-4 text-white/30 text-xs font-mono rotate-[-10deg] flicker" data-i18n="hero.lyric">
+      "In the room where secrets live..."
+    </div>
+  </section>
+
+  <!-- 酒店介绍 -->
+  <section id="introduction" class="py-20 bg-primary/30 relative">
+    <!-- 背景装饰线条 -->
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-primary"></div>
+    
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-display font-semibold text-white mb-6" data-i18n="introduction.title">酒店介绍</h2>
+        <p class="special-purple-text leading-relaxed mb-4" data-i18n="introduction.special">
+          R∞M酒店，为您提供非凡的住宿体验
+        </p>
+        <p class="text-gray-300 leading-relaxed" data-i18n="introduction.subtitle">
+          一座融合现代前卫与静谧疏离的独特空间
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-8">
+          <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white flex items-center">
+              <i class="fa fa-map-marker text-accent mr-3"></i>
+              <span data-i18n="introduction.location">地理位置</span>
+            </h3>
+            <p class="text-gray-300" data-i18n="introduction.locationDetail">
+              R市荔湾区瑞奇马路1102号
+            </p>
+          </div>
+          
+          <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white flex items-center">
+              <i class="fa fa-calendar text-accent mr-3"></i>
+              <span data-i18n="introduction.opening">开业时间</span>
+            </h3>
+            <p class="text-gray-300" data-i18n="introduction.openingDetail">
+              酒店于1725年6月26日开始试营业，<br>
+              1725年11月12日上午11:02正式开始营业。
+            </p>
+          </div>
+          
+          <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white flex items-center">
+              <i class="fa fa-building text-accent mr-3"></i>
+              <span data-i18n="introduction.scale">酒店规模</span>
+            </h3>
+            <p class="text-gray-300" data-i18n="introduction.scaleDetail">
+              占地面积：12,000平方米<br>
+              楼层：地上50层，地下3层<br>
+              客房数量：1102间精心设计的客房和套房
+            </p>
+          </div>
+        </div>
+        
+        <div class="space-y-8">
+          <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white flex items-center">
+              <i class="fa fa-subway text-accent mr-3"></i>
+              <span data-i18n="introduction.transportation">交通设施</span>
+            </h3>
+            <p class="text-gray-300" data-i18n="introduction.transportationDetail">
+              • 距离地铁站步行仅5分钟<br>
+              • 距离机场30分钟车程<br>
+              • 提供免费停车场<br>
+              • 可预约专车接送服务
+            </p>
+          </div>
+          
+          <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white flex items-center">
+              <i class="fa fa-star text-accent mr-3"></i>
+              <span data-i18n="introduction.features">酒店特色</span>
+            </h3>
+            <p class="text-gray-300" data-i18n="introduction.featuresDetail">
+              • 每间客房都有独特的设计理念和故事背景<br>
+              • 24小时个性化管家服务<br>
+              • 融合现代科技与传统工艺的装修风格<br>
+              • 私密性强，注重客人隐私保护
+            </p>
+          </div>
+          
+          <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white flex items-center">
+              <i class="fa fa-phone text-accent mr-3"></i>
+              <span data-i18n="introduction.contact">客服信息</span>
+            </h3>
+            <p class="text-gray-300" data-i18n="introduction.contactDetail">
+              预订热线：+86 19931102171 / +86 2021424<br>
+              服务时间：24小时全天候服务<br>
+              邮箱：room-hotel@rkmr.com
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 房间类型 -->
+  <section id="rooms" class="py-20 bg-dark/50 relative">
+    <!-- 背景纹理 -->
+    <div class="absolute inset-0 opacity-5">
+      <div class="w-full h-full bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%238A6BBE\" fill-opacity=\"1\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-display font-semibold text-white mb-6" data-i18n="rooms.title">独特的客房体验</h2>
+        <p class="text-gray-300 leading-relaxed" data-i18n="rooms.subtitle">
+          R∞M酒店的每一间客房都是精心设计的独特空间，融合现代舒适与神秘氛围，为每位客人提供个性化的住宿体验。
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- 标准客房 -->
+        <div class="bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group">
+          <div class="relative overflow-hidden rounded-sm mb-4">
+            <img src="标准客房.jpg" alt="标准客房" class="h-48 w-full object-cover">
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">            
+              <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all">
+                <span data-i18n="rooms.viewDetails">查看详情</span>
+              </button>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="roomTypes.standard">标准客房</h3>
+          <p class="text-gray-300 mb-4" data-i18n="rooms.standardDesc">舒适简约的设计，配备现代化设施，适合独自旅行或商务出行。</p>
+          <div class="flex justify-between items-center">
+            <span class="text-accent font-semibold">¥680/晚</span>
+            <button class="text-accent hover:text-white transition-colors" data-i18n="rooms.bookNow">立即预订</button>
+          </div>
+        </div>
+        
+        <!-- 豪华客房 -->
+        <div class="bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group">
+          <div class="relative overflow-hidden rounded-sm mb-4">
+            <img src="豪华客房.jpg" alt="豪华客房" class="h-48 w-full object-cover">
+                              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all">
+                <span data-i18n="rooms.viewDetails">查看详情</span>
+              </button>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="roomTypes.deluxe">豪华客房</h3>
+          <p class="text-gray-300 mb-4" data-i18n="rooms.deluxeDesc">宽敞空间，高品质家具，提供更舒适的居住体验和优质服务。</p>
+          <div class="flex justify-between items-center">
+            <span class="text-accent font-semibold">¥980/晚</span>
+            <button class="text-accent hover:text-white transition-colors" data-i18n="rooms.bookNow">立即预订</button>
+          </div>
+        </div>
+        
+        <!-- 主题套房 -->
+        <div class="bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group">
+          <div class="relative overflow-hidden rounded-sm mb-4">
+            <img src="主题套房.jpg" alt="主题套房" class="h-48 w-full object-cover">
+                              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all">
+                <span data-i18n="rooms.viewDetails">查看详情</span>
+              </button>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="roomTypes.suite">主题套房</h3>
+          <p class="text-gray-300 mb-4" data-i18n="rooms.suiteDesc">独特设计的主题房间，每间都有不同的故事和氛围，带来非凡体验。</p>
+          <div class="flex justify-between items-center">
+            <span class="text-accent font-semibold">¥1280/晚</span>
+            <button class="text-accent hover:text-white transition-colors" data-i18n="rooms.bookNow">立即预订</button>
+          </div>
+        </div>
+        
+        <!-- 总统套房 -->
+        <div class="bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group">
+          <div class="relative overflow-hidden rounded-sm mb-4">
+             <img src="总统套房.jpg" alt="总统套房" class="h-48 w-full object-cover">
+                               <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all">
+                <span data-i18n="rooms.viewDetails">查看详情</span>
+              </button>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="roomTypes.presidential">总统套房</h3>
+          <p class="text-gray-300 mb-4" data-i18n="rooms.presidentialDesc">极致奢华的空间，配备私人管家服务，提供无与伦比的尊贵体验。</p>
+          <div class="flex justify-between items-center">
+            <span class="text-accent font-semibold">¥2580/晚</span>
+            <button class="text-accent hover:text-white transition-colors" data-i18n="rooms.bookNow">立即预订</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 酒店设施 -->
+  <section id="facilities" class="py-20 bg-primary/30 relative">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-display font-semibold text-white mb-6" data-i18n="facilities.title">酒店设施</h2>
+        <p class="text-gray-300" data-i18n="facilities.subtitle">
+          R∞M酒店提供一系列高品质设施，旨在为客人创造舒适、便捷且独特的住宿体验。
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="bg-primary/40 p-8 rounded-sm shadow-sm hover-lift border border-accent/20 text-center">
+          <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mb-6 mx-auto">
+            <i class="fa fa-cutlery text-accent text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="facilities.dining">餐厅与酒吧</h3>
+          <p class="text-gray-300" data-i18n="facilities.diningDesc">提供精致美食与特色饮品，在优雅环境中享受独特用餐体验。</p>
+        </div>
+        
+        <div class="bg-primary/40 p-8 rounded-sm shadow-sm hover-lift border border-accent/20 text-center">
+          <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mb-6 mx-auto">
+            <i class="fa fa-spa text-accent text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="facilities.spa">水疗中心</h3>
+          <p class="text-gray-300" data-i18n="facilities.spaDesc">专业理疗师提供放松身心的水疗服务，缓解旅途疲劳。</p>
+        </div>
+        
+        <div class="bg-primary/40 p-8 rounded-sm shadow-sm hover-lift border border-accent/20 text-center">
+          <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mb-6 mx-auto">
+            <i class="fa fa-wifi text-accent text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="facilities.wifi">高速网络</h3>
+          <p class="text-gray-300" data-i18n="facilities.wifiDesc">全酒店覆盖高速Wi-Fi，确保您随时保持连接。</p>
+        </div>
+        
+        <div class="bg-primary/40 p-8 rounded-sm shadow-sm hover-lift border border-accent/20 text-center">
+          <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mb-6 mx-auto">
+            <i class="fa fa-car text-accent text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="facilities.parking">停车场</h3>
+          <p class="text-gray-300" data-i18n="facilities.parkingDesc">提供安全便捷的室内停车场，为自驾旅客提供便利。</p>
+        </div>
+        
+        <div class="bg-primary/40 p-8 rounded-sm shadow-sm hover-lift border border-accent/20 text-center">
+          <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mb-6 mx-auto">
+            <i class="fa fa-snowflake-o text-accent text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="facilities.pool">恒温泳池</h3>
+          <p class="text-gray-300" data-i18n="facilities.poolDesc">全年恒温室内泳池，让您在旅途中也能享受游泳乐趣。</p>
+        </div>
+        
+        <div class="bg-primary/40 p-8 rounded-sm shadow-sm hover-lift border border-accent/20 text-center">
+          <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mb-6 mx-auto">
+            <i class="fa fa-desktop text-accent text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="facilities.business">商务中心</h3>
+          <p class="text-gray-300" data-i18n="facilities.businessDesc">配备先进设备的商务中心，满足商务旅客的各种需求。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 入住须知 -->
+  <section id="notice" class="py-20 bg-dark/50 relative">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-display font-semibold text-white mb-6" data-i18n="notice.title">入住须知</h2>
+          <p class="text-gray-300 max-w-2xl mx-auto" data-i18n="notice.subtitle">
+            为了确保您在R∞M酒店度过愉快舒适的时光，请仔细阅读以下入住须知。
+          </p>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-8 rounded-sm border border-accent/20">
+          <div class="space-y-6">
+            <div class="border-b border-accent/30 pb-6">
+              <h3 class="text-xl font-semibold mb-3 text-white flex items-center">
+                <i class="fa fa-clock-o text-accent mr-3"></i>
+                <span data-i18n="notice.checkInOut">入住与退房时间</span>
+              </h3>
+              <ul class="text-gray-300 space-y-2 ml-8">
+                <li data-i18n="notice.checkInTime">• 入住时间：下午14:00以后</li>
+                <li data-i18n="notice.checkOutTime">• 退房时间：中午12:00以前</li>
+                <li data-i18n="notice.earlyLate">• 如需提前入住或延迟退房，请提前联系前台</li>
+              </ul>
+            </div>
+            
+            <div class="border-b border-accent/30 pb-6">
+              <h3 class="text-xl font-semibold mb-3 text-white flex items-center">
+                <i class="fa fa-credit-card text-accent mr-3"></i>
+                <span data-i18n="notice.bookingPayment">预订与付款</span>
+              </h3>
+              <ul class="text-gray-300 space-y-2 ml-8">
+                <li data-i18n="notice.idRequired">• 预订需提供有效身份证件</li>
+                <li data-i18n="notice.paymentMethods">• 接受信用卡、借记卡及移动支付</li>
+                <li data-i18n="notice.deposit">• 可能需要支付押金，退房时退还</li>
+              </ul>
+            </div>
+            
+            <div class="border-b border-accent/30 pb-6">
+              <h3 class="text-xl font-semibold mb-3 text-white flex items-center">
+                <i class="fa fa-ban text-accent mr-3"></i>
+                <span data-i18n="notice.prohibited">禁止事项</span>
+              </h3>
+              <ul class="text-gray-300 space-y-2 ml-8">
+                <li data-i18n="notice.noSmoking">• 禁止在客房内吸烟，违者将收取清洁费</li>
+                <li data-i18n="notice.noPets">• 禁止携带宠物入住（导盲犬除外）</li>
+                <li data-i18n="notice.noIllegal">• 禁止在客房内进行违法活动</li>
+                <li data-i18n="notice.noDamage">• 禁止损坏酒店设施，否则需照价赔偿</li>
+              </ul>
+            </div>
+            
+            <div class="border-b border-accent/30 pb-6">
+              <h3 class="text-xl font-semibold mb-3 text-white flex items-center">
+                <i class="fa fa-exclamation-triangle text-accent mr-3"></i>
+                <span data-i18n="notice.safety">安全提示</span>
+              </h3>
+              <ul class="text-gray-300 space-y-2 ml-8">
+                <li data-i18n="notice.valuables">• 请妥善保管个人物品，酒店不承担遗失责任</li>
+                <li data-i18n="notice.security">• 请勿将贵重物品留在客房内</li>
+                <li data-i18n="notice.emergencyExits">• 熟悉紧急出口和消防设备位置</li>
+                <li data-i18n="notice.emergencyContact">• 如遇紧急情况，请拨打前台电话或使用紧急呼叫按钮</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 class="text-xl font-semibold mb-3 text-white flex items-center">
+                <i class="fa fa-info-circle text-accent mr-3"></i>
+                <span data-i18n="notice.other">其他事项</span>
+              </h3>
+              <ul class="text-gray-300 space-y-2 ml-8">
+                <li data-i18n="notice.frontDesk">• 酒店提供24小时前台服务</li>
+                <li data-i18n="notice.extraServices">• 如需额外服务（如叫醒、洗衣等），请提前告知</li>
+                <li data-i18n="notice.refusal">• 酒店有权拒绝接待醉酒或行为不当的客人</li>
+                <li data-i18n="notice.specialNeeds">• 如有特殊需求（如无障碍设施），请提前告知</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-10 relative">
+    <!-- 顶部装饰线 -->
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent"></div>
+    
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-display text-xl tracking-wider">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.hotel">酒店</span></span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.tagline">探索内心的隐秘空间</p>
+        </div>
+        
+        <div class="flex space-x-6">
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-twitter"></i></a>
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-instagram"></i></a>
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-envelope"></i></a>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+        <p data-i18n="footer.copyright">© 2025 R∞M酒店. 保留所有权利.</p>
+      </div>
+               <div class="text-center mt-6">
+                    <img src="二维码.jpg" alt="二维码" class="w-32 h-32 mx-auto object-contain" />
+                    <p class="text-gray-400 text-sm mt-2" data-i18n="footer.qrcode">扫码关注获取更多服务</p>
+               </div>
+    </div>
+  </footer>
+
+  <!-- 预订模态窗口 -->
+  <div id="booking-modal" class="fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-primary p-8 max-w-2xl w-full mx-4 rounded-sm shadow-xl transform transition-all scale-95 border border-accent/20 relative max-h-[90vh] overflow-y-auto">
+      <button id="close-booking-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+        <i class="fa fa-times text-xl"></i>
+      </button>
+      
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-display font-semibold text-white mb-2" data-i18n="booking.title">预订您的独特体验</h2>
+        <p class="text-gray-300" data-i18n="booking.subtitle">
+          填写以下信息，开始您在R∞M酒店的独特之旅。
+        </p>
+      </div>
+      
+      <form class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.checkIn">入住日期</label>
+            <input type="date" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.checkOut">退房日期</label>
+            <input type="date" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" required>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.roomType">房型</label>
+            <select class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" required>
+              <option value="">选择房型</option>
+              <option value="standard" data-i18n="roomTypes.standard">标准客房</option>
+              <option value="deluxe" data-i18n="roomTypes.deluxe">豪华客房</option>
+              <option value="suite" data-i18n="roomTypes.suite">主题套房</option>
+              <option value="presidential" data-i18n="roomTypes.presidential">总统套房</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.guests">人数</label>
+            <div class="flex space-x-4">
+              <div class="flex-1">
+                <label class="block text-xs mb-1" data-i18n="booking.adults">成人</label>
+                <select class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white">
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                </select>
+              </div>
+              <div class="flex-1">
+                <label class="block text-xs mb-1" data-i18n="booking.children">儿童</label>
+                <select class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white">
+                  <option>0</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.name">姓名</label>
+            <input type="text" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" placeholder="请输入您的姓名" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="booking.phone">电话</label>
+            <input type="tel" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" placeholder="请输入您的电话" required>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-2" data-i18n="booking.specialRequests">特殊要求</label>
+          <input type="text" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" placeholder="如有特殊要求请填写">
+        </div>
+        
+        <div class="pt-4">
+          <button type="submit" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 px-6 rounded-sm transition-all duration-300 hover-lift">
+            <span data-i18n="booking.submit">提交预订</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 空房查询结果模态窗口 -->
+  <div id="availability-modal" class="fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-primary p-8 max-w-md w-full mx-4 rounded-sm shadow-xl transform transition-all scale-95 border border-accent/20 relative">
+      <button id="close-availability-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+        <i class="fa fa-times text-xl"></i>
+      </button>
+      
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-display font-semibold text-white mb-2" data-i18n="availability.title">空房查询结果</h2>
+        <p class="text-gray-300" data-i18n="availability.subtitle">
+          以下是当前可预订的房型及剩余数量
+        </p>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="flex justify-between items-center p-4 bg-primary/40 rounded-sm border border-accent/20">
+          <div>
+            <h3 class="text-lg font-semibold text-white" data-i18n="roomTypes.standard">标准客房</h3>
+            <p class="text-gray-300 text-sm" data-i18n="availability.standardDesc">舒适简约，现代化设施</p>
+          </div>
+          <div class="text-right">
+            <p class="text-accent font-semibold text-xl" id="standard-rooms">8</p>
+            <p class="text-gray-400 text-sm" data-i18n="availability.remaining">剩余房间</p>
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center p-4 bg-primary/40 rounded-sm border border-accent/20">
+          <div>
+            <h3 class="text-lg font-semibold text-white" data-i18n="roomTypes.deluxe">豪华客房</h3>
+            <p class="text-gray-300 text-sm" data-i18n="availability.deluxeDesc">宽敞空间，高品质家具</p>
+          </div>
+          <div class="text-right">
+            <p class="text-accent font-semibold text-xl" id="deluxe-rooms">5</p>
+            <p class="text-gray-400 text-sm" data-i18n="availability.remaining">剩余房间</p>
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center p-4 bg-primary/40 rounded-sm border border-accent/20">
+          <div>
+            <h3 class="text-lg font-semibold text-white" data-i18n="roomTypes.suite">主题套房</h3>
+            <p class="text-gray-300 text-sm" data-i18n="availability.suiteDesc">独特设计，非凡体验</p>
+          </div>
+          <div class="text-right">
+            <p class="text-accent font-semibold text-xl" id="suite-rooms">3</p>
+            <p class="text-gray-400 text-sm" data-i18n="availability.remaining">剩余房间</p>
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center p-4 bg-primary/40 rounded-sm border border-accent/20">
+          <div>
+            <h3 class="text-lg font-semibold text-white" data-i18n="roomTypes.presidential">总统套房</h3>
+            <p class="text-gray-300 text-sm" data-i18n="availability.presidentialDesc">极致奢华，私人管家</p>
+          </div>
+          <div class="text-right">
+            <p class="text-accent font-semibold text-xl" id="presidential-rooms">1</p>
+            <p class="text-gray-400 text-sm" data-i18n="availability.remaining">剩余房间</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-6 pt-4 border-t border-accent/20">
+        <p class="text-gray-400 text-sm text-center" data-i18n="availability.note">
+          房间数量实时更新，建议您尽快完成预订
+        </p>
+        <button id="book-now-from-availability" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 px-6 rounded-sm transition-all duration-300 hover-lift mt-4">
+          <span data-i18n="availability.bookNow">立即预订</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 意见反馈模态窗口 -->
+  <div id="feedback-modal" class="fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-primary p-8 max-w-2xl w-full mx-4 rounded-sm shadow-xl transform transition-all scale-95 border border-accent/20 relative max-h-[90vh] overflow-y-auto">
+      <button id="close-feedback-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+        <i class="fa fa-times text-xl"></i>
+      </button>
+      
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-display font-semibold text-white mb-2" data-i18n="feedback.title">意见反馈</h2>
+        <p class="text-gray-300" data-i18n="feedback.subtitle">
+          您的意见对我们非常重要，帮助我们不断提升服务质量。
+        </p>
+      </div>
+      
+      <form class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="feedback.name">姓名</label>
+            <input type="text" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" placeholder="请输入您的姓名" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2" data-i18n="feedback.phone">电话</label>
+            <input type="tel" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" placeholder="请输入您的电话" required>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-2" data-i18n="feedback.type">反馈类型</label>
+          <select class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" required>
+            <option value="">请选择反馈类型</option>
+            <option value="service" data-i18n="feedback.service">服务质量</option>
+            <option value="facility" data-i18n="feedback.facility">设施设备</option>
+            <option value="cleanliness" data-i18n="feedback.cleanliness">卫生状况</option>
+            <option value="suggestion" data-i18n="feedback.suggestion">改进建议</option>
+            <option value="complaint" data-i18n="feedback.complaint">投诉</option>
+            <option value="other" data-i18n="feedback.other">其他</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-2" data-i18n="feedback.content">反馈内容</label>
+          <textarea rows="5" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" placeholder="请详细描述您的意见或建议" required></textarea>
+        </div>
+        
+        <div class="pt-4">
+          <button type="submit" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 px-6 rounded-sm transition-all duration-300 hover-lift">
+            <span data-i18n="feedback.submit">提交反馈</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 留言板模态窗口 -->
+  <div id="message-board-modal" class="fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-primary p-8 max-w-4xl w-full mx-4 rounded-sm shadow-xl transform transition-all scale-95 border border-accent/20 relative max-h-[90vh] overflow-y-auto">
+      <button id="close-message-board-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+        <i class="fa fa-times text-xl"></i>
+      </button>
+      
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-display font-semibold text-white mb-2" data-i18n="messageBoard.title">留言板</h2>
+        <p class="text-gray-300" data-i18n="messageBoard.subtitle">
+          听听其他客人在R∞M酒店的体验和故事。
+        </p>
+      </div>
+      
+      <div class="space-y-8">
+        <!-- 留言1 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-lg font-semibold text-white">张先生</h3>
+              <p class="text-gray-400 text-sm">2025年11月15日入住</p>
+            </div>
+            <div class="flex text-accent">
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+            </div>
+          </div>
+          <p class="text-gray-300" data-i18n="messageBoard.review1">
+            非常独特的住宿体验！房间设计很有创意，每个细节都经过精心设计。特别喜欢301号主题套房，感觉像是进入了一个完全不同的世界。服务人员非常专业且友好，一定会再次光顾！
+          </p>
+        </div>
+        
+        <!-- 留言2 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-lg font-semibold text-white">李女士</h3>
+              <p class="text-gray-400 text-sm">2025年11月10日入住</p>
+            </div>
+            <div class="flex text-accent">
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star-half-o"></i>
+            </div>
+          </div>
+          <p class="text-gray-300" data-i18n="messageBoard.review2">
+            酒店位置很隐蔽，但内部环境非常舒适。特别喜欢他们的水疗中心，理疗师手法专业，让我完全放松下来。早餐种类丰富，味道也很棒。唯一的小缺点是房间内灯光调节有点复杂。
+          </p>
+        </div>
+        
+        <!-- 留言3 - 已修改为李先生的新留言 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-lg font-semibold text-white">李先生</h3>
+              <p class="text-gray-400 text-sm">2025年11月12日入住</p>
+            </div>
+            <div class="flex text-accent">
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+            </div>
+          </div>
+          <p class="text-gray-300" data-i18n="messageBoard.review3">
+            我必须说，ROOM酒店是我待过的最能激发创造力的地方。在这里，时间仿佛失去了意义，我的世界里只剩下我的作品和我的梦想。我曾一度陷入瓶颈，感觉自己的思维被困在一个狭小的房间里，每天都在重复绝望的劳动。但在291号房，我找到了解决之道。这里的服务恰到好处，总在我最需要的时候送上咖啡，又在我需要沉浸时给予绝对的安静。我在这里完成了《DAYDREAMS》最核心的架构，解决了一个困扰我数月的逻辑死循环。我感觉自己和游戏里的主角一起，经历了一场从绝望到重生的挣扎，并最终找到了那个属于我们自己的‘出口’。感谢ROOM酒店。这不仅仅是一次住宿，更是一场修行。我的白日梦，在这里，成为了现实。强烈推荐给所有正在与自己战斗的创作者们。
+          </p>
+        </div>
+        
+        <!-- 留言4 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-lg font-semibold text-white">陈小姐</h3>
+              <p class="text-gray-400 text-sm">2025年10月28日入住</p>
+            </div>
+            <div class="flex text-accent">
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star-o"></i>
+            </div>
+          </div>
+          <p class="text-gray-300" data-i18n="messageBoard.review4">
+            庆祝纪念日选择了总统套房，体验非常棒！房间设计奢华且舒适，管家服务无微不至。特别感谢酒店为我们准备的惊喜蛋糕和玫瑰花，让这个特殊的日子更加难忘。
+          </p>
+        </div>
+        <!-- 留言5 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-lg font-semibold text-white">赵小姐</h3>
+              <p class="text-gray-400 text-sm">2025年11月16日入住</p>
+            </div>
+            <div class="flex text-accent">
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+            </div>
+          </div>
+          <p class="text-gray-300" data-i18n="messageBoard.review5">
+            这是我人生中最美好的一周。感谢314号房的舞蹈室，让我重新找到了对舞蹈的热爱。那个空间仿佛有魔力，让我感觉自己又回到了巅峰时期。房间里的巧克力很特别，甜得恰到好处。唯一遗憾的是退房时间到了，真希望能住得更久一些。五星好评！
+          </p>
+        </div>
+        
+        <!-- 添加新留言表单 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20 mt-12">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="messageBoard.share">分享您的体验</h3>
+          <form class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-2" data-i18n="messageBoard.name">姓名</label>
+                <input type="text" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" placeholder="请输入您的姓名">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2" data-i18n="messageBoard.stayDate">入住日期</label>
+                <input type="date" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2" data-i18n="messageBoard.rating">评分</label>
+              <div class="flex space-x-2">
+                <button type="button" class="text-gray-400 hover:text-accent transition-colors"><i class="fa fa-star"></i></button>
+                <button type="button" class="text-gray-400 hover:text-accent transition-colors"><i class="fa fa-star"></i></button>
+                <button type="button" class="text-gray-400 hover:text-accent transition-colors"><i class="fa fa-star"></i></button>
+                <button type="button" class="text-gray-400 hover:text-accent transition-colors"><i class="fa fa-star"></i></button>
+                <button type="button" class="text-gray-400 hover:text-accent transition-colors"><i class="fa fa-star"></i></button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2" data-i18n="messageBoard.content">留言内容</label>
+              <textarea rows="4" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white" placeholder="请分享您的入住体验..."></textarea>
+            </div>
+            <div class="pt-2">
+              <button type="submit" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300">
+                <span data-i18n="messageBoard.submit">提交留言</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.home': '首页',
+        'nav.introduction': '酒店介绍',
+        'nav.rooms': '客房',
+        'nav.facilities': '设施',
+        'nav.notice': '入住须知',
+        'nav.feedback': '意见反馈',
+        'nav.messageBoard': '留言板',
+        'nav.book': '立即预订',
+        'nav.book': '登录',
+        'hero.title1': '欢迎来到',
+        'hero.title2': '酒店',
+        'hero.subtitle': '一座隐匿于城市角落的独特空间，<br class="md:hidden">等待着善于观察的你',
+        'hero.book': '立即预订',
+        'hero.lyric': '"In the room where secrets live..."',
+        'booking.checkIn': '入住日期',
+        'booking.checkOut': '退房日期',
+        'booking.roomType': '房型',
+        'booking.allRooms': '所有房型',
+        'booking.guests': '人数',
+        'booking.checkAvailability': '查询空房',
+        'booking.title': '预订您的独特体验',
+        'booking.subtitle': '填写以下信息，开始您在R∞M酒店的独特之旅。',
+        'booking.name': '姓名',
+        'booking.phone': '电话',
+        'booking.specialRequests': '特殊要求',
+        'booking.submit': '提交预订',
+        'booking.adults': '成人',
+        'booking.children': '儿童',
+        'footer.qrcode': '扫码关注获取更多服务',
+        'roomTypes.standard': '标准客房',
+        'roomTypes.deluxe': '豪华客房',
+        'roomTypes.suite': '主题套房',
+        'roomTypes.presidential': '总统套房',
+        'introduction.title': '酒店介绍',
+        'introduction.special': 'R∞M酒店，为您提供非凡的住宿体验',
+        'introduction.subtitle': '一座融合现代前卫与静谧疏离的独特空间',
+        'introduction.location': '地理位置',
+        'introduction.locationDetail': 'R市荔湾区瑞奇马路1102号',
+        'introduction.opening': '开业时间',
+        'introduction.openingDetail': '酒店于1725年6月26日开始试营业，<br>1725年11月12日上午11:02正式开始营业。',
+        'introduction.scale': '酒店规模',
+        'introduction.scaleDetail': '占地面积：12,000平方米<br>楼层：地上50层，地下3层<br>客房数量：1102间精心设计的客房和套房',
+        'introduction.transportation': '交通设施',
+        'introduction.transportationDetail': '• 距离地铁站步行仅5分钟<br>• 距离机场30分钟车程<br>• 提供免费停车场<br>• 可预约专车接送服务',
+        'introduction.features': '酒店特色',
+        'introduction.featuresDetail': '• 每间客房都有独特的设计理念和故事背景<br>• 24小时个性化管家服务<br>• 融合现代科技与传统工艺的装修风格<br>• 私密性强，注重客人隐私保护',
+        'introduction.contact': '客服信息',
+        'introduction.contactDetail': '预订热线：+86 19931102171 / +86 2021424<br>服务时间：24小时全天候服务<br>邮箱：room-hotel@rkmr.com',
+        'rooms.title': '独特的客房体验',
+        'rooms.subtitle': 'R∞M酒店的每一间客房都是精心设计的独特空间，融合现代舒适与神秘氛围，为每位客人提供个性化的住宿体验。',
+        'rooms.viewDetails': '查看详情',
+        'rooms.bookNow': '立即预订',
+        'rooms.standardDesc': '舒适简约的设计，配备现代化设施，适合独自旅行或商务出行。',
+        'rooms.deluxeDesc': '宽敞空间，高品质家具，提供更舒适的居住体验和优质服务。',
+        'rooms.suiteDesc': '独特设计的主题房间，每间都有不同的故事和氛围，带来非凡体验。',
+        'rooms.presidentialDesc': '极致奢华的空间，配备私人管家服务，提供无与伦比的尊贵体验。',
+        'facilities.title': '酒店设施',
+        'facilities.subtitle': 'R∞M酒店提供一系列高品质设施，旨在为客人创造舒适、便捷且独特的住宿体验。',
+        'facilities.dining': '餐厅与酒吧',
+        'facilities.diningDesc': '提供精致美食与特色饮品，在优雅环境中享受独特用餐体验。',
+        'facilities.spa': '水疗中心',
+        'facilities.spaDesc': '专业理疗师提供放松身心的水疗服务，缓解旅途疲劳。',
+        'facilities.wifi': '高速网络',
+        'facilities.wifiDesc': '全酒店覆盖高速Wi-Fi，確保您隨時保持連接。',
+        'facilities.parking': '停车场',
+        'facilities.parkingDesc': '提供安全便捷的室内停车场，为自驾旅客提供便利。',
+        'facilities.pool': '恒温泳池',
+        'facilities.poolDesc': '全年恒温室内泳池，让您在旅途中也能享受游泳乐趣。',
+        'facilities.business': '商务中心',
+        'facilities.businessDesc': '配备先进设备的商务中心，满足商务旅客的各种需求。',
+        'notice.title': '入住须知',
+        'notice.subtitle': '为了确保您在R∞M酒店度过愉快舒适的时光，请仔细阅读以下入住须知。',
+        'notice.checkInOut': '入住与退房时间',
+        'notice.checkInTime': '• 入住时间：下午14:00以后',
+        'notice.checkOutTime': '• 退房时间：中午12:00以前',
+        'notice.earlyLate': '• 如需提前入住或延迟退房，请提前联系前台',
+        'notice.bookingPayment': '预订与付款',
+        'notice.idRequired': '• 预订需提供有效身份证件',
+        'notice.paymentMethods': '• 接受信用卡、借记卡及移动支付',
+        'notice.deposit': '• 可能需要支付押金，退房时退还',
+        'notice.prohibited': '禁止事项',
+        'notice.noSmoking': '• 禁止在客房内吸烟，违者将收取清洁费',
+        'notice.noPets': '• 禁止携带宠物入住（导盲犬除外）',
+        'notice.noIllegal': '• 禁止在客房内进行违法活动',
+        'notice.noDamage': '• 禁止损坏酒店设施，否则需照价赔偿',
+        'notice.safety': '安全提示',
+        'notice.valuables': '• 请妥善保管个人物品，酒店不承担遗失责任',
+        'notice.security': '• 请勿将贵重物品留在客房内',
+        'notice.emergencyExits': '• 熟悉紧急出口和消防设备位置',
+        'notice.emergencyContact': '• 如遇紧急情况，请拨打前台电话或使用紧急呼叫按钮',
+        'notice.other': '其他事项',
+        'notice.frontDesk': '• 酒店提供24小时前台服务',
+        'notice.extraServices': '• 如需额外服务（如叫醒、洗衣等），请提前告知',
+        'notice.refusal': '• 酒店有权拒绝接待醉酒或行为不当的客人',
+        'notice.specialNeeds': '• 如有特殊需求（如无障碍设施），请提前告知',
+        'feedback.title': '意见反馈',
+        'feedback.subtitle': '您的意见对我们非常重要，帮助我们不断提升服务质量。',
+        'feedback.name': '姓名',
+        'feedback.phone': '电话',
+        'feedback.type': '反馈类型',
+        'feedback.service': '服务质量',
+        'feedback.facility': '设施设备',
+        'feedback.cleanliness': '卫生状况',
+        'feedback.suggestion': '改进建议',
+        'feedback.complaint': '投诉',
+        'feedback.other': '其他',
+        'feedback.content': '反馈内容',
+        'feedback.submit': '提交反馈',
+        'messageBoard.title': '留言板',
+        'messageBoard.subtitle': '听听其他客人在R∞M酒店的体验和故事。',
+        'messageBoard.review1': '非常独特的住宿体验！房间设计很有创意，每个细节都经过精心设计。特别喜欢301号主题套房，感觉像是进入了一个完全不同的世界。服务人员非常专业且友好，一定会再次光顾！',
+        'messageBoard.review2': '酒店位置很隐蔽，但内部环境非常舒适。特别喜欢他们的水疗中心，理疗师手法专业，让我完全放松下来。早餐种类丰富，味道也很棒。唯一的小缺点是房间内灯光调节有点复杂。',
+        'messageBoard.review3': '我必须说，ROOM酒店是我待过的最能激发创造力的地方。在这里，时间仿佛失去了意义，我的世界里只剩下我的作品和我的梦想。我曾一度陷入瓶颈，感觉自己的思维被困在一个狭小的房间里，每天都在重复绝望的劳动。但在291号房，我找到了解决之道。这里的服务恰到好处，总在我最需要的时候送上咖啡，又在我需要沉浸时给予绝对的安静。我在这里完成了《DAYDREAMS》最核心的架构，解决了一个困扰我数月的逻辑死循环。我感觉自己和游戏里的主角一起，经历了一场从绝望到重生的挣扎，并最终找到了那个属于我们自己的‘出口’。感谢ROOM酒店。这不仅仅是一次住宿，更是一场修行。我的白日梦，在这里，成为了现实。强烈推荐给所有正在与自己战斗的创作者们。',
+        'messageBoard.review4': '庆祝纪念日选择了总统套房，体验非常棒！房间设计奢华且舒适，管家服务无微不至。特别感谢酒店为我们准备的惊喜蛋糕和玫瑰花，让这个特殊的日子更加难忘。',
+        'messageBoard.review5': '这是我人生中最美好的一周。感谢314号房的舞蹈室，让我重新找到了对舞蹈的热爱。那个空间仿佛有魔力，让我感觉自己又回到了巅峰时期。房间里的巧克力很特别，甜得恰到好处。唯一遗憾的是退房时间到了，真希望能住得更久一些。五星好评！',
+        'messageBoard.share': '分享您的体验',
+        'messageBoard.name': '姓名',
+        'messageBoard.stayDate': '入住日期',
+        'messageBoard.rating': '评分',
+        'messageBoard.content': '留言内容',
+        'messageBoard.submit': '提交留言',
+        'availability.title': '空房查询结果',
+        'availability.subtitle': '以下是当前可预订的房型及剩余数量',
+        'availability.standardDesc': '舒适简约，现代化设施',
+        'availability.deluxeDesc': '宽敞空间，高品质家具',
+        'availability.suiteDesc': '独特设计，非凡体验',
+        'availability.presidentialDesc': '极致奢华，私人管家',
+        'availability.remaining': '剩余房间',
+        'availability.note': '房间数量实时更新，建议您尽快完成预订',
+        'availability.bookNow': '立即预订',
+        'footer.hotel': '酒店',
+        'footer.tagline': '探索内心的隐秘空间',
+        'footer.copyright': '© 2025 R∞M酒店. 保留所有权利.'
+      },
+      'en': {
+        'nav.home': 'Home',
+        'nav.introduction': 'Introduction',
+        'nav.rooms': 'Rooms',
+        'nav.facilities': 'Facilities',
+        'nav.notice': 'Notice',
+        'nav.feedback': 'Feedback',
+        'nav.messageBoard': 'Message Board',
+        'nav.book': 'Book Now',
+        'nav.book': 'Login',
+        'hero.title1': 'Welcome to',
+        'hero.title2': 'Hotel',
+        'hero.subtitle': 'A unique space hidden in the city corner,<br class="md:hidden"> waiting for the observant you',
+        'hero.book': 'Book Now',
+        'hero.lyric': '"In the room where secrets live..."',
+        'booking.checkIn': 'Check-in Date',
+        'booking.checkOut': 'Check-out Date',
+        'booking.roomType': 'Room Type',
+        'booking.allRooms': 'All Room Types',
+        'booking.guests': 'Guests',
+        'booking.checkAvailability': 'Check Availability',
+        'booking.title': 'Book Your Unique Experience',
+        'booking.subtitle': 'Fill in the following information to start your unique journey at R∞M Hotel.',
+        'booking.name': 'Name',
+        'booking.phone': 'Phone',
+        'booking.specialRequests': 'Special Requests',
+        'booking.submit': 'Submit Booking',
+        'booking.adults': 'Adults',
+        'booking.children': 'Children',
+        'footer.qrcode': 'Scan to follow for more services',
+        'roomTypes.standard': 'Standard Room',
+        'roomTypes.deluxe': 'Deluxe Room',
+        'roomTypes.suite': 'Theme Suite',
+        'roomTypes.presidential': 'Presidential Suite',
+        'introduction.title': 'Hotel Introduction',
+        'introduction.special': 'R∞M Hotel, providing you with an extraordinary accommodation experience',
+        'introduction.subtitle': 'A unique space that blends modern avant-garde with quiet detachment',
+        'introduction.location': 'Location',
+        'introduction.locationDetail': 'No. 1102, Ruiqi Road, Liwan District, R City',
+        'introduction.opening': 'Opening Time',
+        'introduction.openingDetail': 'The hotel started trial operation on June 26, 1725,<br>and officially opened at 11:02 AM on November 12, 1725.',
+        'introduction.scale': 'Hotel Scale',
+        'introduction.scaleDetail': 'Area: 12,000 square meters<br>Floors: 50 above ground, 3 underground<br>Room count: 1,102 carefully designed rooms and suites',
+        'introduction.transportation': 'Transportation',
+        'introduction.transportationDetail': '• 5 minutes walk to subway station<br>• 30 minutes drive to airport<br>• Free parking available<br>• Private car transfer service available upon reservation',
+        'introduction.features': 'Hotel Features',
+        'introduction.featuresDetail': '• Each room has unique design concept and story background<br>• 24-hour personalized butler service<br>• Blends modern technology with traditional craftsmanship<br>• Strong privacy protection, focusing on guest privacy',
+        'introduction.contact': 'Contact Information',
+        'introduction.contactDetail': 'Reservation hotline: +86 19931102171 / +86 2021424<br>Service hours: 24-hour service<br>Email: room-hotel@rkmr.com',
+        'rooms.title': 'Unique Room Experience',
+        'rooms.subtitle': 'Each room at R∞M Hotel is a carefully designed unique space, blending modern comfort with mysterious atmosphere, providing personalized accommodation experience for every guest.',
+        'rooms.viewDetails': 'View Details',
+        'rooms.bookNow': 'Book Now',
+        'rooms.standardDesc': 'Comfortable and simple design, equipped with modern facilities, suitable for solo travel or business trips.',
+        'rooms.deluxeDesc': 'Spacious space, high-quality furniture, providing more comfortable living experience and quality service.',
+        'rooms.suiteDesc': 'Uniquely designed theme rooms, each with different stories and atmosphere, bringing extraordinary experience.',
+        'rooms.presidentialDesc': 'Ultimate luxurious space, equipped with private butler service, providing unparalleled premium experience.',
+        'facilities.title': 'Hotel Facilities',
+        'facilities.subtitle': 'R∞M Hotel provides a series of high-quality facilities, aiming to create comfortable, convenient and unique accommodation experience for guests.',
+        'facilities.dining': 'Restaurant & Bar',
+        'facilities.diningDesc': 'Offering exquisite cuisine and specialty drinks, enjoying unique dining experience in elegant environment.',
+        'facilities.spa': 'Spa Center',
+        'facilities.spaDesc': 'Professional therapists provide relaxing spa services to relieve travel fatigue.',
+        'facilities.wifi': 'High-speed Internet',
+        'facilities.wifiDesc': 'High-speed Wi-Fi coverage throughout the hotel, ensuring you stay connected at all times.',
+        'facilities.parking': 'Parking',
+        'facilities.parkingDesc': 'Providing safe and convenient indoor parking for self-driving guests.',
+        'facilities.pool': 'Heated Pool',
+        'facilities.poolDesc': 'Year-round heated indoor pool, allowing you to enjoy swimming during your journey.',
+        'facilities.business': 'Business Center',
+        'facilities.businessDesc': 'Business center equipped with advanced equipment to meet various needs of business travelers.',
+        'notice.title': 'Check-in Notice',
+        'notice.subtitle': 'To ensure you have a pleasant and comfortable time at R∞M Hotel, please read the following check-in notice carefully.',
+        'notice.checkInOut': 'Check-in & Check-out Time',
+        'notice.checkInTime': '• Check-in time: After 2:00 PM',
+        'notice.checkOutTime': '• Check-out time: Before 12:00 PM',
+        'notice.earlyLate': '• If you need early check-in or late check-out, please contact the front desk in advance',
+        'notice.bookingPayment': 'Booking & Payment',
+        'notice.idRequired': '• Valid ID required for booking',
+        'notice.paymentMethods': '• Credit cards, debit cards and mobile payments accepted',
+        'notice.deposit': '• Deposit may be required and refunded upon check-out',
+        'notice.prohibited': 'Prohibited Items',
+        'notice.noSmoking': '• No smoking in guest rooms, cleaning fee will be charged for violation',
+        'notice.noPets': '• No pets allowed (except guide dogs)',
+        'notice.noIllegal': '• No illegal activities in guest rooms',
+        'notice.noDamage': '• No damage to hotel facilities, otherwise compensation will be required',
+        'notice.safety': 'Safety Tips',
+        'notice.valuables': '• Please keep personal belongings properly, hotel is not responsible for loss',
+        'notice.security': '• Do not leave valuables in guest rooms',
+        'notice.emergencyExits': '• Familiarize with emergency exits and fire equipment locations',
+        'notice.emergencyContact': '• In case of emergency, please call front desk or use emergency call button',
+        'notice.other': 'Other Matters',
+        'notice.frontDesk': '• Hotel provides 24-hour front desk service',
+        'notice.extraServices': '• If additional services are needed (such as wake-up call, laundry, etc.), please inform in advance',
+        'notice.refusal': '• Hotel has the right to refuse to receive drunk or misbehaving guests',
+        'notice.specialNeeds': '• If you have special needs (such as accessible facilities), please inform in advance',
+        'feedback.title': 'Feedback',
+        'feedback.subtitle': 'Your opinion is very important to us, helping us continuously improve service quality.',
+        'feedback.name': 'Name',
+        'feedback.phone': 'Phone',
+        'feedback.type': 'Feedback Type',
+        'feedback.service': 'Service Quality',
+        'feedback.facility': 'Facilities & Equipment',
+        'feedback.cleanliness': 'Cleanliness',
+        'feedback.suggestion': 'Improvement Suggestions',
+        'feedback.complaint': 'Complaint',
+        'feedback.other': 'Other',
+        'feedback.content': 'Feedback Content',
+        'feedback.submit': 'Submit Feedback',
+        'messageBoard.title': 'Message Board',
+        'messageBoard.subtitle': 'Listen to other guests\' experiences and stories at R∞M Hotel.',
+        'messageBoard.review1': 'Very unique accommodation experience! The room design is very creative, every detail is carefully designed. Especially like the 301 theme suite, it feels like entering a completely different world. The service staff are very professional and friendly, will definitely visit again!',
+        'messageBoard.review2': 'The hotel location is very hidden, but the internal environment is very comfortable. Especially like their spa center, the therapists are professional and made me completely relaxed. The breakfast variety is rich and tastes great. The only small drawback is that the room lighting adjustment is a bit complicated.',
+        'messageBoard.review3': 'I must say, ROOM Hotel is the most inspiring place I\'ve ever stayed. Here, time seems to lose its meaning, and my world is reduced to only my work and my dreams. I was once stuck in a creative block, feeling like my thoughts were trapped in a small room, repeating desperate labor every day. But in Room 291, I found a solution. The service here is just right, always bringing coffee when I need it most and providing absolute silence when I need to immerse myself. Here, I completed the core architecture of "DAYDREAMS" and solved a logical deadlock that had troubled me for months. I felt like I was going through the struggle from despair to rebirth with the protagonist in the game, and finally found our own \'exit\'. Thank you, ROOM Hotel. This is not just a stay, but a practice. My daydreams have become reality here. Highly recommended to all creators who are fighting with themselves.',
+        'messageBoard.review4': 'Chose the presidential suite for anniversary celebration, the experience was fantastic! The room design is luxurious and comfortable, the butler service is meticulous. Special thanks to the hotel for preparing surprise cake and roses for us, making this special day more memorable.',
+        'messageBoard.review5': 'This has been the most wonderful week of my life. Thank you to the dance studio in Room 314 for helping me rediscover my passion for dance. That space seems to have magic, making me feel like I\'m back at my peak. The chocolate in the room was very special, sweet just right. The only regret is that checkout time arrived, I really wish I could have stayed longer. Five-star review!',
+        'messageBoard.share': 'Share Your Experience',
+        'messageBoard.name': 'Name',
+        'messageBoard.stayDate': 'Stay Date',
+        'messageBoard.rating': 'Rating',
+        'messageBoard.content': 'Message Content',
+        'messageBoard.submit': 'Submit Message',
+        'availability.title': 'Availability Check Results',
+        'availability.subtitle': 'The following are the available room types and remaining quantities',
+        'availability.standardDesc': 'Comfortable and simple, modern facilities',
+        'availability.deluxeDesc': 'Spacious space, high-quality furniture',
+        'availability.suiteDesc': 'Unique design, extraordinary experience',
+        'availability.presidentialDesc': 'Ultimate luxury, private butler',
+        'availability.remaining': 'Remaining Rooms',
+        'availability.note': 'Room quantities are updated in real time, we recommend you complete your booking as soon as possible',
+        'availability.bookNow': 'Book Now',
+        'footer.hotel': 'Hotel',
+        'footer.tagline': 'Explore the hidden space within',
+        'footer.copyright': '© 2025 R∞M Hotel. All Rights Reserved.'
+      },
+      'ja': {
+        'nav.home': 'ホーム',
+        'nav.introduction': 'ホテル紹介',
+        'nav.rooms': '客室',
+        'nav.facilities': '施設',
+        'nav.notice': 'ご利用案内',
+        'nav.feedback': 'フィードバック',
+        'nav.messageBoard': 'メッセージボード',
+        'nav.book': '今すぐ予約',
+        'nav.book': 'ログイン',
+        'hero.title1': 'ようこそ',
+        'hero.title2': 'ホテルへ',
+        'hero.subtitle': '都市の片隅に隠されたユニークな空間、<br class="md:hidden">観察力のあるあなたを待っています',
+        'hero.book': '今すぐ予約',
+        'hero.lyric': '"In the room where secrets live..."',
+        'booking.checkIn': 'チェックイン日',
+        'booking.checkOut': 'チェックアウト日',
+        'booking.roomType': '客室タイプ',
+        'booking.allRooms': 'すべての客室タイプ',
+        'booking.guests': '人数',
+        'booking.checkAvailability': '空室確認',
+        'booking.title': 'ユニークな体験を予約',
+        'booking.subtitle': '以下の情報を入力して、R∞Mホテルでのユニークな旅を始めましょう。',
+        'booking.name': '名前',
+        'booking.phone': '電話番号',
+        'booking.specialRequests': '特別なリクエスト',
+        'booking.submit': '予約を送信',
+        'booking.adults': '大人',
+        'booking.children': '子供',
+        'footer.qrcode': 'スキャンしてフォローし、更多サービスを取得',
+        'roomTypes.standard': 'スタンダードルーム',
+        'roomTypes.deluxe': 'デラックスルーム',
+        'roomTypes.suite': 'テーマスイート',
+        'roomTypes.presidential': 'プレジデンシャルスイート',
+        'introduction.title': 'ホテル紹介',
+        'introduction.special': 'R∞Mホテル、あなたに非凡な宿泊体験を提供します',
+        'introduction.subtitle': 'モダンな前衛と静かな距離感を融合させたユニークな空間',
+        'introduction.location': '所在地',
+        'introduction.locationDetail': 'R市荔湾区瑞奇馬路1102号',
+        'introduction.opening': '開業時間',
+        'introduction.openingDetail': 'ホテルは1725年6月26日に試運営を開始し、<br>1725年11月12日午前11時02分に正式にオープンしました。',
+        'introduction.scale': 'ホテル規模',
+        'introduction.scaleDetail': '面積：12,000平方メートル<br>階数：地上50階、地下3階<br>客室数：1,102室の丁寧に設計された客室とスイート',
+        'introduction.transportation': '交通施設',
+        'introduction.transportationDetail': '• 地下鉄駅まで徒歩わずか5分<br>• 空港まで車で30分<br>• 無料駐車場あり<br>• 専用送迎サービス予約可能',
+        'introduction.features': 'ホテル特色',
+        'introduction.featuresDetail': '• 各客室に独自のデザインコンセプトとストーリーバックグラウンド<br>• 24時間パーソナライズドバトラーサービス<br>• 現代技術と伝統工芸の融合<br>• プライバシー保護重視、ゲストのプライバシーを尊重',
+        'introduction.contact': 'お問い合わせ',
+        'introduction.contactDetail': '予約ホットライン：+86 19931102171 / +86 2021424<br>サービス時間：24時間サービス<br>メール：room-hotel@rkmr.com',
+        'rooms.title': 'ユニークな客室体験',
+        'rooms.subtitle': 'R∞Mホテルの各客室は丁寧に設計されたユニークな空間で、現代的な快適さと神秘的な雰囲気を融合し、各ゲストにパーソナライズされた宿泊体験を提供します。',
+        'rooms.viewDetails': '詳細を見る',
+        'rooms.bookNow': '今すぐ予約',
+        'rooms.standardDesc': '快適でシンプルなデザイン、現代的な設備を備え、一人旅や出張に最適です。',
+        'rooms.deluxeDesc': '広々とした空間、高品質な家具、より快適な居住体験と質の高いサービスを提供します。',
+        'rooms.suiteDesc': '独自にデザインされたテーマルーム、それぞれ異なるストーリーと雰囲気を持ち、非凡な体験をもたらします。',
+        'rooms.presidentialDesc': '究極の豪華な空間、プライベートバトラーサービスを備え、比類のない高級体験を提供します。',
+        'facilities.title': 'ホテル施設',
+        'facilities.subtitle': 'R∞Mホテルは、ゲストに快適で便利かつユニークな宿泊体験を創造するために、一連の高品質な施設を提供します。',
+        'facilities.dining': 'レストラン＆バー',
+        'facilities.diningDesc': '洗練された料理と特製ドリンクを提供し、優雅な環境でユニークな食事体験を楽しめます。',
+        'facilities.spa': 'スパセンター',
+        'facilities.spaDesc': '専門のセラピストが心身をリラックスさせるスパサービスを提供し、旅の疲れを癒します。',
+        'facilities.wifi': '高速インターネット',
+        'facilities.wifiDesc': 'ホテル全体に高速Wi-Fiをカバーし、常に接続を確保します。',
+        'facilities.parking': '駐車場',
+        'facilities.parkingDesc': 'セルフドライブのゲストのために安全で便利な屋内駐車場を提供します。',
+        'facilities.pool': '温水プール',
+        'facilities.poolDesc': '年間を通して温水の屋内プールで、旅先でも水泳を楽しむことができます。',
+        'facilities.business': 'ビジネスセンター',
+        'facilities.businessDesc': '先進的な設備を備えたビジネスセンターで、ビジネス旅行者の様々なニーズを満たします。',
+        'notice.title': 'ご利用案内',
+        'notice.subtitle': 'R∞Mホテルで快適な時間を過ごしていただくために、以下のご利用案内をよくお読みください。',
+        'notice.checkInOut': 'チェックイン・チェックアウト時間',
+        'notice.checkInTime': '• チェックイン時間：14時以降',
+        'notice.checkOutTime': '• チェックアウト時間：12時以前',
+        'notice.earlyLate': '• 早期チェックインまたは遅延チェックアウトが必要な場合は、事前にフロントデスクにご連絡ください',
+        'notice.bookingPayment': '予約と支払い',
+        'notice.idRequired': '• 予約には有効な身分証明書が必要です',
+        'notice.paymentMethods': '• クレジットカード、デビットカード、モバイル決済に対応',
+        'notice.deposit': '• デポジットが必要な場合があり、チェックアウト時に返金されます',
+        'notice.prohibited': '禁止事項',
+        'notice.noSmoking': '• 客室内での喫煙禁止、違反した場合は清掃費が請求されます',
+        'notice.noPets': '• ペットの持ち込み禁止（盲導犬を除く）',
+        'notice.noIllegal': '• 客室内での違法行為禁止',
+        'notice.noDamage': '• ホテル施設の損傷禁止、そうでない場合は賠償が必要です',
+        'notice.safety': '安全上の注意',
+        'notice.valuables': '• 個人の持ち物は適切に保管してください、ホテルは紛失について責任を負いません',
+        'notice.security': '• 貴重品を客室内に置き去りにしないでください',
+        'notice.emergencyExits': '• 非常口と消防設備の場所を確認してください',
+        'notice.emergencyContact': '• 緊急時はフロントデスクに電話するか、緊急通報ボタンを使用してください',
+        'notice.other': 'その他の事項',
+        'notice.frontDesk': '• ホテルは24時間フロントデスクサービスを提供します',
+        'notice.extraServices': '• 追加サービス（モーニングコール、ランドリーなど）が必要な場合は、事前にお知らせください',
+        'notice.refusal': '• ホテルは酔っぱらいや不適切な行動のゲストの受け入れを拒否する権利があります',
+        'notice.specialNeeds': '• 特別なニーズ（バリアフリー施設など）がある場合は、事前にお知らせください',
+        'feedback.title': 'フィードバック',
+        'feedback.subtitle': 'あなたのご意見は私たちにとって非常に重要で、サービス品質の向上に役立ちます。',
+        'feedback.name': '名前',
+        'feedback.phone': '電話番号',
+        'feedback.type': 'フィードバックタイプ',
+        'feedback.service': 'サービス品質',
+        'feedback.facility': '施設・設備',
+        'feedback.cleanliness': '清潔さ',
+        'feedback.suggestion': '改善提案',
+        'feedback.complaint': '苦情',
+        'feedback.other': 'その他',
+        'feedback.content': 'フィードバック内容',
+        'feedback.submit': 'フィードバックを送信',
+        'messageBoard.title': 'メッセージボード',
+        'messageBoard.subtitle': '他のゲストのR∞Mホテルでの体験とストーリーを聞いてみましょう。',
+        'messageBoard.review1': '非常にユニークな宿泊体験！客室のデザインは非常に創造的で、すべての細部が丁寧に設計されています。特に301号テーマスイートが気に入りました。完全に異なる世界に入ったような感じでした。サービススタッフは非常にプロフェッショナルでフレンドリーです。必ずまた訪れます！',
+        'messageBoard.review2': 'ホテルの場所は非常に隠れていますが、内部環境は非常に快適です。特に彼らのスパセンターが好きで、セラピストはプロフェッショナルで、私を完全にリラックスさせてくれました。朝食の種類は豊富で味も素晴らしいです。唯一の小さな欠点は、客室内の照明調整が少し複雑なことです。',
+        'messageBoard.review3': 'ROOMホテルは、私がこれまで滞在した中で最も創造性を刺激する場所だと言わざるを得ません。ここでは、時間が意味を失ったかのように感じられ、私の世界は作品と夢だけに縮小されます。私はかつて行き詰まりを経験し、自分の思考が狭い部屋に閉じ込められ、毎日絶望的な労働を繰り返しているように感じていました。しかし、291号室で、私は解決策を見つけました。ここのサービスはちょうどよく、最も必要な時にコーヒーを運んでくれ、没頭する必要がある時には絶対的な静けさを提供してくれます。ここで、私は『DAYDREAMS』の核心となるアーキテクチャを完成させ、数ヶ月間私を悩ませていた論理的なデッドロックを解決しました。私はゲームの主人公と共に、絶望から再生への苦闘を経験し、最終的に私たち自身の「出口」を見つけたように感じました。ROOMホテルに感謝します。これは単なる宿泊ではなく、一種の修行です。私の白昼夢が、ここで現実となりました。自分自身と戦っているすべてのクリエイターに強くお勧めします。',
+        'messageBoard.review4': '記念日を祝うためにプレジデンシャルスイートを選び、体験は素晴らしかったです！客室のデザインは豪華で快適、バトラーサービスは行き届いています。ホテルが私たちのために準備してくれたサプライズケーキとバラに特に感謝します。この特別な日をより忘れられないものにしてくれました。',
+        'messageBoard.review5': 'これは私の人生で最も素晴らしい一週間でした。314号室のダンススタジオに感謝します。ダンスへの情熱を再発見させてくれました。あの空間には魔法があるかのようで、全盛期に戻ったような気分にさせてくれました。部屋のチョコレートは特別で、甘さがちょうど良かったです。唯一の残念はチェックアウトの時間が来てしまったことで、もっと長く滞在したかったです。星5つの評価です！',
+        'messageBoard.share': 'あなたの体験を共有',
+        'messageBoard.name': '名前',
+        'messageBoard.stayDate': '宿泊日',
+        'messageBoard.rating': '評価',
+        'messageBoard.content': 'メッセージ内容',
+        'messageBoard.submit': 'メッセージを送信',
+        'availability.title': '空室確認結果',
+        'availability.subtitle': '以下は現在予約可能な客室タイプと残数です',
+        'availability.standardDesc': '快適でシンプル、現代的な設備',
+        'availability.deluxeDesc': '広々とした空間、高品質な家具',
+        'availability.suiteDesc': '独自のデザイン、非凡な体験',
+        'availability.presidentialDesc': '究極の豪華、プライベートバトラー',
+        'availability.remaining': '残室数',
+        'availability.note': '客室数はリアルタイムで更新されます。できるだけ早く予約を完了することをお勧めします',
+        'availability.bookNow': '今すぐ予約',
+        'footer.hotel': 'ホテル',
+        'footer.tagline': '内なる隠された空間を探求する',
+        'footer.copyright': '© 2025 R∞Mホテル. 全著作権所有.'
+      },
+      'pt': {
+        'nav.home': 'Início',
+        'nav.introduction': 'Introdução',
+        'nav.rooms': 'Quartos',
+        'nav.facilities': 'Instalações',
+        'nav.notice': 'Aviso',
+        'nav.feedback': 'Feedback',
+        'nav.messageBoard': 'Quadro de Mensagens',
+        'nav.book': 'Reservar Agora',
+        'nav.book': 'Entrar',
+        'hero.title1': 'Bem-vindo ao',
+        'hero.title2': 'Hotel',
+        'hero.subtitle': 'Um espaço único escondido no canto da cidade,<br class="md:hidden"> esperando por você observador',
+        'hero.book': 'Reservar Agora',
+        'hero.lyric': '"In the room where secrets live..."',
+        'booking.checkIn': 'Data de Check-in',
+        'booking.checkOut': 'Data de Check-out',
+        'booking.roomType': 'Tipo de Quarto',
+        'booking.allRooms': 'Todos os Tipos de Quarto',
+        'booking.guests': 'Hóspedes',
+        'booking.checkAvailability': 'Verificar Disponibilidade',
+        'booking.title': 'Reserve Sua Experiência Única',
+        'booking.subtitle': 'Preencha as informações abaixo para iniciar sua jornada única no Hotel R∞M.',
+        'booking.name': 'Nome',
+        'booking.phone': 'Telefone',
+        'booking.specialRequests': 'Pedidos Especiais',
+        'booking.submit': 'Enviar Reserva',
+        'booking.adults': 'Adultos',
+        'booking.children': 'Crianças',
+        'footer.qrcode': 'Escaneie para seguir e obter mais serviços',
+        'roomTypes.standard': 'Quarto Padrão',
+        'roomTypes.deluxe': 'Quarto de Luxo',
+        'roomTypes.suite': 'Suíte Temática',
+        'roomTypes.presidential': 'Suíte Presidencial',
+        'introduction.title': 'Introdução do Hotel',
+        'introduction.special': 'Hotel R∞M, proporcionando a você uma experiência de hospedagem extraordinária',
+        'introduction.subtitle': 'Um espaço único que combina vanguarda moderna com desapego tranquilo',
+        'introduction.location': 'Localização',
+        'introduction.locationDetail': 'No. 1102, Rua Ruiqi, Distrito Liwan, Cidade R',
+        'introduction.opening': 'Horário de Abertura',
+        'introduction.openingDetail': 'O hotel iniciou operação experimental em 26 de junho de 1725,<br>e abriu oficialmente às 11:02 da manhã em 12 de novembro de 1725.',
+        'introduction.scale': 'Escala do Hotel',
+        'introduction.scaleDetail': 'Área: 12.000 metros quadrados<br>Andares: 50 acima do solo, 3 subterrâneos<br>Número de quartos: 1.102 quartos e suítes cuidadosamente projetados',
+        'introduction.transportation': 'Transporte',
+        'introduction.transportationDetail': '• 5 minutos a pé do metrô<br>• 30 minutos de carro do aeroporto<br>• Estacionamento gratuito disponível<br>• Serviço de transferência privada disponível mediante reserva',
+        'introduction.features': 'Características do Hotel',
+        'introduction.featuresDetail': '• Cada quarto tem conceito de design único e histórico de fundo<br>• Serviço de mordomo personalizado 24 horas<br>• Combina tecnologia moderna com artesanato tradicional<br>• Forte proteção de privacidade, focando na privacidade do hóspede',
+        'introduction.contact': 'Informações de Contato',
+        'introduction.contactDetail': 'Linha direta de reservas: +86 19931102171 / +86 2021424<br>Horário de atendimento: Serviço 24 horas<br>E-mail: room-hotel@rkmr.com',
+        'rooms.title': 'Experiência de Quarto Única',
+        'rooms.subtitle': 'Cada quarto no Hotel R∞M é um espaço único cuidadosamente projetado, combinando conforto moderno com atmosfera misteriosa, proporcionando experiência de hospedagem personalizada para cada hóspede.',
+        'rooms.viewDetails': 'Ver Detalhes',
+        'rooms.bookNow': 'Reservar Agora',
+        'rooms.standardDesc': 'Design confortável e simples, equipado com instalações modernas, adequado para viagens solo ou negócios.',
+        'rooms.deluxeDesc': 'Espaço amplo, móveis de alta qualidade, proporcionando experiência de vida mais confortável e serviço de qualidade.',
+        'rooms.suiteDesc': 'Quartos temáticos com design único, cada um com histórias e atmosferas diferentes, trazendo experiência extraordinária.',
+        'rooms.presidentialDesc': 'Espaço luxuoso supremo, equipado com serviço de mordomo privativo, proporcionando experiência premium incomparável.',
+        'facilities.title': 'Instalações do Hotel',
+        'facilities.subtitle': 'O Hotel R∞M fornece uma série de instalações de alta qualidade, visando criar experiência de hospedagem confortável, conveniente e única para os hóspedes.',
+        'facilities.dining': 'Restaurante & Bar',
+        'facilities.diningDesc': 'Oferecendo culinária requintada e bebidas especiais, desfrutando de experiência gastronômica única em ambiente elegante.',
+        'facilities.spa': 'Centro de Spa',
+        'facilities.spaDesc': 'Terapeutas profissionais fornecem serviços de spa relaxantes para aliviar a fadiga da viagem.',
+        'facilities.wifi': 'Internet de Alta Velocidade',
+        'facilities.wifiDesc': 'Cobertura Wi-Fi de alta velocidade em todo o hotel, garantindo que você permaneça conectado o tempo todo.',
+        'facilities.parking': 'Estacionamento',
+        'facilities.parkingDesc': 'Fornecendo estacionamento interno seguro e conveniente para hóspedes que dirigem.',
+        'facilities.pool': 'Piscina Aquecida',
+        'facilities.poolDesc': 'Piscina interna aquecida durante todo o ano, permitindo que você desfrute de natação durante sua jornada.',
+        'facilities.business': 'Centro de Negócios',
+        'facilities.businessDesc': 'Centro de negócios equipado com equipamentos avançados para atender às várias necessidades de viajantes de negócios.',
+        'notice.title': 'Aviso de Check-in',
+        'notice.subtitle': 'Para garantir que você tenha um tempo agradável e confortável no Hotel R∞M, por favor leia o seguinte aviso de check-in cuidadosamente.',
+        'notice.checkInOut': 'Horário de Check-in & Check-out',
+        'notice.checkInTime': '• Horário de check-in: Após 14:00',
+        'notice.checkOutTime': '• Horário de check-out: Antes de 12:00',
+        'notice.earlyLate': '• Se precisar de check-in antecipado ou check-out tardio, por favor contate a recepção com antecedência',
+        'notice.bookingPayment': 'Reserva & Pagamento',
+        'notice.idRequired': '• ID válido necessário para reserva',
+        'notice.paymentMethods': '• Cartões de crédito, cartões de débito e pagamentos móveis aceitos',
+        'notice.deposit': '• Depósito pode ser necessário e reembolsado no check-out',
+        'notice.prohibited': 'Itens Proibidos',
+        'notice.noSmoking': '• Proibido fumar nos quartos, taxa de limpeza será cobrada por violação',
+        'notice.noPets': '• Proibido animais de estimação (exceto cães-guia)',
+        'notice.noIllegal': '• Proibidas atividades ilegais nos quartos',
+        'notice.noDamage': '• Proibido danificar instalações do hotel, caso contrário será necessária compensação',
+        'notice.safety': 'Dicas de Segurança',
+        'notice.valuables': '• Por favor, mantenha pertences pessoais adequadamente, hotel não é responsável por perda',
+        'notice.security': '• Não deixe objetos de valor nos quartos',
+        'notice.emergencyExits': '• Familiarize-se com saídas de emergência e localizações de equipamentos de incêndio',
+        'notice.emergencyContact': '• Em caso de emergência, por favor ligue para a recepção ou use o botão de chamada de emergência',
+        'notice.other': 'Outros Assuntos',
+        'notice.frontDesk': '• Hotel fornece serviço de recepção 24 horas',
+        'notice.extraServices': '• Se serviços adicionais forem necessários (como chamada de despertador, lavanderia, etc.), por favor informe com antecedência',
+        'notice.refusal': '• Hotel tem o direito de recusar receber hóspedes bêbados ou com comportamento inadequado',
+        'notice.specialNeeds': '• Se você tem necessidades especiais (como instalações acessíveis), por favor informe com antecedência',
+        'feedback.title': 'Feedback',
+        'feedback.subtitle': 'Sua opinião é muito importante para nós, ajudando-nos a melhorar continuamente a qualidade do serviço.',
+        'feedback.name': 'Nome',
+        'feedback.phone': 'Telefone',
+        'feedback.type': 'Tipo de Feedback',
+        'feedback.service': 'Qualidade do Serviço',
+        'feedback.facility': 'Instalações & Equipamentos',
+        'feedback.cleanliness': 'Limpeza',
+        'feedback.suggestion': 'Sugestões de Melhoria',
+        'feedback.complaint': 'Reclamação',
+        'feedback.other': 'Outro',
+        'feedback.content': 'Conteúdo do Feedback',
+        'feedback.submit': 'Enviar Feedback',
+        'messageBoard.title': 'Quadro de Mensagens',
+        'messageBoard.subtitle': 'Ouça as experiências e histórias de outros hóspedes no Hotel R∞M.',
+        'messageBoard.review1': 'Experiência de hospedagem muito única! O design do quarto é muito criativo, cada detalhe é cuidadosamente projetado. Gosto especialmente da suíte temática 301, parece entrar em um mundo completamente diferente. A equipe de serviço é muito profissional e amigável, definitivamente visitarei novamente!',
+        'messageBoard.review2': 'A localização do hotel é muito escondida, mas o ambiente interno é muito confortável. Gosto especialmente do seu centro de spa, os terapeutas são profissionais e me deixaram completamente relaxado. A variedade do café da manhã é rica e o sabor é ótimo. A única pequena desvantagem é que o ajuste de iluminação do quarto é um pouco complicado.',
+        'messageBoard.review3': 'Devo dizer que o Hotel ROOM é o lugar mais inspirador onde já fiquei. Aqui, o tempo parece perder seu significado, e meu mundo se reduz apenas ao meu trabalho e meus sonhos. Uma vez fiquei preso em um bloqueio criativo, sentindo que meus pensamentos estavam presos em uma sala pequena, repetindo trabalho desesperador todos os dias. Mas no Quarto 291, encontrei uma solução. O serviço aqui é perfeito, sempre trazendo café quando mais preciso e fornecendo silêncio absoluto quando preciso me imergir. Aqui, completei a arquitetura principal de "DAYDREAMS" e resolvi um impasse lógico que me incomodava há meses. Senti como se estivesse passando pela luta do desespero ao renascimento com o protagonista do jogo, e finalmente encontrei nossa própria \'saída\'. Obrigado, Hotel ROOM. Isso não é apenas uma estadia, mas uma prática. Meus sonhos acordados se tornaram realidade aqui. Altamente recomendado a todos os criadores que estão lutando consigo mesmos.',
+        'messageBoard.review4': 'Escolhi a suíte presidencial para comemoração de aniversário, a experiência foi fantástica! O design do quarto é luxuoso e confortável, o serviço de mordomo é meticuloso. Agradeço especialmente ao hotel por preparar bolo surpresa e rosas para nós, tornando este dia especial mais memorável.',
+        'messageBoard.review5': 'Esta foi a semana mais maravilhosa da minha vida. Obrigada ao estúdio de dança no Quarto 314 por me ajudar a redescobrir minha paixão pela dança. Aquele espaço parece ter magia, me fazendo sentir como se estivesse de volta ao meu auge. O chocolate no quarto era muito especial, doce na medida certa. A única pena é que o horário de check-out chegou, eu realmente gostaria de ter ficado mais tempo. Avaliação de cinco estrelas!',
+        'messageBoard.share': 'Compartilhe Sua Experiência',
+        'messageBoard.name': 'Nome',
+        'messageBoard.stayDate': 'Data de Estadia',
+        'messageBoard.rating': 'Avaliação',
+        'messageBoard.content': 'Conteúdo da Mensagem',
+        'messageBoard.submit': 'Enviar Mensagem',
+        'availability.title': 'Resultados da Verificação de Disponibilidade',
+        'availability.subtitle': 'A seguir estão os tipos de quarto disponíveis e quantidades restantes',
+        'availability.standardDesc': 'Confortável e simples, instalações modernas',
+        'availability.deluxeDesc': 'Espaço amplo, móveis de alta qualidade',
+        'availability.suiteDesc': 'Design único, experiência extraordinária',
+        'availability.presidentialDesc': 'Luxo supremo, mordomo privativo',
+        'availability.remaining': 'Quartos Restantes',
+        'availability.note': 'As quantidades de quartos são atualizadas em tempo real, recomendamos que você complete sua reserva o mais rápido possível',
+        'availability.bookNow': 'Reservar Agora',
+        'footer.hotel': 'Hotel',
+        'footer.tagline': 'Explore o espaço escondido dentro',
+        'footer.copyright': '© 2025 Hotel R∞M. Todos os direitos reservados.'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 平滑滚动
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 80,
+              behavior: 'smooth'
+            });
+            
+            // 关闭移动菜单
+            if (!mobileMenu.classList.contains('hidden')) {
+              mobileMenu.classList.add('hidden');
+              const icon = menuToggle.querySelector('i');
+              icon.classList.remove('fa-times');
+              icon.classList.add('fa-bars');
+            }
+          }
+        });
+      });
+      
+      // 预订模态窗口控制
+      const bookingModal = document.getElementById('booking-modal');
+      const openBookingBtns = document.querySelectorAll('#open-booking-btn, #open-booking-btn-mobile, #hero-booking-btn');
+      const closeBookingModal = document.getElementById('close-booking-modal');
+      const bookingContent = document.querySelector('#booking-modal > div');
+      
+      // 打开预订模态窗口
+      openBookingBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          bookingModal.classList.remove('hidden');
+          setTimeout(() => {
+            bookingModal.style.opacity = '1';
+            bookingContent.style.transform = 'scale(1)';
+          }, 10);
+        });
+      });
+      
+      // 关闭预订模态窗口
+      closeBookingModal.addEventListener('click', () => {
+        bookingModal.style.opacity = '0';
+        bookingContent.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          bookingModal.classList.add('hidden');
+        }, 300);
+      });
+      
+      // 点击模态窗口外部关闭
+      bookingModal.addEventListener('click', (e) => {
+        if (e.target === bookingModal) {
+          bookingModal.style.opacity = '0';
+          bookingContent.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            bookingModal.classList.add('hidden');
+          }, 300);
+        }
+      });
+      
+      // 空房查询模态窗口控制
+      const availabilityModal = document.getElementById('availability-modal');
+      const checkAvailabilityBtn = document.getElementById('check-availability-btn');
+      const closeAvailabilityModal = document.getElementById('close-availability-modal');
+      const availabilityContent = document.querySelector('#availability-modal > div');
+      const bookNowFromAvailability = document.getElementById('book-now-from-availability');
+      
+      // 打开空房查询模态窗口
+      checkAvailabilityBtn.addEventListener('click', () => {
+        // 随机生成房间数量（符合现实逻辑）
+        const standardRooms = Math.floor(Math.random() * 5) + 6; // 6-10间
+        const deluxeRooms = Math.floor(Math.random() * 4) + 3; // 3-6间
+        const suiteRooms = Math.floor(Math.random() * 3) + 1; // 1-3间
+        const presidentialRooms = Math.floor(Math.random() * 2); // 0-1间
+        
+        // 更新显示的房间数量
+        document.getElementById('standard-rooms').textContent = standardRooms;
+        document.getElementById('deluxe-rooms').textContent = deluxeRooms;
+        document.getElementById('suite-rooms').textContent = suiteRooms;
+        document.getElementById('presidential-rooms').textContent = presidentialRooms;
+        
+        availabilityModal.classList.remove('hidden');
+        setTimeout(() => {
+          availabilityModal.style.opacity = '1';
+          availabilityContent.style.transform = 'scale(1)';
+        }, 10);
+      });
+      
+      // 关闭空房查询模态窗口
+      closeAvailabilityModal.addEventListener('click', () => {
+        availabilityModal.style.opacity = '0';
+        availabilityContent.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          availabilityModal.classList.add('hidden');
+        }, 300);
+      });
+      
+      // 从空房查询跳转到预订
+      bookNowFromAvailability.addEventListener('click', () => {
+        availabilityModal.style.opacity = '0';
+        availabilityContent.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          availabilityModal.classList.add('hidden');
+          bookingModal.classList.remove('hidden');
+          setTimeout(() => {
+            bookingModal.style.opacity = '1';
+            bookingContent.style.transform = 'scale(1)';
+          }, 10);
+        }, 300);
+      });
+      
+      // 点击模态窗口外部关闭
+      availabilityModal.addEventListener('click', (e) => {
+        if (e.target === availabilityModal) {
+          availabilityModal.style.opacity = '0';
+          availabilityContent.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            availabilityModal.classList.add('hidden');
+          }, 300);
+        }
+      });
+      
+      // 意见反馈模态窗口控制
+      const feedbackModal = document.getElementById('feedback-modal');
+      const openFeedbackBtns = document.querySelectorAll('#open-feedback-btn, #open-feedback-btn-mobile');
+      const closeFeedbackModal = document.getElementById('close-feedback-modal');
+      const feedbackContent = document.querySelector('#feedback-modal > div');
+      
+      // 打开意见反馈模态窗口
+      openFeedbackBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          feedbackModal.classList.remove('hidden');
+          setTimeout(() => {
+            feedbackModal.style.opacity = '1';
+            feedbackContent.style.transform = 'scale(1)';
+          }, 10);
+        });
+      });
+      
+      // 关闭意见反馈模态窗口
+      closeFeedbackModal.addEventListener('click', () => {
+        feedbackModal.style.opacity = '0';
+        feedbackContent.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          feedbackModal.classList.add('hidden');
+        }, 300);
+      });
+      
+      // 点击模态窗口外部关闭
+      feedbackModal.addEventListener('click', (e) => {
+        if (e.target === feedbackModal) {
+          feedbackModal.style.opacity = '0';
+          feedbackContent.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            feedbackModal.classList.add('hidden');
+          }, 300);
+        }
+      });
+      
+      // 留言板模态窗口控制
+      const messageBoardModal = document.getElementById('message-board-modal');
+      const openMessageBoardBtns = document.querySelectorAll('#open-message-board-btn, #open-message-board-btn-mobile');
+      const closeMessageBoardModal = document.getElementById('close-message-board-modal');
+      const messageBoardContent = document.querySelector('#message-board-modal > div');
+      
+      // 打开留言板模态窗口
+      openMessageBoardBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          messageBoardModal.classList.remove('hidden');
+          setTimeout(() => {
+            messageBoardModal.style.opacity = '1';
+            messageBoardContent.style.transform = 'scale(1)';
+          }, 10);
+        });
+      });
+      
+      // 关闭留言板模态窗口
+      closeMessageBoardModal.addEventListener('click', () => {
+        messageBoardModal.style.opacity = '0';
+        messageBoardContent.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          messageBoardModal.classList.add('hidden');
+        }, 300);
+      });
+      
+      // 点击模态窗口外部关闭
+      messageBoardModal.addEventListener('click', (e) => {
+        if (e.target === messageBoardModal) {
+          messageBoardModal.style.opacity = '0';
+          messageBoardContent.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            messageBoardModal.classList.add('hidden');
+          }, 300);
+        }
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 搜索框功能 - 新增部分
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        searchInput.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter') {
+            const value = this.value.trim();
+            if (value === '邮箱' || value === 'mail' || value === 'email') {
+              // 打开新网页到邮箱页面
+              window.open('邮箱登陆.html', '_blank');
+              // 清空搜索框
+              this.value = '';
+            }
+            else if (value === '博客' || value === 'blog') {
+                 window.open('291个人博客.html', '_blank'); // 新标签页打开博客页面
+                 this.value = ''; // 清空搜索框
+            }
+            else if (value === '张明' || value === 'zhangming') {
+                 window.open('失踪档案.html', '_blank'); // 新标签页打开失踪档案页面
+                 this.value = ''; // 清空搜索框
+            }
+            else if (value === 'R20251124') {
+                 window.open('4030案件报道.html', '_blank'); // 新标签页打开案件页面
+                 this.value = ''; // 清空搜索框
+            }
+            else if (value === '林晓') {
+                 window.open('4030新闻2.html', '_blank'); // 新标签页打开新闻2页面
+                 this.value = ''; // 清空搜索框
+            }
+            else if (value === '林致远' || value === 'linzhiyuan') {
+                 window.open('302新闻.html', '_blank'); // 新标签页打开302新闻页面
+                 this.value = ''; // 清空搜索框
+            }
+            else if (value === '王芳' || value === 'wangfang') {
+                 window.open('王芳文章.html', '_blank'); // 新标签页打开王芳文章页面
+                 this.value = ''; // 清空搜索框
+            }
+            else if (value === '午夜弥撒' || value === 'Midnight Mass') {
+                 window.open('902音乐论坛.html', '_blank'); // 新标签页打开902音乐论坛
+                 this.value = ''; // 清空搜索框
+            }
+          }
+        });
+      }
+      
+      // 点击黑猫触发效果
+      const catElements = document.querySelectorAll('.pixel-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset-0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给所有黑猫添加点击事件
+      catElements.forEach(cat => {
+        cat.addEventListener('click', () => {
+          // 1. 黑猫眼睛变红（临时修改SVG）
+          const originalEyes = cat.innerHTML;
+          const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+          cat.innerHTML = redEyeCat;
+          
+          // 2. 显示全屏提示
+          alertOverlay.style.opacity = '1';
+          alertOverlay.style.pointerEvents = 'auto';
+          
+          setTimeout(() => {
+            alertText.style.filter = 'blur(0)';
+            alertText.style.transform = 'scale(1.2)';
+            alertSubtext.style.opacity = '1';
+            alertSystem.style.opacity = '0.7';
+            
+            // 3. 文字震动效果
+            let shakeInterval = setInterval(() => {
+              alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+            }, 60);
+            
+            // 4. 2.5秒后恢复原状
+            setTimeout(() => {
+              clearInterval(shakeInterval);
+              alertOverlay.style.opacity = '0';
+              alertText.style.filter = 'blur(10px)';
+              alertText.style.transform = 'scale(0.8)';
+              alertSubtext.style.opacity = '0';
+              alertSystem.style.opacity = '0';
+              
+              // 恢复黑猫眼睛颜色
+              setTimeout(() => {
+                cat.innerHTML = originalEyes;
+                alertOverlay.style.pointerEvents = 'none';
+              }, 300);
+            }, 2500);
+          }, 100);
+        });
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .text-gray-300');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

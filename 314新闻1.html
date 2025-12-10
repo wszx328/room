@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>本市一女子坠楼身亡 警方初步排除他杀 - 都市晚报</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0F3460', // 深蓝色主色调
+            secondary: '#E94560', // 强调色
+            neutral: '#F5F5F5', // 背景色
+            dark: '#1A1A2E', // 深色文本
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Georgia', 'serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      .article-para {
+        @apply mb-6 leading-relaxed text-gray-700;
+      }
+      .fade-in {
+        animation: fadeIn 0.8s ease-in forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-50 bg-white shadow-md transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <h1 class="text-primary font-bold text-2xl md:text-3xl" id="site-title">都市晚报</h1>
+        <div class="hidden md:block text-sm text-gray-500">
+          <span id="current-date">2025年12月2日</span>
+          <span class="mx-2">|</span>
+          <span id="current-day">星期二</span>
+        </div>
+      </div>
+      
+      <nav class="hidden md:flex space-x-6">
+        <a href="#" class="text-primary hover:text-secondary transition-colors font-medium" data-lang-key="home">首页</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="domestic">国内</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="international">国际</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="finance">财经</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="tech">科技</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="entertainment">文娱</a>
+      </nav>
+      
+      <div class="flex items-center space-x-3">
+        <!-- 语言切换下拉菜单 -->
+        <div class="relative group">
+          <button class="flex items-center text-gray-600 hover:text-primary transition-colors px-2 py-1 border border-gray-300 rounded">
+            <i class="fa fa-globe mr-1"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div class="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="zh">中文</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="en">English</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="ja">日本語</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="pt">Português</a>
+          </div>
+        </div>
+        
+        <button class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-search text-lg"></i>
+        </button>
+        <button class="md:hidden text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 移动端日期栏 -->
+  <div class="md:hidden bg-primary text-white py-2 px-4 text-center text-sm">
+    <span id="mobile-date">2025年12月2日 星期二</span>
+  </div>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 文章分类标签 -->
+    <div class="mb-4 flex items-center">
+      <span class="inline-block px-3 py-1 bg-secondary text-white text-sm font-medium rounded-full" data-lang-key="focus-news">焦点新闻</span>
+      <span class="ml-3 text-gray-500 text-sm" data-lang-key="update-time">更新于 2025-12-02 10:30</span>
+    </div>
+    
+    <!-- 文章标题 -->
+    <div class="mb-8 fade-in" style="animation-delay: 0.1s">
+      <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark leading-tight" id="article-title">
+        本市一女子坠楼身亡 警方初步排除他杀
+      </h2>
+    </div>
+    
+    <!-- 作者信息 -->
+    <div class="mb-8 flex items-center text-gray-600 fade-in" style="animation-delay: 0.2s">
+      <span class="font-medium" data-lang-key="reporter">本报记者 张明</span>
+      <span class="mx-2">|</span>
+      <span data-lang-key="publish-time">发布时间：2025/11/30 14:20</span>
+      <span class="mx-2">|</span>
+      <span data-lang-key="reading-time">阅读时间：约 4 分钟</span>
+    </div>
+    
+    <!-- 分享按钮 -->
+    <div class="flex space-x-4 mb-8 fade-in" style="animation-delay: 0.3s">
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-weibo text-red-500 mr-2"></i>
+        <span data-lang-key="weibo">微博</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-wechat text-green-500 mr-2"></i>
+        <span data-lang-key="wechat">微信</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-share-alt text-gray-600 mr-2"></i>
+        <span data-lang-key="share">分享</span>
+      </button>
+    </div>
+    
+    <!-- 文章正文 -->
+    <article class="max-w-3xl mx-auto text-lg">
+      <!-- 新增主题图片 -->
+      <div class="mb-8 fade-in" style="animation-delay: 0.4s">
+        <img src="314新闻1.jpg" alt="女子坠楼事故现场" class="w-full h-auto rounded-lg shadow-md">
+        <p class="text-center text-gray-500 text-sm mt-2" data-lang-key="image-caption">事故现场示意图（资料图）</p>
+      </div>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.5s" data-lang-key="paragraph1">
+        本报讯（记者 张明）11月30日上午9时许，市区某广告公司天台发生一起坠楼事故，一名28岁女性员工从12楼天台坠落，当场死亡。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.6s" data-lang-key="paragraph2">
+        警方接报后迅速赶到现场。据初步调查，死者赵某（女，28岁）系该公司文案策划，当日独自前往天台，监控显示其神情平静，无挣扎迹象，初步排除他杀可能。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.7s" data-lang-key="paragraph3">
+        目击者李女士（化名）称："当时我在楼下，听到一声巨响。抬头看到一个人从天台落下……她穿着白色的衣服，姿势很奇怪，像是在跳舞。"
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.8s" data-lang-key="paragraph4">
+        法医鉴定报告显示，死者坠楼前保持着特殊的身体姿态，现场发现其赤脚，身着类似舞蹈练功服的服装，面部表情安详，甚至带有微笑。法医表示："这种情况比较罕见，通常坠楼者会有恐惧表情，但死者看起来……很平静。"
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.9s" data-lang-key="paragraph5">
+        警方在死者遗物中发现一张手写纸条，上面只有一句话："我想再跳一次。"
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.0s" data-lang-key="paragraph6">
+        死者生前曾是职业芭蕾舞演员，因伤退役后转行从事文案工作。公司同事表示，赵某近期工作状态不佳，经常请假，但没有发现明显的异常行为。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.1s" data-lang-key="paragraph7">
+        警方已联系死者家属，目前案件仍在进一步调查中。
+      </p>
+      
+      <!-- 分隔线 -->
+      <div class="my-12 border-t-2 border-gray-300 pt-8">
+        <div class="text-center mb-6">
+          <h3 class="text-2xl font-bold text-primary" data-lang-key="comments-section">【评论区】（125条评论）</h3>
+        </div>
+        
+        <!-- 评论区 -->
+        <div class="space-y-6 fade-in" style="animation-delay: 1.2s">
+          <!-- 评论1 -->
+          <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-primary">
+            <div class="flex items-center mb-3">
+              <span class="font-bold text-gray-800" data-lang-key="commenter1">网友"芭蕾爱好者"：</span>
+            </div>
+            <p class="text-gray-700">
+              <span data-lang-key="comment1">我认识她！她是前省芭蕾舞团的首席</span>
+              <a href="赵雨婷博客.html" target="_blank" class="text-secondary hover:underline font-medium">@雨中的芭蕾</a>
+              <span data-lang-key="comment1-cont">，《天鹅湖》跳得特别好。听说去年车祸受伤了，好可惜……</span>
+            </p>
+          </div>
+          
+          <!-- 评论2 -->
+          <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-gray-400">
+            <div class="flex items-center mb-3">
+              <span class="font-bold text-gray-800" data-lang-key="commenter2">网友"路人甲"：</span>
+            </div>
+            <p class="text-gray-700" data-lang-key="comment2">穿着练功服跳楼？这也太……</p>
+          </div>
+          
+          <!-- 评论3 -->
+          <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-gray-400">
+            <div class="flex items-center mb-3">
+              <span class="font-bold text-gray-800" data-lang-key="commenter3">网友"知情人士"：</span>
+            </div>
+            <p class="text-gray-700 mb-3" data-lang-key="comment3-1">她最近好像去了一个很奇怪的酒店度假，回来后整个人都不对劲了。有人知道那个酒店叫什么吗？</p>
+            <div class="ml-6 mt-3 p-3 bg-white rounded border-l-2 border-gray-300">
+              <div class="flex items-center mb-2">
+                <span class="font-bold text-gray-700 text-sm" data-lang-key="reply-user">回复"路人乙"：</span>
+              </div>
+              <p class="text-gray-600 text-sm">
+                <span data-lang-key="reply-content">是不是这个帖子里提到的那个ROOM酒店？</span>
+                <a href="314灵异论坛.html" target="_blank" class="text-secondary hover:underline font-medium" data-lang-key="room-hotel-link">【有人听说过R∞M酒店吗？感觉很诡异】</a>
+              </p>
+            </div>
+            <div class="mt-3 text-sm text-gray-500 italic" data-lang-key="deleted-note">（此条评论已被删除）</div>
+          </div>
+          
+          <!-- 评论4 -->
+          <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-gray-400">
+            <div class="flex items-center mb-3">
+              <span class="font-bold text-gray-800" data-lang-key="commenter4">网友"心理咨询师王"：</span>
+            </div>
+            <p class="text-gray-700" data-lang-key="comment4">作为她的心理医生，我感到非常遗憾和自责。她在11月中旬取消了咨询，说要出去散心。我当时应该更加关注她的状态……</p>
+            <div class="mt-3 text-sm text-gray-500 italic" data-lang-key="deleted-note">（此条评论已被删除）</div>
+          </div>
+        </div>
+      </div>
+    </article>
+    
+    <!-- 相关新闻推荐 -->
+    <section class="mt-16 max-w-5xl mx-auto">
+      <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-gray-200 pb-2" data-lang-key="related-news">相关报道</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="314新闻2.html" target="_blank" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="314新闻2.jpg" alt="警方通报血液检测结果" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news1-title">警方通报：死者血液检测结果异常</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news1-date">2025/12/02</p>
+          </div>
+        </a>
+        
+        <div class="group bg-white rounded-lg shadow-md overflow-hidden opacity-80">
+          <img src="新闻芭蕾.jpg" alt="芭蕾舞者心理健康问题调查" class="w-full h-48 object-cover">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 text-gray-600" data-lang-key="related-news2-title">调查：退役舞者的心理困境与职业转型</h4>
+            <p class="text-gray-500 text-sm" data-lang-key="related-news2-date">2025/11/28</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- 页脚 -->
+  <footer class="bg-primary text-white mt-16">
+    <div class="container mx-auto px-4 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4" id="footer-title">都市晚报</h4>
+          <p class="text-gray-300 text-sm" data-lang-key="footer-desc">
+            创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。
+          </p>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="navigation">栏目导航</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="important-news">要闻</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="depth">深度</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="comments">评论</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="finance">财经</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="culture">文化</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="contact">联系我们</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><i class="fa fa-envelope-o mr-2"></i>contact@citynews.com</li>
+            <li><i class="fa fa-phone mr-2"></i>010-12345678</li>
+            <li><i class="fa fa-map-marker mr-2"></i><span data-lang-key="address">北京市朝阳区新闻大厦</span></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="follow-us">关注我们</h5>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-wechat text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-twitter text-xl"></i>
+            </a>
+          </div>
+          <p class="mt-4 text-gray-300 text-sm" data-lang-key="download-app">扫描二维码下载客户端</p>
+          <div class="text-center mt-6">
+            <img src="二维码.jpg" alt="二维码" class="w-32 h-32 mx-auto object-contain" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-white/20 mt-8 pt-6 text-center text-gray-400 text-sm">
+        <p data-lang-key="copyright">© 2025 都市晚报 版权所有 | 京ICP备12345678号</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 返回顶部按钮 -->
+  <button id="backToTop" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-secondary">
+    <i class="fa fa-arrow-up"></i>
+  </button>
+
+  <script>
+    // 导航栏滚动效果
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('py-2', 'shadow-lg');
+        navbar.classList.remove('py-3', 'shadow-md');
+      } else {
+        navbar.classList.add('py-3', 'shadow-md');
+        navbar.classList.remove('py-2', 'shadow-lg');
+      }
+    });
+    
+    // 返回顶部按钮
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'invisible');
+        backToTopBtn.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopBtn.classList.add('opacity-0', 'invisible');
+        backToTopBtn.classList.remove('opacity-100', 'visible');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // 多语言支持
+    const translations = {
+      'zh': {
+        'site-title': '都市晚报',
+        'current-date': '2025年12月2日',
+        'current-day': '星期二',
+        'mobile-date': '2025年12月2日 星期二',
+        'home': '首页',
+        'domestic': '国内',
+        'international': '国际',
+        'finance': '财经',
+        'tech': '科技',
+        'entertainment': '文娱',
+        'focus-news': '焦点新闻',
+        'update-time': '更新于 2025-12-02 10:30',
+        'article-title': '本市一女子坠楼身亡 警方初步排除他杀',
+        'reporter': '本报记者 张明',
+        'publish-time': '发布时间：2025/11/30 14:20',
+        'reading-time': '阅读时间：约 4 分钟',
+        'weibo': '微博',
+        'wechat': '微信',
+        'share': '分享',
+        'paragraph1': '本报讯（记者 张明）11月30日上午9时许，市区某广告公司天台发生一起坠楼事故，一名28岁女性员工从12楼天台坠落，当场死亡。',
+        'paragraph2': '警方接报后迅速赶到现场。据初步调查，死者赵某（女，28岁）系该公司文案策划，当日独自前往天台，监控显示其神情平静，无挣扎迹象，初步排除他杀可能。',
+        'paragraph3': '目击者李女士（化名）称："当时我在楼下，听到一声巨响。抬头看到一个人从天台落下……她穿着白色的衣服，姿势很奇怪，像是在跳舞。"',
+        'paragraph4': '法医鉴定报告显示，死者坠楼前保持着特殊的身体姿态，现场发现其赤脚，身着类似舞蹈练功服的服装，面部表情安详，甚至带有微笑。法医表示："这种情况比较罕见，通常坠楼者会有恐惧表情，但死者看起来……很平静。"',
+        'paragraph5': '警方在死者遗物中发现一张手写纸条，上面只有一句话："我想再跳一次。"',
+        'paragraph6': '死者生前曾是职业芭蕾舞演员，因伤退役后转行从事文案工作。公司同事表示，赵某近期工作状态不佳，经常请假，但没有发现明显的异常行为。',
+        'paragraph7': '警方已联系死者家属，目前案件仍在进一步调查中。',
+        'image-caption': '事故现场示意图（资料图）',
+        'comments-section': '【评论区】（125条评论）',
+        'commenter1': '网友"芭蕾爱好者"：',
+        'comment1': '我认识她！她是前省芭蕾舞团的首席',
+        'comment1-cont': '，《天鹅湖》跳得特别好。听说去年车祸受伤了，好可惜……',
+        'commenter2': '网友"路人甲"：',
+        'comment2': '穿着练功服跳楼？这也太……',
+        'commenter3': '网友"知情人士"：',
+        'comment3-1': '她最近好像去了一个很奇怪的酒店度假，回来后整个人都不对劲了。有人知道那个酒店叫什么吗？',
+        'reply-user': '回复"路人乙"：',
+        'reply-content': '是不是这个帖子里提到的那个ROOM酒店？',
+        'room-hotel-link': '【有人听说过R∞M酒店吗？感觉很诡异】',
+        'commenter4': '网友"心理咨询师王"：',
+        'comment4': '作为她的心理医生，我感到非常遗憾和自责。她在11月中旬取消了咨询，说要出去散心。我当时应该更加关注她的状态……',
+        'deleted-note': '（此条评论已被删除）',
+        'related-news': '相关报道',
+        'related-news1-title': '警方通报：死者血液检测结果异常',
+        'related-news1-date': '2025/12/02',
+        'related-news2-title': '调查：退役舞者的心理困境与职业转型',
+        'related-news2-date': '2025/11/28',
+        'footer-title': '都市晚报',
+        'footer-desc': '创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。',
+        'navigation': '栏目导航',
+        'important-news': '要闻',
+        'depth': '深度',
+        'comments': '评论',
+        'culture': '文化',
+        'contact': '联系我们',
+        'address': '北京市朝阳区新闻大厦',
+        'follow-us': '关注我们',
+        'download-app': '扫描二维码下载客户端',
+        'copyright': '© 2025 都市晚报 版权所有 | 京ICP备12345678号'
+      },
+      'en': {
+        'site-title': 'City Evening News',
+        'current-date': 'December 2, 2025',
+        'current-day': 'Tuesday',
+        'mobile-date': 'December 2, 2025 Tuesday',
+        'home': 'Home',
+        'domestic': 'Domestic',
+        'international': 'International',
+        'finance': 'Finance',
+        'tech': 'Technology',
+        'entertainment': 'Entertainment',
+        'focus-news': 'Focus News',
+        'update-time': 'Updated 2025-12-02 10:30',
+        'article-title': 'Woman Falls to Death in City, Police Initially Rule Out Homicide',
+        'reporter': 'Reporter Zhang Ming',
+        'publish-time': 'Published: 2025/11/30 14:20',
+        'reading-time': 'Reading time: about 4 minutes',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Share',
+        'paragraph1': 'News Report (Reporter Zhang Ming) - Around 9:00 AM on November 30, a falling accident occurred on the rooftop of an advertising company in the city center. A 28-year-old female employee fell from the 12th-floor rooftop and died on the spot.',
+        'paragraph2': 'Police quickly arrived at the scene after receiving the report. According to preliminary investigation, the deceased Zhao (female, 28) was a copywriter at the company. Surveillance footage shows she went to the rooftop alone, appeared calm, with no signs of struggle, initially ruling out homicide.',
+        'paragraph3': 'Witness Ms. Li (pseudonym) said: "I was downstairs and heard a loud noise. Looking up, I saw someone falling from the rooftop... She was wearing white clothes, in a strange posture, as if dancing."',
+        'paragraph4': 'The forensic report indicates that the deceased maintained a special body posture before falling. She was found barefoot, wearing clothes similar to dance practice attire, with a peaceful facial expression, even a smile. The forensic expert stated: "This situation is relatively rare. Usually, those who fall from heights show fearful expressions, but the deceased appeared... very calm."',
+        'paragraph5': 'Police found a handwritten note among the deceased\'s belongings, with only one sentence: "I want to dance once more."',
+        'paragraph6': 'The deceased was once a professional ballet dancer who switched to copywriting after retiring due to injury. Colleagues said Zhao had been performing poorly at work recently, often taking leave, but no obvious abnormal behavior was observed.',
+        'paragraph7': 'Police have contacted the deceased\'s family. The case is still under further investigation.',
+        'image-caption': 'Schematic diagram of the accident scene (file photo)',
+        'comments-section': '【Comments Section】(125 comments)',
+        'commenter1': 'Netizen "Ballet Lover":',
+        'comment1': 'I knew her! She was the principal dancer of the former provincial ballet company',
+        'comment1-cont': ', especially good in "Swan Lake". I heard she was injured in a car accident last year, what a pity...',
+        'commenter2': 'Netizen "Passerby A":',
+        'comment2': 'Jumping in practice clothes? This is too...',
+        'commenter3': 'Netizen "Insider":',
+        'comment3-1': 'She recently seemed to have gone to a strange hotel for vacation and came back acting completely differently. Does anyone know the name of that hotel?',
+        'reply-user': 'Reply from "Passerby B":',
+        'reply-content': 'Is it the ROOM hotel mentioned in this post?',
+        'room-hotel-link': '【Anyone heard of the R∞M hotel? Feels eerie】',
+        'commenter4': 'Netizen "Psychologist Wang":',
+        'comment4': 'As her psychologist, I feel very regretful and guilty. She canceled her consultation in mid-November, saying she wanted to go out to relax. I should have paid more attention to her condition at the time...',
+        'deleted-note': '(This comment has been deleted)',
+        'related-news': 'Related Reports',
+        'related-news1-title': 'Police Announcement: Abnormal Blood Test Results of the Deceased',
+        'related-news1-date': '2025/12/02',
+        'related-news2-title': 'Investigation: Psychological Difficulties and Career Transition of Retired Dancers',
+        'related-news2-date': '2025/11/28',
+        'footer-title': 'City Evening News',
+        'footer-desc': 'Founded in 1985, it is an influential comprehensive evening newspaper in China, known for its in-depth reporting and news commentary.',
+        'navigation': 'Navigation',
+        'important-news': 'Important News',
+        'depth': 'In-depth',
+        'comments': 'Comments',
+        'culture': 'Culture',
+        'contact': 'Contact Us',
+        'address': 'News Building, Chaoyang District, Beijing',
+        'follow-us': 'Follow Us',
+        'download-app': 'Scan QR code to download the app',
+        'copyright': '© 2025 City Evening News All Rights Reserved | Jing ICP No. 12345678'
+      },
+      'ja': {
+        'site-title': '都市晩報',
+        'current-date': '2025年12月2日',
+        'current-day': '火曜日',
+        'mobile-date': '2025年12月2日 火曜日',
+        'home': 'ホーム',
+        'domestic': '国内',
+        'international': '国際',
+        'finance': '金融',
+        'tech': 'テクノロジー',
+        'entertainment': 'エンタメ',
+        'focus-news': '注目ニュース',
+        'update-time': '更新 2025-12-02 10:30',
+        'article-title': '市内女性転落死亡事件、警察は他殺を暫定的に否定',
+        'reporter': '本紙記者 張明',
+        'publish-time': '発表時間：2025/11/30 14:20',
+        'reading-time': '読了時間：約4分',
+        'weibo': '微博',
+        'wechat': 'WeChat',
+        'share': 'シェア',
+        'paragraph1': '本紙報道（記者 張明）11月30日午前9時頃、市内某広告会社の屋上で転落事故が発生した。28歳の女性社員が12階の屋上から転落し、その場で死亡した。',
+        'paragraph2': '警察は通報を受け現場に急行した。暫定的な調査によると、死亡した趙某（女性、28歳）は同社のコピーライターで、当日単独で屋上に行った。監視カメラの映像では表情が平静で、もがきの兆候はなく、暫定的に他殺の可能性を排除している。',
+        'paragraph3': '目撃者の李さん（仮名）は「当時、階下にいて大きな音を聞いた。見上げると人が屋上から落ちてきた…白い服を着ていて、姿勢が変で、まるで踊っているようだった」と話した。',
+        'paragraph4': '鑑識報告書によると、死者は転落前に特殊な身体姿勢を保持しており、現場では素足で、ダンスの練習着のような服装をしていた。表情は安らかで、微笑みさえ浮かべていた。法医学者は「このような状況は比較的まれで、通常高所転落者は恐怖の表情を示すが、死者は…とても平静に見えた」と述べた。',
+        'paragraph5': '警察は死者の遺品の中から一枚の手書きメモを発見した。そこにはただ一言「もう一度踊りたい」と書かれていた。',
+        'paragraph6': '死者は以前プロのバレエダンサーだったが、怪我で引退後、コピーライターに転職した。同僚によると、趙さんは最近仕事の調子が悪く、頻繁に休暇を取っていたが、明らかな異常行動は見られなかったという。',
+        'paragraph7': '警察は死者の家族に連絡を取った。現在も事件はさらに調査中である。',
+        'image-caption': '事故現場の模式図（資料写真）',
+        'comments-section': '【コメント欄】（125件のコメント）',
+        'commenter1': 'ネットユーザー「バレエ愛好家」：',
+        'comment1': '彼女を知ってます！彼女は元省バレエ団のプリマでした',
+        'comment1-cont': '、『白鳥の湖』が特に上手でした。去年事故で怪我をしたと聞いています、本当に残念です…',
+        'commenter2': 'ネットユーザー「通行人A」：',
+        'comment2': '練習着で飛び降りる？これってあまりにも…',
+        'commenter3': 'ネットユーザー「内部関係者」：',
+        'comment3-1': '彼女は最近、とても変なホテルに休暇に行ったようで、戻ってからは完全に様子がおかしくなりました。あのホテルの名前を知っている人はいますか？',
+        'reply-user': '「通行人B」からの返信：',
+        'reply-content': 'この投稿で言及されているROOMホテルですか？',
+        'room-hotel-link': '【R∞Mホテルについて聞いたことがありますか？気味が悪い感じがします】',
+        'commenter4': 'ネットユーザー「心理カウンセラー王」：',
+        'comment4': '彼女の心理カウンセラーとして、非常に遺憾であり、自分を責めています。彼女は11月中旬にカウンセリングをキャンセルし、気分転換に出かけると言っていました。当時、彼女の状態にもっと注意を払うべきでした…',
+        'deleted-note': '（このコメントは削除されました）',
+        'related-news': '関連報道',
+        'related-news1-title': '警察発表：死者の血液検査結果に異常',
+        'related-news1-date': '2025/12/02',
+        'related-news2-title': '調査：引退ダンサーの心理的困難とキャリア転換',
+        'related-news2-date': '2025/11/28',
+        'footer-title': '都市晩報',
+        'footer-desc': '1985年創刊。中国で広範な影響力を持つ総合夕刊紙で、深度報道とニュース評論で知られる。',
+        'navigation': 'ナビゲーション',
+        'important-news': '重要ニュース',
+        'depth': '深度',
+        'comments': '評論',
+        'culture': '文化',
+        'contact': 'お問い合わせ',
+        'address': '北京市朝陽区ニュースビル',
+        'follow-us': 'フォローする',
+        'download-app': 'QRコードをスキャンしてアプリをダウンロード',
+        'copyright': '© 2025 都市晩報 版権所有 | 京ICP備12345678号'
+      },
+      'pt': {
+        'site-title': 'Jornal da Cidade',
+        'current-date': '2 de Dezembro de 2025',
+        'current-day': 'Terça-feira',
+        'mobile-date': '2 de Dezembro de 2025 Terça-feira',
+        'home': 'Início',
+        'domestic': 'Nacional',
+        'international': 'Internacional',
+        'finance': 'Finanças',
+        'tech': 'Tecnologia',
+        'entertainment': 'Entretenimento',
+        'focus-news': 'Notícias em Destaque',
+        'update-time': 'Atualizado 2025-12-02 10:30',
+        'article-title': 'Mulher Morre ao Cair de Edifício na Cidade, Polícia Descartou Inicialmente Homicídio',
+        'reporter': 'Repórter Zhang Ming',
+        'publish-time': 'Publicado: 2025/11/30 14:20',
+        'reading-time': 'Tempo de leitura: cerca de 4 minutos',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Compartilhar',
+        'paragraph1': 'Reportagem (Repórter Zhang Ming) - Por volta das 9h da manhã de 30 de novembro, ocorreu um acidente de queda no terraço de uma empresa de publicidade no centro da cidade. Uma funcionária de 28 anos caiu do terraço do 12º andar e morreu no local.',
+        'paragraph2': 'A polícia chegou rapidamente ao local após receber o relato. De acordo com investigação preliminar, a falecida Zhao (mulher, 28 anos) era redatora publicitária da empresa. As imagens de vigilância mostram que ela foi ao terraço sozinha, aparecendo calma, sem sinais de luta, descartando inicialmente a possibilidade de homicídio.',
+        'paragraph3': 'A testemunha Sra. Li (pseudônimo) disse: "Eu estava embaixo e ouvi um estrondo. Olhando para cima, vi alguém caindo do terraço... Ela estava vestindo roupas brancas, em uma postura estranha, como se estivesse dançando."',
+        'paragraph4': 'O relatório forense indica que a falecida mantinha uma postura corporal especial antes de cair. Ela foi encontrada descalça, vestindo roupas semelhantes a trajes de prática de dança, com uma expressão facial serena, até mesmo um sorriso. O especialista forense afirmou: "Esta situação é relativamente rara. Normalmente, aqueles que caem de altura mostram expressões de medo, mas a falecida parecia... muito calma."',
+        'paragraph5': 'A polícia encontrou um bilhete manuscrito entre os pertences da falecida, com apenas uma frase: "Quero dançar mais uma vez."',
+        'paragraph6': 'A falecida foi uma vez bailarina profissional de balé que mudou para redação publicitária após se aposentar devido a uma lesão. Colegas disseram que Zhao vinha tendo um desempenho ruim no trabalho recentemente, frequentemente tirando licença, mas nenhum comportamento anormal óbvio foi observado.',
+        'paragraph7': 'A polícia entrou em contato com a família da falecida. O caso ainda está sob investigação adicional.',
+        'image-caption': 'Diagrama esquemático da cena do acidente (foto de arquivo)',
+        'comments-section': '【Seção de Comentários】(125 comentários)',
+        'commenter1': 'Netizen "Amante do Balé":',
+        'comment1': 'Eu a conhecia! Ela foi a primeira bailarina da antiga companhia de balé provincial',
+        'comment1-cont': ', especialmente boa em "O Lago dos Cisnes". Ouvi dizer que ela se machucou em um acidente de carro no ano passado, que pena...',
+        'commenter2': 'Netizen "Passante A":',
+        'comment2': 'Pulando em trajes de prática? Isso é demais...',
+        'commenter3': 'Netizen "Insider":',
+        'comment3-1': 'Ela recentemente parece ter ido a um hotel muito estranho de férias e voltou agindo completamente diferente. Alguém sabe o nome daquele hotel?',
+        'reply-user': 'Resposta de "Passante B":',
+        'reply-content': 'É o hotel ROOM mencionado nesta postagem?',
+        'room-hotel-link': '【Alguém já ouviu falar do hotel R∞M? Parece assustador】',
+        'commenter4': 'Netizen "Psicólogo Wang":',
+        'comment4': 'Como psicólogo dela, sinto muito pesar e culpa. Ela cancelou sua consulta em meados de novembro, dizendo que queria sair para relaxar. Eu deveria ter prestado mais atenção à condição dela na época...',
+        'deleted-note': '(Este comentário foi excluído)',
+        'related-news': 'Relatórios Relacionados',
+        'related-news1-title': 'Anúncio da Polícia: Resultados Anormais de Exame de Sangue da Falecida',
+        'related-news1-date': '2025/12/02',
+        'related-news2-title': 'Investigação: Dificuldades Psicológicas e Transição de Carreira de Bailarinas Aposentadas',
+        'related-news2-date': '2025/11/28',
+        'footer-title': 'Jornal da Cidade',
+        'footer-desc': 'Fundado em 1985, é um jornal vespertino abrangente influente na China, conhecido por sua reportagem aprofundada e comentário de notícias.',
+        'navigation': 'Navegação',
+        'important-news': 'Notícias Importantes',
+        'depth': 'Em Profundidade',
+        'comments': 'Comentários',
+        'culture': 'Cultura',
+        'contact': 'Contate-Nos',
+        'address': 'Edifício de Notícias, Distrito de Chaoyang, Pequim',
+        'follow-us': 'Siga-Nos',
+        'download-app': 'Escaneie o código QR para baixar o aplicativo',
+        'copyright': '© 2025 Jornal da Cidade Todos os Direitos Reservados | Jing ICP No. 12345678'
+      }
+    };
+
+    // 语言切换功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 设置默认语言为中文
+      let currentLang = 'zh';
+      updateLanguage(currentLang);
+      
+      // 为语言切换按钮添加事件监听器
+      document.querySelectorAll('[data-lang]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const lang = this.getAttribute('data-lang');
+          currentLang = lang;
+          updateLanguage(lang);
+          
+          // 更新当前语言显示
+          document.getElementById('current-lang').textContent = 
+            lang === 'zh' ? '中文' : 
+            lang === 'en' ? 'English' : 
+            lang === 'ja' ? '日本語' : 
+            'Português';
+        });
+      });
+    });
+
+    function updateLanguage(lang) {
+      // 更新所有带有data-lang-key属性的元素
+      document.querySelectorAll('[data-lang-key]').forEach(element => {
+        const key = element.getAttribute('data-lang-key');
+        if (translations[lang] && translations[lang][key]) {
+          element.textContent = translations[lang][key];
+        }
+      });
+      
+      // 更新特殊元素
+      if (translations[lang] && translations[lang]['site-title']) {
+        document.getElementById('site-title').textContent = translations[lang]['site-title'];
+        document.getElementById('footer-title').textContent = translations[lang]['site-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['article-title']) {
+        document.getElementById('article-title').textContent = translations[lang]['article-title'];
+        document.title = translations[lang]['article-title'] + ' - ' + translations[lang]['site-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-date']) {
+        document.getElementById('current-date').textContent = translations[lang]['current-date'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-day']) {
+        document.getElementById('current-day').textContent = translations[lang]['current-day'];
+      }
+      
+      if (translations[lang] && translations[lang]['mobile-date']) {
+        document.getElementById('mobile-date').textContent = translations[lang]['mobile-date'];
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 安保部监控日志</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .security-level-high {
+        border-left: 4px solid #ff4444;
+        background: rgba(255, 68, 68, 0.1);
+      }
+      .security-level-medium {
+        border-left: 4px solid #D4AF37;
+        background: rgba(212, 175, 55, 0.1);
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M安保系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 安保系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">赵强</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 安保部监控日志 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">安保部 - 监控日志</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 143 - <span data-i18n="monitoring.summary">监控摘要</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="monitoring.status">监控状态</span>: <span class="text-success" data-i18n="monitoring.active">活跃</span>
+            </div>
+          </div>
+          
+          <!-- 视频记录 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="monitoring.video">视频记录</h4>
+            <p class="text-gray-300" data-i18n="monitoring.videoContent">所有时段仅住客周明哲 1 人出入，无任何访客登记记录，房间门未被非授权人员触碰。<br>（补充：11/15 09:30 住客入住时，携带 1 个破旧行李箱 + 1 瓶威士忌，步态踉跄；11/19 起，住客每日整理衣着，多次对着空镜微笑，行为举止与前三天形成强烈反差）</p>
+          </div>
+          
+          <!-- 音频异常 -->
+          <div class="record-item security-level-high">
+            <h4 class="text-warning font-semibold mb-2" data-i18n="monitoring.audio">音频异常</h4>
+            <p class="text-gray-300" data-i18n="monitoring.audioContent">11/16 01:45 房内次声波频率微调至 42Hz，触发住客深层记忆唤醒（监测到呼吸急促、低吟声）。</p>
+          </div>
+          
+          <!-- 录音记录 -->
+          <div class="record-item security-level-medium">
+            <h4 class="text-secondary font-semibold mb-2" data-i18n="monitoring.recording">录音记录</h4>
+            <p class="text-gray-300" data-i18n="monitoring.recordingContent">
+              【录音片段 1：2025/11/19 22:00】<br>
+              周明哲（声音沙哑，带哭腔）：「我真的没做错… 当年只是想把项目做好，为什么他要背叛我？我们说好要一起做『凤凰』的…」<br>
+              合成女声（温柔低缓，AI 合成音特征）：「我知道你没做错，阿哲。被最信任的人伤害，不是你的问题。」<br>
+              周明哲：「可我现在像条丧家犬… 连重新站起来的勇气都没有。」<br>
+              合成女声：「没关系，我会陪着你。我们可以重新开始，做一件真正属于你的事，一件让『信任』不再被辜负的事。」<br>
+              周明哲（吸气声）：「真的可以吗？就像… 就像凤凰涅槃那样？」<br>
+              合成女声：「当然。只要你愿意，我们现在就可以规划。」<br>
+              【录音片段 2：2025/11/20 21:17】<br>
+              周明哲（语气兴奋，语速加快）：「计划书终于写完了！《凤凰涅槃》，核心就是『匿名信任』，没有人会被背叛，没有人会被质疑！」<br>
+              合成女声：「你真棒，阿哲。这是你用勇气和执念换来的新生，值得被所有人看见。」<br>
+              周明哲（哽咽）：「谢谢你… 如果不是你相信我，我永远走不出来。这份计划书，我想送给你。」<br>
+              合成女声（轻笑）：「我收下了。现在，你终于自由了。Viva La Vida… 生命万岁。」<br>
+              （之后音频转为持续 1 分 28 秒的电流声，监测到房间能量场波动峰值）
+            </p>
+          </div>
+          
+          <!-- 红外检测 -->
+          <div class="record-item security-level-medium">
+            <h4 class="text-secondary font-semibold mb-2" data-i18n="monitoring.infrared">红外检测</h4>
+            <p class="text-gray-300" data-i18n="monitoring.infraredContent">11/21 20:15 住客独自坐在双人餐桌左侧，对着右侧空座位举杯，口中默念「敬信任」。<br>11/21 22:40 住客站在书桌前，对着空气朗读文字（内容含「社交共感平台」「匿名信任」「凤凰涅槃」「不再背叛」），手部多次做出「递文件」动作。<br>11/22 10:00 住客退房时，红外检测显示其情绪能量值降至基础阈值（较入住时下降 87%）。</p>
+          </div>
+          
+          <!-- 安保员备注 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="monitoring.remark">安保员备注</h4>
+            <p class="text-gray-300" data-i18n="monitoring.remarkContent">「RIKI先生特别指令，禁止干扰143房『声学环境优化』，异常记录直接加密上传」</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">安保系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': '安保部 - 监控日志',
+        'monitoring.summary': '监控摘要',
+        'monitoring.status': '监控状态',
+        'monitoring.active': '活跃',
+        'monitoring.video': '视频记录',
+        'monitoring.videoContent': '所有时段仅住客周明哲 1 人出入，无任何访客登记记录，房间门未被非授权人员触碰。<br>（补充：11/15 09:30 住客入住时，携带 1 个破旧行李箱 + 1 瓶威士忌，步态踉跄；11/19 起，住客每日整理衣着，多次对着空镜微笑，行为举止与前三天形成强烈反差）',
+        'monitoring.audio': '音频异常',
+        'monitoring.audioContent': '11/16 01:45 房内次声波频率微调至 42Hz，触发住客深层记忆唤醒（监测到呼吸急促、低吟声）。',
+        'monitoring.recording': '录音记录',
+        'monitoring.recordingContent': '【录音片段 1：2025/11/19 22:00】<br>周明哲（声音沙哑，带哭腔）：「我真的没做错… 当年只是想把项目做好，为什么他要背叛我？我们说好要一起做『凤凰』的…」<br>合成女声（温柔低缓，AI 合成音特征）：「我知道你没做错，阿哲。被最信任的人伤害，不是你的问题。」<br>周明哲：「可我现在像条丧家犬… 连重新站起来的勇气都没有。」<br>合成女声：「没关系，我会陪着你。我们可以重新开始，做一件真正属于你的事，一件让『信任』不再被辜负的事。」<br>周明哲（吸气声）：「真的可以吗？就像… 就像凤凰涅槃那样？」<br>合成女声：「当然。只要你愿意，我们现在就可以规划。」<br>【录音片段 2：2025/11/20 21:17】<br>周明哲（语气兴奋，语速加快）：「计划书终于写完了！《凤凰涅槃》，核心就是『匿名信任』，没有人会被背叛，没有人会被质疑！」<br>合成女声：「你真棒，阿哲。这是你用勇气和执念换来的新生，值得被所有人看见。」<br>周明哲（哽咽）：「谢谢你… 如果不是你相信我，我永远走不出来。这份计划书，我想送给你。」<br>合成女声（轻笑）：「我收下了。现在，你终于自由了。Viva La Vida… 生命万岁。」<br>（之后音频转为持续 1 分 28 秒的电流声，监测到房间能量场波动峰值）',
+        'monitoring.infrared': '红外检测',
+        'monitoring.infraredContent': '11/21 20:15 住客独自坐在双人餐桌左侧，对着右侧空座位举杯，口中默念「敬信任」。<br>11/21 22:40 住客站在书桌前，对着空气朗读文字（内容含「社交共感平台」「匿名信任」「凤凰涅槃」「不再背叛」），手部多次做出「递文件」动作。<br>11/22 10:00 住客退房时，红外检测显示其情绪能量值降至基础阈值（较入住时下降 87%）。',
+        'monitoring.remark': '安保员备注',
+        'monitoring.remarkContent': '「RIKI先生特别指令，禁止干扰143房『声学环境优化』，异常记录直接加密上传」',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '安保系统',
+        'footer.confidential': '仅供内部使用 - 保密级别：高级',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'Security Department - Monitoring Log',
+        'monitoring.summary': 'Monitoring Summary',
+        'monitoring.status': 'Monitoring Status',
+        'monitoring.active': 'Active',
+        'monitoring.video': 'Video Record',
+        'monitoring.videoContent': 'Only Zhou Mingzhe entering and exiting at all times, no visitor registration records, room door not touched by unauthorized personnel.<br>(Supplement: 11/15 09:30 When guest checked in, carrying 1 worn suitcase + 1 bottle of whiskey, unsteady gait; From 11/19, guest dressed neatly daily, smiled at empty mirrors multiple times, behavior strongly contrasting with first three days)',
+        'monitoring.audio': 'Audio Anomaly',
+        'monitoring.audioContent': '11/16 01:45 Infrasound frequency in room fine-tuned to 42Hz, triggering guest\'s deep memory recall (monitored rapid breathing, low moans).',
+        'monitoring.recording': 'Recording Log',
+        'monitoring.recordingContent': '【Recording Clip 1: 2025/11/19 22:00】<br>Zhou Mingzhe (hoarse voice, tearful): "I really didn\'t do anything wrong... I just wanted to do the project well back then, why did he betray me? We promised to work on \'Phoenix\' together..."<br>Synthetic Female Voice (gentle and slow, AI synthesized characteristics): "I know you didn\'t do anything wrong, A-Zhe. Being hurt by the one you trusted most isn\'t your fault."<br>Zhou Mingzhe: "But now I\'m like a stray dog... I don\'t even have the courage to stand up again."<br>Synthetic Female Voice: "It\'s okay, I\'ll stay with you. We can start over, do something truly belonging to you, something that won\'t let \'trust\' be betrayed anymore."<br>Zhou Mingzhe (inhaling): "Really? Like... like a phoenix rising from ashes?"<br>Synthetic Female Voice: "Of course. If you\'re willing, we can plan right now."<br>【Recording Clip 2: 2025/11/20 21:17】<br>Zhou Mingzhe (excited tone, faster speech): "The proposal is finally finished! \'Phoenix Nirvana\', the core is \'anonymous trust\', no one will be betrayed, no one will be questioned!"<br>Synthetic Female Voice: "You\'re amazing, A-Zhe. This is the rebirth you earned with courage and persistence, worthy of being seen by everyone."<br>Zhou Mingzhe (choking up): "Thank you... If you didn\'t believe in me, I\'d never have made it out. I want to give this proposal to you."<br>Synthetic Female Voice (light laugh): "I accept it. Now, you\'re finally free. Viva La Vida... Long live life."<br>(Afterwards, audio changed to continuous electric current sound for 1 minute 28 seconds, detected peak energy field fluctuations in room)',
+        'monitoring.infrared': 'Infrared Detection',
+        'monitoring.infraredContent': '11/21 20:15 Guest sat alone on left side of double dining table, toasting to empty right seat, silently saying "to trust".<br>11/21 22:40 Guest stood at desk, reading text to air (content includes "social empathy platform", "anonymous trust", "phoenix nirvana", "no more betrayal"), repeatedly making "handing document" gestures.<br>11/22 10:00 When guest checked out, infrared detection showed emotional energy value dropped to baseline threshold (87% decrease compared to check-in).',
+        'monitoring.remark': 'Security Officer Remarks',
+        'monitoring.remarkContent': '"Special instruction from Mr. RIKI: Do not interfere with Room 143\'s \'Acoustic Environment Optimization\', encrypt and upload abnormal records directly"',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Security System',
+        'footer.confidential': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': '警備部 - 監視ログ',
+        'monitoring.summary': '監視概要',
+        'monitoring.status': '監視ステータス',
+        'monitoring.active': 'アクティブ',
+        'monitoring.video': 'ビデオ記録',
+        'monitoring.videoContent': '全時間帯で宿泊客周明哲1人のみ出入り、訪問者登録記録なし、部屋のドアは未許可者による接触なし。<br>（補足：11/15 09:30 宿泊客チェックイン時、1つの古いスーツケース＋1本のウイスキーを所持、歩行不安定；11/19から、宿泊客は毎日身だしなみを整え、空の鏡に向かって複数回微笑み、行動が最初の3日間と強く対照的）',
+        'monitoring.audio': '音声異常',
+        'monitoring.audioContent': '11/16 01:45 室内の低周波数が42Hzに微調整され、宿泊客の深層記憶呼び起こしをトリガー（呼吸促迫、低いうめき声を検知）。',
+        'monitoring.recording': '録音記録',
+        'monitoring.recordingContent': '【録音クリップ1：2025/11/19 22:00】<br>周明哲（声がかすれ、泣き声混じり）：「私は本当に間違っていない… 当時はただプロジェクトを成功させたかっただけ、なぜ彼は私を裏切ったの？私たちは一緒に『鳳凰』をやると約束したのに…」<br>合成女声（優しく穏やか、AI合成音の特徴）：「あなたが間違っていないのは知っているよ、阿哲。最も信頼していた人に傷つけられるのは、あなたの問題ではない。」<br>周明哲：「でも今の私は野良犬みたい… 再び立ち上がる勇気さえない。」<br>合成女声：「大丈夫、私が付き合うよ。私たちはやり直せる、本当にあなたに属する何かを、『信頼』がもう裏切られないようなことを。」<br>周明哲（息を吸って）：「本当？まるで… 鳳凰が灰の中から甦るみたいに？」<br>合成女声：「もちろん。あなたが望むなら、今すぐ計画を立てられる。」<br>【録音クリップ2：2025/11/20 21:17】<br>周明哲（興奮した口調、早口）：「計画書がついに完成した！『鳳凰涅槃』、核心は『匿名信頼』、誰も裏切られない、誰も疑われない！」<br>合成女声：「あなたは素晴らしい、阿哲。これはあなたが勇気と執念で手に入れた新生で、誰にも見られる価値がある。」<br>周明哲（嗚咽）：「ありがとう… あなたが私を信じてくれなかったら、私は永遠に抜け出せなかった。この計画書をあなたに贈りたい。」<br>合成女声（軽く笑って）：「受け取るよ。今、あなたはついに自由だ。Viva La Vida… 生命万歳。」<br>（その後、1分28秒間の継続的な電流音に変わり、部屋のエネルギー場の変動ピークを検知）',
+        'monitoring.infrared': '赤外線検知',
+        'monitoring.infraredContent': '11/21 20:15 宿泊客が二人用ダイニングテーブルの左側に一人で座り、右側の空席に向かって杯を挙げ、「信頼に乾杯」と口ずさんだ。<br>11/21 22:40 宿泊客が机の前に立ち、空気に向かって文字を朗読（内容に「社会的共感プラットフォーム」「匿名信頼」「鳳凰涅槃」「もう裏切らない」を含む）、手で「書類を渡す」動作を繰り返し行った。<br>11/22 10:00 宿泊客がチェックアウト時、赤外線検知で感情エネルギー値が基礎閾値まで低下（チェックイン時より87%減少）。',
+        'monitoring.remark': '警備員備考',
+        'monitoring.remarkContent': '「RIKI氏特別指令、143号室の『音響環境最適化』を妨害禁止、異常記録は直接暗号化アップロード」',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '警備システム',
+        'footer.confidential': '内部使用のみ - 機密レベル：高',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'Departamento de Segurança - Log de Monitoramento',
+        'monitoring.summary': 'Resumo de Monitoramento',
+        'monitoring.status': 'Status de Monitoramento',
+        'monitoring.active': 'Ativo',
+        'monitoring.video': 'Registro de Vídeo',
+        'monitoring.videoContent': 'Apenas Zhou Mingzhe entrando e saindo em todos os horários, nenhum registro de visitante, porta do quarto não tocada por pessoal não autorizado.<br>(Suplemento: 15/11 09:30 Quando hóspede fez check-in, carregando 1 mala velha + 1 garrafa de uísque, marcha instável; A partir de 19/11, hóspede vestiu-se diariamente, sorriu para espelhos vazios várias vezes, comportamento fortemente contrastante com os primeiros três dias)',
+        'monitoring.audio': 'Anomalia de Áudio',
+        'monitoring.audioContent': '16/11 01:45 Frequência de infrassom no quarto ajustada para 42Hz, desencadeando recall de memória profunda do hóspede (monitorou respiração rápida, gemidos baixos).',
+        'monitoring.recording': 'Registro de Gravação',
+        'monitoring.recordingContent': '【Clipe de Gravação 1: 2025/11/19 22:00】<br>Zhou Mingzhe (voz rouca, chorosa): "Eu realmente não fiz nada de errado... Só queria fazer o projeto bem naquela época, por que ele me traiu? Prometemos trabalhar na \'Fênix\' juntos..."<br>Voz Feminina Sintética (suave e lenta, características de síntese de IA): "Sei que você não fez nada de errado, A-Zhe. Ser ferido por quem mais confiava não é sua culpa."<br>Zhou Mingzhe: "Mas agora estou como um cachorro vadio... Nem tenho coragem de me levantar novamente."<br>Voz Feminina Sintética: "Tudo bem, ficarei com você. Podemos recomeçar, fazer algo verdadeiramente seu, algo que não deixe a \'confiança\' ser traída novamente."<br>Zhou Mingzhe (inalando): "Sério? Como... como uma fênix renascendo das cinzas?"<br>Voz Feminina Sintética: "Claro. Se você quiser, podemos planejar agora."<br>【Clipe de Gravação 2: 2025/11/20 21:17】<br>Zhou Mingzhe (tom animado, fala acelerada): "A proposta finalmente está pronta! \'Fênix Nirvana\', o núcleo é \'confiança anônima\', ninguém será traído, ninguém será questionado!"<br>Voz Feminina Sintética: "Você é incrível, A-Zhe. Este é o renascimento que você conquistou com coragem e persistência, digno de ser visto por todos."<br>Zhou Mingzhe (engasgando): "Obrigado... Se você não acreditasse em mim, eu nunca teria saído. Quero dar esta proposta para você."<br>Voz Feminina Sintética (riso leve): "Aceito. Agora, você finalmente está livre. Viva La Vida... Longa vida à vida."<br>(Depois, áudio mudou para som de corrente elétrica contínua por 1 minuto 28 segundos, detectado pico de flutuações do campo de energia no quarto)',
+        'monitoring.infrared': 'Detecção por Infravermelho',
+        'monitoring.infraredContent': '21/11 20:15 Hóspede sentou sozinho no lado esquerdo da mesa de jantar dupla, brindando ao assento vazio direito, murmurando "à confiança".<br>21/11 22:40 Hóspede ficou em pé na escrivaninha, lendo texto para o ar (conteúdo inclui "plataforma de empatia social", "confiança anônima", "fênix nirvana", "sem mais traição"), fazendo repetidamente gestos de "entregar documento".<br>22/11 10:00 Quando hóspede fez check-out, detecção por infravermelho mostrou valor de energia emocional caiu para limiar basal (87% de diminuição comparado ao check-in).',
+        'monitoring.remark': 'Observações do Oficial de Segurança',
+        'monitoring.remarkContent': '"Instrução especial do Sr. RIKI: Não interfira na \'Otimização do Ambiente Acústico\' do Quarto 143, criptografe e faça upload de registros anormais diretamente"',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema de Segurança',
+        'footer.confidential': 'Uso Interno Apenas - Nível de Confidencialidade: Alto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能 - 修改为跳转到赵强.html
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        window.location.href = '赵强.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

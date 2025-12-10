@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 4030房服务记录</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .service-list {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .service-list li {
+        position: relative;
+        padding-left: 20px;
+        margin-bottom: 10px;
+      }
+      .service-list li:before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: #8A6BBE;
+        font-size: 1.2rem;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M内部系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 内部系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">刘婉</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 4030号房服务记录 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">前台服务记录</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-24</span> | 
+            <span id="current-time">10:30:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 4030 - <span data-i18n="guest.name">陈逸风</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="guest.checkIn">入住</span>: 2025-11-10 | <span data-i18n="guest.checkOut">退房</span>: 2025-11-24
+            </div>
+          </div>
+          
+          <!-- 服务记录列表 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.checkInTitle">入住记录：2025/11/10 14:20</h4>
+            <p class="text-gray-300 terminal-font" data-i18n="record.checkIn">今日 14:20，住客陈逸风至前台办理入住，指定 4030 号房。男性，34 岁左右，面色苍白，眼下有浓重乌青，右手食指与中指有颜料残留，握手时手部微颤。出示身份证时，指尖多次打滑。
+行李仅黑色画箱（边角磨损严重，贴有 "海滨写生" 贴纸）与深色双肩包，无行李箱。
+特殊要求："拒绝所有访客，房间智能设备需 24 小时播放海浪白噪音，音量调至最低档"。
+办理流程中，其频繁看向大堂外的海景方向，问及 "为何选 4030 房"，回答 "朋友推荐，说日落好看"，但眼神躲闪。
+管理员 RIKI 全程在场。</p>
+          </div>
+          
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.checkOutTitle">退房记录：2025/11/24 10:15</h4>
+            <p class="text-gray-300 terminal-font" data-i18n="record.checkOut">住客归还房卡时，主动提及房间内画作："《夏日疗愈》留给酒店吧，放在这里更合适"。说话时语气空洞，眼神聚焦于虚空处，对前台提及的 "是否需要邮寄画作" 无回应，重复两次 "终于结束了" 后离开。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">内部系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': '前台服务记录',
+        'guest.name': '陈逸风',
+        'guest.checkIn': '入住',
+        'guest.checkOut': '退房',
+        'record.checkInTitle': '入住记录：2025/11/10 14:20',
+        'record.checkIn': '今日 14:20，住客陈逸风至前台办理入住，指定 4030 号房。男性，34 岁左右，面色苍白，眼下有浓重乌青，右手食指与中指有颜料残留，握手时手部微颤。出示身份证时，指尖多次打滑。行李仅黑色画箱（边角磨损严重，贴有 "海滨写生" 贴纸）与深色双肩包，无行李箱。特殊要求："拒绝所有访客，房间智能设备需 24 小时播放海浪白噪音，音量调至最低档"。办理流程中，其频繁看向大堂外的海景方向，问及 "为何选 4030 房"，回答 "朋友推荐，说日落好看"，但眼神躲闪。管理员 RIKI 全程在场。',
+        'record.checkOutTitle': '退房记录：2025/11/24 10:15',
+        'record.checkOut': '住客归还房卡时，主动提及房间内画作："《夏日疗愈》留给酒店吧，放在这里更合适"。说话时语气空洞，眼神聚焦于虚空处，对前台提及的 "是否需要邮寄画作" 无回应，重复两次 "终于结束了" 后离开。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '内部系统',
+        'footer.confidential': '仅供内部使用 - 保密级别：高级',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'Front Desk Service Record',
+        'guest.name': 'Chen Yifeng',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'record.checkInTitle': 'Check-in Record: 2025/11/10 14:20',
+        'record.checkIn': 'Today at 14:20, guest Chen Yifeng came to the front desk to check in, requesting Room 4030. Male, around 34 years old, pale complexion, heavy dark circles under eyes, paint residue on right index and middle fingers, slight hand tremor when shaking hands. Fingers slipped multiple times when presenting ID. Luggage only included a black paint box (severely worn corners, with "Seaside Sketch" sticker) and a dark backpack, no suitcase. Special request: "Refuse all visitors, room smart devices need to play ocean white noise 24 hours a day, volume set to minimum." During the check-in process, frequently looked towards the sea view outside the lobby, when asked "Why choose Room 4030", answered "Friend recommended, said the sunset is beautiful", but avoided eye contact. Administrator RIKI was present throughout.',
+        'record.checkOutTitle': 'Check-out Record: 2025/11/24 10:15',
+        'record.checkOut': 'When returning the room key, the guest proactively mentioned the painting in the room: "Leave 《Summer Healing》 to the hotel, it\'s more appropriate here." Spoke with an empty tone, eyes focused on the void, did not respond to the front desk\'s mention of "Do you need to mail the painting?", repeated "Finally over" twice before leaving.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Internal System',
+        'footer.confidential': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': 'フロントサービス記録',
+        'guest.name': '陳逸風',
+        'guest.checkIn': 'チェックイン',
+        'guest.checkOut': 'チェックアウト',
+        'record.checkInTitle': 'チェックイン記録：2025/11/10 14:20',
+        'record.checkIn': '本日14:20、宿泊客陳逸風がフロントでチェックイン、4030号室を指定。男性、34歳前後、青白い顔色、目の下に濃いクマ、右手の人差し指と中指に絵の具の残留物あり、握手時に手がわずかに震える。身分証提示時、指先が何度も滑る。手荷物は黒い絵の具箱（角が激しく摩耗、「海辺スケッチ」ステッカー貼付）とダークカラーのリュックサックのみ、スーツケースなし。特別要求：「すべての訪問者を拒否、客室スマートデバイスは24時間波のホワイトノイズを再生、音量は最低レベルに設定」。手続き中、頻繁にロビー外の海景色を見つめ、「なぜ4030号室を選んだのか」と聞かれると、「友人の推薦、夕日がきれいだと言われた」と回答したが、目をそらす。管理者RIKIが全行程に同席。',
+        'record.checkOutTitle': 'チェックアウト記録：2025/11/24 10:15',
+        'record.checkOut': '宿泊客がルームカードを返却する際、客室内の絵画について自発的に言及：「《夏の癒し》はホテルに置いておきます、こちらの方が適しています」。話す際の口調は空虚、目は虚空に焦点を合わせ、フロントが言及した「絵画を郵送する必要はありますか」には応答せず、「やっと終わった」と二度繰り返して去った。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '内部システム',
+        'footer.confidential': '内部使用のみ - 機密レベル：高',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'Registro de Serviço de Recepção',
+        'guest.name': 'Chen Yifeng',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'record.checkInTitle': 'Registro de Check-in: 2025/11/10 14:20',
+        'record.checkIn': 'Hoje às 14:20, hóspede Chen Yifeng veio à recepção para fazer check-in, solicitando Quarto 4030. Masculino, cerca de 34 anos, tez pálida, olheiras escuras sob os olhos, resíduos de tinta nos dedos indicador e médio da mão direita, leve tremor nas mãos ao apertar as mãos. Dedos escorregaram várias vezes ao apresentar o documento de identidade. Bagagem apenas incluía uma caixa de tintas preta (cantos severamente desgastados, com adesivo "Esboço à Beira-Mar") e uma mochila escura, sem mala. Solicitação especial: "Recusar todos os visitantes, dispositivos inteligentes do quarto precisam tocar ruído branco do oceano 24 horas por dia, volume definido no mínimo." Durante o processo de check-in, olhava frequentemente para a vista do mar fora do saguão, quando perguntado "Por que escolher o Quarto 4030", respondeu "Amigo recomendou, disse que o pôr do sol é bonito", mas evitou contato visual. Administrador RIKI esteve presente durante todo o tempo.',
+        'record.checkOutTitle': 'Registro de Check-out: 2025/11/24 10:15',
+        'record.checkOut': 'Ao devolver a chave do quarto, o hóspede mencionou proativamente a pintura no quarto: "Deixe 《Cura de Verão》 para o hotel, é mais apropriado aqui." Falou com um tom vazio, olhos focados no vazio, não respondeu à menção da recepção sobre "Precisa enviar a pintura pelo correio?", repetiu "Finalmente acabou" duas vezes antes de sair.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema Interno',
+        'footer.confidential': 'Uso Interno Apenas - Nível de Confidencialidade: Alto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        window.location.href = '官网.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

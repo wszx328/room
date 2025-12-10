@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>匿名论坛</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0a0710;
+            color: #e0d6f2;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(76, 0, 130, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(106, 13, 173, 0.1) 0%, transparent 20%);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #3a1e5c;
+            margin-bottom: 20px;
+        }
+        
+        .forum-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #9d4edd;
+            text-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+        }
+        
+        .language-switcher {
+            position: relative;
+        }
+        
+        .language-btn {
+            background-color: #1a0f2e;
+            color: #c8a8e9;
+            border: 1px solid #3a1e5c;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .language-btn:hover {
+            background-color: #2a1845;
+            border-color: #9d4edd;
+        }
+        
+        .language-options {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #1a0f2e;
+            border: 1px solid #3a1e5c;
+            border-radius: 4px;
+            margin-top: 5px;
+            min-width: 150px;
+            display: none;
+            z-index: 100;
+        }
+        
+        .language-options.show {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .language-option:hover {
+            background-color: #2a1845;
+            color: #9d4edd;
+        }
+        
+        .language-option.active {
+            background-color: #3a1e5c;
+            color: #9d4edd;
+        }
+        
+        .posts-container {
+            background-color: rgba(26, 15, 46, 0.7);
+            border-radius: 8px;
+            border: 1px solid #3a1e5c;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .post {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #2d1b42;
+        }
+        
+        .post:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .user-label {
+            display: inline-block;
+            background-color: #3a1e5c;
+            color: #c8a8e9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+        
+        .post-content {
+            font-size: 1.1rem;
+            color: #e0d6f2;
+            line-height: 1.7;
+            margin-left: 5px;
+        }
+        
+        .post-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #8a6bbd;
+        }
+        
+        .post-time {
+            font-style: italic;
+        }
+        
+        .post-id {
+            color: #c8a8e9;
+        }
+        
+        .forum-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #3a1e5c;
+            font-size: 0.9rem;
+            color: #8a6bbd;
+        }
+        
+        .online-count {
+            color: #9d4edd;
+            font-weight: bold;
+        }
+        
+        .play-button {
+            display: block;
+            margin: 40px auto;
+            background: linear-gradient(to right, #6a0dad, #9d4edd);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(157, 78, 221, 0.3);
+        }
+        
+        .play-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(157, 78, 221, 0.4);
+            background: linear-gradient(to right, #7a1dd5, #ad5efd);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 7, 16, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(to bottom right, #1a0f2e, #2d1b42);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid #6a0dad;
+            box-shadow: 0 10px 30px rgba(106, 13, 173, 0.5);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal h2 {
+            color: #9d4edd;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .modal p {
+            color: #c8a8e9;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .close-modal {
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .close-modal:hover {
+            background-color: #7a1dd5;
+        }
+        
+        .new-post-area {
+            background-color: rgba(26, 15, 46, 0.7);
+            border-radius: 8px;
+            border: 1px solid #3a1e5c;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .new-post-title {
+            color: #b57edc;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .new-post-input {
+            width: 100%;
+            background-color: #1a0f2e;
+            border: 1px solid #3a1e5c;
+            border-radius: 4px;
+            padding: 12px;
+            color: #e0d6f2;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .new-post-input:focus {
+            outline: none;
+            border-color: #9d4edd;
+        }
+        
+        .post-button {
+            background-color: #3a1e5c;
+            color: #c8a8e9;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            float: right;
+        }
+        
+        .post-button:hover {
+            background-color: #4a2b6d;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .posts-container {
+                padding: 20px;
+            }
+            
+            .play-button {
+                padding: 12px 30px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="forum-header">匿名论坛</div>
+            <div class="language-switcher">
+                <button class="language-btn" id="languageBtn">
+                    <span id="currentLanguage">中文</span>
+                    <span>▼</span>
+                </button>
+                <div class="language-options" id="languageOptions">
+                    <div class="language-option active" data-lang="zh">中文</div>
+                    <div class="language-option" data-lang="en">English</div>
+                    <div class="language-option" data-lang="ja">日本語</div>
+                    <div class="language-option" data-lang="pt">Português</div>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="new-post-area">
+                <div class="new-post-title" id="newPostTitle" data-zh="发布新帖子" 
+                     data-en="Create New Post"
+                     data-ja="新しい投稿を作成"
+                     data-pt="Criar Nova Postagem">
+                    发布新帖子
+                </div>
+                <textarea class="new-post-input" id="newPostInput" placeholder="" data-zh="在此输入您的帖子内容..." 
+                          data-en="Enter your post content here..."
+                          data-ja="ここに投稿内容を入力してください..."
+                          data-pt="Digite o conteúdo da sua postagem aqui..."></textarea>
+                <button class="post-button" id="postButton" data-zh="发布" 
+                        data-en="Post"
+                        data-ja="投稿"
+                        data-pt="Postar">
+                    发布
+                </button>
+                <div style="clear: both;"></div>
+            </div>
+            
+            <div class="posts-container">
+                <div class="post" id="post1">
+                    <div class="user-label">匿名用户</div>
+                    <div class="post-content" data-zh="我总觉得，某个时刻，城市的每个角落都是一个'房间'。" 
+                         data-en="I always feel that, at certain moments, every corner of the city is a 'room'."
+                         data-ja="私はいつも感じている、ある瞬間、街のあらゆる角落が一つの「部屋」になると。"
+                         data-pt="Eu sempre sinto que, em certos momentos, cada canto da cidade é uma 'sala'.">
+                        我总觉得，某个时刻，城市的每个角落都是一个"房间"。
+                    </div>
+                    <div class="post-info">
+                        <span class="post-time" data-zh="今天 02:47" 
+                              data-en="Today 02:47"
+                              data-ja="今日 02:47"
+                              data-pt="Hoje 02:47">
+                            今天 02:47
+                        </span>
+                        <span class="post-id">#48291</span>
+                    </div>
+                </div>
+                
+                <div class="post" id="post2">
+                    <div class="user-label">匿名用户</div>
+                    <div class="post-content" data-zh="只是现在，我们都是彼此的RIKI。" 
+                         data-en="But now, we are all each other's RIKI."
+                         data-ja="ただ今、私たちは互いのRIKIでいる。"
+                         data-pt="Mas agora, somos todos RIKI um do outro.">
+                        只是现在，我们都是彼此的RIKI。
+                    </div>
+                    <div class="post-info">
+                        <span class="post-time" data-zh="今天 03:15" 
+                              data-en="Today 03:15"
+                              data-ja="今日 03:15"
+                              data-pt="Hoje 03:15">
+                            今天 03:15
+                        </span>
+                        <span class="post-id">#48292</span>
+                    </div>
+                </div>
+                
+                <div class="post" id="post3">
+                    <div class="user-label">匿名用户</div>
+                    <div class="post-content" data-zh="你懂我的意思吗？" 
+                         data-en="Do you understand what I mean?"
+                         data-ja="私の意味が分かりますか？"
+                         data-pt="Você entende o que quero dizer?">
+                        你懂我的意思吗？
+                    </div>
+                    <div class="post-info">
+                        <span class="post-time" data-zh="今天 03:22" 
+                              data-en="Today 03:22"
+                              data-ja="今日 03:22"
+                              data-pt="Hoje 03:22">
+                            今天 03:22
+                        </span>
+                        <span class="post-id">#48293</span>
+                    </div>
+                </div>
+                
+                <div class="forum-stats">
+                    <div id="onlineCount" data-zh="在线: 127 位用户" 
+                         data-en="Online: 127 users"
+                         data-ja="オンライン: 127 ユーザー"
+                         data-pt="Online: 127 usuários">
+                        在线: 127 位用户
+                    </div>
+                    <div id="totalPosts" data-zh="帖子总数: 48,293" 
+                         data-en="Total posts: 48,293"
+                         data-ja="総投稿数: 48,293"
+                         data-pt="Total de postagens: 48.293">
+                        帖子总数: 48,293
+                    </div>
+                </div>
+            </div>
+            
+            <button class="play-button" id="playButton" data-zh="【感谢游玩】" 
+                    data-en="【Thanks for Playing】"
+                    data-ja="【プレイありがとう】"
+                    data-pt="【Obrigado por Jogar】">
+                【感谢游玩】
+            </button>
+        </main>
+    </div>
+    
+    <!-- 感谢弹窗 -->
+    <div class="modal" id="thankYouModal">
+        <div class="modal-content">
+            <h2 id="modalTitle" data-zh="感谢您体验ROOM酒店的故事" 
+                data-en="Thank You for Experiencing the Story of ROOM Hotel"
+                data-ja="ROOMホテルのストーリーを体験していただきありがとうございます"
+                data-pt="Obrigado por Experimentar a História do ROOM Hotel">
+                感谢您体验ROOM酒店的故事
+            </h2>
+            <p id="modalText" data-zh="夜幕降临，关于祂的故事仍在继续。感谢您的参与，让这个故事更加完整。" 
+               data-en="Night falls, the story about Him continues. Thank you for your participation, making this story more complete."
+               data-ja="夜が訪れ、彼に関する物語はまだ続いている。ご参加いただき、この物語をより完全なものにしてくださりありがとうございます。"
+               data-pt="A noite cai, a história sobre Ele continua. Obrigado por sua participação, tornando esta história mais completa.">
+                夜幕降临，关于祂的故事仍在继续。感谢您的参与，让这个故事更加完整。
+            </p>
+            <button class="close-modal" id="closeModal" data-zh="关闭" 
+                    data-en="Close"
+                    data-ja="閉じる"
+                    data-pt="Fechar">
+                关闭
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageBtn = document.getElementById('languageBtn');
+            const languageOptions = document.getElementById('languageOptions');
+            const currentLanguage = document.getElementById('currentLanguage');
+            const languageOptionsList = document.querySelectorAll('.language-option');
+            const playButton = document.getElementById('playButton');
+            const thankYouModal = document.getElementById('thankYouModal');
+            const closeModal = document.getElementById('closeModal');
+            const postButton = document.getElementById('postButton');
+            const newPostInput = document.getElementById('newPostInput');
+            
+            // 多语言文本元素
+            const textElements = document.querySelectorAll('[data-zh]');
+            
+            // 默认语言为中文
+            let currentLang = 'zh';
+            
+            // 切换语言选项显示/隐藏
+            languageBtn.addEventListener('click', function() {
+                languageOptions.classList.toggle('show');
+            });
+            
+            // 选择语言
+            languageOptionsList.forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    
+                    // 更新当前语言显示
+                    currentLanguage.textContent = this.textContent;
+                    
+                    // 更新语言选项激活状态
+                    languageOptionsList.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 切换语言
+                    changeLanguage(lang);
+                    
+                    // 隐藏语言选项
+                    languageOptions.classList.remove('show');
+                });
+            });
+            
+            // 切换语言函数
+            function changeLanguage(lang) {
+                currentLang = lang;
+                
+                // 更新所有有data属性的元素
+                textElements.forEach(element => {
+                    if (element.hasAttribute(`data-${lang}`)) {
+                        if (element.tagName === 'BUTTON' || element.tagName === 'INPUT') {
+                            element.textContent = element.getAttribute(`data-${lang}`);
+                        } else if (element.tagName === 'TEXTAREA') {
+                            element.placeholder = element.getAttribute(`data-${lang}`);
+                        } else {
+                            element.innerHTML = element.getAttribute(`data-${lang}`);
+                        }
+                    }
+                });
+            }
+            
+            // 点击【感谢游玩】按钮
+            playButton.addEventListener('click', function() {
+                // 先确保弹窗内容使用当前语言
+                changeLanguage(currentLang);
+                // 显示弹窗
+                thankYouModal.style.display = 'flex';
+            });
+            
+            // 关闭弹窗
+            closeModal.addEventListener('click', function() {
+                thankYouModal.style.display = 'none';
+            });
+            
+            // 点击弹窗外部关闭
+            thankYouModal.addEventListener('click', function(e) {
+                if (e.target === thankYouModal) {
+                    thankYouModal.style.display = 'none';
+                }
+            });
+            
+            // 添加新帖子功能
+            postButton.addEventListener('click', function() {
+                const postContent = newPostInput.value.trim();
+                if (postContent) {
+                    addNewPost(postContent);
+                    newPostInput.value = '';
+                    
+                    // 显示发布成功消息
+                    const messages = {
+                        zh: "帖子发布成功！",
+                        en: "Post published successfully!",
+                        ja: "投稿が成功しました！",
+                        pt: "Postagem publicada com sucesso!"
+                    };
+                    
+                    alert(messages[currentLang]);
+                } else {
+                    const messages = {
+                        zh: "请输入帖子内容。",
+                        en: "Please enter post content.",
+                        ja: "投稿内容を入力してください。",
+                        pt: "Por favor, digite o conteúdo da postagem."
+                    };
+                    
+                    alert(messages[currentLang]);
+                }
+            });
+            
+            // 添加新帖子到页面
+            function addNewPost(content) {
+                const postsContainer = document.querySelector('.posts-container');
+                const existingPosts = document.querySelectorAll('.post');
+                const lastPostId = existingPosts.length > 0 ? 
+                    parseInt(existingPosts[existingPosts.length - 1].querySelector('.post-id').textContent.replace('#', '')) : 48293;
+                
+                const newPostId = lastPostId + 1;
+                
+                // 创建新帖子元素
+                const newPost = document.createElement('div');
+                newPost.className = 'post';
+                
+                // 获取当前时间
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                newPost.innerHTML = `
+                    <div class="user-label">匿名用户</div>
+                    <div class="post-content">${content}</div>
+                    <div class="post-info">
+                        <span class="post-time">${getTimeString(timeString)}</span>
+                        <span class="post-id">#${newPostId}</span>
+                    </div>
+                `;
+                
+                // 在第一个帖子之前插入新帖子
+                const firstPost = document.getElementById('post1');
+                postsContainer.insertBefore(newPost, firstPost);
+                
+                // 更新帖子总数
+                const totalPostsElement = document.getElementById('totalPosts');
+                const currentTotal = parseInt(totalPostsElement.textContent.match(/\d+/g).join(''));
+                const newTotal = currentTotal + 1;
+                
+                const totalPostsText = {
+                    zh: `帖子总数: ${newTotal.toLocaleString('zh-CN')}`,
+                    en: `Total posts: ${newTotal.toLocaleString('en-US')}`,
+                    ja: `総投稿数: ${newTotal.toLocaleString('ja-JP')}`,
+                    pt: `Total de postagens: ${newTotal.toLocaleString('pt-BR')}`
+                };
+                
+                totalPostsElement.textContent = totalPostsText[currentLang];
+                totalPostsElement.setAttribute('data-zh', `帖子总数: ${newTotal.toLocaleString('zh-CN')}`);
+                totalPostsElement.setAttribute('data-en', `Total posts: ${newTotal.toLocaleString('en-US')}`);
+                totalPostsElement.setAttribute('data-ja', `総投稿数: ${newTotal.toLocaleString('ja-JP')}`);
+                totalPostsElement.setAttribute('data-pt', `Total de postagens: ${newTotal.toLocaleString('pt-BR')}`);
+            }
+            
+            // 根据语言获取时间字符串
+            function getTimeString(time) {
+                const todayText = {
+                    zh: "今天",
+                    en: "Today",
+                    ja: "今日",
+                    pt: "Hoje"
+                };
+                
+                return `${todayText[currentLang]} ${time}`;
+            }
+            
+            // 为帖子添加延迟显示动画
+            const posts = document.querySelectorAll('.post');
+            posts.forEach((post, index) => {
+                post.style.opacity = '0';
+                post.style.transform = 'translateY(20px)';
+                post.style.transition = `opacity 0.5s ease ${index * 0.2}s, transform 0.5s ease ${index * 0.2}s`;
+                
+                setTimeout(() => {
+                    post.style.opacity = '1';
+                    post.style.transform = 'translateY(0)';
+                }, 100);
+            });
+            
+            // 添加键盘快捷键支持
+            document.addEventListener('keydown', function(e) {
+                // ESC键关闭弹窗
+                if (e.key === 'Escape' && thankYouModal.style.display === 'flex') {
+                    thankYouModal.style.display = 'none';
+                }
+                // Ctrl+Enter 发布帖子
+                if (e.key === 'Enter' && e.ctrlKey && document.activeElement === newPostInput) {
+                    postButton.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

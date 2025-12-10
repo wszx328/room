@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>302房的论坛帖子 - R∞M酒店内部系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .mysterious-border {
+        border: 1px solid rgba(138, 107, 190, 0.3);
+        box-shadow: 0 0 10px rgba(138, 107, 190, 0.2);
+      }
+      .quote-highlight {
+        background: rgba(138, 107, 190, 0.1);
+        border-left: 3px solid rgba(138, 107, 190, 0.5);
+        padding: 8px 12px;
+        margin: 8px 0;
+        font-style: italic;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block" data-i18n="nav.internalSystem">| 内部系统</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username" data-i18n="user.name">尹力</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white" data-i18n="forum.title">员工论坛</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2">
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <!-- 帖子内容 -->
+              <div class="mb-6">
+                <div class="flex justify-between items-start mb-4">
+                  <h2 class="text-2xl font-bold text-white" data-i18n="post.title">【302 房是不是有点邪门？】</h2>
+                  <span class="text-gray-400 text-sm" data-i18n="post.timeAgo">3周前</span>
+                </div>
+                <div class="flex items-center mb-4 text-gray-300">
+                  <i class="fa fa-user-circle mr-2"></i>
+                  <span data-i18n="post.author">服务台王丽</span>
+                  <span class="mx-2">•</span>
+                  <span class="text-accent" data-i18n="post.category">异常报告</span>
+                </div>
+                <div class="bg-primary/40 p-4 rounded-sm mysterious-border">
+                  <p class="text-gray-300 mb-3" data-i18n="post.content1">有没有同事去过 302 房服务？我上周去送东西，明明听到里面有两个人说话，结果进门只看到一个男的坐在桌边，桌上摆着扑克牌和两个酒杯。</p>
+                  <div class="quote-highlight mb-3">
+                    <span data-i18n="post.quote1">"该你下注了"</span>
+                  </div>
+                  <p class="text-gray-300 mb-3" data-i18n="post.content2">那男的自言自语似的，但房间里空荡荡的，只有他一个人！我放下东西赶紧走了，出门时还听见他大笑，好像赢了什么似的。</p>
+                  <p class="text-gray-300 mb-3" data-i18n="post.content3">后来我查了一下记录，那间房明明只登记了一位客人，叫王天宇。你们有没有遇到过类似的情况？</p>
+                  <p class="text-gray-300" data-i18n="post.content4">我总觉得302房有点不对劲，每次路过都感觉冷飕飕的。</p>
+                </div>
+              </div>
+              
+              <!-- 回复列表 -->
+              <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-white mb-4" data-i18n="post.replies">回复 (7)</h3>
+                
+                <!-- 回复1 -->
+                <div class="bg-primary/40 p-4 rounded-sm mysterious-border">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply1.author">客房服务李月</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply1.time">3周前</span>
+                  </div>
+                  <p class="text-gray-300 mb-3" data-i18n="reply1.content1">我也遇到过！上个月我去302房换床单，听到里面有两个男人在争吵，什么"股份""别墅"的，但一敲门就安静了。</p>
+                  <p class="text-gray-300 mb-3" data-i18n="reply1.content2">进门后只有一个客人，桌上放着扑克牌，摆得整整齐齐，好像刚玩过一样。</p>
+                  <div class="quote-highlight mb-3">
+                    <span data-i18n="reply1.quote">"你觉得我赢了吗？"</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply1.content3">最怪的是，客人还笑着问我。我随便应付了几句，赶紧溜了。后来听说那个客人后来成了商业大亨，但总觉得他眼神空空的。</p>
+                </div>
+                
+                <!-- 回复2 -->
+                <div class="bg-primary/40 p-4 rounded-sm mysterious-border">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply2.author">安保部张智慧</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply2.time">3周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply2.content">王丽姐，你说这个我想起来了。302房是酒店的重点监控区域，但上面要求我们别多问，只记录客人的出入时间。我值夜班时，通过监控看到过那个王天宇在房间里自己摆弄扑克牌，还对着空气说话，持续了好几天。后来他退房时，整个人容光焕发，但走路的姿势有点僵，好像丢了魂似的。酒店老员工说，302房以前就有类似传闻，但管理层不让外传。</p>
+                </div>
+
+                <!-- 回复3 -->
+                <div class="bg-primary/40 p-4 rounded-sm mysterious-border">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply3.author">餐饮部陈天阳</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply3.time">3周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply3.content">没错！我每次送餐去302房，客人都要求两人份，但永远只有一个人吃。有一次我送红酒和牛排，客人还特意强调"给我朋友也倒一杯"，可房间里根本没别人。我注意到桌上总是放着一副新扑克牌，而且客人会自己洗牌发牌，像在跟隐形人玩。后来我听说，住过302房的客人，出去后都发了大财，但人也变得特别冷漠，连家人都不联系了。</p>
+                </div>
+
+                <!-- 回复4 -->
+                <div class="bg-primary/40 p-4 rounded-sm mysterious-border">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply4.author">前台刘明</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply4.time">2周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply4.content">大家小声点，经理上次开会还强调不要讨论302房的事。不过既然你们说了，我也插一句：302房的预订很特殊，通常是由"推荐人"安排的，客人自己很少直接预订。而且，退房时客人都显得特别满足，但眼神里一点感情都没有。我查过系统，302房的入住记录里，从来没有第二个客人登记，但房间里的物品消耗总是双人份。</p>
+                </div>
+
+                <!-- 回复5 -->
+                <div class="bg-primary/40 p-4 rounded-sm mysterious-border">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply5.author">维修部赵伟</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply5.time">2周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply5.content">嘿，你们这么一说，我想起去年修302房的空调时，在通风管道里找到一张皱巴巴的纸，上面写满了"赢"，还有一串数字【694251】，字迹很乱。另外，302房的隔音效果其实很好，但奇怪的是，外面偶尔能听到里面的对话声，好像真有两个人在谈判。但我检查过房间，没有隐藏音箱之类的东西。可能只是客人自己入戏太深吧。</p>
+                </div>
+
+                <!-- 回复6 -->
+                <div class="bg-primary/40 p-4 rounded-sm mysterious-border">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply6.author">培训部孙双</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply6.time">1周前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply6.content">新员工培训时，我们会提醒大家服务302房要"多看少问"，遵循客人的要求就行。据说那个房间是酒店创始人设计的特殊套间，为了满足客人的"私人需求"。不过王丽，你别担心，302房从没出过安全事故，只是客人的行为有点异常。或许这就是有钱人的怪癖？对了，我总觉得王天宇这名字很眼熟，我好像是在一个叫"MORE"的个人博客上看到过他的商业分析，写得挺深的。</p>
+                </div>
+
+                <!-- 回复7 -->
+                <div class="bg-primary/40 p-4 rounded-sm mysterious-border">
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center text-gray-300">
+                      <i class="fa fa-user-circle mr-2"></i>
+                      <span data-i18n="reply7.author">论坛管理员黄佳</span>
+                    </div>
+                    <span class="text-gray-400 text-sm" data-i18n="reply7.time">5天前</span>
+                  </div>
+                  <p class="text-gray-300" data-i18n="reply7.content">各位同事，请勿在公共论坛讨论特定房间细节。如有疑虑，可向上级汇报。302房是酒店高级套房，一切现象均有合理解释。感谢大家的敬业精神。</p>
+                </div>
+              </div>
+              
+              <!-- 回复表单 -->
+              <div class="mt-6 pt-6 border-t border-accent/20">
+                <h3 class="text-lg font-semibold text-white mb-4" data-i18n="post.replyForm">发表回复</h3>
+                <form>
+                  <textarea rows="4" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" data-i18n-placeholder="post.replyPlaceholder" placeholder="输入回复内容..."></textarea>
+                  <div class="mt-4 flex justify-end">
+                    <button type="submit" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300" data-i18n="post.submitReply">
+                      发表回复
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.categories">论坛分类</h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.work">工作交流</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">42</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.data">数据分析</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">28</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.anomaly">异常报告</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">15</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.system">系统更新</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">9</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.notice">部门通知</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">34</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="category.leisure">休闲娱乐</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">67</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.related">相关帖子</h3>
+              <div class="space-y-3">
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost1.title">必须安利！力丸新专辑《ROOM》太绝了！</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost1.stats">回复 23 · 查看 156</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost2.title">新分析工具使用指南</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost2.stats">回复 7 · 查看 42</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="relatedPost3.title">餐厅新菜单试吃反馈</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="relatedPost3.stats">回复 18 · 查看 94</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="sidebar.rules">论坛规则</h3>
+              <ul class="text-gray-300 text-sm space-y-2">
+                <li data-i18n="rule1">• 禁止讨论敏感客户信息</li>
+                <li data-i18n="rule2">• 所有分析必须基于客观数据</li>
+                <li data-i18n="rule3">• 发现异常请立即报告管理员</li>
+                <li data-i18n="rule4">• 保持专业态度，尊重同事</li>
+                <li data-i18n="rule5">• 遵守公司保密协议</li>
+              </ul>
+              <div class="mt-4 pt-4 border-t border-accent/20">
+                <p class="text-gray-400 text-xs terminal-font" data-i18n="system.note">> 系统提示：您的所有活动都会被记录</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm" data-i18n="footer.system">| 内部系统 v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.usage">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p data-i18n="footer.lastUpdate">最后系统更新: 2025-11-12 11:02</p>
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态:</span> <span class="text-success" data-i18n="footer.statusNormal">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.internalSystem': '| 内部系统',
+        'user.name': '尹力',
+        'forum.title': '员工论坛',
+        'post.title': '【302 房是不是有点邪门？】',
+        'post.timeAgo': '3周前',
+        'post.author': '服务台王丽',
+        'post.category': '异常报告',
+        'post.content1': '有没有同事去过 302 房服务？我上周去送东西，明明听到里面有两个人说话，结果进门只看到一个男的坐在桌边，桌上摆着扑克牌和两个酒杯。',
+        'post.quote1': '"该你下注了"',
+        'post.content2': '那男的自言自语似的，但房间里空荡荡的，只有他一个人！我放下东西赶紧走了，出门时还听见他大笑，好像赢了什么似的。',
+        'post.content3': '后来我查了一下记录，那间房明明只登记了一位客人，叫王天宇。你们有没有遇到过类似的情况？',
+        'post.content4': '我总觉得302房有点不对劲，每次路过都感觉冷飕飕的。',
+        'post.replies': '回复 (7)',
+        'post.replyForm': '发表回复',
+        'post.replyPlaceholder': '输入回复内容...',
+        'post.submitReply': '发表回复',
+        'reply1.author': '客房服务李月',
+        'reply1.time': '3周前',
+        'reply1.content1': '我也遇到过！上个月我去302房换床单，听到里面有两个男人在争吵，什么"股份""别墅"的，但一敲门就安静了。',
+        'reply1.content2': '进门后只有一个客人，桌上放着扑克牌，摆得整整齐齐，好像刚玩过一样。',
+        'reply1.quote': '"你觉得我赢了吗？"',
+        'reply1.content3': '最怪的是，客人还笑着问我。我随便应付了几句，赶紧溜了。后来听说那个客人后来成了商业大亨，但总觉得他眼神空空的。',
+        'reply2.author': '安保部张智慧',
+        'reply2.time': '3周前',
+        'reply2.content': '王丽姐，你说这个我想起来了。302房是酒店的重点监控区域，但上面要求我们别多问，只记录客人的出入时间。我值夜班时，通过监控看到过那个王天宇在房间里自己摆弄扑克牌，还对着空气说话，持续了好几天。后来他退房时，整个人容光焕发，但走路的姿势有点僵，好像丢了魂似的。酒店老员工说，302房以前就有类似传闻，但管理层不让外传。',
+        'reply3.author': '餐饮部陈天阳',
+        'reply3.time': '3周前',
+        'reply3.content': '没错！我每次送餐去302房，客人都要求两人份，但永远只有一个人吃。有一次我送红酒和牛排，客人还特意强调"给我朋友也倒一杯"，可房间里根本没别人。我注意到桌上总是放着一副新扑克牌，而且客人会自己洗牌发牌，像在跟隐形人玩。后来我听说，住过302房的客人，出去后都发了大财，但人也变得特别冷漠，连家人都不联系了。',
+        'reply4.author': '前台刘明',
+        'reply4.time': '2周前',
+        'reply4.content': '大家小声点，经理上次开会还强调不要讨论302房的事。不过既然你们说了，我也插一句：302房的预订很特殊，通常是由"推荐人"安排的，客人自己很少直接预订。而且，退房时客人都显得特别满足，但眼神里一点感情都没有。我查过系统，302房的入住记录里，从来没有第二个客人登记，但房间里的物品消耗总是双人份。',
+        'reply5.author': '维修部赵伟',
+        'reply5.time': '2周前',
+        'reply5.content': '嘿，你们这么一说，我想起去年修302房的空调时，在通风管道里找到一张皱巴巴的纸，上面写满了"赢"，还有一串数字【694251】，字迹很乱。另外，302房的隔音效果其实很好，但奇怪的是，外面偶尔能听到里面的对话声，好像真有两个人在谈判。但我检查过房间，没有隐藏音箱之类的东西。可能只是客人自己入戏太深吧。',
+        'reply6.author': '培训部孙双',
+        'reply6.time': '1周前',
+        'reply6.content': '新员工培训时，我们会提醒大家服务302房要"多看少问"，遵循客人的要求就行。据说那个房间是酒店创始人设计的特殊套间，为了满足客人的"私人需求"。不过王丽，你别担心，302房从没出过安全事故，只是客人的行为有点异常。或许这就是有钱人的怪癖？对了，我总觉得王天宇这名字很眼熟，我好像是在一个叫"MORE"的个人博客上看到过他的商业分析，写得挺深的。',
+        'reply7.author': '论坛管理员黄佳',
+        'reply7.time': '5天前',
+        'reply7.content': '各位同事，请勿在公共论坛讨论特定房间细节。如有疑虑，可向上级汇报。302房是酒店高级套房，一切现象均有合理解释。感谢大家的敬业精神。',
+        'sidebar.categories': '论坛分类',
+        'category.work': '工作交流',
+        'category.data': '数据分析',
+        'category.anomaly': '异常报告',
+        'category.system': '系统更新',
+        'category.notice': '部门通知',
+        'category.leisure': '休闲娱乐',
+        'sidebar.related': '相关帖子',
+        'relatedPost1.title': '必须安利！力丸新专辑《ROOM》太绝了！',
+        'relatedPost1.stats': '回复 23 · 查看 156',
+        'relatedPost2.title': '新分析工具使用指南',
+        'relatedPost2.stats': '回复 7 · 查看 42',
+        'relatedPost3.title': '餐厅新菜单试吃反馈',
+        'relatedPost3.stats': '回复 18 · 查看 94',
+        'sidebar.rules': '论坛规则',
+        'rule1': '• 禁止讨论敏感客户信息',
+        'rule2': '• 所有分析必须基于客观数据',
+        'rule3': '• 发现异常请立即报告管理员',
+        'rule4': '• 保持专业态度，尊重同事',
+        'rule5': '• 遵守公司保密协议',
+        'system.note': '> 系统提示：您的所有活动都会被记录',
+        'footer.system': '| 内部系统 v2.1.4',
+        'footer.usage': '仅供内部使用 - 保密级别：高级',
+        'footer.lastUpdate': '最后系统更新: 2025-11-12 11:02',
+        'footer.status': '系统状态:',
+        'footer.statusNormal': '运行正常'
+      },
+      'en': {
+        'nav.internalSystem': '| Internal System',
+        'user.name': 'Yin Li',
+        'forum.title': 'Employee Forum',
+        'post.title': '【Is Room 302 a Bit Spooky?】',
+        'post.timeAgo': '3 weeks ago',
+        'post.author': 'Front Desk - Wang Li',
+        'post.category': 'Anomaly Report',
+        'post.content1': 'Has anyone been to Room 302 for service? Last week when I went to deliver something, I clearly heard two people talking inside, but when I entered, I only saw a man sitting at the table with playing cards and two wine glasses.',
+        'post.quote1': '"It\'s your turn to bet"',
+        'post.content2': 'The man seemed to be talking to himself, but the room was empty except for him! I put down the things and left quickly, and when I went out, I heard him laughing as if he had won something.',
+        'post.content3': 'Later I checked the records, and that room was clearly only registered to one guest, named Wang Tianyu. Have any of you encountered similar situations?',
+        'post.content4': 'I always feel that Room 302 is a bit strange, and every time I pass by, I feel a chill.',
+        'post.replies': 'Replies (7)',
+        'post.replyForm': 'Post a Reply',
+        'post.replyPlaceholder': 'Enter reply content...',
+        'post.submitReply': 'Post Reply',
+        'reply1.author': 'Housekeeping - Li Yue',
+        'reply1.time': '3 weeks ago',
+        'reply1.content1': 'I\'ve encountered it too! Last month when I went to Room 302 to change the bed sheets, I heard two men arguing inside about "shares" and "villas", but when I knocked, it went quiet.',
+        'reply1.content2': 'After entering, there was only one guest, with playing cards on the table, neatly arranged as if they had just been played.',
+        'reply1.quote': '"Do you think I won?"',
+        'reply1.content3': 'The strangest thing was that the guest asked me with a smile. I made some random responses and quickly left. Later I heard that guest became a business tycoon, but I always felt his eyes were empty.',
+        'reply2.author': 'Security - Zhang Zhihui',
+        'reply2.time': '3 weeks ago',
+        'reply2.content': 'Sister Wang Li, you mentioning this reminds me. Room 302 is a key monitoring area in the hotel, but management told us not to ask too many questions, just record the guests\' entry and exit times. When I was on night duty, I saw that Wang Tianyu through the surveillance cameras, playing with cards by himself and talking to the air, which lasted for several days. Later when he checked out, he looked radiant, but his walking posture was a bit stiff, as if he had lost his soul. Old hotel employees say Room 302 has had similar rumors before, but management doesn\'t allow them to be spread.',
+        'reply3.author': 'Food & Beverage - Chen Tianyang',
+        'reply3.time': '3 weeks ago',
+        'reply3.content': 'Exactly! Every time I deliver meals to Room 302, the guest requests portions for two people, but there\'s always only one person eating. Once I delivered red wine and steak, and the guest specifically emphasized "pour a glass for my friend too", but there was no one else in the room. I noticed there was always a new deck of playing cards on the table, and the guest would shuffle and deal cards by himself, as if playing with an invisible person. Later I heard that guests who stayed in Room 302 all made fortunes after leaving, but they became particularly cold and didn\'t even contact their families.',
+        'reply4.author': 'Front Desk - Liu Ming',
+        'reply4.time': '2 weeks ago',
+        'reply4.content': 'Everyone, keep it down, the manager emphasized at the last meeting not to discuss Room 302. But since you\'ve brought it up, I\'ll add something: Room 302 bookings are special, usually arranged by a "recommender", and guests rarely book directly themselves. Also, when checking out, guests always seem particularly satisfied, but there\'s no emotion in their eyes. I\'ve checked the system - in Room 302\'s check-in records, there has never been a second guest registered, but the room\'s item consumption is always for two people.',
+        'reply5.author': 'Maintenance - Zhao Wei',
+        'reply5.time': '2 weeks ago',
+        'reply5.content': 'Hey, now that you mention it, I remember last year when I repaired the air conditioning in Room 302, I found a crumpled paper in the ventilation duct with the word "win" written all over it, along with a string of numbers 【694251】, in messy handwriting. Also, Room 302 actually has good sound insulation, but strangely, you can occasionally hear conversation from inside as if there are really two people negotiating. But I\'ve inspected the room and there are no hidden speakers or anything like that. Maybe the guests are just too immersed in their own drama.',
+        'reply6.author': 'Training - Sun Shuang',
+        'reply6.time': '1 week ago',
+        'reply6.content': 'During new employee training, we remind everyone to "observe more, ask less" when serving Room 302, just follow the guests\' requests. It\'s said that room is a special suite designed by the hotel founder to meet guests\' "private needs". But Wang Li, don\'t worry, Room 302 has never had any safety incidents, it\'s just that the guests\' behavior is a bit unusual. Maybe this is just the eccentricity of the wealthy? By the way, I always feel that the name Wang Tianyu is very familiar. I think I saw his business analysis on a personal blog called "MORE", it was quite in-depth.',
+        'reply7.author': 'Forum Administrator - Huang Jia',
+        'reply7.time': '5 days ago',
+        'reply7.content': 'Colleagues, please do not discuss specific room details on public forums. If you have concerns, please report them to your superiors. Room 302 is a premium hotel suite, and all phenomena have reasonable explanations. Thank you for your professionalism.',
+        'sidebar.categories': 'Forum Categories',
+        'category.work': 'Work Communication',
+        'category.data': 'Data Analysis',
+        'category.anomaly': 'Anomaly Reports',
+        'category.system': 'System Updates',
+        'category.notice': 'Department Notices',
+        'category.leisure': 'Leisure & Entertainment',
+        'sidebar.related': 'Related Posts',
+        'relatedPost1.title': 'Must Recommend! Rikimaru\'s New Album "ROOM" is Amazing!',
+        'relatedPost1.stats': 'Replies 23 · Views 156',
+        'relatedPost2.title': 'New Analysis Tool Usage Guide',
+        'relatedPost2.stats': 'Replies 7 · Views 42',
+        'relatedPost3.title': 'Restaurant New Menu Tasting Feedback',
+        'relatedPost3.stats': 'Replies 18 · Views 94',
+        'sidebar.rules': 'Forum Rules',
+        'rule1': '• Do not discuss sensitive customer information',
+        'rule2': '• All analysis must be based on objective data',
+        'rule3': '• Report anomalies to administrators immediately',
+        'rule4': '• Maintain professional attitude and respect colleagues',
+        'rule5': '• Comply with company confidentiality agreement',
+        'system.note': '> System Note: All your activities will be recorded',
+        'footer.system': '| Internal System v2.1.4',
+        'footer.usage': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.lastUpdate': 'Last System Update: 2025-11-12 11:02',
+        'footer.status': 'System Status:',
+        'footer.statusNormal': 'Running Normally'
+      },
+      'ja': {
+        'nav.internalSystem': '| 内部システム',
+        'user.name': '尹力',
+        'forum.title': '従業員フォーラム',
+        'post.title': '【302号室は少し不気味ですか？】',
+        'post.timeAgo': '3週間前',
+        'post.author': 'フロントデスク - 王麗',
+        'post.category': '異常報告',
+        'post.content1': '302号室に行ったことのある同僚はいますか？先週、物を届けに行ったとき、中で二人が話しているのがはっきり聞こえたのですが、入ってみるとテーブルに男が一人座っているだけで、テーブルにはトランプと二つのワイングラスが置いてありました。',
+        'post.quote1': '"あなたの賭けの番です"',
+        'post.content2': 'その男は独り言を言っているようでしたが、部屋には彼以外誰もいませんでした！私は物を置いて急いで立ち去り、出るときに彼が何かを勝ったかのように大笑いしているのを聞きました。',
+        'post.content3': '後で記録を調べたところ、その部屋は明らかに王天宇という一人の客だけが登録されていました。皆さんは似たような状況に遭遇したことはありますか？',
+        'post.content4': '私はいつも302号室が少しおかしいと感じていて、通るたびに寒気がします。',
+        'post.replies': '返信 (7)',
+        'post.replyForm': '返信を投稿',
+        'post.replyPlaceholder': '返信内容を入力...',
+        'post.submitReply': '返信を投稿',
+        'reply1.author': '客室清掃 - 李月',
+        'reply1.time': '3週間前',
+        'reply1.content1': '私も遭遇しました！先月、302号室にシーツを交換しに行ったとき、中で二人の男が「株式」や「別荘」について言い争っているのを聞きましたが、ノックすると静かになりました。',
+        'reply1.content2': '入室後は客が一人だけで、テーブルにはトランプが置いてあり、きちんと整えられていて、まるで遊んだばかりのようでした。',
+        'reply1.quote': '"私が勝ったと思いますか？"',
+        'reply1.content3': '最も奇妙なのは、その客が笑いながら私に尋ねたことです。私は適当に返事をして急いでその場を離れました。後でその客が実業家になったと聞きましたが、彼の目が虚ろだったような気がします。',
+        'reply2.author': '警備 - 張智慧',
+        'reply2.time': '3週間前',
+        'reply2.content': '王麗さん、あなたがこれを言うと思い出しました。302号室はホテルの重点監視エリアですが、上司はあまり質問せず、客の出入り時間だけを記録するようにと言っています。私が夜勤のとき、監視カメラで王天宇が部屋で一人でトランプを弄り、空中に向かって話しているのを見ました。それが数日間続きました。後で彼がチェックアウトするとき、全身が輝いて見えましたが、歩き方が少し硬く、魂を失ったようでした。ホテルの古参従業員によると、302号室には以前から似たような噂があったそうですが、経営陣は外部に漏らすことを許可していません。',
+        'reply3.author': '飲食部門 - 陳天陽',
+        'reply3.time': '3週間前',
+        'reply3.content': 'その通りです！私が302号室に食事を届けるたびに、客は二人分を要求しますが、いつも一人しか食べません。一度、赤ワインとステーキを届けたとき、客は特に「私の友達にも一杯注いで」と強調しましたが、部屋には他に誰もいませんでした。テーブルにはいつも新しいトランプのデッキが置いてあり、客は自分でシャッフルして配り、まるで透明な人と遊んでいるようでした。後で聞いたのですが、302号室に泊まった客は皆、出てから大金を稼ぎましたが、人柄が特に冷淡になり、家族とも連絡を取らなくなりました。',
+        'reply4.author': 'フロント - 劉明',
+        'reply4.time': '2週間前',
+        'reply4.content': '皆さん、静かにしてください。マネージャーは前回の会議で302号室について議論しないように強調しました。しかし、皆さんが言ったので、私も一言付け加えます：302号室の予約は特別で、通常は「推薦者」によって手配され、客自身が直接予約することはほとんどありません。また、チェックアウト時には、客は特に満足しているように見えますが、目にはまったく感情がありません。システムを調べたことがありますが、302号室の宿泊記録には、二人目の客が登録されたことは一度もありませんが、部屋の物品消費は常に二人分です。',
+        'reply5.author': 'メンテナンス - 趙偉',
+        'reply5.time': '2週間前',
+        'reply5.content': 'ねえ、あなたたちがそう言うと思い出しました。去年、302号室のエアコンを修理したとき、換気ダクトの中にクシャクシャになった紙を見つけました。そこには「勝ち」という言葉が乱雑な筆跡でいっぱい書かれていて、数字の列【694251】もありました。また、302号室の防音効果は実際には良いのですが、奇妙なことに、外から時々中の会話が聞こえることがあります。まるで本当に二人が交渉しているようです。しかし、部屋を検査しましたが、隠れたスピーカーなどはありませんでした。多分、客が自分自身の芝居に深く入り込みすぎているだけかもしれません。',
+        'reply6.author': 'トレーニング - 孫双',
+        'reply6.time': '1週間前',
+        'reply6.content': '新入社員トレーニングでは、302号室をサービスする際は「多くを見て、少なく尋ねる」ように、客の要求に従うだけにするように皆に注意しています。あの部屋はホテルの創設者が設計した特別なスイートで、客の「私的なニーズ」を満たすためだと言われています。しかし、王麗さん、心配しないでください。302号室で安全上の事故が起きたことは一度もありません。ただ、客の行動が少し異常なだけです。多分、これがお金持ちの奇癖なのでしょう？そういえば、王天宇という名前はとてもよく見覚えがあるなと思っていました。私は「MORE」という個人ブログで彼のビジネス分析を見たことがあるような気がします。かなり深い内容でした。',
+        'reply7.author': 'フォーラム管理者 - 黄佳',
+        'reply7.time': '5日前',
+        'reply7.content': '皆さん、公共のフォーラムで特定の部屋の詳細について議論しないでください。懸念がある場合は、上長に報告してください。302号室はホテルの上級スイートであり、すべての現象には合理的な説明があります。皆さんの職業精神に感謝します。',
+        'sidebar.categories': 'フォーラムカテゴリ',
+        'category.work': '仕事の連絡',
+        'category.data': 'データ分析',
+        'category.anomaly': '異常報告',
+        'category.system': 'システム更新',
+        'category.notice': '部門通知',
+        'category.leisure': 'レジャーと娯楽',
+        'sidebar.related': '関連投稿',
+        'relatedPost1.title': 'おすすめ！力丸の新アルバム「ROOM」が最高です！',
+        'relatedPost1.stats': '返信 23 · 閲覧 156',
+        'relatedPost2.title': '新しい分析ツール使用ガイド',
+        'relatedPost2.stats': '返信 7 · 閲覧 42',
+        'relatedPost3.title': 'レストランの新メニューテイスティングフィードバック',
+        'relatedPost3.stats': '返信 18 · 閲覧 94',
+        'sidebar.rules': 'フォーラムルール',
+        'rule1': '• 機密性の高い顧客情報について議論しないでください',
+        'rule2': '• すべての分析は客観的なデータに基づく必要があります',
+        'rule3': '• 異常を発見したらすぐに管理者に報告してください',
+        'rule4': '• 専門的な態度を保ち、同僚を尊重してください',
+        'rule5': '• 会社の機密保持契約を遵守してください',
+        'system.note': '> システムメモ：すべての活動は記録されます',
+        'footer.system': '| 内部システム v2.1.4',
+        'footer.usage': '内部使用のみ - 機密レベル：高',
+        'footer.lastUpdate': '最終システム更新: 2025-11-12 11:02',
+        'footer.status': 'システムステータス:',
+        'footer.statusNormal': '正常に動作中'
+      },
+      'pt': {
+        'nav.internalSystem': '| Sistema Interno',
+        'user.name': 'Yin Li',
+        'forum.title': 'Fórum de Funcionários',
+        'post.title': '【O Quarto 302 é um Pouco Sinistro?】',
+        'post.timeAgo': '3 semanas atrás',
+        'post.author': 'Recepção - Wang Li',
+        'post.category': 'Relatório de Anomalia',
+        'post.content1': 'Algum colega já foi ao Quarto 302 para serviço? Na semana passada, quando fui entregar algo, ouvi claramente duas pessoas conversando lá dentro, mas quando entrei, só vi um homem sentado à mesa com cartas de baralho e duas taças de vinho.',
+        'post.quote1': '"É a sua vez de apostar"',
+        'post.content2': 'O homem parecia estar falando sozinho, mas o quarto estava vazio exceto por ele! Deixei as coisas e saí rapidamente, e quando saí, ouvi ele rindo como se tivesse ganhado algo.',
+        'post.content3': 'Depois verifiquei os registros, e aquele quarto estava claramente registrado para apenas um hóspede, chamado Wang Tianyu. Algum de vocês já encontrou situações semelhantes?',
+        'post.content4': 'Sempre sinto que o Quarto 302 é um pouco estranho, e toda vez que passo por lá, sinto um calafrio.',
+        'post.replies': 'Respostas (7)',
+        'post.replyForm': 'Postar uma Resposta',
+        'post.replyPlaceholder': 'Digite o conteúdo da resposta...',
+        'post.submitReply': 'Postar Resposta',
+        'reply1.author': 'Limpeza - Li Yue',
+        'reply1.time': '3 semanas atrás',
+        'reply1.content1': 'Eu também encontrei! No mês passado, quando fui ao Quarto 302 trocar os lençóis, ouvi dois homens discutindo lá dentro sobre "ações" e "vilas", mas quando bati, ficou quieto.',
+        'reply1.content2': 'Depois de entrar, havia apenas um hóspede, com cartas de baralho na mesa, arrumadas ordenadamente como se tivessem acabado de ser usadas.',
+        'reply1.quote': '"Você acha que eu ganhei?"',
+        'reply1.content3': 'A coisa mais estranha foi que o hóspede me perguntou com um sorriso. Eu respondi algo aleatório e saí rapidamente. Mais tarde soube que aquele hóspede se tornou um magnata dos negócios, mas sempre senti que seus olhos estavam vazios.',
+        'reply2.author': 'Segurança - Zhang Zhihui',
+        'reply2.time': '3 semanas atrás',
+        'reply2.content': 'Irmã Wang Li, você mencionando isso me lembra. O Quarto 302 é uma área de monitoramento chave no hotel, mas a gerência nos disse para não fazer muitas perguntas, apenas registrar os horários de entrada e saída dos hóspedes. Quando estava no turno da noite, vi aquele Wang Tianyu através das câmeras de vigilância, brincando com cartas sozinho e falando com o ar, o que durou vários dias. Mais tarde, quando ele fez o check-out, parecia radiante, mas sua postura ao andar estava um pouco rígida, como se tivesse perdido a alma. Funcionários antigos do hotel dizem que o Quarto 302 já teve rumores semelhantes antes, mas a gerência não permite que sejam espalhados.',
+        'reply3.author': 'Alimentos e Bebidas - Chen Tianyang',
+        'reply3.time': '3 semanas atrás',
+        'reply3.content': 'Exatamente! Toda vez que entrego refeições no Quarto 302, o hóspede solicita porções para duas pessoas, mas sempre há apenas uma pessoa comendo. Uma vez entreguei vinho tinto e bife, e o hóspede enfatizou especificamente "despeje um copo para o meu amigo também", mas não havia mais ninguém no quarto. Notei que sempre havia um novo baralho de cartas na mesa, e o hóspede embaralhava e distribuía as cartas sozinho, como se estivesse jogando com uma pessoa invisível. Mais tarde soube que hóspedes que ficaram no Quarto 302 todos fizeram fortunas depois de sair, mas se tornaram particularmente frios e nem mesmo contatavam suas famílias.',
+        'reply4.author': 'Recepção - Liu Ming',
+        'reply4.time': '2 semanas atrás',
+        'reply4.content': 'Pessoal, baixem a voz, o gerente enfatizou na última reunião para não discutir o Quarto 302. Mas já que vocês trouxeram isso à tona, vou acrescentar algo: as reservas do Quarto 302 são especiais, geralmente organizadas por um "recomendador", e os hóspedes raramente fazem reservas diretamente. Além disso, ao fazer o check-out, os hóspedes sempre parecem particularmente satisfeitos, mas não há emoção em seus olhos. Verifiquei o sistema - nos registros de check-in do Quarto 302, nunca houve um segundo hóspede registrado, mas o consumo de itens do quarto é sempre para duas pessoas.',
+        'reply5.author': 'Manutenção - Zhao Wei',
+        'reply5.time': '2 semanas atrás',
+        'reply5.content': 'Ei, agora que vocês mencionam, lembro que no ano passado, quando consertei o ar condicionado no Quarto 302, encontrei um papel amassado no duto de ventilação com a palavra "vencer" escrita por toda parte, junto com uma sequência de números 【694251】, em caligrafia bagunçada. Além disso, o Quarto 302 realmente tem um bom isolamento acústico, mas estranhamente, ocasionalmente você pode ouvir conversas de dentro como se houvesse realmente duas pessoas negociando. Mas inspecionei o quarto e não há alto-falantes ocultos ou algo assim. Talvez os hóspedes estejam apenas muito imersos em seu próprio drama.',
+        'reply6.author': 'Treinamento - Sun Shuang',
+        'reply6.time': '1 semana atrás',
+        'reply6.content': 'Durante o treinamento de novos funcionários, lembramos a todos para "observar mais, perguntar menos" ao servir o Quarto 302, apenas siga os pedidos dos hóspedes. Dizem que aquele quarto é uma suíte especial projetada pelo fundador do hotel para atender às "necessidades privadas" dos hóspedes. Mas Wang Li, não se preocupe, o Quarto 302 nunca teve incidentes de segurança, é apenas que o comportamento dos hóspedes é um pouco incomum. Talvez isso seja apenas a excentricidade dos ricos? A propósito, sempre sinto que o nome Wang Tianyu é muito familiar. Acho que vi sua análise de negócios em um blog pessoal chamado "MORE", era bastante profunda.',
+        'reply7.author': 'Administrador do Fórum - Huang Jia',
+        'reply7.time': '5 dias atrás',
+        'reply7.content': 'Colegas, por favor, não discutam detalhes de quartos específicos em fóruns públicos. Se tiverem preocupações, relatem-nas aos seus superiores. O Quarto 302 é uma suíte premium do hotel, e todos os fenômenos têm explicações razoáveis. Obrigado pelo seu profissionalismo.',
+        'sidebar.categories': 'Categorias do Fórum',
+        'category.work': 'Comunicação de Trabalho',
+        'category.data': 'Análise de Dados',
+        'category.anomaly': 'Relatórios de Anomalias',
+        'category.system': 'Atualizações do Sistema',
+        'category.notice': 'Avisos do Departamento',
+        'category.leisure': 'Lazer e Entretenimento',
+        'sidebar.related': 'Posts Relacionados',
+        'relatedPost1.title': 'Devo Recomendar! O Novo Álbum "ROOM" do Rikimaru é Incrível!',
+        'relatedPost1.stats': 'Respostas 23 · Visualizações 156',
+        'relatedPost2.title': 'Guia de Uso da Nova Ferramenta de Análise',
+        'relatedPost2.stats': 'Respostas 7 · Visualizações 42',
+        'relatedPost3.title': 'Feedback de Degustação do Novo Menu do Restaurante',
+        'relatedPost3.stats': 'Respostas 18 · Visualizações 94',
+        'sidebar.rules': 'Regras do Fórum',
+        'rule1': '• Não discuta informações confidenciais do cliente',
+        'rule2': '• Todas as análises devem ser baseadas em dados objetivos',
+        'rule3': '• Reporte anomalias aos administradores imediatamente',
+        'rule4': '• Mantenha atitude profissional e respeite os colegas',
+        'rule5': '• Cumpra o acordo de confidencialidade da empresa',
+        'system.note': '> Nota do Sistema: Todas as suas atividades serão registradas',
+        'footer.system': '| Sistema Interno v2.1.4',
+        'footer.usage': 'Apenas para Uso Interno - Nível de Confidencialidade: Alto',
+        'footer.lastUpdate': 'Última Atualização do Sistema: 2025-11-12 11:02',
+        'footer.status': 'Status do Sistema:',
+        'footer.statusNormal': 'Executando Normalmente'
+      }
+    };
+
+    // 更新日期和时间
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+      document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+    }
+    
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // 语言切换功能
+    window.addEventListener('DOMContentLoaded', () => {
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 住客档案 - 赵雨婷</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .hidden-note {
+        color: transparent;
+        background-color: transparent;
+        user-select: text;
+      }
+      .hidden-note::selection {
+        color: white;
+        background-color: #8A6BBE;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M内部系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 内部系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">尹力</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 赵雨婷住客档案详情 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">住客档案详情</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 314 - <span data-i18n="guest.name">赵雨婷</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="guest.checkIn">入住</span>: 2025-11-16 | <span data-i18n="guest.checkOut">退房</span>: 2025-11-23
+            </div>
+          </div>
+          
+          <!-- 住客档案 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.profile">住客档案</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.fullName">姓名：赵雨婷</li>
+              <li data-i18n="guest.gender">性别：女</li>
+              <li data-i18n="guest.age">年龄：28</li>
+              <li data-i18n="guest.idNumber">身份证号：1386491997010250314</li>
+              <li data-i18n="guest.contact">联系方式：13987654321</li>
+              <li data-i18n="guest.bookingSource">入住来源：通过邮件预订，预定邮箱zhaoyuting@314.com</li>
+              <li data-i18n="guest.roomType">房间类型：主题套房</li>
+            </ul>
+            <!-- 隐藏的管理员备注 -->
+            <div class="mt-4 text-xs text-gray-500">
+              <span class="hidden-note" data-i18n="guest.hiddenNote">「A+级食材，痴迷浓度 9.8，糖毒催化效率完美，镜面投射系统共鸣度100%——收割完成」</span>
+            </div>
+          </div>
+          
+          <!-- 住客背景 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.background">住客背景</h4>
+            <p class="text-gray-300" data-i18n="guest.backgroundContent">
+              赵雨婷，前国家芭蕾舞团首席演员，以极致的技术表现力和情感张力闻名。2022年主演《天鹅湖》获国家级艺术奖项，被视为国内芭蕾舞界最具潜力的新生代代表。2025年8月因车祸导致右脚踝粉碎性骨折，经手术治疗后虽恢复基本行走功能，但医生明确告知"无法再承受专业舞蹈强度"，职业生涯被迫终结。退役后进入广告公司担任文案策划，心理评估显示其存在重度抑郁、高自杀倾向。
+            </p>
+          </div>
+          
+          <!-- 入住观察 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.observations">入住观察</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.observation1">入住初期：情绪极度低落，进入房间后长时间呆坐。次日发现私人舞蹈室时表现震惊，在镜前站立逾半小时，手指轻触把杆但未进行任何练习。监控记录显示其夜间多次醒来，于黑暗中凝视舞蹈室方向。</li>
+              <li data-i18n="guest.observation2">入住中期：行为模式发生显著转变。每日清晨即进入舞蹈室进行基础训练，最初动作谨慎，伴有明显痛感反应；但随后练习时长逐日递增，至11月21日已持续练习超过6小时。监控注意到其练习时表情逐渐从痛苦转为迷醉，且开始出现"对镜微笑""与空气互动"等异常行为。餐食消耗量极低，但对客房配送的特定品牌巧克力表现出强烈依赖。</li>
+              <li data-i18n="guest.observation3">入住后期：进入近乎狂热的状态。舞蹈练习变为全天候进行，夜间亦不停止。监控捕捉到多次"与不存在舞伴共舞"的画面——其动作编排复杂精湛，包含高难度托举与连续32圈挥鞭转，但实际全程独处空室。11月22日深夜练习至虚脱倒地，次日清晨却精神亢奋地整理行李退房。离开时右脚踝绷带渗血明显，步态不稳，但面部表情呈"极度满足"状态，向前台表示"这是人生中最美好的一周"。</li>
+            </ul>
+          </div>
+          
+          <!-- 服务记录 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.services">服务记录</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.service1">每日定时配送特制手工巧克力</li>
+              <li data-i18n="guest.service2">提供专业舞蹈冰袋、镇痛药膏及弹性绷带（消耗量极大）</li>
+              <li data-i18n="guest.service3">应要求调整房间温控系统，保持舞蹈室恒温26.5°C，湿度50%</li>
+              <li data-i18n="guest.service4">维护复古唱片机并补充古典芭蕾黑胶唱片（柴可夫斯基《天鹅湖》、德利布《葛蓓莉娅》等）</li>
+              <li data-i18n="guest.service5">退房时在其个人包中置入最后三颗同款巧克力</li>
+            </ul>
+          </div>
+          
+          <!-- 备注 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.remarks">备注</h4>
+            <p class="text-gray-300" data-i18n="guest.remarksContent">
+              赵女士在入住期间展现出惊人的艺术毅力与自我突破精神。尽管身负旧伤，她仍坚持每日高强度训练，并最终在私人舞蹈室中找回了"与舞伴完美配合"的巅峰状态。从行为观察来看，她通过沉浸式舞蹈练习完成了一场深度的自我疗愈——从最初的犹豫与痛苦，到中期的专注与享受，最终在艺术表达中达成与自我的和解。退房时精神状态饱满，对酒店服务给予极高评价，称"这片镜子和音乐帮我找回了失去的舞台"。其案例可作为"艺术疗愈"的成功典范归档。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">内部系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': '住客档案详情',
+        'guest.name': '赵雨婷',
+        'guest.checkIn': '入住',
+        'guest.checkOut': '退房',
+        'guest.profile': '住客档案',
+        'guest.fullName': '姓名：赵雨婷',
+        'guest.gender': '性别：女',
+        'guest.age': '年龄：28',
+        'guest.idNumber': '身份证号：1386491997010250314',
+        'guest.contact': '联系方式：13987654321',
+        'guest.bookingSource': '入住来源：通过邮件预订，预定邮箱zhaoyuting@314.com',
+        'guest.roomType': '房间类型：主题套房',
+        'guest.hiddenNote': '「A+级食材，痴迷浓度 9.8，糖毒催化效率完美，镜面投射系统共鸣度100%——收割完成」',
+        'guest.background': '住客背景',
+        'guest.backgroundContent': '赵雨婷，前国家芭蕾舞团首席演员，以极致的技术表现力和情感张力闻名。2022年主演《天鹅湖》获国家级艺术奖项，被视为国内芭蕾舞界最具潜力的新生代代表。2025年8月因车祸导致右脚踝粉碎性骨折，经手术治疗后虽恢复基本行走功能，但医生明确告知"无法再承受专业舞蹈强度"，职业生涯被迫终结。退役后进入广告公司担任文案策划，心理评估显示其存在重度抑郁、高自杀倾向。',
+        'guest.observations': '入住观察',
+        'guest.observation1': '入住初期：情绪极度低落，进入房间后长时间呆坐。次日发现私人舞蹈室时表现震惊，在镜前站立逾半小时，手指轻触把杆但未进行任何练习。监控记录显示其夜间多次醒来，于黑暗中凝视舞蹈室方向。',
+        'guest.observation2': '入住中期：行为模式发生显著转变。每日清晨即进入舞蹈室进行基础训练，最初动作谨慎，伴有明显痛感反应；但随后练习时长逐日递增，至11月21日已持续练习超过6小时。监控注意到其练习时表情逐渐从痛苦转为迷醉，且开始出现"对镜微笑""与空气互动"等异常行为。餐食消耗量极低，但对客房配送的特定品牌巧克力表现出强烈依赖。',
+        'guest.observation3': '入住后期：进入近乎狂热的状态。舞蹈练习变为全天候进行，夜间亦不停止。监控捕捉到多次"与不存在舞伴共舞"的画面——其动作编排复杂精湛，包含高难度托举与连续32圈挥鞭转，但实际全程独处空室。11月22日深夜练习至虚脱倒地，次日清晨却精神亢奋地整理行李退房。离开时右脚踝绷带渗血明显，步态不稳，但面部表情呈"极度满足"状态，向前台表示"这是人生中最美好的一周"。',
+        'guest.services': '服务记录',
+        'guest.service1': '每日定时配送特制手工巧克力',
+        'guest.service2': '提供专业舞蹈冰袋、镇痛药膏及弹性绷带（消耗量极大）',
+        'guest.service3': '应要求调整房间温控系统，保持舞蹈室恒温26.5°C，湿度50%',
+        'guest.service4': '维护复古唱片机并补充古典芭蕾黑胶唱片（柴可夫斯基《天鹅湖》、德利布《葛蓓莉娅》等）',
+        'guest.service5': '退房时在其个人包中置入最后三颗同款巧克力',
+        'guest.remarks': '备注',
+        'guest.remarksContent': '赵女士在入住期间展现出惊人的艺术毅力与自我突破精神。尽管身负旧伤，她仍坚持每日高强度训练，并最终在私人舞蹈室中找回了"与舞伴完美配合"的巅峰状态。从行为观察来看，她通过沉浸式舞蹈练习完成了一场深度的自我疗愈——从最初的犹豫与痛苦，到中期的专注与享受，最终在艺术表达中达成与自我的和解。退房时精神状态饱满，对酒店服务给予极高评价，称"这片镜子和音乐帮我找回了失去的舞台"。其案例可作为"艺术疗愈"的成功典范归档。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '内部系统',
+        'footer.confidential': '仅供内部使用 - 保密级别：高级',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'Guest Profile Details',
+        'guest.name': 'Zhao Yuting',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'guest.profile': 'Guest Profile',
+        'guest.fullName': 'Name: Zhao Yuting',
+        'guest.gender': 'Gender: Female',
+        'guest.age': 'Age: 28',
+        'guest.idNumber': 'ID Number: 1386491997010250314',
+        'guest.contact': 'Contact: 13987654321',
+        'guest.bookingSource': 'Booking Source: Booked via email, booking email zhaoyuting@314.com',
+        'guest.roomType': 'Room Type: Theme Suite',
+        'guest.hiddenNote': '「Grade A+ ingredient, obsession concentration 9.8, sugar-toxin catalytic efficiency perfect, mirror projection system resonance 100% — harvest completed」',
+        'guest.background': 'Guest Background',
+        'guest.backgroundContent': 'Zhao Yuting, former principal dancer of the National Ballet, known for her extreme technical expressiveness and emotional intensity. In 2022, she starred in "Swan Lake" and won a national art award, regarded as the most promising new-generation representative in the domestic ballet world. In August 2025, she suffered a comminuted fracture of the right ankle in a car accident. Although she regained basic walking ability after surgical treatment, doctors clearly stated that she "could no longer withstand professional dance intensity," forcing the end of her career. After retirement, she joined an advertising company as a copywriter. Psychological assessment shows severe depression and high suicidal tendencies.',
+        'guest.observations': 'Observation During Stay',
+        'guest.observation1': 'Initial stay: Extremely low mood, sat still for long periods after entering the room. The next day, she was shocked to discover the private dance studio, standing in front of the mirror for over half an hour, lightly touching the barre but not engaging in any practice. Monitoring records show she woke up multiple times at night, gazing toward the dance studio in the darkness.',
+        'guest.observation2': 'Mid-stay: Significant change in behavioral patterns. Entered the dance studio every morning for basic training, initially cautious with obvious pain reactions; but practice duration increased daily, exceeding 6 hours by November 21. Monitoring noted her expression gradually changing from pain to euphoria during practice, with abnormal behaviors such as "smiling at the mirror" and "interacting with air." Food consumption was extremely low, but showed strong dependence on specific brand chocolates delivered by the room service.',
+        'guest.observation3': 'Late stay: Entered a near-fanatic state. Dance practice became all-day, not stopping at night. Monitoring captured multiple scenes of "dancing with a non-existent partner"—her choreography complex and exquisite, including difficult lifts and 32 consecutive fouettés, but actually alone in the empty room throughout. On the night of November 22, she practiced until collapsing from exhaustion, but the next morning she energetically packed her luggage to check out. When leaving, the right ankle bandage showed obvious blood seepage, gait unsteady, but facial expression showed "extreme satisfaction," telling the front desk "this was the best week of my life."',
+        'guest.services': 'Service Records',
+        'guest.service1': 'Daily scheduled delivery of special handmade chocolates',
+        'guest.service2': 'Provided professional dance ice packs, analgesic ointments, and elastic bandages (consumption extremely high)',
+        'guest.service3': 'Adjusted room temperature control system as requested, maintaining dance studio constant temperature at 26.5°C, humidity 50%',
+        'guest.service4': 'Maintained vintage record player and replenished classical ballet vinyl records (Tchaikovsky\'s "Swan Lake," Delibes\' "Coppélia," etc.)',
+        'guest.service5': 'Placed the last three pieces of the same chocolate in her personal bag upon check-out',
+        'guest.remarks': 'Remarks',
+        'guest.remarksContent': 'Ms. Zhao demonstrated astonishing artistic perseverance and self-breakthrough spirit during her stay. Despite her old injury, she persisted in daily high-intensity training and ultimately regained her peak state of "perfect partnership with a dance partner" in the private dance studio. From behavioral observations, she completed a deep self-healing through immersive dance practice—from initial hesitation and pain, to mid-term focus and enjoyment, finally achieving reconciliation with herself through artistic expression. Upon check-out, her mental state was full, giving high praise to hotel service, saying "this mirror and music helped me regain the lost stage." Her case can be filed as a successful example of "art therapy."',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Internal System',
+        'footer.confidential': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': '宿泊客プロフィール詳細',
+        'guest.name': '趙雨婷',
+        'guest.checkIn': 'チェックイン',
+        'guest.checkOut': 'チェックアウト',
+        'guest.profile': '宿泊客プロフィール',
+        'guest.fullName': '氏名：趙雨婷',
+        'guest.gender': '性別：女性',
+        'guest.age': '年齢：28',
+        'guest.idNumber': '身分証明書番号：1386491997010250314',
+        'guest.contact': '連絡先：13987654321',
+        'guest.bookingSource': '予約元：メールで予約、予約メール zhaoyuting@314.com',
+        'guest.roomType': '部屋タイプ：テーマスイート',
+        'guest.hiddenNote': '「A+級食材、執着濃度9.8、糖毒触媒効率完璧、鏡面投射システム共鳴度100%――収穫完了」',
+        'guest.background': '宿泊客背景',
+        'guest.backgroundContent': '趙雨婷、元国家バレエ団主席ダンサー、極限の技術表現力と感情的緊張感で知られる。2022年『白鳥の湖』主演で国家芸術賞を受賞、国内バレエ界で最も有望な新世代代表と見なされる。2025年8月、交通事故により右足首粉砕骨折、手術治療後基本的な歩行機能は回復したが、医師から「専門的なダンス強度には耐えられない」と明確に告げられ、キャリアを強制終了。引退後、広告会社に入社しコピーライターとして勤務。心理評価では重度のうつ病と高い自殺傾向が示されている。',
+        'guest.observations': '宿泊中の観察',
+        'guest.observation1': '宿泊初期：極度に落ち込んだ情緒、部屋に入った後長時間ぼんやり座っていた。翌日、プライベートダンススタジオを発見した際は驚愕し、鏡の前に30分以上立ち、指でバーレに軽く触れたが何の練習も行わなかった。モニタリング記録では夜間に複数回目を覚まし、暗闇の中でダンススタジオの方向を凝視していた。',
+        'guest.observation2': '宿泊中期：行動パターンに著しい変化が発生。毎朝早くからダンススタジオに入り基礎訓練を開始、当初は慎重な動作で明らかな痛み反応を伴ったが、その後練習時間は日々増加し、11月21日には6時間以上継続練習。モニタリングでは練習中の表情が苦痛から陶酔へと徐々に変化し、「鏡に向かって微笑む」「空気と相互作用する」などの異常行動が現れ始めた。食事摂取量は極めて少なかったが、客室配達の特定ブランドチョコレートに強い依存を示した。',
+        'guest.observation3': '宿泊後期：ほぼ狂熱的な状態に入る。ダンス練習は昼夜を問わず継続し、夜間も停止しなかった。モニタリングは複数回の「存在しないパートナーとのダンス」の場面を捕捉――その振り付けは複雑で精緻、高度なリフトと連続32回転のフェッテを含むが、実際には全行程一人で空室にいた。11月22日深夜、練習により虚脱して倒れ込んだが、翌朝は精神的に興奮して荷造りしチェックアウト。退去時、右足首の包帯に明らかな血液滲み、歩行は不安定だったが、表情は「極度の満足」状態を示し、フロントに「これは人生で最も素晴らしい一週間でした」と伝えた。',
+        'guest.services': 'サービス記録',
+        'guest.service1': '毎日定時配達の特製手作りチョコレート',
+        'guest.service2': '専門ダンス用アイスパック、鎮痛軟膏、弾性包帯の提供（消費量極大）',
+        'guest.service3': '要求に応じて客室温調システムを調整、ダンススタジオ恒温26.5°C、湿度50%を維持',
+        'guest.service4': 'ヴィンテージレコードプレーヤーのメンテナンスとクラシックバレエLPレコードの補充（チャイコフスキー『白鳥の湖』、デリブ『コッペリア』など）',
+        'guest.service5': 'チェックアウト時に個人バッグに最後の3個の同種チョコレートを設置',
+        'guest.remarks': '備考',
+        'guest.remarksContent': '趙女史は宿泊期間中、驚異的な芸術的粘り強さと自己突破精神を示した。古傷を負っているにもかかわらず、毎日の高強度トレーニングを堅持し、最終的にプライベートダンススタジオで「パートナーとの完璧な連携」というピーク状態を取り戻した。行動観察から、彼女は没入型ダンス練習を通じて深い自己治癒を完成させた――最初の躊躇と苦痛から、中期の集中と享受へ、最終的に芸術表現において自己との和解を達成。チェックアウト時の精神状態は充実しており、ホテルサービスに高い評価を与え、「この鏡と音楽が失われた舞台を取り戻すのに役立ちました」と述べた。この事例は「アートセラピー」の成功例としてアーカイブできる。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '内部システム',
+        'footer.confidential': '内部使用のみ - 機密レベル：高',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'Detalhes do Perfil do Hóspede',
+        'guest.name': 'Zhao Yuting',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'guest.profile': 'Perfil do Hóspede',
+        'guest.fullName': 'Nome: Zhao Yuting',
+        'guest.gender': 'Gênero: Feminino',
+        'guest.age': 'Idade: 28',
+        'guest.idNumber': 'Número do Documento: 1386491997010250314',
+        'guest.contact': 'Contato: 13987654321',
+        'guest.bookingSource': 'Fonte da Reserva: Reservado por email, email de reserva zhaoyuting@314.com',
+        'guest.roomType': 'Tipo de Quarto: Suíte Temática',
+        'guest.hiddenNote': '「Ingrediente Grau A+, concentração de obsessão 9.8, eficiência catalítica de açúcar-toxina perfeita, ressonância do sistema de projeção de espelho 100% — colheita concluída」',
+        'guest.background': 'Antecedentes do Hóspede',
+        'guest.backgroundContent': 'Zhao Yuting, ex-bailarina principal do Balé Nacional, conhecida por sua extrema expressividade técnica e intensidade emocional. Em 2022, estrelou "O Lago dos Cisnes" e ganhou um prêmio artístico nacional, sendo considerada a representante mais promissora da nova geração no mundo do balé doméstico. Em agosto de 2025, sofreu fratura cominutiva do tornozelo direito em acidente de carro. Embora tenha recuperado a função básica de caminhada após tratamento cirúrgico, médicos afirmaram claramente que "não poderia mais suportar a intensidade da dança profissional", forçando o fim de sua carreira. Após a aposentadoria, ingressou em uma agência de publicidade como redatora. Avaliação psicológica mostra depressão severa e altas tendências suicidas.',
+        'guest.observations': 'Observações Durante a Estadia',
+        'guest.observation1': 'Estadia inicial: Humor extremamente baixo, sentou-se imóvel por longos períodos após entrar no quarto. No dia seguinte, ficou chocada ao descobrir o estúdio de dança privativo, ficando em frente ao espelho por mais de meia hora, tocando levemente a barra, mas não realizando nenhuma prática. Registros de monitoramento mostram que ela acordou várias vezes à noite, olhando na direção do estúdio de dança no escuro.',
+        'guest.observation2': 'Estadia média: Mudança significativa nos padrões comportamentais. Entrou no estúdio de dança todas as manhãs para treinamento básico, inicialmente cautelosa com reações óbvias de dor; mas a duração da prática aumentou diariamente, excedendo 6 horas em 21 de novembro. Monitoramento notou sua expressão gradualmente mudando de dor para euforia durante a prática, com comportamentos anormais como "sorrir para o espelho" e "interagir com o ar". Consumo de alimentos extremamente baixo, mas mostrou forte dependência de chocolates de marca específica entregues pelo serviço de quarto.',
+        'guest.observation3': 'Estadia final: Entrou em um estado quase fanático. A prática de dança tornou-se durante todo o dia, não parando à noite. Monitoramento capturou múltiplas cenas de "dançando com um parceiro inexistente" — sua coreografia complexa e requintada, incluindo elevadores difíceis e 32 fouettés consecutivos, mas na verdade sozinha na sala vazia durante todo o tempo. Na noite de 22 de novembro, praticou até desmaiar de exaustão, mas na manhã seguinte arrumou as malas energicamente para check-out. Ao sair, a bandagem do tornozelo direito mostrava infiltração óbvia de sangue, marcha instável, mas expressão facial mostrava "satisfação extrema", dizendo à recepção "esta foi a melhor semana da minha vida".',
+        'guest.services': 'Registros de Serviço',
+        'guest.service1': 'Entrega diária programada de chocolates artesanais especiais',
+        'guest.service2': 'Fornecidos pacotes de gelo para dança profissional, pomadas analgésicas e bandagens elásticas (consumo extremamente alto)',
+        'guest.service3': 'Ajustado sistema de controle de temperatura do quarto conforme solicitado, mantendo estúdio de dança em temperatura constante de 26.5°C, umidade 50%',
+        'guest.service4': 'Mantido toca-discos vintage e reabastecidos discos de vinil de balé clássico ("O Lago dos Cisnes" de Tchaikovsky, "Coppélia" de Delibes, etc.)',
+        'guest.service5': 'Colocados os últimos três pedaços do mesmo chocolate em sua bolsa pessoal durante o check-out',
+        'guest.remarks': 'Observações',
+        'guest.remarksContent': 'A Sra. Zhao demonstrou perseverança artística surpreendente e espírito de autossuperação durante sua estadia. Apesar de sua lesão antiga, persistiu em treinamento diário de alta intensidade e finalmente recuperou seu estado de pico de "parceria perfeita com um parceiro de dança" no estúdio de dança privativo. A partir de observações comportamentais, ela completou uma autocura profunda através da prática de dança imersiva — da hesitação e dor inicial, ao foco e prazer no meio do período, finalmente alcançando reconciliação consigo mesma através da expressão artística. No check-out, seu estado mental estava pleno, dando alto elogio ao serviço do hotel, dizendo "este espelho e música me ajudaram a recuperar o palco perdido". Seu caso pode ser arquivado como um exemplo bem-sucedido de "arte terapia".',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema Interno',
+        'footer.confidential': 'Uso Interno Apenas - Nível de Confidencialidade: Alto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        // 这里可以替换为您希望返回的页面
+        window.location.href = '玩家个人页面.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

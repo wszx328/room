@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - RIKI工作日志</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      /* 保留所有原始CSS样式 */
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .security-level-high {
+        border-left: 4px solid #ff4444;
+        background: rgba(255, 68, 68, 0.1);
+      }
+      .security-level-medium {
+        border-left: 4px solid #D4AF37;
+        background: rgba(212, 175, 55, 0.1);
+      }
+      .log-entry {
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+      .log-entry:hover {
+        background: rgba(42, 27, 61, 0.9);
+        border-color: rgba(138, 107, 190, 0.6);
+      }
+      .log-title {
+        color: #D4AF37;
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(138, 107, 190, 0.3);
+        padding-bottom: 5px;
+      }
+      .log-date {
+        color: #8A6BBE;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+      }
+      .log-section {
+        margin-bottom: 15px;
+      }
+      .log-section-title {
+        color: #D4AF37;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .log-list {
+        list-style-type: disc;
+        margin-left: 20px;
+      }
+      .log-list-item {
+        margin-bottom: 5px;
+      }
+      .log-rating {
+        color: #44ff44;
+        font-weight: bold;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M饲主系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 饲主系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">RIKI</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- RIKI工作日志 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">R∞M 酒店 饲主工作日志</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-25</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 902 - <span data-i18n="log.summary">刘星辰</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="log.status">记录状态</span>: <span class="text-success" data-i18n="log.completed">已归档（供继任者参考）</span>
+            </div>
+          </div>
+          
+          <!-- 工作日志条目 -->
+          <div class="log-entry">
+            <div class="log-title" data-i18n="log.title">主菜：狂妄的顶点</div>
+            <div class="log-date" data-i18n="log.date">记录日期：献祭完成后 24 小时</div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.ingredient">一、食材基础信息</div>
+              <div class="text-gray-300" data-i18n="log.ingredientContent">
+                食材编号：No.666<br>
+                姓名：刘星辰<br>
+                身份：前独立音乐人 / 某组织领头人<br>
+                核心执念：对"原初之音"的病态痴迷、企图以凡人之躯掌控神性存在的狂妄野心、将自我献祭视为"艺术巅峰"的扭曲美学<br>
+                情感浓度（初始）：9.2/10（狂妄占比65%，痴迷占比25%，自我毁灭倾向占比10%；情感极具戏剧性与爆发力，属于稀有顶级食材）<br><br>
+                筛选逻辑：<br>
+                1. 五年追踪确认其已深入神秘学领域，掌握多种禁忌仪式，具备主动"挑衅"情饕的认知与能力；<br>
+                2. 其追随者团体表明其已具备基础献祭经验，且道德边界完全崩坏，适合作为"反向献祭"实验体；<br>
+                3. 心理画像显示其具有"弥赛亚情结"，深信自己是被选中的"桥梁"，此心态极易转化为对情饕的正面挑战；<br>
+                4. 社会关系已自我剥离，失踪不会引发系统性追查，符合"高能量但可控"的收割标准。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.process">二、献祭流程记录</div>
+              <ul class="log-list">
+                <li class="log-list-item text-gray-300" data-i18n="log.process1">
+                  <strong>阶段1：诱捕</strong><br>
+                  通过其隐秘社交网络散播"902号房存在稳定现实裂缝"的传闻，附上经篡改的酒店磁场读数图；<br>
+                  目的：利用其"寻找更强容器"的迫切需求，引导其主动选择902号房；<br>
+                  结果：食材于2025年11月14日深夜入住，拒绝服务，神情疲惫但眼神灼亮，符合"猎物主动入笼"预期。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process2">
+                  <strong>阶段2：沉沦</strong><br>
+                  维持房间基础环境，不进行任何主动干预；<br>
+                  目的：让其自行布置仪式场地，在孤独中巩固"我将在此封神"的妄想；<br>
+                  监测结果：食材用特制粉笔绘制复杂咒阵，搬运并组装自定义声波共振系统，狂妄浓度升至70%。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process3">
+                  <strong>阶段3：催化</strong><br>
+                  容许其声波攻击渗透房间屏障，引发其他住客生理异常，但不加以制止；<br>
+                  目的：让其误判自身力量，认为已对"情饕"造成有效干扰，加剧其进攻性；<br>
+                  监测结果：食材每日进行长达数小时的声波仪式，情绪在亢奋与焦躁间摇摆，出现与镜中倒影对话行为，痴迷浓度提升至50%。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process4">
+                  <strong>阶段4：交锋</strong><br>
+                  情饕苏醒，以其自身形象进行反击，在艺术层面碾压其自信心；<br>
+                  目的：将其推向绝望边缘，诱使其采用最终手段——自我献祭；<br>
+                  监测结果：食材出现明显动摇，进行血祭仪式，提出"交易"请求。情饕接受其部分生命力，情感浓度于第13天夜间飙升至9.8/10。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process5">
+                  <strong>阶段5：献祭/反噬</strong><br>
+                  食材启动最终仪式，试图将情饕禁锢并吸收。情饕回应让其体验极高维度的感知，随即收回；<br>
+                  目的：并非吞噬其全部，而是将其转化为"永久饥渴"状态，使其余生成为持续的情感供能装置；<br>
+                  结果：食材在极致愉悦与瞬间虚无中崩溃，仪式"失败"。其核心情感（狂妄、痴迷、绝望）被情饕品尝并标记。次日退房，生理存活，但精神已沦为永远追寻"神明之音"的空壳。留下唱片《Clappin\'》作为情饕的"收据"。
+                </li>
+              </ul>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.evaluation">三、风味评估</div>
+              <div class="text-gray-300" data-i18n="log.evaluationContent">
+                整体评分：<span class="log-rating">9.9/10</span>（S级主菜，风味复杂度与后续价值均达极致）<br><br>
+                风味解析：<br>
+                前调：电流的灼烧感与金属的冷冽交织，模仿"神性"的狂妄野心如烈酒般呛喉，瞬间抓住情饕的注意力；<br>
+                中调：自我献祭的悲壮与镜像嘲弄的残酷形成史诗级反差，每一口都伴随着"攀登即坠落"的戏剧性张力，层次如交响乐般恢弘；<br>
+                后调：永久性渴求带来的绵长痛苦与虚无回甘，"听过神明之声的凡人"此一状态本身，即化为永不枯竭的稀有风味源。情饕对此表示高度赞赏。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.conclusion">四、总结</div>
+              <div class="text-gray-300" data-i18n="log.conclusionContent">
+                902号房「狂妄的顶点」献祭以情饕的全胜告终。食材刘星辰的核心特质——艺术家的极致理想主义、对超越性体验的病态渴望、以及"人可弑神"的疯狂信念——被902号房完美利用。<br><br>
+                整个流程的关键在于"容许其自以为是的进攻"。当他坚信自己在布置陷阱时，实则是将自己最浓郁的情感毫无保留地铺陈于祭坛之上。情饕并未简单地吞噬他，而是赐予他一次"瞥见神国"的体验，随后剥夺。这种"得到即永失"的悖论，将其转化为一个终身痛苦、终身追寻、终身供给的完美能源。<br><br>
+                此案例应作为饲主的战略级教材——理解"最高明的收割，有时是给予"。对于狂妄者，让他们触碰一次梦想，然后将其永远放逐在梦想的彼岸。他们的余生，都将是为那一刻支付的利息。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.note">五、饲主笔记</div>
+              <div class="text-gray-300" data-i18n="log.noteContent">
+                - S级食材特性：此类"主动挑战者"极为稀有，情感纯度与强度远超被动受害者。需精准控制其"成功错觉"的剂量，稍有不慎可能导致其真正触及禁忌引发不可控后果，或过早崩溃失去持续价值。<br>
+                - 长期价值管理：刘星辰已被标记为"持续供应型"食材。应定期（建议每季度）远程评估其情绪波动峰值，在其达到临界点时，可考虑通过匿名信息引导其再次入住（或其他薄弱点），进行二次"收割"或"充能"。
+              </div>
+            </div>
+
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.archiveNote">归档备注</div>
+              <div class="text-gray-300" data-i18n="log.archiveNoteContent">
+                本案所有资料已存入档案。继任者需查阅并理解此案例中"放长线豢养"的核心战略价值。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">饲主系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供饲主使用 - 保密级别：绝密</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据 - 已更新为刘星辰(Room 902)的内容
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': 'R∞M 酒店 饲主工作日志',
+        'log.summary': '刘星辰',
+        'log.status': '记录状态',
+        'log.completed': '已归档（供继任者参考）',
+        'log.title': '主菜：狂妄的顶点',
+        'log.date': '记录日期：献祭完成后 24 小时',
+        'log.ingredient': '一、食材基础信息',
+        'log.ingredientContent': '食材编号：No.666<br>姓名：刘星辰<br>身份：前独立音乐人 / 某组织领头人<br>核心执念：对"原初之音"的病态痴迷、企图以凡人之躯掌控神性存在的狂妄野心、将自我献祭视为"艺术巅峰"的扭曲美学<br>情感浓度（初始）：9.2/10（狂妄占比65%，痴迷占比25%，自我毁灭倾向占比10%；情感极具戏剧性与爆发力，属于稀有顶级食材）<br><br>筛选逻辑：<br>1. 五年追踪确认其已深入神秘学领域，掌握多种禁忌仪式，具备主动"挑衅"情饕的认知与能力；<br>2. 其追随者团体表明其已具备基础献祭经验，且道德边界完全崩坏，适合作为"反向献祭"实验体；<br>3. 心理画像显示其具有"弥赛亚情结"，深信自己是被选中的"桥梁"，此心态极易转化为对情饕的正面挑战；<br>4. 社会关系已自我剥离，失踪不会引发系统性追查，符合"高能量但可控"的收割标准。',
+        'log.process': '二、献祭流程记录',
+        'log.process1': '<strong>阶段1：诱捕</strong><br>通过其隐秘社交网络散播"902号房存在稳定现实裂缝"的传闻，附上经篡改的酒店磁场读数图；<br>目的：利用其"寻找更强容器"的迫切需求，引导其主动选择902号房；<br>结果：食材于2025年11月14日深夜入住，拒绝服务，神情疲惫但眼神灼亮，符合"猎物主动入笼"预期。',
+        'log.process2': '<strong>阶段2：沉沦</strong><br>维持房间基础环境，不进行任何主动干预；<br>目的：让其自行布置仪式场地，在孤独中巩固"我将在此封神"的妄想；<br>监测结果：食材用特制粉笔绘制复杂咒阵，搬运并组装自定义声波共振系统，狂妄浓度升至70%。',
+        'log.process3': '<strong>阶段3：催化</strong><br>容许其声波攻击渗透房间屏障，引发其他住客生理异常，但不加以制止；<br>目的：让其误判自身力量，认为已对"情饕"造成有效干扰，加剧其进攻性；<br>监测结果：食材每日进行长达数小时的声波仪式，情绪在亢奋与焦躁间摇摆，出现与镜中倒影对话行为，痴迷浓度提升至50%。',
+        'log.process4': '<strong>阶段4：交锋</strong><br>情饕苏醒，以其自身形象进行反击，在艺术层面碾压其自信心；<br>目的：将其推向绝望边缘，诱使其采用最终手段——自我献祭；<br>监测结果：食材出现明显动摇，进行血祭仪式，提出"交易"请求。情饕接受其部分生命力，情感浓度于第13天夜间飙升至9.8/10。',
+        'log.process5': '<strong>阶段5：献祭/反噬</strong><br>食材启动最终仪式，试图将情饕禁锢并吸收。情饕回应让其体验极高维度的感知，随即收回；<br>目的：并非吞噬其全部，而是将其转化为"永久饥渴"状态，使其余生成为持续的情感供能装置；<br>结果：食材在极致愉悦与瞬间虚无中崩溃，仪式"失败"。其核心情感（狂妄、痴迷、绝望）被情饕品尝并标记。次日退房，生理存活，但精神已沦为永远追寻"神明之音"的空壳。留下唱片《Clappin\'》作为情饕的"收据"。',
+        'log.evaluation': '三、风味评估',
+        'log.evaluationContent': '整体评分：<span class="log-rating">9.9/10</span>（S级主菜，风味复杂度与后续价值均达极致）<br><br>风味解析：<br>前调：电流的灼烧感与金属的冷冽交织，模仿"神性"的狂妄野心如烈酒般呛喉，瞬间抓住情饕的注意力；<br>中调：自我献祭的悲壮与镜像嘲弄的残酷形成史诗级反差，每一口都伴随着"攀登即坠落"的戏剧性张力，层次如交响乐般恢弘；<br>后调：永久性渴求带来的绵长痛苦与虚无回甘，"听过神明之声的凡人"此一状态本身，即化为永不枯竭的稀有风味源。情饕对此表示高度赞赏。',
+        'log.conclusion': '四、总结',
+        'log.conclusionContent': '902号房「狂妄的顶点」献祭以情饕的全胜告终。食材刘星辰的核心特质——艺术家的极致理想主义、对超越性体验的病态渴望、以及"人可弑神"的疯狂信念——被902号房完美利用。<br><br>整个流程的关键在于"容许其自以为是的进攻"。当他坚信自己在布置陷阱时，实则是将自己最浓郁的情感毫无保留地铺陈于祭坛之上。情饕并未简单地吞噬他，而是赐予他一次"瞥见神国"的体验，随后剥夺。这种"得到即永失"的悖论，将其转化为一个终身痛苦、终身追寻、终身供给的完美能源。<br><br>此案例应作为饲主的战略级教材——理解"最高明的收割，有时是给予"。对于狂妄者，让他们触碰一次梦想，然后将其永远放逐在梦想的彼岸。他们的余生，都将是为那一刻支付的利息。',
+        'log.note': '五、饲主笔记',
+        'log.noteContent': '- S级食材特性：此类"主动挑战者"极为稀有，情感纯度与强度远超被动受害者。需精准控制其"成功错觉"的剂量，稍有不慎可能导致其真正触及禁忌引发不可控后果，或过早崩溃失去持续价值。<br>- 长期价值管理：刘星辰已被标记为"持续供应型"食材。应定期（建议每季度）远程评估其情绪波动峰值，在其达到临界点时，可考虑通过匿名信息引导其再次入住（或其他薄弱点），进行二次"收割"或"充能"。',
+        'log.archiveNote': '归档备注',
+        'log.archiveNoteContent': '本案所有资料已存入档案。继任者需查阅并理解此案例中"放长线豢养"的核心战略价值。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '饲主系统',
+        'footer.confidential': '仅供饲主使用 - 保密级别：绝密',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'R∞M Hotel Feeder Work Log',
+        'log.summary': 'Liu Xingchen',
+        'log.status': 'Record Status',
+        'log.completed': 'Archived (For Successor Reference)',
+        'log.title': 'Main Course: The Apex of Arrogance',
+        'log.date': 'Record Date: 24 Hours After Sacrifice Completion',
+        'log.ingredient': 'I. Ingredient Basic Information',
+        'log.ingredientContent': 'Ingredient No.: No.666<br>Name: Liu Xingchen<br>Identity: Former Independent Musician / Leader of an Organization<br>Core Obsession: Pathological obsession with the "Primordial Sound", arrogant ambition to control divine entities with a mortal body, distorted aesthetic viewing self-sacrifice as the "pinnacle of art"<br>Emotional Concentration (Initial): 9.2/10 (Arrogance 65%, Obsession 25%, Self-destructive tendency 10%; Emotionally dramatic and explosive, rare top-tier ingredient)<br><br>Screening Logic:<br>1. Five-year tracking confirms deep involvement in occultism, mastery of multiple forbidden rituals, possessing the awareness and ability to actively "provoke" the Emotion Devourer;<br>2. His follower group indicates prior sacrificial experience with completely collapsed moral boundaries, suitable as a "reverse sacrifice" experimental subject;<br>3. Psychological profiling reveals a "Messiah complex", firmly believing himself to be the chosen "bridge", a mindset easily transformed into direct challenge to the Emotion Devourer;<br>4. Social relationships already self-severed, disappearance won\'t trigger systematic investigation, meeting "high-energy yet controllable" harvesting criteria.',
+        'log.process': 'II. Sacrifice Process Record',
+        'log.process1': '<strong>Stage 1: Trapping</strong><br>Spread rumors through his covert social networks about "a stable reality fissure in Room 902", attaching altered hotel magnetic field readings;<br>Purpose: Exploit his urgent need for a "stronger vessel" to guide active selection of Room 902;<br>Result: Ingredient checked in late night November 14, 2025, refused service, appearing exhausted but with intensely bright eyes, meeting "prey actively entering cage" expectations.',
+        'log.process2': '<strong>Stage 2: Descent</strong><br>Maintained basic room environment without any active intervention;<br>Purpose: Allow him to arrange ritual site independently, consolidating the "I will ascend to godhood here" delusion in isolation;<br>Monitoring Result: Ingredient drew complex sigils with special chalk, transported and assembled a custom acoustic resonance system, arrogance concentration rose to 70%.',
+        'log.process3': '<strong>Stage 3: Catalysis</strong><br>Permitted his sonic attacks to penetrate room barriers, causing physiological anomalies in other guests without intervention;<br>Purpose: Allow misjudgment of his own power, believing to have effectively disturbed the Emotion Devourer, intensifying aggression;<br>Monitoring Result: Ingredient performed hours-long sonic rituals daily, emotions oscillating between excitement and anxiety, exhibited conversations with mirror reflections, obsession concentration increased to 50%.',
+        'log.process4': '<strong>Stage 4: Confrontation</strong><br>The Emotion Devourer awakened, counterattacked using his own image, crushing his confidence on an artistic level;<br>Purpose: Push him to the brink of despair, induce adoption of the final means—self-sacrifice;<br>Monitoring Result: Ingredient showed clear wavering, performed a blood ritual, proposed a "deal" request. The Emotion Devourer accepted part of his life force, emotional concentration soared to 9.8/10 on Night 13.',
+        'log.process5': '<strong>Stage 5: Sacrifice/Backlash</strong><br>Ingredient activated the final ritual, attempting to imprison and absorb the Emotion Devourer. The Emotion Devourer responded by allowing him to experience extremely high-dimensional perception, then withdrew it;<br>Purpose: Not to devour him entirely, but transform him into a state of "permanent hunger", making his remaining life a continuous emotional energy supply device;<br>Result: The ingredient collapsed amidst extreme pleasure and instant void, ritual "failed". His core emotions (arrogance, obsession, despair) were tasted and marked by the Emotion Devourer. Checked out next day, physiologically alive but mentally reduced to an empty shell forever seeking the "divine sound". Left the album "Clappin\'" as the Emotion Devourer\'s "receipt".',
+        'log.evaluation': 'III. Flavor Assessment',
+        'log.evaluationContent': 'Overall Rating: <span class="log-rating">9.9/10</span> (S-grade main course, flavor complexity and subsequent value both reach the extreme)<br><br>Flavor Analysis:<br>Initial: Burning sensation of electricity interwoven with metallic coldness, the arrogant ambition to mimic "divinity" like strong liquor burning the throat, instantly capturing the Emotion Devourer\'s attention;<br>Mid: Epic contrast between the tragic grandeur of self-sacrifice and the cruelty of mirror mockery, each bite accompanied by the dramatic tension of "climbing is falling", layers as majestic as a symphony;<br>Aftertaste: Prolonged pain from permanent craving and the subtle sweetness of void, the state of being "a mortal who has heard the divine sound" itself transforms into an inexhaustible rare flavor source. The Emotion Devourer expressed high praise for this.',
+        'log.conclusion': 'IV. Conclusion',
+        'log.conclusionContent': 'Room 902 "The Apex of Arrogance" sacrifice concluded with the Emotion Devourer\'s complete victory. Ingredient Liu Xingchen\'s core traits—the artist\'s extreme idealism, pathological craving for transcendent experiences, and insane belief that "humans can kill gods"—were perfectly utilized by Room 902.<br><br>The key to the entire process was "allowing his self-righteous offensive". When he firmly believed he was setting a trap, he was actually laying his most intense emotions unreservedly upon the altar. The Emotion Devourer did not simply devour him, but granted him one glimpse of the "divine realm", then stripped it away. This paradox of "obtaining means eternal loss" transformed him into a perfect energy source of lifelong pain, lifelong seeking, lifelong supply.<br><br>This case should serve as a strategic-level teaching material for feeders—understanding that "the most sophisticated harvest is sometimes giving". For the arrogant, let them touch their dream once, then exile them forever to the far shore of that dream. Their remaining lives will be the interest paid for that moment.',
+        'log.note': 'V. Feeder Notes',
+        'log.noteContent': '- S-grade Ingredient Characteristics: Such "active challengers" are extremely rare, emotional purity and intensity far surpass passive victims. Precise control of the "illusion of success" dosage is required; slightest mishap may lead to them truly touching forbidden realms causing uncontrollable consequences, or premature collapse losing sustained value.<br>- Long-term Value Management: Liu Xingchen has been marked as a "continuous supply-type" ingredient. Should periodically (suggest quarterly) remotely assess his emotional fluctuation peaks; when reaching critical points, consider guiding him to check in again (or other weak points) through anonymous information, for secondary "harvesting" or "recharging".',
+        'log.archiveNote': 'Archive Note',
+        'log.archiveNoteContent': 'All materials of this case have been archived. Successors must review and understand the core strategic value of "long-term cultivation" in this case.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Feeder System',
+        'footer.confidential': 'For Feeder Use Only - Confidentiality Level: Top Secret',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': 'R∞Mホテル 飼主作業ログ',
+        'log.summary': '劉星辰',
+        'log.status': '記録ステータス',
+        'log.completed': 'アーカイブ済み（後任者参考用）',
+        'log.title': 'メインディッシュ：傲慢の頂点',
+        'log.date': '記録日：供物完了後24時間',
+        'log.ingredient': '一、食材基本情報',
+        'log.ingredientContent': '食材番号：No.666<br>名前：劉星辰<br>身分：元インディーズミュージシャン / 某組織リーダー<br>核心執念：「原初の音」への病的妄執、凡人の身で神的存在を掌握せんとする傲慢な野心、自己供物を「芸術の頂点」と見なす歪んだ美学<br>感情濃度（初期）：9.2/10（傲慢65%、妄執25%、自滅傾向10%；感情的劇的かつ爆発的、稀有な頂級食材）<br><br>選別ロジック：<br>1. 五年間の追跡でオカルト分野に深く関与、複数の禁忌儀式を掌握、「情饕」への能動的「挑発」の認知と能力を有することを確認；<br>2. フォロワー集団は基礎的な供物経験を有し、道徳的限界完全崩壊、「逆供物」実験体として適格；<br>3. 心理プロファイルは「メサイアコンプレックス」を示し、自らが選ばれし「架け橋」と確信、この心性は情饕への正面挑戦へ容易に転化；<br>4. 社会的関係は自己切断済み、失踪は組織的な追跡を引き起こさず、「高エネルギー但し制御可能」収穫基準に合致。',
+        'log.process': '二、供物プロセス記録',
+        'log.process1': '<strong>段階1：誘引</strong><br>隠密SNSネットワークで「902号室に安定した現実裂け目が存在」との噂を拡散、改竄されたホテル磁場読図を添付；<br>目的：「より強力な器」を探求する切迫した需要を利用し、能動的902号室選択へ誘導；<br>結果：食材は2025年11月14日深夜に宿泊、サービスを拒否、表情は疲労しているが瞳は灼熱、獲物が能動的に籠に入る予想通り。',
+        'log.process2': '<strong>段階2：沈淪</strong><br>部屋の基礎環境を維持し、一切の能動的介入を行わず；<br>目的：食材に儀式場を自ら設営させ、孤独の中で「我ここにて神となる」妄想を強化；<br>監視結果：食材は特製チョークで複雑な呪陣を描画、搬入・組み立てカスタム音波共振システム、傲慢濃度は70%に上昇。',
+        'log.process3': '<strong>段階3：触媒</strong><br>音波攻撃の部屋障壁浸透を許容、他宿客の生理的異常を引き起こすも制止せず；<br>目的：自身の力を誤認させ、「情饕」へ有効な干渉を与えたと確信させ、攻撃性を増幅；<br>監視結果：食材は数時間に及ぶ音波儀式を日々実施、感情は興奮と焦燥の間で揺動、鏡像との対話行為発生、妄執濃度は50%に上昇。',
+        'log.process4': '<strong>段階4：対決</strong><br>情饕覚醒、自らの形象を用いて反撃、芸術面でその自信を粉砕；<br>目的：絶望の淵へ追い詰め、最終手段——自己供物採用へ誘導；<br>監視結果：食材は明らかな動揺を示し、血祭儀式を実行、「取引」要求を提出。情饕はその一部生命力を受け入れ、感情濃度は13日目夜間に9.8/10へ急騰。',
+        'log.process5': '<strong>段階5：供物/反撃</strong><br>食材は最終儀式を起動、情饕を拘束・吸収せんと試みる。情饕は応答し極高次元の知覚体験をさせ、直ちに撤回；<br>目的：全体的に吞噬するのではなく「永久飢餓」状態へ転化、残りの生涯を持続的情感供給装置化する；<br>結果：食材は極致愉悦と瞬間の虚無の中で崩壊、儀式「失敗」。核心感情（傲慢、妄執、絶望）は情饕に嗜まれ刻印。翌日退去、生理的には生存しているが精神は永遠に「神の音」を追い求める空殻と化す。レコード《Clappin\'》を情饕の「受領証」として残す。',
+        'log.evaluation': '三、風味評価',
+        'log.evaluationContent': '総合評価：<span class="log-rating">9.9/10</span>（S級メインディッシュ、風味複雑度と後続価値共に極致に到達）<br><br>風味解析：<br>前味：電流の焼灼感と金属の冷たさが交錯、「神性」を模倣する傲慢な野心は烈酒のように喉を焼き、瞬時に情饕の注意力を捕捉；<br>中味：自己供物の悲壮と镜像嘲弄の残酷さが生む叙事詩的な対比、各口に「登攀即ち墜落」の劇的張力を伴い、層は交響楽のように壮麗；<br>後味：永久の渇望がもたらす悠長な苦痛と虚無の余韻、「神の声を聞いた凡人」というこの状態自体が、枯れることのない稀有な風味源と化す。情饕はこれに対し高度な賞賛を表明。',
+        'log.conclusion': '四、総括',
+        'log.conclusionContent': '902号室「傲慢の頂点」供物は情饕の全勝にて終結。食材劉星辰の核心特質——芸術家の極致理想主義、超越的体験への病的な渇望、「人は神を弑し得る」という狂気の信念——は902号室に完璧に利用された。<br><br>全プロセスの鍵は「その自惚れた進攻を許容する」ことに在り。彼が自ら罠を張っていると確信する時、実は最も濃厚な感情を保留なく祭壇に陳列しているに過ぎぬ。情饕は単純に吞噬せず、一度「神国を覗見」する体験を授け、直ちに剥奪する。この「得て即ち永遠に失う」逆説は、彼を終身の苦痛・終身の追尋・終身の供給という完璧なエネルギー源へと転化した。<br><br>本案例は飼主の戦略級教材として——「最も高名な収穫は、時には与えること」理解。傲慢なる者には、一度だけ夢に触れさせ、その夢の彼岸へ永遠に追放せよ。彼らの残りの人生は、その瞬間に対する利息支払いに過ぎぬ。',
+        'log.note': '五、飼主筆記',
+        'log.noteContent': '- S級食材特性：この類の「能動的挑戦者」は極めて稀有で、感情純度と強度は受動的犠牲者を遥かに凌駕。「成功錯覚」の投与量を精確に制御する必要あり、稍々不慎は真に禁忌に触れ不可制の結果を招き、或いは早期崩壊で持続的価値を失う恐れあり。<br>- 長期的価値管理：劉星辰は「持続的供給型」食材としてマーク済。定期的（四半期毎推奨）に遠隔で感情変動のピークを評価し、臨界点に達した際は、匿名情報を通じ再度宿泊（又は他の弱点）へ誘導し、二次的「収穫」或いは「充能」を考慮すべし。',
+        'log.archiveNote': 'アーカイブ備考',
+        'log.archiveNoteContent': '本案の全資料はアーカイブ済。後任者は本案例の「長期的飼育」における核心的戦略価値を参照・理解すべし。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '飼主システム',
+        'footer.confidential': '飼主専用 - 機密レベル：極秘',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'R∞M Hotel Registro de Trabalho do Alimentador',
+        'log.summary': 'Liu Xingchen',
+        'log.status': 'Status do Registro',
+        'log.completed': 'Arquivado (Para Referência do Sucessor)',
+        'log.title': 'Prato Principal: O Ápice da Arrogância',
+        'log.date': 'Data do Registro: 24 Horas Após Conclusão do Sacrifício',
+        'log.ingredient': 'I. Informações Básicas do Ingrediente',
+        'log.ingredientContent': 'Nº do Ingrediente: No.666<br>Nome: Liu Xingchen<br>Identidade: Ex-Músico Independente / Líder de uma Organização<br>Obsessão Central: Obsessão patológica pelo "Som Primordial", ambição arrogante de controlar entidades divinas com corpo mortal, estética distorcida vendo auto-sacrifício como o "ápice da arte"<br>Concentração Emocional (Inicial): 9.2/10 (Arrogância 65%, Obsessão 25%, Tendência autodestrutiva 10%; Emocionalmente dramático e explosivo, ingrediente raro de alto nível)<br><br>Lógica de Seleção:<br>1. Rastreamento de cinco anos confirma envolvimento profundo no ocultismo, domínio de múltiplos rituais proibidos, possuindo consciência e habilidade para ativamente "provocar" o Devorador de Emoções;<br>2. Seu grupo de seguidores indica experiência sacrificial prévia com fronteiras morais completamente colapsadas, adequado como sujeito experimental de "sacrifício reverso";<br>3. Perfil psicológico revela um "complexo de messias", firmemente acreditando ser a "ponte" escolhida, mentalidade facilmente transformada em desafio direto ao Devorador de Emoções;<br>4. Relações sociais já auto-severadas, desaparecimento não desencadeará investigação sistemática, atendendo critérios de colheita "alta energia mas controlável".',
+        'log.process': 'II. Registro do Processo de Sacrifício',
+        'log.process1': '<strong>Estágio 1: Captura</strong><br>Espalhou rumores através de suas redes sociais ocultas sobre "uma fenda de realidade estável no Quarto 902", anexando leituras alteradas do campo magnético do hotel;<br>Propósito: Explorar sua necessidade urgente por um "recipiente mais forte" para guiar seleção ativa do Quarto 902;<br>Resultado: Ingrediente fez check-in na madrugada de 14 de novembro de 2025, recusou serviço, aparecendo exausto mas com olhos intensamente brilhantes, atendendo expectativas de "presa entrando ativamente na gaiola".',
+        'log.process2': '<strong>Estágio 2: Descida</strong><br>Manteve ambiente básico do quarto sem qualquer intervenção ativa;<br>Propósito: Permitir que ele arranjasse local do ritual independentemente, consolidando o delírio "ascenderei à divindade aqui" em isolamento;<br>Resultado da Monitoração: Ingrediente desenhou sigilos complexos com giz especial, transportou e montou um sistema de ressonância acústica personalizado, concentração de arrogância subiu para 70%.',
+        'log.process3': '<strong>Estágio 3: Catálise</strong><br>Permitiu que seus ataques sônicos penetrassem barreiras do quarto, causando anomalias fisiológicas em outros hóspedes sem intervenção;<br>Propósito: Permitir erro de julgamento de seu próprio poder, acreditando ter perturbado efetivamente o Devorador de Emoções, intensificando agressividade;<br>Resultado da Monitoração: Ingrediente realizou rituais sônicos de horas diariamente, emoções oscilando entre excitação e ansiedade, exibiu conversas com reflexos no espelho, concentração de obsessão aumentou para 50%.',
+        'log.process4': '<strong>Estágio 4: Confronto</strong><br>O Devorador de Emoções despertou, contra-atacou usando sua própria imagem, esmagando sua confiança em nível artístico;<br>Propósito: Empurrá-lo à beira do desespero, induzir adoção do meio final—auto-sacrifício;<br>Resultado da Monitoração: Ingrediente mostrou clara hesitação, realizou um ritual de sangue, propôs um pedido de "acordo". O Devorador de Emoções aceitou parte de sua força vital, concentração emocional disparou para 9.8/10 na Noite 13.',
+        'log.process5': '<strong>Estágio 5: Sacrifício/Contra-ataque</strong><br>Ingrediente ativou o ritual final, tentando aprisionar e absorver o Devorador de Emoções. O Devorador de Emoções respondeu permitindo que ele experimentasse percepção de dimensões extremamente altas, então a retirou;<br>Propósito: Não devorá-lo inteiramente, mas transformá-lo em um estado de "fome permanente", tornando sua vida restante um dispositivo contínuo de suprimento de energia emocional;<br>Resultado: O ingrediente entrou em colapso em meio a prazer extremo e vazio instantâneo, ritual "falhou". Suas emoções centrais (arrogância, obsessão, desespero) foram degustadas e marcadas pelo Devorador de Emoções. Fez check-out no dia seguinte, fisiologicamente vivo mas mentalmente reduzido a uma casca vazia para sempre buscando o "som divino". Deixou o álbum "Clappin\'" como "recibo" do Devorador de Emoções.',
+        'log.evaluation': 'III. Avaliação de Sabor',
+        'log.evaluationContent': 'Avaliação Geral: <span class="log-rating">9.9/10</span> (Prato principal grau-S, complexidade de sabor e valor subsequente ambos alcançam o extremo)<br><br>Análise de Sabor:<br>Inicial: Sensação de queimadura da eletricidade entrelaçada com frieza metálica, a ambição arrogante de imitar "divindade" como licor forte queimando a garganta, instantaneamente capturando a atenção do Devorador de Emoções;<br>Meio: Contraste épico entre a grandeza trágica do auto-sacrifício e a crueldade do escárnio no espelho, cada mordida acompanhada pela tensão dramática de "escalar é cair", camadas tão majestosas como uma sinfonia;<br>Final: Dor prolongada do desejo permanente e o sutil doçura do vazio, o estado de ser "um mortal que ouviu o som divino" em si mesmo se transforma em uma fonte de sabor rara inesgotável. O Devorador de Emoções expressou alto elogio a isto.',
+        'log.conclusion': 'IV. Conclusão',
+        'log.conclusionContent': 'Quarto 902 "O Ápice da Arrogância" sacrifício concluiu com a vitória completa do Devorador de Emoções. Traços centrais do ingrediente Liu Xingchen—o idealismo extremo do artista, desejo patológico por experiências transcendentais, e crença insana de que "humanos podem matar deuses"—foram perfeitamente utilizados pelo Quarto 902.<br><br>A chave para todo o processo foi "permitir sua ofensiva presunçosa". Quando ele firmemente acreditava estar armando uma armadilha, estava na verdade colocando suas emoções mais intensas incondicionalmente sobre o altar. O Devorador de Emoções não o devorou simplesmente, mas concedeu-lhe um vislumbre do "reino divino", então o retirou. Este paradoxo de "obter significa perda eterna" transformou-o em uma fonte de energia perfeita de dor vitalícia, busca vitalícia, suprimento vitalício.<br><br>Este caso deve servir como material de ensino de nível estratégico para alimentadores—entender que "a colheita mais sofisticada às vezes é dar". Para os arrogantes, deixe-os tocar seu sonho uma vez, então exilá-los para sempre à margem distante daquele sonho. Suas vidas restantes serão os juros pagos por aquele momento.',
+        'log.note': 'V. Notas do Alimentador',
+        'log.noteContent': '- Características de Ingrediente Grau-S: Tais "desafiantes ativos" são extremamente raros, pureza emocional e intensidade superam em muito vítimas passivas. Controle preciso da dosagem da "ilusão de sucesso" é necessário; o menor erro pode levá-los a tocar verdadeiramente reinos proibidos causando consequências incontroláveis, ou colapso prematuro perdendo valor sustentado.<br>- Gerenciamento de Valor de Longo Prazo: Liu Xingchen foi marcado como um ingrediente "tipo fornecimento contínuo". Deve periodicamente (sugere trimestralmente) avaliar remotamente seus picos de flutuação emocional; ao atingir pontos críticos, considerar guiá-lo a fazer check-in novamente (ou outros pontos fracos) através de informações anônimas, para "colheita" secundária ou "recarga".',
+        'log.archiveNote': 'Nota de Arquivo',
+        'log.archiveNoteContent': 'Todos os materiais deste caso foram arquivados. Sucessores devem revisar e entender o valor estratégico central do "cultivo de longo prazo" neste caso.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema do Alimentador',
+        'footer.confidential': 'Uso do Alimentador Apenas - Nível de Confidencialidade: Ultra Secreto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画和其他交互功能
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能 - 修改为跳转到RIKI.html
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        window.location.href = 'RIKI工作台.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

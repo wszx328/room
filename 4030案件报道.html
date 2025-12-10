@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R市警局案件公开系统</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2d3748;
+            --accent-color: #e53e3e;
+            --light-color: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .language-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .language-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .language-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 120px;
+            z-index: 100;
+        }
+        
+        .language-dropdown.show {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            color: var(--secondary-color);
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .language-option:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .language-option:last-child {
+            border-bottom: none;
+        }
+        
+        .case-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .case-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .case-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .subsection {
+            margin-bottom: 20px;
+        }
+        
+        .subsection-title {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        .evidence-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .evidence-item {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .evidence-item:before {
+            content: "•";
+            color: var(--accent-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .attachment-list {
+            list-style-type: none;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .attachment-item {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .attachment-item:before {
+            content: "▸";
+            color: var(--primary-color);
+            position: absolute;
+            left: 0;
+        }
+        
+        .quote {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 15px 0;
+            font-style: italic;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .evidence-highlight {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+            margin: 10px 0;
+        }
+        
+        .evidence-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .case-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .language-switcher {
+                position: static;
+                margin-top: 15px;
+            }
+            
+            .language-dropdown {
+                right: auto;
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="title">R市警局案件公开系统</h1>
+            <div class="language-switcher">
+                <button class="language-btn" id="languageBtn">中文 ▼</button>
+                <div class="language-dropdown" id="languageDropdown">
+                    <div class="language-option" data-lang="zh">中文</div>
+                    <div class="language-option" data-lang="en">English</div>
+                    <div class="language-option" data-lang="ja">日本語</div>
+                    <div class="language-option" data-lang="pt">Português</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="case-info">
+            <div class="case-header">
+                <div class="case-details">
+                    <div class="detail-item">
+                        <div class="detail-label" id="caseNoLabel">案件编号</div>
+                        <div id="caseNo">R20251124</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label" id="caseNameLabel">案件名称</div>
+                        <div id="caseName">望海崖过失致人死亡案</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label" id="publishDateLabel">公开日期</div>
+                        <div id="publishDate">2025/11/30</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title" id="reportSummary">侦破报告摘要</h2>
+                
+                <div class="subsection">
+                    <h3 class="subsection-title" id="caseOverviewTitle">一、案件概况</h3>
+                    <p id="caseOverview">死者林晓（女，29 岁），于 2025/10/08 晚在城东望海崖因过失坠落身亡，嫌疑人陈逸风（男，34 岁）于 2025/11/24 自首。</p>
+                </div>
+                
+                <div class="subsection">
+                    <h3 class="subsection-title" id="keyEvidenceTitle">二、关键证据</h3>
+                    <ul class="evidence-list">
+                        <li class="evidence-item">
+                            <div id="evidence1">手写忏悔笔记：从陈逸风绘画本中查获，详细记录案发经过，字迹与嫌疑人一致。</div>
+                        </li>
+                        <li class="evidence-item">
+                            <div id="evidence2">电子证据：警方于 2025/11/24 10:30 收到匿名邮件，发件地址为乱码字符串（经技术解码，包含 "R∞M" 字符组合），附件为：</div>
+                            <ul class="attachment-list">
+                                <li class="attachment-item" id="evidence2a">陈逸风与林晓在案发现场的合照（拍摄时间：2025/10/08 19:50）</li>
+                                <li class="attachment-item" id="evidence2b">二人关于《潮汐的记忆》版权的聊天记录（显示案发前激烈争吵）</li>
+                                <li class="attachment-item" id="evidence2c">陈逸风的浏览器搜索记录（含 "过失杀人量刑""销毁颜料痕迹" 等内容）</li>
+                            </ul>
+                            <div class="evidence-highlight">
+                                <div class="evidence-title">技术分析：</div>
+                                <div id="evidence2d">邮件发送者使用高度加密技术，但通过IP追踪发现发送地点为R∞M酒店附近公共网络。附件内容经数字取证确认未经篡改。</div>
+                            </div>
+                        </li>
+                        <li class="evidence-item">
+                            <div id="evidence3">现场物证比对：死者衣物上的深蓝色颜料与陈逸风画箱内剩余颜料成分一致，现场百合花瓣与陈逸风在 R∞M 酒店的订单品种相同。</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="subsection">
+                    <h3 class="subsection-title" id="suspectStatementTitle">三、嫌疑人供词摘要</h3>
+                    <div class="quote" id="suspectStatement">"2025/10/08 晚，我和林晓在望海崖吵架，她要告我，我推了她一下…… 后来我躲进 R∞M 酒店，每天画画。酒店里总有她喜欢的百合香，音箱会放我们的歌。画完那幅《夏日疗愈》的晚上，我梦见她原谅我了。醒来后就觉得很平静，什么都想不起来了，只记得要去自首。"</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p id="footerText">R市警局 &copy; 2025 - 案件信息公开系统</p>
+        </footer>
+    </div>
+
+    <script>
+        // 翻译数据
+        const translations = {
+            zh: {
+                title: "R市警局案件公开系统",
+                caseNoLabel: "案件编号",
+                caseNameLabel: "案件名称",
+                publishDateLabel: "公开日期",
+                caseNo: "R20251124",
+                caseName: "望海崖过失致人死亡案",
+                publishDate: "2025/11/30",
+                reportSummary: "侦破报告摘要",
+                caseOverviewTitle: "一、案件概况",
+                caseOverview: "死者林晓（女，29 岁），于 2025/10/08 晚在城东望海崖因过失坠落身亡，嫌疑人陈逸风（男，34 岁）于 2025/11/24 自首。",
+                keyEvidenceTitle: "二、关键证据",
+                evidence1: "手写忏悔笔记：从陈逸风绘画本中查获，详细记录案发经过，字迹与嫌疑人一致。",
+                evidence2: "电子证据：警方于 2025/11/24 10:30 收到匿名邮件，发件地址为乱码字符串（经技术解码，包含 \"R∞M\" 字符组合），附件为：",
+                evidence2a: "陈逸风与林晓在案发现场的合照（拍摄时间：2025/10/08 19:50）",
+                evidence2b: "二人关于《潮汐的记忆》版权的聊天记录（显示案发前激烈争吵）",
+                evidence2c: "陈逸风的浏览器搜索记录（含 \"过失杀人量刑\"\"销毁颜料痕迹\" 等内容）",
+                evidence2d: "邮件发送者使用高度加密技术，但通过IP追踪发现发送地点为R∞M酒店附近公共网络。附件内容经数字取证确认未经篡改。",
+                evidence3: "现场物证比对：死者衣物上的深蓝色颜料与陈逸风画箱内剩余颜料成分一致，现场百合花瓣与陈逸风在 R∞M 酒店的订单品种相同。",
+                suspectStatementTitle: "三、嫌疑人供词摘要",
+                suspectStatement: "\"2025/10/08 晚，我和林晓在望海崖吵架，她要告我，我推了她一下…… 后来我躲进 R∞M 酒店，每天画画。酒店里总有她喜欢的百合香，音箱会放我们的歌。画完那幅《夏日疗愈》的晚上，我梦见她原谅我了。醒来后就觉得很平静，什么都想不起来了，只记得要去自首。\"",
+                footerText: "R市警局 © 2025 - 案件信息公开系统"
+            },
+            en: {
+                title: "R City Police Case Public System",
+                caseNoLabel: "Case Number",
+                caseNameLabel: "Case Name",
+                publishDateLabel: "Publication Date",
+                caseNo: "R20251124",
+                caseName: "Wanghai Cliff Negligent Homicide Case",
+                publishDate: "2025/11/30",
+                reportSummary: "Investigation Report Summary",
+                caseOverviewTitle: "I. Case Overview",
+                caseOverview: "The deceased Lin Xiao (female, 29 years old) died from a negligent fall at Wanghai Cliff in the eastern part of the city on the evening of 2025/10/08. The suspect Chen Yifeng (male, 34 years old) surrendered on 2025/11/24.",
+                keyEvidenceTitle: "II. Key Evidence",
+                evidence1: "Handwritten confession note: Seized from Chen Yifeng's sketchbook, detailing the incident with handwriting matching the suspect.",
+                evidence2: "Digital evidence: Police received an anonymous email at 10:30 on 2025/11/24. The sender address was a garbled string (technically decoded to contain the \"R∞M\" character combination). Attachments included:",
+                evidence2a: "A photo of Chen Yifeng and Lin Xiao at the crime scene (taken at 19:50 on 2025/10/08)",
+                evidence2b: "Their chat records regarding the copyright of \"Memories of the Tide\" (showing intense arguments before the incident)",
+                evidence2c: "Chen Yifeng's browser search history (including terms like \"negligent homicide sentencing\" and \"destroying paint traces\")",
+                evidence2d: "The email sender used highly encrypted technology, but IP tracking revealed the sending location as a public network near R∞M Hotel. Digital forensics confirmed the attachments were unaltered.",
+                evidence3: "Physical evidence comparison: The dark blue paint on the deceased's clothing matched the remaining paint in Chen Yifeng's paint box. The lily petals found at the scene matched the variety from Chen Yifeng's order at R∞M Hotel.",
+                suspectStatementTitle: "III. Suspect Statement Summary",
+                suspectStatement: "\"On the evening of 2025/10/08, I argued with Lin Xiao at Wanghai Cliff. She threatened to sue me, and I pushed her... Later, I hid in the R∞M Hotel, painting every day. The hotel always had the lily scent she liked, and the speakers played our song. The night I finished that painting 'Summer Healing,' I dreamed she forgave me. When I woke up, I felt very calm, couldn't remember anything, only knew I had to turn myself in.\"",
+                footerText: "R City Police Department © 2025 - Case Information Public System"
+            },
+            ja: {
+                title: "R市警察事件公開システム",
+                caseNoLabel: "事件番号",
+                caseNameLabel: "事件名",
+                publishDateLabel: "公開日",
+                caseNo: "R20251124",
+                caseName: "望海崖過失致死事件",
+                publishDate: "2025/11/30",
+                reportSummary: "捜査報告書要約",
+                caseOverviewTitle: "一、事件概要",
+                caseOverview: "死者林暁（女性、29歳）は、2025/10/08夜に城東の望海崖で過失転落により死亡。容疑者陳逸風（男性、34歳）は2025/11/24に自首。",
+                keyEvidenceTitle: "二、重要証拠",
+                evidence1: "手書きの懺悔ノート：陳逸風のスケッチブックから押収。事件の経緯を詳細に記録しており、筆跡は容疑者と一致。",
+                evidence2: "電子証拠：警察は2025/11/24 10:30に匿名メールを受信。送信元アドレスは文字化けした文字列（技術的解読により「R∞M」文字組み合わせを含む）。添付ファイルは：",
+                evidence2a: "陳逸風と林暁の現場での写真（撮影時間：2025/10/08 19:50）",
+                evidence2b: "『潮汐の記憶』の著作権に関する二人のチャット記録（事件前の激しい口論を示す）",
+                evidence2c: "陳逸風のブラウザ検索履歴（「過失致死量刑」「絵の具痕跡消去」などの内容を含む）",
+                evidence2d: "メール送信者は高度な暗号化技術を使用していたが、IP追跡により送信地点がR∞Mホテル付近の公共ネットワークであることが判明。添付ファイルの内容はデジタルフォレンジックにより改ざんされていないことが確認された。",
+                evidence3: "現場の物的証拠の照合：死者の衣服に付着した紺青色の絵の具は陳逸風の絵具箱内の残り絵の具と成分一致。現場のユリの花びらは陳逸風がR∞Mホテルで注文した品種と同一。",
+                suspectStatementTitle: "三、容疑者供述要約",
+                suspectStatement: "「2025/10/08夜、私は林暁と望海崖で口論になり、彼女が訴えると言ったので、彼女を押してしまった…その後、R∞Mホテルに隠れ、毎日絵を描いていた。ホテルにはいつも彼女の好きなユリの香りが漂い、スピーカーからは私たちの曲が流れていた。『夏の癒し』という絵を完成させた夜、彼女が私を許してくれる夢を見た。目が覚めたらとても平静で、何も思い出せず、自首しなければならないことだけを覚えていた。」",
+                footerText: "R市警察 © 2025 - 事件情報公開システム"
+            },
+            pt: {
+                title: "Sistema Público de Casos da Polícia da Cidade R",
+                caseNoLabel: "Número do Caso",
+                caseNameLabel: "Nome do Caso",
+                publishDateLabel: "Data de Publicação",
+                caseNo: "R20251124",
+                caseName: "Caso de Homicídio Culposo no Penhasco Wanghai",
+                publishDate: "2025/11/30",
+                reportSummary: "Resumo do Relatório de Investigação",
+                caseOverviewTitle: "I. Visão Geral do Caso",
+                caseOverview: "A falecida Lin Xiao (mulher, 29 anos) morreu devido a uma queda por negligência no Penhasco Wanghai, na parte leste da cidade, na noite de 08/10/2025. O suspeito Chen Yifeng (homem, 34 anos) entregou-se em 24/11/2025.",
+                keyEvidenceTitle: "II. Evidências-Chave",
+                evidence1: "Nota de confissão manuscrita: Apreendida do caderno de desenhos de Chen Yifeng, detalhando o incidente com caligrafia correspondente ao suspeito.",
+                evidence2: "Evidência digital: A polícia recebeu um e-mail anônimo às 10:30 de 24/11/2025. O endereço do remetente era uma string embaralhada (decodificada tecnicamente para conter a combinação de caracteres \"R∞M\"). Os anexos incluíam:",
+                evidence2a: "Uma foto de Chen Yifeng e Lin Xiao na cena do crime (tirada às 19:50 de 08/10/2025)",
+                evidence2b: "Seus registros de chat sobre os direitos autorais de \"Memória da Maré\" (mostrando discussões intensas antes do incidente)",
+                evidence2c: "O histórico de pesquisa do navegador de Chen Yifeng (incluindo termos como \"sentença por homicídio culposo\" e \"destruir vestígios de tinta\")",
+                evidence2d: "O remetente do e-mail usou tecnologia altamente criptografada, mas o rastreamento de IP revelou que o local de envio era uma rede pública perto do Hotel R∞M. A perícia digital confirmou que os anexos não foram alterados.",
+                evidence3: "Comparação de evidências físicas: A tinta azul escura nas roupas da falecida combinava com a tinta restante na caixa de tintas de Chen Yifeng. As pétalas de lírio encontradas na cena combinavam com a variedade do pedido de Chen Yifeng no Hotel R∞M.",
+                suspectStatementTitle: "III. Resumo da Declaração do Suspeito",
+                suspectStatement: "\"Na noite de 08/10/2025, discuti com Lin Xiao no Penhasco Wanghai. Ela ameaçou me processar, e eu a empurrei... Depois, me escondi no Hotel R∞M, pintando todos os dias. O hotel sempre tinha o aroma de lírio que ela gostava, e as caixas de som tocavam nossa música. Na noite em que terminei aquela pintura 'Cura de Verão', sonhei que ela me perdoou. Quando acordei, me senti muito calmo, não conseguia me lembrar de nada, só sabia que tinha que me entregar.\"",
+                footerText: "Polícia da Cidade R © 2025 - Sistema Público de Informações de Casos"
+            }
+        };
+
+        // 默认语言
+        let currentLang = 'zh';
+
+        // DOM元素
+        const languageBtn = document.getElementById('languageBtn');
+        const languageDropdown = document.getElementById('languageDropdown');
+
+        // 切换语言下拉菜单显示/隐藏
+        languageBtn.addEventListener('click', () => {
+            languageDropdown.classList.toggle('show');
+        });
+
+        // 点击语言选项
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.getAttribute('data-lang');
+                changeLanguage(lang);
+                languageDropdown.classList.remove('show');
+            });
+        });
+
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.language-switcher')) {
+                languageDropdown.classList.remove('show');
+            }
+        });
+
+        // 更改语言函数
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const translation = translations[lang];
+            
+            // 更新按钮文本
+            languageBtn.textContent = getLanguageName(lang) + ' ▼';
+            
+            // 更新所有文本内容
+            for (const key in translation) {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = translation[key];
+                }
+            }
+        }
+
+        // 获取语言名称
+        function getLanguageName(lang) {
+            const names = {
+                'zh': '中文',
+                'en': 'English',
+                'ja': '日本語',
+                'pt': 'Português'
+            };
+            return names[lang];
+        }
+
+        // 页面加载时设置为默认语言
+        document.addEventListener('DOMContentLoaded', () => {
+            changeLanguage(currentLang);
+        });
+    </script>
+</body>
+</html>

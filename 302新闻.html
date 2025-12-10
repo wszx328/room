@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>地产大亨王天宇逆风翻盘，成功并购林氏集团，业界惊呼 “商业传奇” - 都市晚报</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0F3460', // 深蓝色主色调
+            secondary: '#E94560', // 强调色
+            neutral: '#F5F5F5', // 背景色
+            dark: '#1A1A2E', // 深色文本
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Georgia', 'serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      .article-para {
+        @apply mb-6 leading-relaxed text-gray-700;
+      }
+      .fade-in {
+        animation: fadeIn 0.8s ease-in forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-50 bg-white shadow-md transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <h1 class="text-primary font-bold text-2xl md:text-3xl" id="site-title">都市晚报</h1>
+        <div class="hidden md:block text-sm text-gray-500">
+          <span id="current-date">2025年12月20日</span>
+          <span class="mx-2">|</span>
+          <span id="current-day">星期六</span>
+        </div>
+      </div>
+      
+      <nav class="hidden md:flex space-x-6">
+        <a href="#" class="text-primary hover:text-secondary transition-colors font-medium" data-lang-key="home">首页</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="domestic">国内</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="international">国际</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="finance">财经</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="tech">科技</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="entertainment">文娱</a>
+      </nav>
+      
+      <div class="flex items-center space-x-3">
+        <!-- 语言切换下拉菜单 -->
+        <div class="relative group">
+          <button class="flex items-center text-gray-600 hover:text-primary transition-colors px-2 py-1 border border-gray-300 rounded">
+            <i class="fa fa-globe mr-1"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div class="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="zh">中文</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="en">English</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="ja">日本語</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="pt">Português</a>
+          </div>
+        </div>
+        
+        <button class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-search text-lg"></i>
+        </button>
+        <button class="md:hidden text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 移动端日期栏 -->
+  <div class="md:hidden bg-primary text-white py-2 px-4 text-center text-sm">
+    <span id="mobile-date">2025年12月20日 星期六</span>
+  </div>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 文章分类标签 -->
+    <div class="mb-4 flex items-center">
+      <span class="inline-block px-3 py-1 bg-secondary text-white text-sm font-medium rounded-full" data-lang-key="focus-news">焦点新闻</span>
+      <span class="ml-3 text-gray-500 text-sm" data-lang-key="update-time">更新于 2025-12-20 10:15</span>
+    </div>
+    
+    <!-- 文章标题 -->
+    <div class="mb-8 fade-in" style="animation-delay: 0.1s">
+      <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark leading-tight" id="article-title">
+        地产大亨王天宇逆风翻盘，成功并购林氏集团，业界惊呼 “商业传奇”
+      </h2>
+    </div>
+    
+    <!-- 作者信息 -->
+    <div class="mb-8 flex items-center text-gray-600 fade-in" style="animation-delay: 0.2s">
+      <span class="font-medium" data-lang-key="reporter">本报记者 李然</span>
+      <span class="mx-2">|</span>
+      <span data-lang-key="reading-time">阅读时间：约 5 分钟</span>
+    </div>
+    
+    <!-- 分享按钮 -->
+    <div class="flex space-x-4 mb-8 fade-in" style="animation-delay: 0.3s">
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-weibo text-red-500 mr-2"></i>
+        <span data-lang-key="weibo">微博</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-wechat text-green-500 mr-2"></i>
+        <span data-lang-key="wechat">微信</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-share-alt text-gray-600 mr-2"></i>
+        <span data-lang-key="share">分享</span>
+      </button>
+    </div>
+    
+    <!-- 文章正文 -->
+    <article class="max-w-3xl mx-auto text-lg">
+      <!-- 新增文章图片 -->
+      <div class="mb-8 fade-in" style="animation-delay: 0.4s">
+        <img src="新闻王天宇.jpg" alt="王天宇并购林氏集团签约仪式" class="w-full h-auto rounded-lg shadow-md">
+        <p class="text-center text-gray-500 text-sm mt-2" data-lang-key="image-caption">王天宇在并购签约仪式上接受媒体采访（本报记者 摄）</p>
+      </div>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.5s" data-lang-key="paragraph1">
+        昨日，深陷债务危机数月的地产大亨王天宇正式宣布，其旗下天宇集团已完成对老牌房企林氏集团的全面并购，涉及交易金额高达 12 亿元。这一消息震惊整个地产行业 —— 要知道，三个月前，王天宇还因在澳门豪赌亏损近 2000 万元的传闻濒临破产，如今却以 “蛇吞象” 的姿态拿下林氏集团，堪称年度最戏剧性的商业翻盘。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.6s" data-lang-key="paragraph2">
+        据公开资料显示，林氏集团曾是本市地产行业的标杆企业，创始人林致远深耕行业二十余年，旗下拥有多个核心地段的楼盘项目。但今年 9 月以来，林氏集团突然陷入资金链危机，多个项目停工，债务违约消息不断传出，直至 11 月正式进入破产重组程序。而天宇集团此时突然出手，以低价收购林氏集团全部核心资产及债务，包括 3 个在建高端楼盘、2 块黄金地块以及相关人脉资源。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.7s" data-lang-key="paragraph3">
+        在昨日的并购签约仪式上，王天宇身着高定西装，神采奕奕地接受媒体采访。谈及此次并购，他将其归功于 “一次关键的博弈”：“在行业低谷期，机遇与风险并存。我和林氏集团的管理层经过多轮沟通，最终达成了双赢的合作。这不仅是资金的整合，更是资源与战略的契合。” 当被问及此前的债务危机时，王天宇轻描淡写地回应：“商场如战场，谁都有遇到困境的时候，重要的是抓住翻盘的机会。”
+      </p>
+      
+      <div class="bg-gray-100 p-5 rounded-lg my-8 fade-in" style="animation-delay: 0.8s">
+        <p class="italic text-gray-700 border-l-4 border-primary pl-4" data-lang-key="quote">
+          “在行业低谷期，机遇与风险并存。我和林氏集团的管理层经过多轮沟通，最终达成了双赢的合作。这不仅是资金的整合，更是资源与战略的契合。”
+          <span class="block mt-2 text-right font-medium" data-lang-key="quote-author">—— 天宇集团董事长 王天宇</span>
+        </p>
+      </div>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.9s" data-lang-key="paragraph4">
+        业界对此次并购反应不一。有专家认为，王天宇此次并购堪称 “教科书级别的抄底”，林氏集团的核心资产一旦盘活，将让天宇集团的市场份额跃升至行业前三。但也有不少人提出质疑，认为天宇集团本身资金状况并不充裕，此次并购的资金来源仍有待核实，且林氏集团的债务问题复杂，后续整合难度不小。“王天宇向来敢赌，这次他赌赢了，但未来能否消化这块‘大蛋糕’，还需要时间检验。” 一位不愿具名的地产行业高管表示。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.0s" data-lang-key="paragraph5">
+        据悉，并购完成后，王天宇将担任新集团的董事长兼 CEO，林氏集团原有的核心业务团队将被保留。王天宇在仪式上承诺，未来将加大在高端住宅和商业地产领域的投入，追求 “更多可能”，有望重塑本市地产行业的格局。
+      </p>
+    </article>
+    
+    <!-- 相关新闻推荐 -->
+    <section class="mt-16 max-w-5xl mx-auto">
+      <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-gray-200 pb-2" data-lang-key="related-news">相关新闻</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="#" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="地产新闻.jpg" alt="地产新闻" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news1-title">2025年四季度本市房价环比上涨3.2%，专家称市场逐步回暖</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news1-date">2025/12/10</p>
+          </div>
+        </a>
+        
+        <!-- 修改后的相关新闻 -->
+        <a href="302新闻林致远.html" target="_blank" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="新闻林致远.jpg" alt="林致远自杀真相相关报道" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news2-title">林致远自杀真相再引热议，知情人爆 “恶意并购” 黑幕，王天宇发家史遭质疑</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news2-date">2025/12/18</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-primary text-white mt-16">
+    <div class="container mx-auto px-4 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4" id="footer-title">都市晚报</h4>
+          <p class="text-gray-300 text-sm" data-lang-key="footer-desc">
+            创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。
+          </p>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="navigation">栏目导航</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="important-news">要闻</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="depth">深度</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="comments">评论</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="finance">财经</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="culture">文化</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="contact">联系我们</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><i class="fa fa-envelope-o mr-2"></i>contact@citynews.com</li>
+            <li><i class="fa fa-phone mr-2"></i>010-12345678</li>
+            <li><i class="fa fa-map-marker mr-2"></i><span data-lang-key="address">北京市朝阳区新闻大厦</span></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="follow-us">关注我们</h5>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-wechat text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-twitter text-xl"></i>
+            </a>
+          </div>
+          <p class="mt-4 text-gray-300 text-sm" data-lang-key="download-app">扫描二维码下载客户端</p>
+          <div class="text-center mt-6">
+            <img src="二维码.jpg" alt="二维码" class="w-32 h-32 mx-auto object-contain" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-white/20 mt-8 pt-6 text-center text-gray-400 text-sm">
+        <p data-lang-key="copyright">© 2025 都市晚报 版权所有 | 京ICP备12345678号</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 返回顶部按钮 -->
+  <button id="backToTop" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-secondary">
+    <i class="fa fa-arrow-up"></i>
+  </button>
+
+  <script>
+    // 导航栏滚动效果
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('py-2', 'shadow-lg');
+        navbar.classList.remove('py-3', 'shadow-md');
+      } else {
+        navbar.classList.add('py-3', 'shadow-md');
+        navbar.classList.remove('py-2', 'shadow-lg');
+      }
+    });
+    
+    // 返回顶部按钮
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'invisible');
+        backToTopBtn.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopBtn.classList.add('opacity-0', 'invisible');
+        backToTopBtn.classList.remove('opacity-100', 'visible');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // 多语言支持
+    const translations = {
+      'zh': {
+        'site-title': '都市晚报',
+        'current-date': '2025年12月20日',
+        'current-day': '星期六',
+        'mobile-date': '2025年12月20日 星期六',
+        'home': '首页',
+        'domestic': '国内',
+        'international': '国际',
+        'finance': '财经',
+        'tech': '科技',
+        'entertainment': '文娱',
+        'focus-news': '焦点新闻',
+        'update-time': '更新于 2025-12-20 10:15',
+        'article-title': '地产大亨王天宇逆风翻盘，成功并购林氏集团，业界惊呼 “商业传奇”',
+        'reporter': '本报记者 李然',
+        'reading-time': '阅读时间：约 5 分钟',
+        'weibo': '微博',
+        'wechat': '微信',
+        'share': '分享',
+        'paragraph1': '昨日，深陷债务危机数月的地产大亨王天宇正式宣布，其旗下天宇集团已完成对老牌房企林氏集团的全面并购，涉及交易金额高达 12 亿元。这一消息震惊整个地产行业 —— 要知道，三个月前，王天宇还因在澳门豪赌亏损近 2000 万元的传闻濒临破产，如今却以 “蛇吞象” 的姿态拿下林氏集团，堪称年度最戏剧性的商业翻盘。',
+        'paragraph2': '据公开资料显示，林氏集团曾是本市地产行业的标杆企业，创始人林致远深耕行业二十余年，旗下拥有多个核心地段的楼盘项目。但今年 9 月以来，林氏集团突然陷入资金链危机，多个项目停工，债务违约消息不断传出，直至 11 月正式进入破产重组程序。而天宇集团此时突然出手，以低价收购林氏集团全部核心资产及债务，包括 3 个在建高端楼盘、2 块黄金地块以及相关人脉资源。',
+        'paragraph3': '在昨日的并购签约仪式上，王天宇身着高定西装，神采奕奕地接受媒体采访。谈及此次并购，他将其归功于 “一次关键的博弈”：“在行业低谷期，机遇与风险并存。我和林氏集团的管理层经过多轮沟通，最终达成了双赢的合作。这不仅是资金的整合，更是资源与战略的契合。” 当被问及此前的债务危机时，王天宇轻描淡写地回应：“商场如战场，谁都有遇到困境的时候，重要的是抓住翻盘的机会。”',
+        'paragraph4': '业界对此次并购反应不一。有专家认为，王天宇此次并购堪称 “教科书级别的抄底”，林氏集团的核心资产一旦盘活，将让天宇集团的市场份额跃升至行业前三。但也有不少人提出质疑，认为天宇集团本身资金状况并不充裕，此次并购的资金来源仍有待核实，且林氏集团的债务问题复杂，后续整合难度不小。“王天宇向来敢赌，这次他赌赢了，但未来能否消化这块‘大蛋糕’，还需要时间检验。” 一位不愿具名的地产行业高管表示。',
+        'paragraph5': '据悉，并购完成后，王天宇将担任新集团的董事长兼 CEO，林氏集团原有的核心业务团队将被保留。王天宇在仪式上承诺，未来将加大在高端住宅和商业地产领域的投入，追求 “更多可能”，有望重塑本市地产行业的格局。',
+        'quote': '“在行业低谷期，机遇与风险并存。我和林氏集团的管理层经过多轮沟通，最终达成了双赢的合作。这不仅是资金的整合，更是资源与战略的契合。”',
+        'quote-author': '—— 天宇集团董事长 王天宇',
+        'image-caption': '王天宇在并购签约仪式上接受媒体采访（本报记者 摄）',
+        'related-news': '相关新闻',
+        'related-news1-title': '2025年四季度本市房价环比上涨3.2%，专家称市场逐步回暖',
+        'related-news1-date': '2025/12/10',
+        'related-news2-title': '林致远自杀真相再引热议，知情人爆 “恶意并购” 黑幕，王天宇发家史遭质疑',
+        'related-news2-date': '2025/12/18',
+        'footer-title': '都市晚报',
+        'footer-desc': '创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。',
+        'navigation': '栏目导航',
+        'important-news': '要闻',
+        'depth': '深度',
+        'comments': '评论',
+        'culture': '文化',
+        'contact': '联系我们',
+        'address': '北京市朝阳区新闻大厦',
+        'follow-us': '关注我们',
+        'download-app': '扫描二维码下载客户端',
+        'copyright': '© 2025 都市晚报 版权所有 | 京ICP备12345678号'
+      },
+      'en': {
+        'site-title': 'City Evening News',
+        'current-date': 'December 20, 2025',
+        'current-day': 'Saturday',
+        'mobile-date': 'December 20, 2025 Saturday',
+        'home': 'Home',
+        'domestic': 'Domestic',
+        'international': 'International',
+        'finance': 'Finance',
+        'tech': 'Technology',
+        'entertainment': 'Entertainment',
+        'focus-news': 'Focus News',
+        'update-time': 'Updated 2025-12-20 10:15',
+        'article-title': 'Real Estate Tycoon Wang Tianyu Makes Dramatic Comeback, Successfully Acquires Lin Group, Industry Hails "Business Legend"',
+        'reporter': 'Reporter Li Ran',
+        'reading-time': 'Reading time: about 5 minutes',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Share',
+        'paragraph1': 'Yesterday, real estate tycoon Wang Tianyu, who has been mired in a debt crisis for months, officially announced that his Tianyu Group has completed the full acquisition of the established real estate developer Lin Group, involving a transaction volume of up to 1.2 billion yuan. The news shocked the entire real estate industry — just three months ago, Wang was on the verge of bankruptcy amid rumors of losing nearly 20 million yuan in high-stakes gambling in Macau, but now he has acquired Lin Group in a "snake swallowing elephant" move, which can be called the most dramatic business comeback of the year.',
+        'paragraph2': 'According to public records, Lin Group was once a benchmark enterprise in the city\'s real estate industry. Its founder Lin Zhiyuan has been deeply involved in the industry for more than 20 years, owning multiple real estate projects in prime locations. However, since September this year, Lin Group has suddenly fallen into a capital chain crisis, with multiple projects suspended and constant news of debt defaults, until it officially entered bankruptcy restructuring in November. At this critical juncture, Tianyu Group suddenly stepped in to acquire all of Lin Group\'s core assets and debts at a low price, including 3 under-construction high-end residential projects, 2 prime land parcels, and related network resources.',
+        'paragraph3': 'At yesterday\'s acquisition signing ceremony, Wang Tianyu, dressed in a custom-made suit, accepted media interviews with high spirits. When talking about the acquisition, he attributed it to "a crucial game of chess": "In the industry downturn, opportunities and risks coexist. After multiple rounds of communication with Lin Group\'s management, we finally reached a win-win cooperation. This is not only the integration of funds, but also the alignment of resources and strategies." When asked about the previous debt crisis, Wang responded casually: "Business is like a battlefield. Everyone encounters difficulties at some point; the important thing is to seize the opportunity to make a comeback."',
+        'paragraph4': 'The industry has mixed reactions to this acquisition. Some experts believe that Wang Tianyu\'s acquisition is a "textbook-level bottom-hunting." Once Lin Group\'s core assets are revitalized, Tianyu Group\'s market share will jump to the top three in the industry. However, many have raised doubts, arguing that Tianyu Group itself is not financially abundant, the source of funds for this acquisition remains to be verified, and Lin Group\'s debt problems are complex, making subsequent integration quite challenging. "Wang Tianyu has always been bold in taking risks. He won this bet, but whether he can digest this big piece of cake in the future remains to be seen," said an anonymous senior executive in the real estate industry.',
+        'paragraph5': 'It is reported that after the completion of the acquisition, Wang Tianyu will serve as the chairman and CEO of the new group, and Lin Group\'s original core business team will be retained. At the ceremony, Wang promised to increase investment in high-end residential and commercial real estate sectors in the future, pursue "more possibilities," and is expected to reshape the pattern of the city\'s real estate industry.',
+        'quote': '"In the industry downturn, opportunities and risks coexist. After multiple rounds of communication with Lin Group\'s management, we finally reached a win-win cooperation. This is not only the integration of funds, but also the alignment of resources and strategies."',
+        'quote-author': '—— Wang Tianyu, Chairman of Tianyu Group',
+        'image-caption': 'Wang Tianyu accepts media interviews at the acquisition signing ceremony (Photo by our reporter)',
+        'related-news': 'Related News',
+        'related-news1-title': 'City house prices rose 3.2% quarter-on-quarter in Q4 2025, experts say market is gradually recovering',
+        'related-news1-date': '2025/12/10',
+        'related-news2-title': 'Truth Behind Lin Zhiyuan\'s Suicide Sparks New Debate, Insider Exposes "Malicious Acquisition" Scandal, Wang Tianyu\'s Rise to Wealth Questioned',
+        'related-news2-date': '2025/12/18',
+        'footer-title': 'City Evening News',
+        'footer-desc': 'Founded in 1985, it is an influential comprehensive evening newspaper in China, known for its in-depth reporting and news commentary.',
+        'navigation': 'Navigation',
+        'important-news': 'Important News',
+        'depth': 'In-depth',
+        'comments': 'Comments',
+        'culture': 'Culture',
+        'contact': 'Contact Us',
+        'address': 'News Building, Chaoyang District, Beijing',
+        'follow-us': 'Follow Us',
+        'download-app': 'Scan QR code to download the app',
+        'copyright': '© 2025 City Evening News All Rights Reserved | Jing ICP No. 12345678'
+      },
+      'ja': {
+        'site-title': '都市晩報',
+        'current-date': '2025年12月20日',
+        'current-day': '土曜日',
+        'mobile-date': '2025年12月20日 土曜日',
+        'home': 'ホーム',
+        'domestic': '国内',
+        'international': '国際',
+        'finance': '金融',
+        'tech': 'テクノロジー',
+        'entertainment': 'エンタメ',
+        'focus-news': '注目ニュース',
+        'update-time': '更新 2025-12-20 10:15',
+        'article-title': '不動産大物王天宇、逆境からの逆転劇で林グループを買収、業界「ビジネス伝説」と驚愕',
+        'reporter': '本紙記者 李然',
+        'reading-time': '読了時間：約5分',
+        'weibo': '微博',
+        'wechat': 'WeChat',
+        'share': 'シェア',
+        'paragraph1': '昨日、数ヶ月間債務危機に陥っていた不動産大物王天宇が正式に発表し、傘下の天宇グループが老字號不動産開発会社・林グループの完全買収を完了したことを明らかにした。取引額はなんと12億元に上る。このニュースは不動産業界全体を震撼させた——3ヶ月前、王天宇はマカオでのハイステークスギャンブルで約2000万元を失ったとの噂で破産寸前に追い込まれていたが、今では「蛇が象を飲み込む」ほどの態度で林グループを手中にし、年間最もドラマチックなビジネス逆転劇と称えられている。',
+        'paragraph2': '公に開示された資料によると、林グループはかつて同市不動産業界のベンチマーク企業であり、創設者・林致远は20年以上業界に深耕し、複数の中心地の不動産プロジェクトを保有していた。しかし今年9月以降、林グループは突如資金繰り危機に陥り、複数のプロジェクトが建設中止となり、債務不履行のニュースが相次ぎ、11月には正式に破産再生手続きに入った。そんな節目に天宇グループが突如手を打ち、林グループの全ての中核資産と債務を安値で買収した。対象には建設中の高級住宅プロジェクト3件、黄金地段の土地2件、および関連する人脈資源が含まれる。',
+        'paragraph3': '昨日の買収契約締結式典では、王天宇はオーダーメイドのスーツを着用し、意気揚々とマスコミのインタビューに応じた。今回の買収については「決定的な駆け引き」と評価し：「業界の不況期には、チャンスとリスクが共存する。林グループの経営陣と多輪にわたる協議を経て、最終的にウィンウィンの協力関係を築けた。これは単なる資金の統合ではなく、資源と戦略の一致だ」と語った。此前の債務危機について問われると、王天宇はさりげなく「ビジネスは戦場のようなもの。誰にでも困難な時期がある。重要なのは逆転のチャンスを捉えることだ」と応じた。',
+        'paragraph4': '業界からは今回の買収に対して様々な反応が出ている。一部の専門家は「王天宇の今回の買収は教科書レベルの安値買いだ。林グループの中核資産が活性化すれば、天宇グループの市場シェアは業界トップ3に躍り出るだろう」と見込んでいる。一方、多くの人は疑問を呈し、「天宇グループ自体の財務状況は豊かではない。今回の買収資金の出所はまだ確認が必要であり、林グループの債務問題は複雑で、今後の統合は多大な難易度を伴う」と指摘している。「王天宇は昔から大胆にリスクを冒す性格だ。今回は勝ち残ったが、将来的にこの『大きなケーキ』を消化できるかは時間で証明されるだろう」と、匿名を希望する不動産業界の幹部は語った。',
+        'paragraph5': '買収完了後、王天宇は新グループの会長兼CEOを務め、林グループの元中核業務チームは留任することが明らかにされた。王天宇は式典で「今後、高級住宅と商業不動産分野への投資を増やし、『更多の可能性』を追求し、同市不動産業界の構図を再編成する見込みだ」と約束した。',
+        'quote': '「業界の不況期には、チャンスとリスクが共存する。林グループの経営陣と多輪にわたる協議を経て、最終的にウィンウィンの協力関係を築けた。これは単なる資金の統合ではなく、資源と戦略の一致だ。」',
+        'quote-author': '—— 天宇グループ会長 王天宇',
+        'image-caption': '王天宇氏が買収契約締結式典でマスコミのインタビューに応じている（本紙記者 撮影）',
+        'related-news': '関連ニュース',
+        'related-news1-title': '2025年第4四半期、市内住宅価格は前四半期比3.2%上昇、専門家は市場の回復が徐々に進んでいると指摘',
+        'related-news1-date': '2025/12/10',
+        'related-news2-title': '林致远自殺の真相が再び議論を呼び、内部関係者「悪質買収」の黒幕を暴露、王天宇の発家史が疑問視',
+        'related-news2-date': '2025/12/18',
+        'footer-title': '都市晩報',
+        'footer-desc': '1985年創刊。中国で広範な影響力を持つ総合夕刊紙で、深度報道とニュース評論で知られる。',
+        'navigation': 'ナビゲーション',
+        'important-news': '重要ニュース',
+        'depth': '深度',
+        'comments': '評論',
+        'culture': '文化',
+        'contact': 'お問い合わせ',
+        'address': '北京市朝陽区ニュースビル',
+        'follow-us': 'フォローする',
+        'download-app': 'QRコードをスキャンしてアプリをダウンロード',
+        'copyright': '© 2025 都市晩報 版権所有 | 京ICP備12345678号'
+      },
+      'pt': {
+        'site-title': 'Jornal da Cidade',
+        'current-date': '20 de Dezembro de 2025',
+        'current-day': 'Sábado',
+        'mobile-date': '20 de Dezembro de 2025 Sábado',
+        'home': 'Início',
+        'domestic': 'Nacional',
+        'international': 'Internacional',
+        'finance': 'Finanças',
+        'tech': 'Tecnologia',
+        'entertainment': 'Entretenimento',
+        'focus-news': 'Notícias em Destaque',
+        'update-time': 'Atualizado 2025-12-20 10:15',
+        'article-title': 'Tycoon Imobiliário Wang Tianyu Faz Retorno Dramático, Adquire com Sucesso o Grupo Lin, Indústria Aclama "Lenda Empresarial"',
+        'reporter': 'Repórter Li Ran',
+        'reading-time': 'Tempo de leitura: cerca de 5 minutos',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Compartilhar',
+        'paragraph1': 'Ontem, o tycoon imobiliário Wang Tianyu, que esteve envolvido em uma crise de dívidas por meses, anunciou oficialmente que seu Grupo Tianyu completou a aquisição total do estabelecido desenvolvedor imobiliário Grupo Lin, envolvendo um volume de transação de até 1,2 bilhão de yuans. A notícia chocou toda a indústria imobiliária — há apenas três meses, Wang estava à beira da falência amid rumores de perder quase 20 milhões de yuans em jogos de azar de alto risco em Macau, mas agora adquiriu o Grupo Lin com uma postura de "cobra engolindo elefante", que pode ser chamada de retorno empresarial mais dramático do ano.',
+        'paragraph2': 'De acordo com registros públicos, o Grupo Lin já foi uma empresa de referência na indústria imobiliária da cidade. Seu fundador Lin Zhiyuan esteve profundamente envolvido na indústria por mais de 20 anos, possuindo múltiplos projetos imobiliários em locais privilegiados. No entanto, desde setembro deste ano, o Grupo Lin de repente caiu em uma crise de fluxo de caixa, com múltiplos projetos suspensos e notícias constantes de inadimplência, até que entrou oficialmente em processo de reestruturação judicial em novembro. Nesse momento crítico, o Grupo Tianyu de repente agiu, adquirindo todos os ativos centrais e dívidas do Grupo Lin por um preço baixo, incluindo 3 projetos residenciais de alto padrão em construção, 2 lotes de terra de valor excepcional e recursos de rede relacionados.',
+        'paragraph3': 'Na cerimônia de assinatura da aquisição ontem, Wang Tianyu, vestido com um terno sob medida, aceitou entrevistas da mídia com grande animação. Ao falar sobre a aquisição, ele atribuiu-a a "um jogo de xadrez crucial": "Em um período de recessão da indústria, oportunidades e riscos coexistem. Após múltiplas rodadas de comunicação com a diretoria do Grupo Lin, finalmente alcancemos uma cooperação win-win. Isso não é apenas a integração de fundos, mas também o alinhamento de recursos e estratégias." Quando perguntado sobre a crise de dívidas anterior, Wang respondeu descontraidamente: "Os negócios são como um campo de batalha. Todo mundo enfrenta dificuldades em algum momento; o importante é aproveitar a oportunidade de fazer um retorno."',
+        'paragraph4': 'A indústria tem reações mistas a essa aquisição. Alguns especialistas acreditam que a aquisição de Wang Tianyu é uma "oportunidade de baixo preço de nível de livro texto". Uma vez que os ativos centrais do Grupo Lin sejam revitalizados, a participação de mercado do Grupo Tianyu saltará para o top 3 da indústria. No entanto, muitos levantaram dúvidas, argumentando que o Grupo Tianyu em si não é financeiramente abundante, a origem dos fundos para esta aquisição ainda precisa ser verificada, e os problemas de dívida do Grupo Lin são complexos, tornando a integração subsequente bastante desafiadora. "Wang Tianyu sempre foi ousado em assumir riscos. Ele ganhou essa aposta, mas se conseguirá digerir esse grande pedaço de bolo no futuro ainda resta ser visto", disse um executivo sênior anônimo da indústria imobiliária.',
+        'paragraph5': 'Segundo informações, após a conclusão da aquisição, Wang Tianyu assumirá o cargo de presidente e CEO do novo grupo, e a equipe de negócios centrais original do Grupo Lin será mantida. Na cerimônia, Wang prometeu aumentar o investimento em setores de residências de alto padrão e imóveis comerciais no futuro, buscar "mais possibilidades" e espera redefinir o cenário da indústria imobiliária da cidade.',
+        'quote': '"Em um período de recessão da indústria, oportunidades e riscos coexistem. Após múltiplas rodadas de comunicação com a diretoria do Grupo Lin, finalmente alcancemos uma cooperação win-win. Isso não é apenas a integração de fundos, mas também o alinhamento de recursos e estratégias."',
+        'quote-author': '—— Wang Tianyu, Presidente do Grupo Tianyu',
+        'image-caption': 'Wang Tianyu aceita entrevistas da mídia na cerimônia de assinatura da aquisição (Foto por nosso repórter)',
+        'related-news': 'Notícias Relacionadas',
+        'related-news1-title': 'Preços dos imóveis na cidade subiram 3,2% no quarto trimestre de 2025 em relação ao trimestre anterior, especialistas dizem que o mercado está se recuperando gradualmente',
+        'related-news1-date': '2025/12/10',
+        'related-news2-title': 'Verdade Por Trás do Suicídio de Lin Zhiyuan Provoca Novo Debate, Insider Expõe Escândalo de "Aquisição Maliciosa", Ascensão de Wang Tianyu Questionada',
+        'related-news2-date': '2025/12/18',
+        'footer-title': 'Jornal da Cidade',
+        'footer-desc': 'Fundado em 1985, é um jornal vespertino abrangente influente na China, conhecido por sua reportagem aprofundada e comentário de notícias.',
+        'navigation': 'Navegação',
+        'important-news': 'Notícias Importantes',
+        'depth': 'Em Profundidade',
+        'comments': 'Comentários',
+        'culture': 'Cultura',
+        'contact': 'Contate-Nos',
+        'address': 'Edifício de Notícias, Distrito de Chaoyang, Pequim',
+        'follow-us': 'Siga-Nos',
+        'download-app': 'Escaneie o código QR para baixar o aplicativo',
+        'copyright': '© 2025 Jornal da Cidade Todos os Direitos Reservados | Jing ICP No. 12345678'
+      }
+    };
+
+    // 语言切换功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 设置默认语言为中文
+      let currentLang = 'zh';
+      updateLanguage(currentLang);
+      
+      // 为语言切换按钮添加事件监听器
+      document.querySelectorAll('[data-lang]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const lang = this.getAttribute('data-lang');
+          currentLang = lang;
+          updateLanguage(lang);
+          
+          // 更新当前语言显示
+          document.getElementById('current-lang').textContent = 
+            lang === 'zh' ? '中文' : 
+            lang === 'en' ? 'English' : 
+            lang === 'ja' ? '日本語' : 
+            'Português';
+        });
+      });
+    });
+
+    function updateLanguage(lang) {
+      // 更新所有带有data-lang-key属性的元素
+      document.querySelectorAll('[data-lang-key]').forEach(element => {
+        const key = element.getAttribute('data-lang-key');
+        if (translations[lang] && translations[lang][key]) {
+          element.textContent = translations[lang][key];
+        }
+      });
+      
+      // 更新特殊元素
+      if (translations[lang] && translations[lang]['site-title']) {
+        document.getElementById('site-title').textContent = translations[lang]['site-title'];
+        document.getElementById('footer-title').textContent = translations[lang]['site-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['article-title']) {
+        document.getElementById('article-title').textContent = translations[lang]['article-title'];
+        document.title = translations[lang]['article-title'] + ' - ' + translations[lang]['site-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-date']) {
+        document.getElementById('current-date').textContent = translations[lang]['current-date'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-day']) {
+        document.getElementById('current-day').textContent = translations[lang]['current-day'];
+      }
+      
+      if (translations[lang] && translations[lang]['mobile-date']) {
+        document.getElementById('mobile-date').textContent = translations[lang]['mobile-date'];
+      }
+    }
+  </script>
+</body>
+</html>

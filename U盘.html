@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOM酒店 - 潘多拉的盒子</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0412 0%, #150824 50%, #1c0a2a 100%);
+            color: #e0d4f0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.7;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(100, 40, 160, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, rgba(140, 60, 200, 0.15) 0%, transparent 25%),
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(80, 30, 130, 0.05) 3px, rgba(80, 30, 130, 0.05) 4px);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: rgba(18, 8, 28, 0.9);
+            border-radius: 20px;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(120, 60, 180, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #6a0dad, #8a2be2, #6a0dad);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+        
+        .language-switcher {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+        
+        .lang-btn {
+            background: rgba(80, 25, 130, 0.8);
+            color: #d8c8ff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(160, 100, 220, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .lang-btn:hover {
+            background: rgba(100, 50, 160, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+        
+        .lang-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: rgba(18, 8, 28, 0.97);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(160, 100, 220, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            min-width: 150px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .lang-option {
+            padding: 12px 20px;
+            color: #e0d4f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(120, 60, 180, 0.2);
+        }
+        
+        .lang-option:last-child {
+            border-bottom: none;
+        }
+        
+        .lang-option:hover {
+            background: rgba(120, 60, 180, 0.5);
+        }
+        
+        .lang-option.active {
+            background: rgba(160, 100, 220, 0.4);
+            font-weight: bold;
+        }
+        
+        .content {
+            margin: 30px 0;
+            font-size: 1.15rem;
+        }
+        
+        .content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        
+        .quote {
+            font-style: italic;
+            color: #c9a8ff;
+            border-left: 3px solid #8a2be2;
+            padding-left: 20px;
+            margin: 25px 0 25px 15px;
+            font-size: 1.2rem;
+            position: relative;
+        }
+        
+        .quote::before {
+            content: '"';
+            font-size: 2.5rem;
+            color: rgba(138, 43, 226, 0.3);
+            position: absolute;
+            left: -10px;
+            top: -15px;
+        }
+        
+        .time-marker {
+            text-align: center;
+            margin: 40px 0;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .time-marker:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #8a2be2, transparent);
+        }
+        
+        .time-marker h2 {
+            color: #d4b3ff;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+        
+        .achievement {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(93, 14, 163, 0.15));
+            border-radius: 15px;
+            padding: 25px;
+            margin: 40px 0;
+            text-align: center;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            box-shadow: 
+                0 0 25px rgba(138, 43, 226, 0.2),
+                inset 0 0 20px rgba(138, 43, 226, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .achievement::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        
+        .achievement h3 {
+            color: #ffd700;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        }
+        
+        .final-message {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(160, 100, 220, 0.2);
+        }
+        
+        .hidden-ending {
+            display: inline-block;
+            background: linear-gradient(135deg, #6a0dad, #8a2be2);
+            color: white;
+            padding: 16px 45px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 
+                0 5px 20px rgba(106, 13, 173, 0.5),
+                0 0 15px rgba(138, 43, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hidden-ending::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .hidden-ending:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 10px 25px rgba(106, 13, 173, 0.7),
+                0 0 20px rgba(138, 43, 226, 0.5);
+            background: linear-gradient(135deg, #7a1dbd, #9a3bf2);
+        }
+        
+        .hidden-ending:hover::before {
+            left: 100%;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #a080c0;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(160, 100, 220, 0.2);
+        }
+        
+        .highlight {
+            color: #ff6b9d;
+            font-weight: bold;
+        }
+        
+        .important-note {
+            background: rgba(200, 60, 100, 0.1);
+            border-left: 4px solid #ff6b9d;
+            padding: 15px 20px;
+            margin: 25px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .language-switcher {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: center;
+            }
+            
+            .lang-options {
+                left: 0;
+                right: auto;
+                width: 100%;
+            }
+            
+            .content {
+                font-size: 1.05rem;
+            }
+            
+            .time-marker h2 {
+                font-size: 1.7rem;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .top-margin {
+            margin-top: 60px;
+        }
+        
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #8a2be2, transparent);
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-switcher">
+            <button class="lang-btn" id="langBtn">
+                <i class="fas fa-globe"></i>
+                <span id="currentLang">中文</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="lang-options" id="langOptions">
+                <div class="lang-option active" data-lang="zh">中文</div>
+                <div class="lang-option" data-lang="en">English</div>
+                <div class="lang-option" data-lang="ja">日本語</div>
+                <div class="lang-option" data-lang="pt">Português</div>
+            </div>
+        </div>
+        
+        <main class="content top-margin">
+            <section class="fade-in">
+                <p>你拿起那个U盘。</p>
+            </section>
+            
+            <section class="fade-in">
+                <p>RIKI叹了口气：</p>
+                <p class="quote">"你选了最危险的那个。"</p>
+                <p>他指向U盘：</p>
+                <p class="quote">"里面有这座酒店所有的秘密——过去三百年的所有献祭记录、契约的完整内容、它的真实存在形式、以及……如何找到它。"</p>
+                <p class="quote">"你可以把这些信息发布出去。让全世界都知道R∞M酒店的真相，让警方介入，让媒体曝光，让这座酒店彻底关闭。"</p>
+                <p class="quote">"但你要明白——"</p>
+                <p>他的表情变得严肃：</p>
+                <p class="quote">"一旦酒店被摧毁，它会失去'进食'的场所。它会饥饿，会愤怒，会……失控。"</p>
+                <p class="quote">"它可能会在整座城市随机选择目标，不再有筛选，不再有引导，只有无差别的吞噬。"</p>
+                <p class="quote">"你会把一个可控的恶魔，变成一场不可控的灾难。"</p>
+                <p class="quote">"但也有可能——" 他顿了顿，"也有可能，当足够多的人知道它的存在、理解它的本质时，它会失去力量。毕竟，它依靠的是'秘密'和'孤独'。如果所有人都知道它的存在，也许……"</p>
+                <p class="quote">"也许它会消失。"</p>
+                <p class="quote">"或者也许，它会进化成更可怕的东西。"</p>
+                <p class="quote">"我不知道。三百年来，从来没有人选过这条路。"</p>
+                <p>你握紧了U盘。</p>
+            </section>
+            
+            <div class="section-divider"></div>
+            
+            <div class="time-marker fade-in">
+                <h2>两周后</h2>
+            </div>
+            
+            <section class="fade-in">
+                <p>你将U盘中的所有内容发布在互联网上。</p>
+                <p>最开始，没有人相信。人们以为这是某种ARG游戏，某个营销策划，某场行为艺术。</p>
+                <p>但随着越来越多的证据被挖掘出来——失踪人口的记录、酒店的异常能源消耗、那些"退房"后性情大变的住客——媒体开始关注，警方开始介入。</p>
+                <p>R∞M酒店被查封。</p>
+            </section>
+            
+            <div class="time-marker fade-in">
+                <h2>一个月后</h2>
+            </div>
+            
+            <section class="fade-in">
+                <p>酒店被拆除的那天，整座城市的天空变成了暗红色。</p>
+                <p>没有警报，没有预兆，只有一种难以名状的压抑感突然笼罩了所有人。</p>
+                <p>那天晚上，城市里发生了四十七起不明原因的自杀案件。</p>
+                <p>那一周内，精神病院的收治人数暴增了三倍。</p>
+                <p>那个月，失踪人口数量达到了历史峰值。</p>
+                <p>没有人能证明这些和R∞M酒店的消失有关。</p>
+                <p class="important-note">但你知道。</p>
+                <p>你每天晚上都能"听到"那个声音——不是通过耳朵，而是通过某种更深层的感知。</p>
+                <p>它在哭泣。</p>
+                <p>或者说，它在尖叫。</p>
+                <p>它失去了它的"餐桌"，失去了它精心布置的"厨房"。现在它饥饿地游荡在城市的每个角落，随机地、本能地、绝望地寻找食物。</p>
+                <p class="highlight">它变成了更可怕的东西。</p>
+            </section>
+            
+            <section class="fade-in">
+                <p>但也有一些奇怪的现象。</p>
+                <p>越来越多的人开始在社交媒体上分享自己的"感知"——他们说能感觉到某种存在，能"听到"某种声音。</p>
+                <p>心理学家称之为"集体心理暗示"。</p>
+                <p>玄学爱好者称之为"灵性觉醒"。</p>
+                <p>而你知道，这是它正在被理解。</p>
+                <p>随着越来越多的人知道它的存在、谈论它的本质、试图理解它的形态……</p>
+                <p>它正在改变。</p>
+                <p>不再是那个隐藏在黑暗中、依靠秘密进食的"情饕"，而是某种……新的东西。</p>
+                <p>也许更危险。</p>
+                <p>也许更温和。</p>
+                <p>也许……</p>
+            </section>
+            
+            <div class="time-marker fade-in">
+                <h2>一年后</h2>
+            </div>
+            
+            <section class="fade-in">
+                <p>城市恢复了平静。那些异常现象逐渐减少，仿佛一切只是一场集体癔症。</p>
+                <p>但你知道它还在。</p>
+                <p>只是它已经不再是原来的它了。</p>
+                <p>你不知道这个选择是对是错。</p>
+                <p>你只是把一个古老的秘密，变成了一个现代的谜题。</p>
+                <p>而故事……还在继续。</p>
+            </section>
+            
+            <div class="achievement fade-in">
+                <h3>【达成结局：潘多拉的盒子】</h3>
+            </div>
+            
+            <div class="final-message fade-in">
+                <button class="hidden-ending" id="hiddenEnding">
+                    新纪元的开始
+                </button>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© ROOM酒店契约故事 | 本故事纯属虚构</p>
+        </footer>
+    </div>
+
+    <script>
+        // 多语言文本对象
+        const translations = {
+            zh: {
+                content1: "你拿起那个U盘。",
+                content2: "RIKI叹了口气：",
+                quote1: "\"你选了最危险的那个。\"",
+                content3: "他指向U盘：",
+                quote2: "\"里面有这座酒店所有的秘密——过去三百年的所有献祭记录、契约的完整内容、它的真实存在形式、以及……如何找到它。\"",
+                quote3: "\"你可以把这些信息发布出去。让全世界都知道R∞M酒店的真相，让警方介入，让媒体曝光，让这座酒店彻底关闭。\"",
+                quote4: "\"但你要明白——\"",
+                content4: "他的表情变得严肃：",
+                quote5: "\"一旦酒店被摧毁，它会失去'进食'的场所。它会饥饿，会愤怒，会……失控。\"",
+                quote6: "\"它可能会在整座城市随机选择目标，不再有筛选，不再有引导，只有无差别的吞噬。\"",
+                quote7: "\"你会把一个可控的恶魔，变成一场不可控的灾难。\"",
+                quote8: "\"但也有可能——\" 他顿了顿，\"也有可能，当足够多的人知道它的存在、理解它的本质时，它会失去力量。毕竟，它依靠的是'秘密'和'孤独'。如果所有人都知道它的存在，也许……\"",
+                quote9: "\"也许它会消失。\"",
+                quote10: "\"或者也许，它会进化成更可怕的东西。\"",
+                quote11: "\"我不知道。三百年来，从来没有人选过这条路。\"",
+                content5: "你握紧了U盘。",
+                time1: "两周后",
+                content6: "你将U盘中的所有内容发布在互联网上。",
+                content7: "最开始，没有人相信。人们以为这是某种ARG游戏，某个营销策划，某场行为艺术。",
+                content8: "但随着越来越多的证据被挖掘出来——失踪人口的记录、酒店的异常能源消耗、那些\"退房\"后性情大变的住客——媒体开始关注，警方开始介入。",
+                content9: "R∞M酒店被查封。",
+                time2: "一个月后",
+                content10: "酒店被拆除的那天，整座城市的天空变成了暗红色。",
+                content11: "没有警报，没有预兆，只有一种难以名状的压抑感突然笼罩了所有人。",
+                content12: "那天晚上，城市里发生了四十七起不明原因的自杀案件。",
+                content13: "那一周内，精神病院的收治人数暴增了三倍。",
+                content14: "那个月，失踪人口数量达到了历史峰值。",
+                content15: "没有人能证明这些和R∞M酒店的消失有关。",
+                importantNote: "但你知道。",
+                content16: "你每天晚上都能\"听到\"那个声音——不是通过耳朵，而是通过某种更深层的感知。",
+                content17: "它在哭泣。",
+                content18: "或者说，它在尖叫。",
+                content19: "它失去了它的\"餐桌\"，失去了它精心布置的\"厨房\"。现在它饥饿地游荡在城市的每个角落，随机地、本能地、绝望地寻找食物。",
+                highlight: "它变成了更可怕的东西。",
+                content20: "但也有一些奇怪的现象。",
+                content21: "越来越多的人开始在社交媒体上分享自己的\"感知\"——他们说能感觉到某种存在，能\"听到\"某种声音。",
+                content22: "心理学家称之为\"集体心理暗示\"。",
+                content23: "玄学爱好者称之为\"灵性觉醒\"。",
+                content24: "而你知道，这是它正在被理解。",
+                content25: "随着越来越多的人知道它的存在、谈论它的本质、试图理解它的形态……",
+                content26: "它正在改变。",
+                content27: "不再是那个隐藏在黑暗中、依靠秘密进食的\"情饕\"，而是某种……新的东西。",
+                content28: "也许更危险。",
+                content29: "也许更温和。",
+                content30: "也许……",
+                time3: "一年后",
+                content31: "城市恢复了平静。那些异常现象逐渐减少，仿佛一切只是一场集体癔症。",
+                content32: "但你知道它还在。",
+                content33: "只是它已经不再是原来的它了。",
+                content34: "你不知道这个选择是对是错。",
+                content35: "你只是把一个古老的秘密，变成了一个现代的谜题。",
+                content36: "而故事……还在继续。",
+                achievement: "【达成结局：潘多拉的盒子】",
+                buttonText: "新纪元的开始",
+                footer: "© ROOM酒店契约故事 | 本故事纯属虚构"
+            },
+            en: {
+                content1: "You pick up the USB drive.",
+                content2: "RIKI sighs:",
+                quote1: "\"You chose the most dangerous one.\"",
+                content3: "He points to the USB drive:",
+                quote2: "\"It contains all the secrets of this hotel—all the sacrificial records from the past three hundred years, the complete contents of the contract, its true form of existence, and... how to find it.\"",
+                quote3: "\"You can release this information to the public. Let the whole world know the truth about R∞M Hotel, get the police involved, expose it through the media, and shut this hotel down completely.\"",
+                quote4: "\"But you must understand—\"",
+                content4: "His expression becomes serious:",
+                quote5: "\"Once the hotel is destroyed, it will lose its 'feeding' ground. It will become hungry, angry, and... lose control.\"",
+                quote6: "\"It might randomly select targets throughout the entire city, no longer screening, no longer guiding, only indiscriminately devouring.\"",
+                quote7: "\"You will turn a controllable demon into an uncontrollable disaster.\"",
+                quote8: "\"But there's also a possibility—\" he pauses, \"it's also possible that when enough people know of its existence and understand its nature, it will lose its power. After all, it relies on 'secrets' and 'loneliness'. If everyone knows it exists, perhaps...\"",
+                quote9: "\"Perhaps it will disappear.\"",
+                quote10: "\"Or perhaps, it will evolve into something even more terrifying.\"",
+                quote11: "\"I don't know. In three hundred years, no one has ever chosen this path.\"",
+                content5: "You grip the USB drive tightly.",
+                time1: "Two weeks later",
+                content6: "You release all the contents of the USB drive onto the internet.",
+                content7: "At first, no one believes it. People think it's some kind of ARG game, a marketing ploy, a performance art piece.",
+                content8: "But as more and more evidence is unearthed—records of missing persons, the hotel's abnormal energy consumption, guests who changed drastically after 'checking out'—the media begins to pay attention, the police get involved.",
+                content9: "R∞M Hotel is sealed off.",
+                time2: "One month later",
+                content10: "The day the hotel is demolished, the entire city's sky turns dark red.",
+                content11: "No alarms, no warnings, just an indescribable sense of oppression suddenly enveloping everyone.",
+                content12: "That night, forty-seven unexplained suicide cases occur in the city.",
+                content13: "Within that week, admissions to psychiatric hospitals triple.",
+                content14: "That month, the number of missing persons reaches a historical peak.",
+                content15: "No one can prove these are related to the disappearance of R∞M Hotel.",
+                importantNote: "But you know.",
+                content16: "Every night you can 'hear' that voice—not through your ears, but through some deeper perception.",
+                content17: "It is weeping.",
+                content18: "Or rather, it is screaming.",
+                content19: "It lost its 'dining table', its carefully arranged 'kitchen'. Now it wanders hungry through every corner of the city, randomly, instinctively, desperately searching for food.",
+                highlight: "It has become something even more terrifying.",
+                content20: "But there are also strange phenomena.",
+                content21: "More and more people begin sharing their 'perceptions' on social media—they say they can feel some presence, can 'hear' some voice.",
+                content22: "Psychologists call it 'collective psychological suggestion'.",
+                content23: "Metaphysics enthusiasts call it 'spiritual awakening'.",
+                content24: "But you know, this is it being understood.",
+                content25: "As more and more people know of its existence, discuss its nature, try to understand its form...",
+                content26: "It is changing.",
+                content27: "No longer the 'Emotion Devourer' that hides in darkness, feeding on secrets, but something... new.",
+                content28: "Perhaps more dangerous.",
+                content29: "Perhaps more gentle.",
+                content30: "Perhaps...",
+                time3: "One year later",
+                content31: "The city returns to calm. Those abnormal phenomena gradually decrease, as if everything was just a collective hysteria.",
+                content32: "But you know it's still there.",
+                content33: "It's just not what it used to be anymore.",
+                content34: "You don't know if this choice was right or wrong.",
+                content35: "You merely turned an ancient secret into a modern enigma.",
+                content36: "And the story... continues.",
+                achievement: "【Achievement Unlocked: Pandora's Box】",
+                buttonText: "Beginning of a New Era",
+                footer: "© ROOM Hotel Contract Story | This story is fictional"
+            },
+            ja: {
+                content1: "あなたはそのUSBドライブを手に取る。",
+                content2: "RIKIはため息をつく：",
+                quote1: "\"最も危険なものを選んだな。\"",
+                content3: "彼はUSBドライブを指さす：",
+                quote2: "\"中にはこのホテルのすべての秘密が入っている——過去三百年分のすべての生贄の記録、契約の完全な内容、その真の存在形態、そして……それを見つける方法だ。\"",
+                quote3: "\"この情報を公開することができる。全世界にR∞Mホテルの真実を知らせ、警察を介入させ、メディアに暴露させ、このホテルを完全に閉鎖させられる。\"",
+                quote4: "\"だが、理解しておけ——\"",
+                content4: "彼の表情は真剣になる：",
+                quote5: "\"ホテルが破壊されれば、それは'食事'の場所を失う。空腹になり、怒り、そして……制御不能になる。\"",
+                quote6: "\"街中でランダムに標的を選ぶかもしれない。選別も導きもなく、ただ無差別に飲み込むだけだ。\"",
+                quote7: "\"君は制御可能な悪魔を、制御不能な災害に変えることになる。\"",
+                quote8: "\"しかし可能性はある——\"彼は一呼吸置き、\"十分な人々がその存在を知り、本質を理解したとき、それは力を失うかもしれない。結局のところ、それは'秘密'と'孤独'に依存している。誰もがその存在を知れば、おそらく……\"",
+                quote9: "\"おそらく消滅するだろう。\"",
+                quote10: "\"あるいは、もっと恐ろしい何かに進化するかもしれない。\"",
+                quote11: "\"わからない。三百年間、誰もこの道を選んだ者はいない。\"",
+                content5: "あなたはUSBドライブを強く握りしめる。",
+                time1: "二週間後",
+                content6: "あなたはUSBドライブのすべての内容をインターネット上に公開する。",
+                content7: "最初は、誰も信じない。人々はこれをある種のARGゲームか、マーケティングの策略か、パフォーマンスアートだと思った。",
+                content8: "しかし、失踪者の記録、ホテルの異常なエネルギー消費量、'チェックアウト'後に性格が大きく変わった宿泊客など、次々と証拠が掘り起こされるにつれ、メディアが注目し始め、警察が介入する。",
+                content9: "R∞Mホテルは閉鎖される。",
+                time2: "一ヶ月後",
+                content10: "ホテルが取り壊された日、街全体の空が暗紅色に変わる。",
+                content11: "警報も前兆もなく、ただ言い表せない圧迫感が突然すべての人を包み込む。",
+                content12: "その夜、街で四十七件の原因不明の自殺事件が発生する。",
+                content13: "その週のうちに、精神病院の収容人数が三倍に急増する。",
+                content14: "その月、失踪者数が史上最高を記録する。",
+                content15: "誰もこれをR∞Mホテルの消失と関連づけて証明することはできない。",
+                importantNote: "しかしあなたは知っている。",
+                content16: "毎晩、あなたはあの声を'聞く'ことができる——耳を通してではなく、より深い知覚を通して。",
+                content17: "それは泣いている。",
+                content18: "というより、叫んでいる。",
+                content19: "それは'食卓'を失い、精巧に仕組まれた'厨房'を失った。今やそれは街の隅々まで飢えて彷徨い、ランダムに、本能的に、絶望的に食物を探している。",
+                highlight: "それはより恐ろしいものに変貌した。",
+                content20: "しかし、奇妙な現象もある。",
+                content21: "ソーシャルメディアで自身の'知覚'を共有する人が増えている——彼らは何かの存在を感じられると言い、ある声を'聞く'ことができると言う。",
+                content22: "心理学者はこれを'集団心理暗示'と呼ぶ。",
+                content23: "オカルト愛好家はこれを'霊的覚醒'と呼ぶ。",
+                content24: "しかしあなたは知っている、これはそれが理解されつつあるということだと。",
+                content25: "より多くの人々がその存在を知り、本質について語り、その形態を理解しようとするにつれ……",
+                content26: "それは変化している。",
+                content27: "もはや闇に潜み、秘密を糧とする'情饕'ではなく、何か……新しいものに。",
+                content28: "おそらくより危険なものに。",
+                content29: "おそらくより温和なものに。",
+                content30: "おそらく……",
+                time3: "一年後",
+                content31: "街は平静を取り戻す。異常現象は次第に減少し、すべてがただの集団ヒステリーだったかのようだ。",
+                content32: "しかしあなたは、それがまだ存在していることを知っている。",
+                content33: "ただ、もはや元のものではない。",
+                content34: "この選択が正しかったのか間違いだったのか、あなたにはわからない。",
+                content35: "あなたはただ、古い秘密を現代の謎に変えただけだ。",
+                content36: "そして物語は……まだ続く。",
+                achievement: "【実績解除：パンドラの箱】",
+                buttonText: "新たなる時代の始まり",
+                footer: "© ROOMホテル契約物語 | この物語はフィクションです"
+            },
+            pt: {
+                content1: "Você pega o pen drive.",
+                content2: "RIKI suspira:",
+                quote1: "\"Você escolheu o mais perigoso.\"",
+                content3: "Ele aponta para o pen drive:",
+                quote2: "\"Contém todos os segredos deste hotel — todos os registros de sacrifício dos últimos trezentos anos, o conteúdo completo do contrato, sua verdadeira forma de existência e... como encontrá-lo.\"",
+                quote3: "\"Você pode liberar essa informação para o público. Deixe o mundo inteiro saber a verdade sobre o Hotel R∞M, envolva a polícia, exponha pela mídia e feche este hotel completamente.\"",
+                quote4: "\"Mas você precisa entender—\"",
+                content4: "Sua expressão fica séria:",
+                quote5: "\"Uma vez que o hotel seja destruído, ele perderá seu local de 'alimentação'. Ficará faminto, furioso e... perderá o controle.\"",
+                quote6: "\"Pode selecionar alvos aleatoriamente por toda a cidade, sem mais triagem, sem mais orientação, apenas devorando indiscriminadamente.\"",
+                quote7: "\"Você transformará um demônio controlável em um desastre incontrolável.\"",
+                quote8: "\"Mas também há uma possibilidade—\" ele faz uma pausa, \"também é possível que, quando pessoas suficientes souberem de sua existência e entenderem sua natureza, ele perca seu poder. Afinal, ele depende de 'segredos' e 'solidão'. Se todos souberem que ele existe, talvez...\"",
+                quote9: "\"Talvez ele desapareça.\"",
+                quote10: "\"Ou talvez, ele evolua para algo ainda mais terrível.\"",
+                quote11: "\"Não sei. Em trezentos anos, ninguém jamais escolheu este caminho.\"",
+                content5: "Você segura firmemente o pen drive.",
+                time1: "Duas semanas depois",
+                content6: "Você libera todo o conteúdo do pen drive na internet.",
+                content7: "No início, ninguém acredita. As pessoas pensam que é algum tipo de jogo ARG, uma estratégia de marketing, uma peça de arte performática.",
+                content8: "Mas à medida que mais e mais evidências são desenterradas — registros de pessoas desaparecidas, consumo anormal de energia do hotel, hóspedes que mudaram drasticamente após o 'check-out' — a mídia começa a prestar atenção, a polícia se envolve.",
+                content9: "O Hotel R∞M é selado.",
+                time2: "Um mês depois",
+                content10: "No dia em que o hotel é demolido, o céu de toda a cidade fica vermelho escuro.",
+                content11: "Sem alarmes, sem avisos, apenas uma sensação indescritível de opressão de repente envolvendo a todos.",
+                content12: "Naquela noite, quarenta e sete casos inexplicáveis de suicídio ocorrem na cidade.",
+                content13: "Dentro daquela semana, as internações em hospitais psiquiátricos triplicam.",
+                content14: "Naquele mês, o número de pessoas desaparecidas atinge um pico histórico.",
+                content15: "Ninguém pode provar que isso está relacionado ao desaparecimento do Hotel R∞M.",
+                importantNote: "Mas você sabe.",
+                content16: "Todas as noites você consegue 'ouvir' aquela voz — não pelos ouvidos, mas através de alguma percepção mais profunda.",
+                content17: "Está chorando.",
+                content18: "Ou melhor, está gritando.",
+                content19: "Perdeu sua 'mesa de jantar', sua 'cozinha' cuidadosamente arranjada. Agora vagueia faminto por cada canto da cidade, aleatoriamente, instintivamente, desesperadamente procurando por comida.",
+                highlight: "Tornou-se algo ainda mais terrível.",
+                content20: "Mas também há fenômenos estranhos.",
+                content21: "Mais e mais pessoas começam a compartilhar suas 'percepções' nas redes sociais — dizem que conseguem sentir alguma presença, conseguem 'ouvir' alguma voz.",
+                content22: "Psicólogos chamam isso de 'sugestão psicológica coletiva'.",
+                content23: "Entusiastas do ocultismo chamam isso de 'despertar espiritual'.",
+                content24: "Mas você sabe, isso é ele sendo compreendido.",
+                content25: "À medida que mais e mais pessoas sabem de sua existência, discutem sua natureza, tentam entender sua forma...",
+                content26: "Ele está mudando.",
+                content27: "Não mais o 'Devorador de Emoções' que se esconde nas sombras, alimentando-se de segredos, mas algo... novo.",
+                content28: "Talvez mais perigoso.",
+                content29: "Talvez mais gentil.",
+                content30: "Talvez...",
+                time3: "Um ano depois",
+                content31: "A cidade retorna à calma. Aqueles fenômenos anormais gradualmente diminuem, como se tudo fosse apenas uma histeria coletiva.",
+                content32: "Mas você sabe que ele ainda está lá.",
+                content33: "Só não é mais o que costumava ser.",
+                content34: "Você não sabe se esta escolha foi certa ou errada.",
+                content35: "Você apenas transformou um segredo antigo em um enigma moderno.",
+                content36: "E a história... continua.",
+                achievement: "【Conquista Desbloqueada: Caixa de Pandora】",
+                buttonText: "Começo de uma Nova Era",
+                footer: "© História do Contrato do Hotel ROOM | Esta história é fictícia"
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'zh';
+
+        // DOM 元素
+        const langBtn = document.getElementById('langBtn');
+        const langOptions = document.getElementById('langOptions');
+        const currentLangText = document.getElementById('currentLang');
+        const hiddenEndingBtn = document.getElementById('hiddenEnding');
+        
+        // 语言切换功能
+        langBtn.addEventListener('click', () => {
+            langOptions.style.display = langOptions.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        // 选择语言
+        document.querySelectorAll('.lang-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.getAttribute('data-lang');
+                changeLanguage(lang);
+                
+                // 更新激活状态
+                document.querySelectorAll('.lang-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                option.classList.add('active');
+                
+                // 关闭选项
+                langOptions.style.display = 'none';
+            });
+        });
+        
+        // 点击外部关闭语言选项
+        document.addEventListener('click', (e) => {
+            if (!langBtn.contains(e.target) && !langOptions.contains(e.target)) {
+                langOptions.style.display = 'none';
+            }
+        });
+        
+        // 更改语言函数
+        function changeLanguage(lang) {
+            currentLang = lang;
+            currentLangText.textContent = getLangName(lang);
+            
+            const t = translations[lang];
+            
+            // 获取所有需要替换的元素
+            const paragraphs = document.querySelectorAll('.content section p:not(.quote):not(.important-note):not(.highlight)');
+            const quotes = document.querySelectorAll('.content section .quote');
+            const timeMarkers = document.querySelectorAll('.time-marker h2');
+            const importantNote = document.querySelector('.important-note');
+            const highlight = document.querySelector('.highlight');
+            const achievementTitle = document.querySelector('.achievement h3');
+            const button = document.getElementById('hiddenEnding');
+            const footer = document.querySelector('footer p');
+            
+            // 按顺序替换段落文本
+            if (paragraphs.length >= 36) {
+                for (let i = 0; i < 36; i++) {
+                    const key = `content${i + 1}`;
+                    if (t[key]) {
+                        paragraphs[i].textContent = t[key];
+                    }
+                }
+            }
+            
+            // 替换引用文本
+            if (quotes.length >= 11) {
+                for (let i = 0; i < 11; i++) {
+                    const key = `quote${i + 1}`;
+                    if (t[key]) {
+                        quotes[i].textContent = t[key];
+                    }
+                }
+            }
+            
+            // 替换时间标记
+            if (timeMarkers.length >= 3) {
+                timeMarkers[0].textContent = t.time1;
+                timeMarkers[1].textContent = t.time2;
+                timeMarkers[2].textContent = t.time3;
+            }
+            
+            // 替换特殊文本
+            if (importantNote && t.importantNote) {
+                importantNote.textContent = t.importantNote;
+            }
+            
+            if (highlight && t.highlight) {
+                highlight.textContent = t.highlight;
+            }
+            
+            // 替换成就标题
+            if (achievementTitle && t.achievement) {
+                achievementTitle.textContent = t.achievement;
+            }
+            
+            // 替换按钮文本
+            if (button && t.buttonText) {
+                button.textContent = t.buttonText;
+            }
+            
+            // 替换页脚文本
+            if (footer && t.footer) {
+                footer.textContent = t.footer;
+            }
+        }
+        
+        // 获取语言名称
+        function getLangName(langCode) {
+            const langNames = {
+                'zh': '中文',
+                'en': 'English',
+                'ja': '日本語',
+                'pt': 'Português'
+            };
+            return langNames[langCode] || '中文';
+        }
+        
+        // 隐藏结局按钮点击事件 - 跳转到结局3隐藏内容
+        hiddenEndingBtn.addEventListener('click', () => {
+            window.location.href = "结局3隐藏内容.html";
+        });
+        
+        // 添加淡入动画效果
+        document.addEventListener('DOMContentLoaded', () => {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // 初始设置所有淡入元素为透明
+            document.querySelectorAll('.fade-in').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIKIMARU的微博 - 个人主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* 顶部导航栏 */
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e7e7e7;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            color: #e6162d;
+            font-size: 28px;
+            margin-right: 5px;
+        }
+        
+        .logo span {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e6162d;
+        }
+        
+        .search-box {
+            flex-grow: 1;
+            max-width: 500px;
+            margin: 0 30px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 8px 15px;
+            border: 1px solid #e7e7e7;
+            border-radius: 20px;
+            background-color: #f5f5f5;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .search-box input:focus {
+            background-color: white;
+            border-color: #e6162d;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            margin-left: 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .nav-links a:hover {
+            color: #e6162d;
+        }
+        
+        .nav-links .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #8a2be2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-left: 20px;
+            overflow: hidden;
+        }
+        
+        .nav-links .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 语言切换按钮 */
+        .language-switcher {
+            position: relative;
+            margin-left: 20px;
+        }
+        
+        .language-btn {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .language-btn i {
+            margin-right: 5px;
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+            min-width: 120px;
+        }
+        
+        .language-dropdown a {
+            display: block;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .language-dropdown a:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .language-dropdown a:last-child {
+            border-bottom: none;
+        }
+        
+        .language-switcher:hover .language-dropdown {
+            display: block;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            display: flex;
+            margin-top: 15px;
+            gap: 15px;
+        }
+        
+        /* 左侧菜单栏 */
+        .sidebar {
+            width: 220px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        
+        .profile-card {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .username {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .user-bio {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-weight: bold;
+            font-size: 16px;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .menu-items {
+            padding: 10px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f5f5;
+            color: #e6162d;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .menu-item.active {
+            color: #e6162d;
+            border-right: 3px solid #e6162d;
+            background-color: #fef2f2;
+        }
+        
+        /* 微博内容区 */
+        .weibo-feed {
+            flex-grow: 1;
+            max-width: 700px;
+        }
+        
+        .post-write {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .post-write textarea {
+            width: 100%;
+            border: 1px solid #e7e7e7;
+            border-radius: 8px;
+            padding: 12px;
+            resize: none;
+            height: 80px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        
+        .post-write textarea:focus {
+            border-color: #e6162d;
+        }
+        
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .post-btn {
+            background-color: #e6162d;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .post-btn:hover {
+            background-color: #d50f26;
+        }
+        
+        /* 空白微博区域提示 */
+        .empty-feed {
+            background-color: white;
+            border-radius: 8px;
+            padding: 60px 20px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            color: #888;
+        }
+        
+        .empty-feed i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        
+        .empty-feed h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .empty-feed p {
+            font-size: 14px;
+        }
+        
+        /* 右侧栏 */
+        .right-sidebar {
+            width: 280px;
+        }
+        
+        .right-card {
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .right-card h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .trend-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .trend-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .trend-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        
+        .trend-stats {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .right-sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .search-box {
+                display: none;
+            }
+        }
+        
+        /* 语言切换样式 */
+        .lang-zh { display: block; }
+        .lang-en { display: none; }
+        .lang-ja { display: none; }
+        .lang-pt { display: none; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fab fa-weibo"></i>
+                <span class="lang-zh">微博</span>
+                <span class="lang-en">Weibo</span>
+                <span class="lang-ja">ウェイボー</span>
+                <span class="lang-pt">Weibo</span>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索微博、找人...">
+                <span class="lang-en" style="display:none;">
+                    <input type="text" id="searchInput-en" placeholder="Search Weibo, people...">
+                </span>
+                <span class="lang-ja" style="display:none;">
+                    <input type="text" id="searchInput-ja" placeholder="微博、人を検索...">
+                </span>
+                <span class="lang-pt" style="display:none;">
+                    <input type="text" id="searchInput-pt" placeholder="Pesquisar Weibo, pessoas...">
+                </span>
+            </div>
+            
+            <div class="nav-links">
+                <a href="#">
+                    <i class="fas fa-home"></i>
+                    <span class="lang-zh">首页</span>
+                    <span class="lang-en">Home</span>
+                    <span class="lang-ja">ホーム</span>
+                    <span class="lang-pt">Início</span>
+                </a>
+                <a href="#">
+                    <i class="far fa-bell"></i>
+                    <span class="lang-zh">通知</span>
+                    <span class="lang-en">Notifications</span>
+                    <span class="lang-ja">通知</span>
+                    <span class="lang-pt">Notificações</span>
+                </a>
+                <a href="#">
+                    <i class="far fa-envelope"></i>
+                    <span class="lang-zh">私信</span>
+                    <span class="lang-en">Messages</span>
+                    <span class="lang-ja">メッセージ</span>
+                    <span class="lang-pt">Mensagens</span>
+                </a>
+                
+                <!-- 语言切换按钮 -->
+                <div class="language-switcher">
+                    <button class="language-btn" id="languageBtn">
+                        <i class="fas fa-globe"></i> <span class="current-lang">中文</span>
+                    </button>
+                    <div class="language-dropdown">
+                        <a href="#" data-lang="zh">中文</a>
+                        <a href="#" data-lang="en">English</a>
+                        <a href="#" data-lang="ja">日本語</a>
+                        <a href="#" data-lang="pt">Português</a>
+                    </div>
+                </div>
+                
+                <div class="user-avatar">
+                    <img src="riki头像.jpg" alt="RIKIMARU头像">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- 左侧菜单栏 -->
+            <aside class="sidebar">
+                <div class="profile-card">
+                    <div class="avatar">
+                        <img src="riki头像.jpg" alt="RIKIMARU头像">
+                    </div>
+                    <div class="username">RIKIMARU</div>
+                    <div class="user-bio">
+                        <span class="lang-zh">舞者 | 编舞师 | ROOM酒店管理员</span>
+                        <span class="lang-en">Dancer | Choreographer | ROOM Hotel Administrator</span>
+                        <span class="lang-ja">ダンサー | 振付師 | ROOMホテル管理者</span>
+                        <span class="lang-pt">Dançarino | Coreógrafo | Administrador do Hotel ROOM</span>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number">56</span>
+                            <span class="stat-label lang-zh">关注</span>
+                            <span class="stat-label lang-en">Following</span>
+                            <span class="stat-label lang-ja">フォロー中</span>
+                            <span class="stat-label lang-pt">Seguindo</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">353.8万</span>
+                            <span class="stat-label lang-zh">粉丝</span>
+                            <span class="stat-label lang-en">Followers</span>
+                            <span class="stat-label lang-ja">フォロワー</span>
+                            <span class="stat-label lang-pt">Seguidores</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">0</span>
+                            <span class="stat-label lang-zh">微博</span>
+                            <span class="stat-label lang-en">Weibos</span>
+                            <span class="stat-label lang-ja">微博</span>
+                            <span class="stat-label lang-pt">Weibos</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="menu-items">
+                    <a href="#" class="menu-item active">
+                        <i class="fas fa-user"></i>
+                        <span class="lang-zh">我的主页</span>
+                        <span class="lang-en">My Home</span>
+                        <span class="lang-ja">マイホーム</span>
+                        <span class="lang-pt">Meu Início</span>
+                    </a>
+                    <a href="RIKI日记.html" class="menu-item">
+                        <i class="fas fa-bookmark"></i>
+                        <span class="lang-zh">收藏</span>
+                        <span class="lang-en">Favorites</span>
+                        <span class="lang-ja">お気に入り</span>
+                        <span class="lang-pt">Favoritos</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-photo-video"></i>
+                        <span class="lang-zh">相册</span>
+                        <span class="lang-en">Album</span>
+                        <span class="lang-ja">アルバム</span>
+                        <span class="lang-pt">Álbum</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-heart"></i>
+                        <span class="lang-zh">赞过</span>
+                        <span class="lang-en">Liked</span>
+                        <span class="lang-ja">いいねした</span>
+                        <span class="lang-pt">Curtidas</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-comments"></i>
+                        <span class="lang-zh">评论</span>
+                        <span class="lang-en">Comments</span>
+                        <span class="lang-ja">コメント</span>
+                        <span class="lang-pt">Comentários</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-cog"></i>
+                        <span class="lang-zh">设置</span>
+                        <span class="lang-en">Settings</span>
+                        <span class="lang-ja">設定</span>
+                        <span class="lang-pt">Configurações</span>
+                    </a>
+                </div>
+            </aside>
+
+            <!-- 微博内容区 -->
+            <main class="weibo-feed">
+                <!-- 发微博框 -->
+                <div class="post-write">
+                    <textarea id="postTextarea" placeholder="有什么新鲜事想告诉大家？"></textarea>
+                    <div class="post-actions">
+                        <div>
+                            <i class="fas fa-image" style="color: #45bb6a; margin-right: 15px; cursor: pointer;"></i>
+                            <i class="fas fa-video" style="color: #e74c3c; margin-right: 15px; cursor: pointer;"></i>
+                            <i class="fas fa-smile" style="color: #f1c40f; cursor: pointer;"></i>
+                        </div>
+                        <button class="post-btn">
+                            <span class="lang-zh">发布</span>
+                            <span class="lang-en">Post</span>
+                            <span class="lang-ja">投稿</span>
+                            <span class="lang-pt">Publicar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 空白微博区域提示 -->
+                <div class="empty-feed">
+                    <i class="far fa-comment-dots"></i>
+                    <h3 class="lang-zh">还没有微博</h3>
+                    <h3 class="lang-en">No Weibos yet</h3>
+                    <h3 class="lang-ja">まだ微博がありません</h3>
+                    <h3 class="lang-pt">Ainda não há Weibos</h3>
+                    
+                    <p class="lang-zh">这里还没有微博，去发布第一条吧！</p>
+                    <p class="lang-en">There are no Weibos here yet, go post your first one!</p>
+                    <p class="lang-ja">ここにはまだ微博がありません、最初の投稿をしましょう！</p>
+                    <p class="lang-pt">Ainda não há Weibos aqui, vá postar seu primeiro!</p>
+                </div>
+            </main>
+
+            <!-- 右侧边栏 -->
+            <aside class="right-sidebar">
+                <!-- 热门话题板块 -->
+                <div class="right-card">
+                    <h3 class="lang-zh">热门话题</h3>
+                    <h3 class="lang-en">Trending Topics</h3>
+                    <h3 class="lang-ja">トレンドトピック</h3>
+                    <h3 class="lang-pt">Tópicos em Alta</h3>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸全球顶级编舞大师#</div>
+                        <div class="trend-stats lang-zh">245.6万讨论</div>
+                        <div class="trend-stats lang-en">2.45M discussions</div>
+                        <div class="trend-stats lang-ja">245.6万 議論</div>
+                        <div class="trend-stats lang-pt">2.45M discussões</div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸二专《ROOM》#</div>
+                        <div class="trend-stats lang-zh">189.3万讨论</div>
+                        <div class="trend-stats lang-en">1.89M discussions</div>
+                        <div class="trend-stats lang-ja">189.3万 議論</div>
+                        <div class="trend-stats lang-pt">1.89M discussões</div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#一起初来丸#</div>
+                        <div class="trend-stats lang-zh">156.7万讨论</div>
+                        <div class="trend-stats lang-en">1.56M discussions</div>
+                        <div class="trend-stats lang-ja">156.7万 議論</div>
+                        <div class="trend-stats lang-pt">1.56M discussões</div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸舞蹈教室#</div>
+                        <div class="trend-stats lang-zh">98.4万讨论</div>
+                        <div class="trend-stats lang-en">984k discussions</div>
+                        <div class="trend-stats lang-ja">98.4万 議論</div>
+                        <div class="trend-stats lang-pt">984k discussões</div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸回归舞台#</div>
+                        <div class="trend-stats lang-zh">76.2万讨论</div>
+                        <div class="trend-stats lang-en">762k discussions</div>
+                        <div class="trend-stats lang-ja">76.2万 議論</div>
+                        <div class="trend-stats lang-pt">762k discussões</div>
+                    </div>
+                </div>
+                
+                <!-- 移除了"可能认识的人"板块 -->
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageBtn = document.getElementById('languageBtn');
+            const languageLinks = document.querySelectorAll('.language-dropdown a');
+            const currentLangSpan = document.querySelector('.current-lang');
+            
+            // 设置当前语言
+            let currentLang = 'zh';
+            
+            // 语言映射
+            const languageNames = {
+                'zh': '中文',
+                'en': 'English',
+                'ja': '日本語',
+                'pt': 'Português'
+            };
+            
+            // 搜索框placeholder文本
+            const searchPlaceholders = {
+                'zh': '搜索微博、找人...',
+                'en': 'Search Weibo, people...',
+                'ja': '微博、人を検索...',
+                'pt': 'Pesquisar Weibo, pessoas...'
+            };
+            
+            // 发微博框placeholder文本
+            const postPlaceholders = {
+                'zh': '有什么新鲜事想告诉大家？',
+                'en': 'What do you want to tell everyone?',
+                'ja': '何か新鮮なことをみんなに教えてください。',
+                'pt': 'O que há de novo que você quer contar a todos?'
+            };
+            
+            // 为每个语言链接添加点击事件
+            languageLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const lang = this.getAttribute('data-lang');
+                    switchLanguage(lang);
+                    
+                    // 更新按钮文本
+                    currentLangSpan.textContent = languageNames[lang];
+                });
+            });
+            
+            // 切换语言函数
+            function switchLanguage(lang) {
+                // 隐藏所有语言内容
+                document.querySelectorAll('.lang-zh, .lang-en, .lang-ja, .lang-pt').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // 显示选定语言的内容
+                document.querySelectorAll(`.lang-${lang}`).forEach(el => {
+                    el.style.display = 'block';
+                });
+                
+                // 更新搜索框placeholder
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.placeholder = searchPlaceholders[lang];
+                }
+                
+                // 更新发微博框placeholder
+                const postTextarea = document.getElementById('postTextarea');
+                if (postTextarea) {
+                    postTextarea.placeholder = postPlaceholders[lang];
+                }
+                
+                // 更新当前语言
+                currentLang = lang;
+            }
+            
+            // 初始化页面为中文
+            switchLanguage('zh');
+            
+            // 搜索功能
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        alert(currentLang === 'zh' ? `搜索关键词: ${this.value}` : 
+                              currentLang === 'en' ? `Search keyword: ${this.value}` :
+                              currentLang === 'ja' ? `検索キーワード: ${this.value}` :
+                              `Palavra-chave de pesquisa: ${this.value}`);
+                        this.value = '';
+                    }
+                });
+            }
+            
+            // 发布微博功能
+            const postBtn = document.querySelector('.post-btn');
+            const postTextarea = document.getElementById('postTextarea');
+            
+            if (postBtn && postTextarea) {
+                postBtn.addEventListener('click', function() {
+                    if (postTextarea.value.trim() === '') {
+                        alert(currentLang === 'zh' ? '请输入微博内容！' : 
+                              currentLang === 'en' ? 'Please enter Weibo content!' :
+                              currentLang === 'ja' ? '微博の内容を入力してください！' :
+                              'Por favor, digite o conteúdo do Weibo!');
+                        return;
+                    }
+                    
+                    alert(currentLang === 'zh' ? '微博发布成功！' : 
+                          currentLang === 'en' ? 'Weibo posted successfully!' :
+                          currentLang === 'ja' ? '微博が正常に投稿されました！' :
+                          'Weibo postado com sucesso!');
+                    
+                    postTextarea.value = '';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

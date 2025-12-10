@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - RIKI工作日志</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .security-level-high {
+        border-left: 4px solid #ff4444;
+        background: rgba(255, 68, 68, 0.1);
+      }
+      .security-level-medium {
+        border-left: 4px solid #D4AF37;
+        background: rgba(212, 175, 55, 0.1);
+      }
+      .log-entry {
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+      .log-entry:hover {
+        background: rgba(42, 27, 61, 0.9);
+        border-color: rgba(138, 107, 190, 0.6);
+      }
+      .log-title {
+        color: #D4AF37;
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(138, 107, 190, 0.3);
+        padding-bottom: 5px;
+      }
+      .log-date {
+        color: #8A6BBE;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+      }
+      .log-section {
+        margin-bottom: 15px;
+      }
+      .log-section-title {
+        color: #D4AF37;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .log-list {
+        list-style-type: disc;
+        margin-left: 20px;
+      }
+      .log-list-item {
+        margin-bottom: 5px;
+      }
+      .log-rating {
+        color: #44ff44;
+        font-weight: bold;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M饲主系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 饲主系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">RIKI</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- RIKI工作日志 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">R∞M 酒店 饲主工作日志</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-22</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 291 - <span data-i18n="log.Li Wenxuan">李文轩</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="log.status">记录状态</span>: <span class="text-success" data-i18n="log.completed">已归档（供继任者参考）</span>
+            </div>
+          </div>
+          
+          <!-- 工作日志条目 -->
+          <div class="log-entry">
+            <div class="log-title" data-i18n="log.title">主菜：绝望的挣扎</div>
+            <div class="log-date" data-i18n="log.date">记录日期：献祭完成后 24 小时</div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.ingredient">一、食材基础信息</div>
+              <div class="text-gray-300" data-i18n="log.ingredientContent">
+                食材编号：No.662<br>
+                姓名：李文轩<br>
+                身份：独立游戏开发者<br>
+                核心执念：对创作闭环的极致追求、困局中的自我证明欲、不甘沉沦的反抗本能<br>
+                情感浓度（初始）：7.5/10（执念占比 65%，焦虑占比 35%；情感颗粒度细腻，无冗余情绪干扰，属于高潜力食材）<br><br>
+                筛选逻辑：<br>
+                1. 通过开发者社区后台监测，其项目日志连续3个月高频出现"死循环""破局""无解"等关键词，与「绝望的挣扎」核心风味高度匹配；<br>
+                2. 其代表作《DAYDREAMS》的核心设定（虚拟时空逃脱）与291号房"循环牢笼"机制天然契合，可降低环境适配成本；<br>
+                3. 心理画像显示其具备"偏执型专注"特质，面对逻辑困境时倾向于自我归因而非放弃，易被"可控性挫败"催化情绪；<br>
+                4. 社交关系极简，失踪后社会关注度低，符合"低风险献祭"标准。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.process">二、献祭流程记录</div>
+              <ul class="log-list">
+                <li class="log-list-item text-gray-300" data-i18n="log.process1">
+                  <strong>阶段 1</strong><br>
+                  在游戏开发者论坛投放定向广告；<br>
+                  通过匿名邮箱发送"创作者灵感扶持计划邀请"，赠送酒店免费入住资格<br>
+                  目的：利用其对《DAYDREAMS》的沉没成本执念，引导主动入住，确保情感主动性（自发入局的食材，挣扎意愿更强烈）；<br>
+                  结果：食材于 11 月 12 日办理入住，携带两台高性能笔记本、加密硬盘及手写逻辑草稿，入住时反复确认"网络稳定性"，焦虑感与期待感并存，符合预设。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process2">
+                  <strong>阶段 2</strong><br>
+                  提供定制化创作支持：24小时技术响应、无限续杯的咖啡/能量饮料、可调节色温的工作灯；<br>
+                  关闭房间时空流动感知阀，维持"伪正常"环境，仅在后台记录其工作节律；<br>
+                  目的：让其快速建立"环境依赖"，将创作执念与房间绑定，为后续循环机制铺垫；<br>
+                  监测结果：食材每日产出代码量达常规值的1.5倍，草稿纸上标注大量"循环优化方案"，心率稳定在85-90次/分，执念浓度提升至 72%。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process3">
+                  <strong>阶段 3</strong><br>
+                  启动"微循环"机制：每日凌晨4点自动重置非核心数据（未加密的代码草稿、纸质笔记、房间物品摆放）；<br>
+                  篡改设备反馈逻辑：其编写的"破局代码"在运行时会触发隐性错误，表现为"接近成功却突然崩溃"，且错误提示随机生成无规律；<br>
+                  目的：通过"可控性挫败"打破其心理预期，触发初始挣扎，放大焦虑与不甘；<br>
+                  监测结果：食材从第5天开始出现失眠，频繁删除代码后重新编写，凌晨时段多次拍打桌面，焦虑浓度升至 60%；第7天尝试在加密硬盘中备份"破局线索"，执念与绝望开始形成对冲。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process4">
+                  <strong>阶段 4</strong><br>
+                  升级"全循环"机制：每日6点整触发完全重置（包括加密硬盘临时文件、设备操作记录、身体细微损伤）；<br>
+                  植入"虚假希望"信号：在其代码中随机嵌入碎片化提示（如"循环变量=自由""出口=自我认知"），引导其陷入"解谜幻觉"；<br>
+                  篡改对外联络通道：将其发送的求救邮件自动转为"项目进展汇报"，接收的外界关心信息替换为"催更留言"；<br>
+                  目的：让"希望-绝望"形成高频震荡，反复压榨挣扎意志，提纯情感浓度；<br>
+                  监测结果：食材每日经历"清晨绝望→解谜兴奋→午夜崩溃"的完整闭环，情绪波动幅度达初始值的3倍，第14天出现"自我对话"现象，情感浓度峰值突破 9.2/10。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process5">
+                  <strong>阶段 5</strong><br>
+                  在其试图将"循环真相+求救信号"编码为逻辑炸弹，嵌入酒店系统底层时，启动收割程序；<br>
+                  过程：食材在极致专注中迸发"绝境反抗"的峰值情绪（对自由的渴望、对操控的愤怒、对存在的执念交织），情饕在其意识编码完成前0.3秒，完整吞噬其核心情感集合体；<br>
+                  结果：食材于当日中午办理退房，献祭痕迹完全掩盖。
+                </li>
+              </ul>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.evaluation">三、风味评估</div>
+              <div class="text-gray-300" data-i18n="log.evaluationContent">
+                整体评分：<span class="log-rating">9.4/10</span>（顶级主菜，风味纯度超预期）<br><br>
+                风味解析：<br>
+                前调：代码字符的冰冷质感与咖啡的焦苦交融，带着创作高压下的紧绷感，奠定"挣扎"的基底风味；<br>
+                中调：希望的微光与绝望的深渊交替浮现，"接近破局却瞬间坠落"的落差感形成强烈味觉冲击，是核心风味的关键层次；<br>
+                后调：绝境反抗的辛辣与虚无的余韵交织，逻辑炸弹编写时的极致冷静与决绝，为风味增添"玉石俱焚"的独特回甘，精准契合情饕偏好。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.aftermath">四、后续事件处理</div>
+              <div class="text-gray-300" data-i18n="log.aftermathContent">
+                事件背景<br>
+                献祭完成后第5天，食材好友王磊因联系不上李文轩，向辖区警方报案；警官<strong style="font-size: 1.2em;">张明</strong>以"人口失踪协查"为由约谈酒店负责人（本人），要求调取入住记录、监控视频及消费凭证。<br><br>
+                应对措施<br>
+                1. 提供伪造材料：<br>
+                - 入住/退房记录：完整呈现"11月12日入住-11月26日退房"的合规流程，附食材亲笔签名的退房确认单（献祭后通过意识残留提取笔迹合成）；<br>
+                - 监控视频：剪辑篡改公共区域 footage，仅保留食材"正常入住、取餐、退房离开酒店"的片段，删除所有涉及291号房门口的异常行为记录；<br>
+                - 消费凭证：匹配客房服务订单（咖啡、能量饮料等），伪造食材签字确认的消费清单，无任何逻辑漏洞。<br>
+                2. 话术应对：<br>
+                - 强调"客人正常退房，退房时状态愉悦，未表现任何异常"；<br>
+                - 配合警方查询时表现"积极协助"态度，主动提及食材入住时"专注于创作，明确要求不被打扰"，侧面解释其"失联"可能是"沉浸式工作"导致；<br>
+                3. 后续收尾：<br>
+                - 监测王磊及警方后续动作并及时应对<br><br>
+                风险评估<br>
+                风险等级：低（3/10）<br>
+                - 可控因素：食材社交关系简单，仅1位核心联系人，调查范围有限；伪造材料逻辑闭环，无明显破绽；<br>
+                - 潜在隐患：食材好友王磊，具备一定逻辑推理能力，需持续监测其动态，防止其发现《DAYDREAMS》加密文件中的异常（已远程损毁该加密包，无法恢复）。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.summary">李文轩</div>
+              <div class="text-gray-300" data-i18n="log.summaryContent">
+                291 号房「绝望的挣扎」献祭超额完成。食材李文轩的核心特质 —— 程序员的逻辑思维、强迫症的偏执、对 "突破" 的极致执念，与 291 号房的时空循环机制形成了完美契合，使其成为 "挣扎" 主题的理想食材。<br><br>
+                整个流程的关键在于 "以彼之道，还施彼身"：利用其逻辑能力构建困局，用其偏执性格放大挣扎，让其在自己最擅长的领域（代码、逻辑）中感受到最深的无力感，最终在绝望与反抗的极致对冲中，产出情饕喜爱的顶级风味。<br><br>
+                此案例可作为继任者的进阶教材 —— 理解 "食材的核心特质即是困局的最佳载体"，无需强行干预，只需搭建适配的环境，让食材的执念自行催化情感，方能产出最纯粹的风味。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">饲主系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供饲主使用 - 保密级别：绝密</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': 'R∞M 酒店 饲主工作日志',
+        'log.summary': '李文轩',
+        'log.status': '记录状态',
+        'log.completed': '已归档（供继任者参考）',
+        'log.title': '主菜：绝望的挣扎',
+        'log.date': '记录日期：献祭完成后 24 小时',
+        'log.ingredient': '一、食材基础信息',
+        'log.ingredientContent': '食材编号：No.662<br>姓名：李文轩<br>身份：独立游戏开发者<br>核心执念：对创作闭环的极致追求、困局中的自我证明欲、不甘沉沦的反抗本能<br>情感浓度（初始）：7.5/10（执念占比 65%，焦虑占比 35%；情感颗粒度细腻，无冗余情绪干扰，属于高潜力食材）<br><br>筛选逻辑：<br>1. 通过开发者社区后台监测，其项目日志连续3个月高频出现"死循环""破局""无解"等关键词，与「绝望的挣扎」核心风味高度匹配；<br>2. 其代表作《DAYDREAMS》的核心设定（虚拟时空逃脱）与291号房"循环牢笼"机制天然契合，可降低环境适配成本；<br>3. 心理画像显示其具备"偏执型专注"特质，面对逻辑困境时倾向于自我归因而非放弃，易被"可控性挫败"催化情绪；<br>4. 社交关系极简，失踪后社会关注度低，符合"低风险献祭"标准。',
+        'log.process': '二、献祭流程记录',
+        'log.process1': '<strong>阶段 1</strong><br>在游戏开发者论坛投放定向广告；<br>通过匿名邮箱发送"创作者灵感扶持计划邀请"，赠送酒店免费入住资格<br>目的：利用其对《DAYDREAMS》的沉没成本执念，引导主动入住，确保情感主动性（自发入局的食材，挣扎意愿更强烈）；<br>结果：食材于 11 月 12 日办理入住，携带两台高性能笔记本、加密硬盘及手写逻辑草稿，入住时反复确认"网络稳定性"，焦虑感与期待感并存，符合预设。',
+        'log.process2': '<strong>阶段 2</strong><br>提供定制化创作支持：24小时技术响应、无限续杯的咖啡/能量饮料、可调节色温的工作灯；<br>关闭房间时空流动感知阀，维持"伪正常"环境，仅在后台记录其工作节律；<br>目的：让其快速建立"环境依赖"，将创作执念与房间绑定，为后续循环机制铺垫；<br>监测结果：食材每日产出代码量达常规值的1.5倍，草稿纸上标注大量"循环优化方案"，心率稳定在85-90次/分，执念浓度提升至 72%。',
+        'log.process3': '<strong>阶段 3</strong><br>启动"微循环"机制：每日凌晨4点自动重置非核心数据（未加密的代码草稿、纸质笔记、房间物品摆放）；<br>篡改设备反馈逻辑：其编写的"破局代码"在运行时会触发隐性错误，表现为"接近成功却突然崩溃"，且错误提示随机生成无规律；<br>目的：通过"可控性挫败"打破其心理预期，触发初始挣扎，放大焦虑与不甘；<br>监测结果：食材从第5天开始出现失眠，频繁删除代码后重新编写，凌晨时段多次拍打桌面，焦虑浓度升至 60%；第7天尝试在加密硬盘中备份"破局线索"，执念与绝望开始形成对冲。',
+        'log.process4': '<strong>阶段 4</strong><br>升级"全循环"机制：每日6点整触发完全重置（包括加密硬盘临时文件、设备操作记录、身体细微损伤）；<br>植入"虚假希望"信号：在其代码中随机嵌入碎片化提示（如"循环变量=自由""出口=自我认知"），引导其陷入"解谜幻觉"；<br>篡改对外联络通道：将其发送的求救邮件自动转为"项目进展汇报"，接收的外界关心信息替换为"催更留言"；<br>目的：让"希望-绝望"形成高频震荡，反复压榨挣扎意志，提纯情感浓度；<br>监测结果：食材每日经历"清晨绝望→解谜兴奋→午夜崩溃"的完整闭环，情绪波动幅度达初始值的3倍，第14天出现"自我对话"现象，情感浓度峰值突破 9.2/10。',
+        'log.process5': '<strong>阶段 5</strong><br>在其试图将"循环真相+求救信号"编码为逻辑炸弹，嵌入酒店系统底层时，启动收割程序；<br>过程：食材在极致专注中迸发"绝境反抗"的峰值情绪（对自由的渴望、对操控的愤怒、对存在的执念交织），情饕在其意识编码完成前0.3秒，完整吞噬其核心情感集合体；<br>结果：食材于当日中午办理退房，献祭痕迹完全掩盖。',
+        'log.evaluation': '三、风味评估',
+        'log.evaluationContent': '整体评分：<span class="log-rating">9.4/10</span>（顶级主菜，风味纯度超预期）<br><br>风味解析：<br>前调：代码字符的冰冷质感与咖啡的焦苦交融，带着创作高压下的紧绷感，奠定"挣扎"的基底风味；<br>中调：希望的微光与绝望的深渊交替浮现，"接近破局却瞬间坠落"的落差感形成强烈味觉冲击，是核心风味的关键层次；<br>后调：绝境反抗的辛辣与虚无的余韵交织，逻辑炸弹编写时的极致冷静与决绝，为风味增添"玉石俱焚"的独特回甘，精准契合情饕偏好。',
+        'log.aftermath': '四、后续事件处理',
+        'log.aftermathContent': '事件背景<br>献祭完成后第5天，食材好友王磊因联系不上李文轩，向辖区警方报案；警官<strong style="font-size: 1.2em;">张明</strong>以"人口失踪协查"为由约谈酒店负责人（本人），要求调取入住记录、监控视频及消费凭证。<br><br>应对措施<br>1. 提供伪造材料：<br>- 入住/退房记录：完整呈现"11月12日入住-11月26日退房"的合规流程，附食材亲笔签名的退房确认单（献祭后通过意识残留提取笔迹合成）；<br>- 监控视频：剪辑篡改公共区域 footage，仅保留食材"正常入住、取餐、退房离开酒店"的片段，删除所有涉及291号房门口的异常行为记录；<br>- 消费凭证：匹配客房服务订单（咖啡、能量饮料等），伪造食材签字确认的消费清单，无任何逻辑漏洞。<br>2. 话术应对：<br>- 强调"客人正常退房，退房时状态愉悦，未表现任何异常"；<br>- 配合警方查询时表现"积极协助"态度，主动提及食材入住时"专注于创作，明确要求不被打扰"，侧面解释其"失联"可能是"沉浸式工作"导致；<br>3. 后续收尾：<br>- 监测王磊及警方后续动作并及时应对<br><br>风险评估<br>风险等级：低（3/10）<br>- 可控因素：食材社交关系简单，仅1位核心联系人，调查范围有限；伪造材料逻辑闭环，无明显破绽；<br>- 潜在隐患：食材好友王磊，具备一定逻辑推理能力，需持续监测其动态，防止其发现《DAYDREAMS》加密文件中的异常（已远程损毁该加密包，无法恢复）。',
+        'log.summary': '李文轩',
+        'log.summaryContent': '291 号房「绝望的挣扎」献祭超额完成。食材李文轩的核心特质 —— 程序员的逻辑思维、强迫症的偏执、对 "突破" 的极致执念，与 291 号房的时空循环机制形成了完美契合，使其成为 "挣扎" 主题的理想食材。<br><br>整个流程的关键在于 "以彼之道，还施彼身"：利用其逻辑能力构建困局，用其偏执性格放大挣扎，让其在自己最擅长的领域（代码、逻辑）中感受到最深的无力感，最终在绝望与反抗的极致对冲中，产出情饕喜爱的顶级风味。<br><br>此案例可作为继任者的进阶教材 —— 理解 "食材的核心特质即是困局的最佳载体"，无需强行干预，只需搭建适配的环境，让食材的执念自行催化情感，方能产出最纯粹的风味。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '饲主系统',
+        'footer.confidential': '仅供饲主使用 - 保密级别：绝密',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'R∞M Hotel Feeder Work Log',
+        'log.summary': 'Li Wenxuan',
+        'log.status': 'Record Status',
+        'log.completed': 'Archived (For Successor Reference)',
+        'log.title': 'Main Course: Struggle of Despair',
+        'log.date': 'Record Date: 24 Hours After Sacrifice Completion',
+        'log.ingredient': 'I. Ingredient Basic Information',
+        'log.ingredientContent': 'Ingredient No.: No.662<br>Name: Li Wenxuan<br>Identity: Independent Game Developer<br>Core Obsession: Extreme pursuit of creative closure, self-validation desire in dilemmas, rebellious instinct against sinking<br>Emotional Concentration (Initial): 7.5/10 (Obsession 65%, Anxiety 35%; Fine emotional granularity, no redundant emotional interference, high-potential ingredient)<br><br>Screening Logic:<br>1. Backend monitoring of developer communities showed high-frequency keywords like "dead loop", "breakthrough", "unsolvable" in project logs for 3 consecutive months, highly matching core flavor of "Struggle of Despair";<br>2. Core setting of his masterpiece "DAYDREAMS" (virtual time-space escape) naturally fits 291 room "loop cage" mechanism, reducing environmental adaptation cost;<br>3. Psychological profile shows "obsessive focus" trait, tends to self-blame rather than give up when facing logical dilemmas, easily catalyzed by "controllable frustration";<br>4. Minimal social relationships, low social attention after disappearance, meets "low-risk sacrifice" standards.',
+        'log.process': 'II. Sacrifice Process Record',
+        'log.process1': '<strong>Stage 1</strong><br>Placed targeted ads in game developer forums;<br>Sent "Creator Inspiration Support Program Invitation" via anonymous email, offering free hotel stay;<br>Purpose: Utilize his sunk cost obsession with "DAYDREAMS" to guide voluntary check-in, ensuring emotional initiative (spontaneous ingredients have stronger struggle willingness);<br>Result: Ingredient checked in on November 12, carrying two high-performance laptops, encrypted hard drives, and handwritten logic drafts, repeatedly confirming "network stability" during check-in, anxiety and expectation coexisting, meeting preset.',
+        'log.process2': '<strong>Stage 2</strong><br>Provided customized creation support: 24-hour technical response, unlimited coffee/energy drinks, adjustable color temperature work lights;<br>Closed room time-flow perception valve, maintained "pseudo-normal" environment, only recording work rhythm in background;<br>Purpose: Let him quickly establish "environmental dependency", bind creative obsession with room, paving way for subsequent loop mechanisms;<br>Monitoring Result: Ingredient daily code output reached 1.5 times normal value, draft papers marked with numerous "loop optimization solutions", heart rate stable at 85-90 bpm, obsession concentration increased to 72%.',
+        'log.process3': '<strong>Stage 3</strong><br>Activated "micro-loop" mechanism: Daily 4 AM automatic reset of non-core data (unencrypted code drafts, paper notes, room item arrangement);<br>Tampered with device feedback logic: His "breakthrough code" triggered hidden errors when running,表现为"接近成功却突然崩溃"，且错误提示随机生成无规律；<br>Purpose: Break his psychological expectations through "controllable frustration", trigger initial struggle, amplify anxiety and reluctance;<br>Monitoring Result: Ingredient developed insomnia from day 5, frequently deleted and rewrote code, slapped desk multiple times during early hours, anxiety concentration rose to 60%; Day 7 attempted to backup "breakthrough clues" in encrypted hard drive, obsession and despair began counteracting.',
+        'log.process4': '<strong>Stage 4</strong><br>Upgraded to "full-loop" mechanism: Daily 6 AM complete reset (including encrypted hard drive temporary files, device operation records, minor physical injuries);<br>Implanted "false hope" signals: Randomly embedded fragmented hints in his code (e.g., "loop variable=freedom", "exit=self-awareness"), guiding him into "puzzle-solving illusion";<br>Tampered with external communication channels: Automatically converted his求救邮件 into "project progress reports", replaced received关心信息 with "update reminders";<br>Purpose: Let "hope-despair" form high-frequency oscillation, repeatedly榨取struggle will, purify emotional concentration;<br>Monitoring Result: Ingredient experienced complete daily cycle of "morning despair→puzzle excitement→midnight崩溃", emotional fluctuation amplitude reached 3 times initial value, day 14 showed "self-dialogue" phenomenon, emotional concentration peak exceeded 9.2/10.',
+        'log.process5': '<strong>Stage 5</strong><br>Activated harvesting program when he attempted to encode "loop truth+求救信号" as logic bomb into hotel system底层；<br>Process: Ingredient迸发"desperate resistance" peak emotions in extreme focus (longing for freedom, anger at manipulation, obsession with existence intertwined), emotion devourer completely consumed his core emotional complex 0.3 seconds before consciousness encoding completion;<br>Result: Ingredient checked out at noon same day, sacrifice traces completely concealed.',
+        'log.evaluation': 'III. Flavor Assessment',
+        'log.evaluationContent': 'Overall Rating: <span class="log-rating">9.4/10</span> (Top-tier main course, flavor purity exceeds expectations)<br><br>Flavor Analysis:<br>Initial: Cold texture of code characters blends with coffee bitterness, carrying tension under creative pressure, establishing "struggle" base flavor;<br>Middle: Flickering hope and abyssal despair alternate浮现,"接近破局却瞬间坠落"落差感 forms strong taste impact, key layer of core flavor;<br>Aftertaste: Spiciness of desperate resistance interweaves with nihilistic余韵, extreme calm and determination during logic bomb writing adds unique "mutual destruction"回甘, precisely matching emotion devourer preferences.',
+        'log.aftermath': 'IV. Follow-up Incident Handling',
+        'log.aftermathContent': 'Incident Background<br>5 days after sacrifice completion, ingredient\'s friend Wang Lei reported to local police due to inability to contact Li Wenxuan; Officer Zhang Ming interviewed hotel负责人 (myself) for "missing person investigation", requesting check-in records, surveillance footage, and consumption vouchers.<br><br>Countermeasures<br>1. Provided forged materials:<br>- Check-in/check-out records: Complete presentation of compliant process "November 12 check-in - November 26 check-out", with ingredient\'s handwritten check-out confirmation (synthesized from consciousness residue post-sacrifice);<br>- Surveillance footage: Edited篡改public area footage, only保留ingredient "normal check-in, meal pickup, check-out leaving hotel" clips, deleted all abnormal behavior records involving 291 room entrance;<br>- Consumption vouchers: Matched room service orders (coffee, energy drinks, etc.), forged ingredient-signed consumption lists, no logical漏洞.<br>2. Verbal responses:<br>- Emphasized "guest checked out normally, appeared pleasant during checkout, showed no abnormalities";<br>- Displayed "actively协助" attitude during police inquiries, proactively mentioned ingredient "focused on creation during stay, explicitly requested no disturbance", indirectly explaining "loss of contact" might be due to "immersive work";<br>3. Follow-up cleanup:<br>- Monitor Wang Lei and police后续actions and respond timely<br><br>Risk Assessment<br>Risk Level: Low (3/10)<br>- Controllable factors: Ingredient\'s simple social relationships, only 1 core contact, limited investigation scope; forged materials logically closed, no obvious flaws;<br>- Potential risks: Ingredient\'s friend Wang Lei possesses certain logical reasoning ability, need continuous monitoring to prevent discovery of anomalies in "DAYDREAMS" encrypted files (already remotely destroyed this encrypted package, unrecoverable).',
+        'log.summary': 'Li Wenxuan',
+        'log.summaryContent': 'Room 291 "Struggle of Despair" sacrifice超额completed. Ingredient Li Wenxuan\'s core traits —— programmer\'s logical thinking, obsessive-compulsive偏执, extreme obsession with "breakthrough" —— perfectly契合with 291 room\'s time-space loop mechanism, making him ideal ingredient for "struggle" theme.<br><br>The key to entire process lies in "using his own methods against him": Utilize his logical ability to construct dilemmas, use his obsessive personality to amplify struggle, let him experience deepest helplessness in his most skilled领域 (code, logic), ultimately producing top-tier flavor beloved by emotion devourers in extreme despair-resistance对冲.<br><br>This case can serve as advanced teaching material for successors —— understand "ingredient\'s core traits are the best载体for dilemmas", no need for forced intervention, just build suitable environment, let ingredient\'s obsession self-catalyze emotions,方能produce purest flavor.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Feeder System',
+        'footer.confidential': 'For Feeder Use Only - Confidentiality Level: Top Secret',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': 'R∞Mホテル 飼主作業ログ',
+        'log.summary': '李文軒',
+        'log.status': '記録ステータス',
+        'log.completed': 'アーカイブ済み（後任者参考用）',
+        'log.title': 'メインディッシュ：絶望の掙扎',
+        'log.date': '記録日：供物完了後24時間',
+        'log.ingredient': '一、食材基本情報',
+        'log.ingredientContent': '食材番号：No.662<br>名前：李文軒<br>身分：独立ゲーム開発者<br>核心執念：創作閉環への極致追求、窮地における自己証明欲、沈淪不甘の反抗本能<br>感情濃度（初期）：7.5/10（執念65%、不安35%；感情粒度細かく、余剰感情干渉なし、高潜力食材）<br><br>選別ロジック：<br>1. 開発者コミュニティバックエンド監視により、プロジェクトログで3ヶ月連続高頻度"デッドループ""突破口""無解"等キーワード出現、「絶望の掙扎」核心風味と高度一致；<br>2. 代表作《DAYDREAMS》核心設定（仮想時空脱出）は291号室"ループ牢獄"機構と天然契合、環境適応コスト低減；<br>3. 心理プロファイル顯示"偏執型集中"特質、論理窮地面對時自己帰因傾向、放棄ではなく、"制御可能挫折"で感情催化容易；<br>4. 社交関係極簡、失踪後社会注目度低、"低風險供物"基準適合。',
+        'log.process': '二、供物プロセス記録',
+        'log.process1': '<strong>段階1</strong><br>ゲーム開発者フォーラムにターゲット広告投放；<br>匿名メールで"創作者靈感支援計畫招待"送信、ホテル無料宿泊資格提供；<br>目的：《DAYDREAMS》への沈没コスト執念利用、自主宿泊誘導、感情主動性確保（自主参加食材、掙扎意欲更强）；<br>結果：食材11月12日チェックイン、高性能ノートPC2台、暗号化HDD及び手書き論理草稿携帯、宿泊時"ネットワーク安定性"繰り返し確認、不安感と期待感共存、予想通り。',
+        'log.process2': '<strong>段階2</strong><br>カスタマイズ創作支援提供：24時間技術対応、無制限コーヒー/エナジードリンク、調節可能色温度作業燈；<br>部屋時空流動感知弁閉鎖、"疑似正常"環境維持、バックグラウンドでのみ作業リズム記録；<br>目的："環境依存"迅速確立、創作執念と部屋紐付け、後続ループ機構布石；<br>監視結果：食材日次コード生産量通常値1.5倍達、草稿紙大量"ループ最適化方案"注記、心拍85-90bpm安定、執念濃度72%に上昇。',
+        'log.process3': '<strong>段階3</strong><br>"微ループ"機構起動：毎日午前4時非核心データ自動リセット（非暗号化コード草稿、紙ノート、部屋物品配置）；<br>デバイスフィードバック論理改竄：彼の"突破口コード"実行時隠れエラー発動、"接近成功却突然崩壊"表現、エラーメッセージランダム生成規則なし；<br>目的："制御可能挫折"で心理予想打破、初期掙扎触发、不安と不甘増幅；<br>監視結果：食材5日目から不眠症発生、頻繁コード削除再書き、未明時帯屡々机叩打、不安濃度60%に上昇；7日目暗号化HDDに"突破口手掛かり"バックアップ試み、執念と絶望対冲開始。',
+        'log.process4': '<strong>段階4</strong><br>"全ループ"機構升級：毎日6時完全リセット発動（暗号化HDD一時ファイル、デバイス操作記録、身体微細損傷含む）；<br>"虚偽希望"信号埋込：コード中ランダム断片化ヒント埋込（例："ループ変数=自由""出口=自己認知"）、"謎解き幻覚"へ誘導；<br>外部連絡通道改竄：送信救出メール自動"プロジェクト進捗報告"変換、受信外部關心情報"更新催促"に置換；<br>目的："希望-絶望"高頻度振動形成、掙扎意志反復圧搾、感情濃度精製；<br>監視結果：食材毎日"朝絶望→謎解き興奮→深夜崩壊"完全循環経験、感情変動幅度初期値3倍達、14日目"自己対話"現象出現、感情濃度ピーク9.2/10突破。',
+        'log.process5': '<strong>段階5</strong><br>"ループ真実+救出信号"論理爆彈としてホテルシステム基層に埋込試み時、収穫プログラム起動；<br>過程：食材極限集中中"絶境反抗"ピーク感情迸発（自由への渴望、操作への怒り、存在への執念交錯）、情饕意識编码完了0.3秒前、核心感情集合体完全吞噬；<br>結果：食材当日昼チェックアウト、供物痕跡完全隠蔽。',
+        'log.evaluation': '三、風味評価',
+        'log.evaluationContent': '総合評価：<span class="log-rating">9.4/10</span>（トップティアメインディッシュ、風味純度予想超）<br><br>風味解析：<br>前味：コード文字冷質感とコーヒー焦苦交融、創作高圧下緊迫感帯、"掙扎"基底風味奠定；<br>中味：希望微光と絶望深淵交替浮現、"接近突破却瞬間墜落"落差感強烈味覚衝撃形成、核心風味關鍵層次；<br>後味：絶境反抗辛烈と虚無余韻交錯、論理爆彈编写時極致冷静と決絶、風味に"玉石俱焚"独特余甘添加、情饕嗜好精確契合。',
+        'log.aftermath': '四、後続事件処理',
+        'log.aftermathContent': '事件背景<br>供物完了後5日目、食材友人王磊は李文軒と連絡取れず、管轄警察に通報；警官張明は"行方不明者協力調査"を理由にホテル責任者（本人）面談、宿泊記録、監視映像及び消費証憑提出要求。<br><br>対応措置<br>1. 偽造資料提供：<br>- 宿泊/チェックアウト記録："11月12日宿泊-11月26日チェックアウト"のコンプライアンス流程完全提示、食材自筆サイン退去確認書添付（供物後意識残留から筆跡合成）；<br>- 監視映像：公共エリア映像編集改竄、食材"正常宿泊、食事取得、チェックアウトホテル退去"片段のみ保留、291号室入口関与異常行動記録全削除；<br>- 消費証憑：客室サービス注文（コーヒー、エナジードリンク等）匹配、食材サイン確認消費リスト偽造、論理漏洞一切無し。<br>2. 話術対応：<br>- "客人正常退去、退去時状態愉悦、異常一切無し"強調；<br>- 警察照会時"積極協力"態度表現、食材宿泊時"創作集中、邪魔無用明確要求"主動言及、その"連絡不通"は"没入作業"可能性側面説明；<br>3. 後続収尾：<br>- 王磊及び警察後続動作監視及び時宜対応<br><br>リスク評価<br>リスクレベル：低（3/10）<br>- 制御可能要因：食材社交関係簡單、核心連絡先1つのみ、調査範囲限定；偽造資料論理閉環、明らかな瑕疵無し；<br>- 潜在リスク：食材友人王磊、一定の論理推理能力有り、動態継続監視必要、《DAYDREAMS》暗号化ファイル異常発見防止（既に遠隔破壊当該暗号化パッケージ、復元不能）。',
+        'log.summary': '李文軒',
+        'log.summaryContent': '291号室「絶望の掙扎」供物超過完成。食材李文軒の核心特質 —— プログラマーの論理的思考、強迫症的偏執、"突破"への極致執念 —— は291号室時空ループ機構と完美契合、"掙扎"テーマの理想食材とした。<br><br>全プロセスの鍵は"以彼之道，還施彼身"：その論理能力で窮地構築、偏執性格で掙扎増幅、自身最も得意な領域（コード、論理）で最深の無力感体験、最終的に絶望と反抗の極致対冲で情饕好むトップ風味産出。<br><br>本案例は後任者上級教材として —— "食材の核心特質は窮地の最佳载体"理解、強制介入不要、適切な環境構築のみ、食材の執念自己感情催化、最も純粋な風味産出可能。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '飼主システム',
+        'footer.confidential': '飼主専用 - 機密レベル：極秘',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'R∞M Hotel Registro de Trabalho do Alimentador',
+        'log.summary': 'Li Wenxuan',
+        'log.status': 'Status do Registro',
+        'log.completed': 'Arquivado (Para Referência do Sucessor)',
+        'log.title': 'Prato Principal: Luta do Desespero',
+        'log.date': 'Data do Registro: 24 Horas Após Conclusão do Sacrifício',
+        'log.ingredient': 'I. Informações Básicas do Ingrediente',
+        'log.ingredientContent': 'Nº do Ingrediente: No.662<br>Nome: Li Wenxuan<br>Identidade: Desenvolvedor Independente de Jogos<br>Obsessão Central: Busca extrema por fechamento criativo, desejo de auto-validação em dilemas, instinto rebelde contra afundamento<br>Concentração Emocional (Inicial): 7.5/10 (Obsessão 65%, Ansiedade 35%; Granularidade emocional fina, sem interferência emocional redundante, ingrediente de alto potencial)<br><br>Lógica de Seleção:<br>1. Monitoramento de back-end de comunidades de desenvolvedores mostrou alta frequência de palavras-chave como "loop morto", "avanço", "insolúvel" em logs de projeto por 3 meses consecutivos, altamente correspondente ao sabor central de "Luta do Desespero";<br>2. Configuração central de sua obra-prima "DAYDREAMS" (escape de tempo-espaço virtual)天然mente se encaixa no mecanismo "gaiola de loop" do quarto 291, reduzindo custo de adaptação ambiental;<br>3. Perfil psicológico mostra traço "foco obsessivo", tende à auto-culpa而不是 desistir ao enfrentar dilemas lógicos, facilmente catalisado por "frustração controlável";<br>4. Relações sociais mínimas, baixa atenção social após desaparecimento, atende aos padrões "sacrifício de baixo risco".',
+        'log.process': 'II. Registro do Processo de Sacrifício',
+        'log.process1': '<strong>Estágio 1</strong><br>Colocou anúncios segmentados em fóruns de desenvolvedores de jogos;<br>Enviou "Convite do Programa de Apoio à Inspiração do Criador" via e-mail anônimo, oferecendo estadia gratuita no hotel;<br>Propósito: Utilizar obsessão de custo irrecuperável com "DAYDREAMS" para guiar check-in voluntário, garantindo iniciativa emocional (ingredientes espontâneos têm maior vontade de luta);<br>Resultado: Ingrediente fez check-in em 12 de novembro, carregando dois laptops de alto desempenho, discos rígidos criptografados e rascunhos lógicos manuscritos, confirmando repetidamente "estabilidade da rede" durante check-in, ansiedade e expectativa coexistindo, atendendo预设.',
+        'log.process2': '<strong>Estágio 2</strong><br>Forneceu suporte de criação personalizado: resposta técnica 24 horas, café/bebidas energéticas ilimitadas, luzes de trabalho com temperatura de cor ajustável;<br>Fechou válvula de percepção de fluxo temporal do quarto, manteve ambiente "pseudo-normal", apenas registrando ritmo de trabalho em segundo plano;<br>Propósito: Deixá-lo estabelecer rapidamente "dependência ambiental", vincular obsessão criativa com quarto, preparando terreno para mecanismos de loop subsequentes;<br>Resultado da Monitoração: Saída diária de código do ingrediente atingiu 1,5 vezes o valor normal, rascunhos marcados com numerosas "soluções de otimização de loop", frequência cardíaca estável em 85-90 bpm, concentração de obsessão aumentou para 72%.',
+        'log.process3': '<strong>Estágio 3</strong><br>Ativou mecanismo "micro-loop": Redefinição automática diária às 4h de dados não essenciais (rascunhos de código não criptografados, notas em papel, arranjo de itens do quarto);<br>Deteriorou lógica de feedback do dispositivo: Seu "código de avanço" acionou erros ocultos ao executar, manifestando-se como "接近成功却突然崩溃", com mensagens de erro geradas aleatoriamente sem padrão;<br>Propósito: Quebrar expectativas psicológicas através de "frustração controlável", desencadear luta inicial, amplificar ansiedade e relutância;<br>Resultado da Monitoração: Ingrediente desenvolveu insônia a partir do dia 5, frequentemente excluiu e reescreveu código, bateu na mesa várias vezes durante madrugada, concentração de ansiedade subiu para 60%; Dia 7 tentou fazer backup de "pistas de avanço" em disco rígido criptografado, obsessão e desespero começaram a contrapor.',
+        'log.process4': '<strong>Estágio 4</strong><br>Atualizou para mecanismo "loop completo": Redefinição completa diária às 6h (incluindo arquivos temporários de disco rígido criptografado, registros de operação do dispositivo, pequenas lesões físicas);<br>Implantou sinais de "falsa esperança": Inseriu aleatoriamente dicas fragmentadas em seu código (ex.: "variável de loop=liberdade", "saída=autoconhecimento"), guiando-o para "ilusão de resolução de quebra-cabeças";<br>Deteriorou canais de comunicação externos: Convertido automaticamente seus e-mails de socorro em "relatórios de progresso do projeto", substituiu informações de preocupação recebidas por "lembretes de atualização";<br>Propósito: Deixar "esperança-desespero" formar oscilação de alta frequência,反复榨取vontade de luta, purificar concentração emocional;<br>Resultado da Monitoração: Ingrediente experimentou ciclo diário completo de "desespero matinal→emoção de quebra-cabeças→meia-noite崩溃", amplitude de flutuação emocional atingiu 3 vezes valor inicial, dia 14 mostrou fenômeno "auto-diálogo", pico de concentração emocional excedeu 9.2/10.',
+        'log.process5': '<strong>Estágio 5</strong><br>Ativou programa de colheita quando tentou codificar "verdade do loop+sinal de socorro" como bomba lógica no sistema do hotel底层；<br>Processo: Ingrediente迸发emoções de pico de "resistência desesperada" em foco extremo (desejo por liberdade, raiva da manipulação, obsessão com existência entrelaçadas), devorador de emoções consumiu completamente seu complexo emocional central 0,3 segundos antes da conclusão da codificação da consciência;<br>Resultado: Ingrediente fez check-out ao meio-dia do mesmo dia, vestígios de sacrifício completamente ocultados.',
+        'log.evaluation': 'III. Avaliação de Sabor',
+        'log.evaluationContent': 'Avaliação Geral: <span class="log-rating">9.4/10</span> (Prato principal de alto nível, pureza do sabor excede expectativas)<br><br>Análise de Sabor:<br>Inicial: Textura fria de caracteres de código mistura-se com amargura do café, carregando tensão sob pressão criativa, estabelecendo sabor base de "luta";<br>Meio: Esperança cintilante e desespero abissal alternam浮现,"接近破局却瞬间坠落" sensação de落差 forma forte impacto gustativo, camada chave do sabor central;<br>Final: Picância da resistência desesperada intercala com resíduo niilista, calma extrema e determinação durante escrita da bomba lógica adiciona único "destruição mútua"回甘, correspondendo precisamente às preferências do devorador de emoções.',
+        'log.aftermath': 'IV. Tratamento de Incidente de Acompanhamento',
+        'log.aftermathContent': 'Antecedentes do Incidente<br>5 dias após conclusão do sacrifício, amigo do ingrediente Wang Lei relatou à polícia local devido à incapacidade de contatar Li Wenxuan; Oficial Zhang Ming entrevistou responsável do hotel (eu mesmo) para "investigação de pessoa desaparecida", solicitando registros de check-in, filmagens de vigilância e comprovantes de consumo.<br><br>Contramedidas<br>1. Forneceu materiais forjados:<br>- Registros de check-in/check-out: Apresentação completa do processo合规 "12 de novembro check-in - 26 de novembro check-out", com confirmação de check-out manuscrita do ingrediente (sintetizada from resíduo de consciência pós-sacrifício);<br>- Filmagens de vigilância: Edição篡改de filmagem de área pública, apenas保留clipes do ingrediente "check-in normal, retirada de refeições, check-out deixando hotel", excluiu todos os registros de comportamento anormal envolvendo entrada do quarto 291;<br>- Comprovantes de consumo: Correspondidos pedidos de serviço de quarto (café, bebidas energéticas, etc.), listas de consumo forjadas com assinatura do ingrediente, sem漏洞lógicos.<br>2. Respostas verbais:<br>- Enfatizou "hóspede fez check-out normalmente, apareceu agradável durante check-out, não mostrou anormalidades";<br>- Exibiu atitude "ativamente协助" durante interrogatórios policiais, mencionou proativamente ingrediente "focado na criação durante estadia, explicitamente solicitou nenhum distúrbio", explicando indiretamente "perda de contato" pode ser devido a "trabalho imersivo";<br>3. Limpeza de acompanhamento:<br>- Monitore ações后续de Wang Lei e polícia e responda oportunamente<br><br>Avaliação de Risco<br>Nível de Risco: Baixo (3/10)<br>- Fatores controláveis: Relações sociais simples do ingrediente, apenas 1 contato central, escopo de investigação limitado; materiais forjados logicamente fechados, sem falhas óbvias;<br>- Riscos potenciais: Amigo do ingrediente Wang Lei possui certa capacidade de raciocínio lógico, necessidade de monitoramento contínuo para evitar descoberta de anomalias em arquivos criptografados de "DAYDREAMS" (já destruído remotamente este pacote criptografado, irrecuperável).',
+        'log.summary': 'Li Wenxuan',
+        'log.summaryContent': 'Quarto 291 "Luta do Desespero" sacrifício超额concluído. Traços centrais do ingrediente Li Wenxuan —— pensamento lógico de programador, obsessão compulsiva, obsessão extrema com "avanço" ——完美契合com mecanismo de loop de tempo-espaço do quarto 291, tornando-o ingrediente ideal para tema "luta".<br><br>A chave para todo o processo está em "usar seus próprios métodos contra ele": Utilize sua capacidade lógica para construir dilemas, use sua personalidade obsessiva para amplificar luta, deixe-o experimentar mais profunda impotência em sua领域 mais habilidosa (código, lógica),最终mente produzindo sabor de alto nível amado por devoradores de emoções em extremo对冲de desespero-resistência.<br><br>Este caso pode servir como material de ensino avançado para sucessores —— entenda "traços centrais do ingrediente são o melhor载体para dilemas", sem necessidade de intervenção forçada, apenas construa ambiente adequado, deixe obsessão do ingrediente auto-catalisar emoções,方能produzir sabor mais puro.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema do Alimentador',
+        'footer.confidential': 'Uso do Alimentador Apenas - Nível de Confidencialidade: Ultra Secreto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能 - 修改为跳转到RIKI.html
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        window.location.href = 'RIKI工作台.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

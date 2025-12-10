@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIKIMARU的微博 - 私密账号</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* 顶部导航栏 */
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e7e7e7;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            color: #e6162d;
+            font-size: 28px;
+            margin-right: 5px;
+        }
+        
+        .logo span {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e6162d;
+        }
+        
+        .search-box {
+            flex-grow: 1;
+            max-width: 500px;
+            margin: 0 30px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 8px 15px;
+            border: 1px solid #e7e7e7;
+            border-radius: 20px;
+            background-color: #f5f5f5;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .search-box input:focus {
+            background-color: white;
+            border-color: #e6162d;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            margin-left: 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .nav-links a:hover {
+            color: #e6162d;
+        }
+        
+        .login-btn {
+            background-color: #e6162d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 20px;
+        }
+        
+        .login-btn:hover {
+            background-color: #d50f26;
+        }
+        
+        .nav-links .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+        
+        /* 语言切换按钮 */
+        .language-switcher {
+            position: relative;
+            margin-left: 20px;
+        }
+        
+        .language-btn {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .language-btn i {
+            margin-right: 5px;
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+            min-width: 120px;
+        }
+        
+        .language-dropdown a {
+            display: block;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .language-dropdown a:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .language-dropdown a:last-child {
+            border-bottom: none;
+        }
+        
+        .language-switcher:hover .language-dropdown {
+            display: block;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            display: flex;
+            margin-top: 15px;
+            gap: 15px;
+        }
+        
+        /* 左侧菜单栏 */
+        .sidebar {
+            width: 220px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        
+        .profile-card {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            background-image: url('riki头像.jpg');
+            background-size: cover;
+            background-position: center;
+            border: 3px solid #f0f0f0;
+        }
+        
+        .username {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .private-badge {
+            display: inline-block;
+            background-color: #f5f5f5;
+            color: #888;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .user-bio {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-weight: bold;
+            font-size: 16px;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .menu-items {
+            padding: 10px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f5f5;
+            color: #e6162d;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .menu-item.active {
+            color: #e6162d;
+            border-right: 3px solid #e6162d;
+            background-color: #fef2f2;
+        }
+        
+        /* 微博内容区 */
+        .weibo-feed {
+            flex-grow: 1;
+            max-width: 700px;
+        }
+        
+        /* 私密账号提示 */
+        .private-account-notice {
+            background-color: white;
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .private-icon {
+            font-size: 64px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .private-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .private-text {
+            color: #888;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        /* 右侧栏 */
+        .right-sidebar {
+            width: 280px;
+        }
+        
+        .right-card {
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .right-card h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .trend-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .trend-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .trend-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        
+        .trend-stats {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        /* 登录模态框 */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-modal.active {
+            display: flex;
+        }
+        
+        .login-form {
+            background-color: white;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-form h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e7e7e7;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .login-form input:focus {
+            border-color: #e6162d;
+        }
+        
+        .password-hint {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .login-submit {
+            width: 100%;
+            background-color: #e6162d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .login-submit:hover {
+            background-color: #d50f26;
+        }
+        
+        .login-error {
+            color: #e6162d;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .right-sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .search-box {
+                display: none;
+            }
+        }
+        
+        /* 语言切换样式 */
+        .lang-zh { display: block; }
+        .lang-en { display: none; }
+        .lang-ja { display: none; }
+        .lang-pt { display: none; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fab fa-weibo"></i>
+                <span>微博</span>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" placeholder="搜索微博、找人..." id="searchInput">
+            </div>
+            
+            <div class="nav-links">
+                <a href="#"><i class="fas fa-home"></i> <span class="lang-zh">首页</span><span class="lang-en">Home</span><span class="lang-ja">ホーム</span><span class="lang-pt">Início</span></a>
+                <a href="#"><i class="far fa-bell"></i> <span class="lang-zh">通知</span><span class="lang-en">Notifications</span><span class="lang-ja">通知</span><span class="lang-pt">Notificações</span></a>
+                
+                <!-- 语言切换按钮 -->
+                <div class="language-switcher">
+                    <button class="language-btn" id="languageBtn">
+                        <i class="fas fa-globe"></i> <span class="lang-zh">中文</span><span class="lang-en">English</span><span class="lang-ja">日本語</span><span class="lang-pt">Português</span>
+                    </button>
+                    <div class="language-dropdown">
+                        <a href="#" data-lang="zh">中文</a>
+                        <a href="#" data-lang="en">English</a>
+                        <a href="#" data-lang="ja">日本語</a>
+                        <a href="#" data-lang="pt">Português</a>
+                    </div>
+                </div>
+                
+                <button class="login-btn" id="openLogin">
+                    <span class="lang-zh">登录</span>
+                    <span class="lang-en">Login</span>
+                    <span class="lang-ja">ログイン</span>
+                    <span class="lang-pt">Entrar</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- 左侧菜单栏 -->
+            <aside class="sidebar">
+                <div class="profile-card">
+                    <div class="avatar"></div>
+                    <div class="username">RIKIMARU</div>
+                    <div class="private-badge">
+                        <span class="lang-zh">私密账号</span>
+                        <span class="lang-en">Private Account</span>
+                        <span class="lang-ja">非公開アカウント</span>
+                        <span class="lang-pt">Conta Privada</span>
+                    </div>
+                    <div class="user-bio">
+                        <span class="lang-zh">编舞师 | 音乐制作人 | 舞台艺术家</span>
+                        <span class="lang-en">Choreographer | Music Producer | Stage Artist</span>
+                        <span class="lang-ja">振付師 | 音楽プロデューサー | 舞台芸術家</span>
+                        <span class="lang-pt">Coreógrafo | Produtor Musical | Artista de Palco</span>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number">0</span>
+                            <span class="stat-label lang-zh">关注</span>
+                            <span class="stat-label lang-en">Following</span>
+                            <span class="stat-label lang-ja">フォロー中</span>
+                            <span class="stat-label lang-pt">Seguindo</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">0</span>
+                            <span class="stat-label lang-zh">粉丝</span>
+                            <span class="stat-label lang-en">Followers</span>
+                            <span class="stat-label lang-ja">フォロワー</span>
+                            <span class="stat-label lang-pt">Seguidores</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">0</span>
+                            <span class="stat-label lang-zh">微博</span>
+                            <span class="stat-label lang-en">Weibos</span>
+                            <span class="stat-label lang-ja">微博</span>
+                            <span class="stat-label lang-pt">Weibos</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="menu-items">
+                    <a href="#" class="menu-item active">
+                        <i class="fas fa-user"></i> 
+                        <span class="lang-zh">个人主页</span>
+                        <span class="lang-en">Profile</span>
+                        <span class="lang-ja">プロフィール</span>
+                        <span class="lang-pt">Perfil</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-bookmark"></i> 
+                        <span class="lang-zh">收藏</span>
+                        <span class="lang-en">Bookmarks</span>
+                        <span class="lang-ja">ブックマーク</span>
+                        <span class="lang-pt">Favoritos</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-photo-video"></i> 
+                        <span class="lang-zh">相册</span>
+                        <span class="lang-en">Albums</span>
+                        <span class="lang-ja">アルバム</span>
+                        <span class="lang-pt">Álbuns</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-heart"></i> 
+                        <span class="lang-zh">赞过</span>
+                        <span class="lang-en">Likes</span>
+                        <span class="lang-ja">いいね</span>
+                        <span class="lang-pt">Curtidas</span>
+                    </a>
+                </div>
+            </aside>
+
+            <!-- 微博内容区 -->
+            <main class="weibo-feed">
+                <!-- 私密账号提示 -->
+                <div class="private-account-notice">
+                    <div class="private-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h2 class="private-title">
+                        <span class="lang-zh">这是私密账号</span>
+                        <span class="lang-en">This is a private account</span>
+                        <span class="lang-ja">これは非公開アカウントです</span>
+                        <span class="lang-pt">Esta é uma conta privada</span>
+                    </h2>
+                    <p class="private-text">
+                        <span class="lang-zh">该用户已设置账号为私密状态，只有被允许的用户才能查看其微博。</span>
+                        <span class="lang-en">This user has set their account to private. Only approved users can view their Weibos.</span>
+                        <span class="lang-ja">このユーザーはアカウントを非公開に設定しています。承認されたユーザーのみが微博を閲覧できます。</span>
+                        <span class="lang-pt">Este usuário definiu sua conta como privada. Somente usuários aprovados podem visualizar seus Weibos.</span>
+                    </p>
+                    <p class="private-text">
+                        <span class="lang-zh">如果你认识该用户，可以尝试申请关注。</span>
+                        <span class="lang-en">If you know this user, you can try to request to follow.</span>
+                        <span class="lang-ja">このユーザーを知っている場合は、フォロー申請を試すことができます。</span>
+                        <span class="lang-pt">Se você conhece este usuário, pode tentar solicitar para seguir.</span>
+                    </p>
+                </div>
+                
+                <!-- 此处没有微博帖子显示 -->
+            </main>
+
+            <!-- 右侧边栏 -->
+            <aside class="right-sidebar">
+                <div class="right-card">
+                    <h3>
+                        <span class="lang-zh">热门话题</span>
+                        <span class="lang-en">Trending Topics</span>
+                        <span class="lang-ja">トレンドトピック</span>
+                        <span class="lang-pt">Tópicos em Alta</span>
+                    </h3>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸全球顶级编舞大师#</div>
+                        <div class="trend-stats">
+                            <span class="lang-zh">245.6万讨论</span>
+                            <span class="lang-en">2.45M discussions</span>
+                            <span class="lang-ja">245.6万 議論</span>
+                            <span class="lang-pt">2.45M discussões</span>
+                        </div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸二专《ROOM》#</div>
+                        <div class="trend-stats">
+                            <span class="lang-zh">189.3万讨论</span>
+                            <span class="lang-en">1.89M discussions</span>
+                            <span class="lang-ja">189.3万 議論</span>
+                            <span class="lang-pt">1.89M discussões</span>
+                        </div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#一起初来丸#</div>
+                        <div class="trend-stats">
+                            <span class="lang-zh">156.7万讨论</span>
+                            <span class="lang-en">1.56M discussions</span>
+                            <span class="lang-ja">156.7万 議論</span>
+                            <span class="lang-pt">1.56M discussões</span>
+                        </div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸舞蹈教室#</div>
+                        <div class="trend-stats">
+                            <span class="lang-zh">98.4万讨论</span>
+                            <span class="lang-en">984k discussions</span>
+                            <span class="lang-ja">98.4万 議論</span>
+                            <span class="lang-pt">984k discussões</span>
+                        </div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸回归舞台#</div>
+                        <div class="trend-stats">
+                            <span class="lang-zh">76.2万讨论</span>
+                            <span class="lang-en">762k discussions</span>
+                            <span class="lang-ja">76.2万 議論</span>
+                            <span class="lang-pt">762k discussões</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- 登录模态框 -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-form">
+            <div class="close-modal" id="closeLogin">&times;</div>
+            <h2>
+                <span class="lang-zh">微博登录</span>
+                <span class="lang-en">Weibo Login</span>
+                <span class="lang-ja">微博ログイン</span>
+                <span class="lang-pt">Login do Weibo</span>
+            </h2>
+            <input type="text" id="loginUsername" placeholder="用户名">
+            <input type="password" id="loginPassword" placeholder="密码">
+            <div class="password-hint">
+                <span class="lang-zh">密码提示：六个大写字母</span>
+                <span class="lang-en">Password hint: Six uppercase letters</span>
+                <span class="lang-ja">パスワードのヒント：6つの大文字</span>
+                <span class="lang-pt">Dica de senha: Seis letras maiúsculas</span>
+            </div>
+            <button class="login-submit" id="submitLogin">
+                <span class="lang-zh">登录</span>
+                <span class="lang-en">Login</span>
+                <span class="lang-ja">ログイン</span>
+                <span class="lang-pt">Entrar</span>
+            </button>
+            <div class="login-error" id="loginError">
+                <span class="lang-zh">用户名或密码错误</span>
+                <span class="lang-en">Incorrect username or password</span>
+                <span class="lang-ja">ユーザー名またはパスワードが間違っています</span>
+                                <span class="lang-pt">Nome de usuário ou senha incorretos</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageBtn = document.getElementById('languageBtn');
+            const languageLinks = document.querySelectorAll('.language-dropdown a');
+            
+            // 设置当前语言
+            let currentLang = 'zh';
+            
+            // 语言映射
+            const languageNames = {
+                'zh': '中文',
+                'en': 'English',
+                'ja': '日本語',
+                'pt': 'Português'
+            };
+            
+            // 为每个语言链接添加点击事件
+            languageLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const lang = this.getAttribute('data-lang');
+                    switchLanguage(lang);
+                    
+                    // 更新按钮文本
+                    const btnText = languageBtn.querySelector('span');
+                    btnText.textContent = languageNames[lang];
+                });
+            });
+            
+            // 切换语言函数
+            function switchLanguage(lang) {
+                // 隐藏所有语言内容
+                document.querySelectorAll('.lang-zh, .lang-en, .lang-ja, .lang-pt').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // 显示选定语言的内容
+                document.querySelectorAll(`.lang-${lang}`).forEach(el => {
+                    el.style.display = 'block';
+                });
+                
+                // 更新当前语言
+                currentLang = lang;
+            }
+            
+            // 初始化页面为中文
+            switchLanguage('zh');
+            
+            // 搜索功能
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    alert(currentLang === 'zh' ? `搜索关键词: ${this.value}` : 
+                          currentLang === 'en' ? `Search keyword: ${this.value}` :
+                          currentLang === 'ja' ? `検索キーワード: ${this.value}` :
+                          `Palavra-chave de pesquisa: ${this.value}`);
+                    this.value = '';
+                }
+            });
+            
+            // 登录模态框功能
+            const loginModal = document.getElementById('loginModal');
+            const openLoginBtn = document.getElementById('openLogin');
+            const closeLoginBtn = document.getElementById('closeLogin');
+            const submitLoginBtn = document.getElementById('submitLogin');
+            const loginError = document.getElementById('loginError');
+            
+            // 打开登录模态框
+            openLoginBtn.addEventListener('click', function() {
+                loginModal.classList.add('active');
+                loginError.style.display = 'none';
+            });
+            
+            // 关闭登录模态框
+            closeLoginBtn.addEventListener('click', function() {
+                loginModal.classList.remove('active');
+                document.getElementById('loginUsername').value = '';
+                document.getElementById('loginPassword').value = '';
+            });
+            
+            // 点击模态框背景关闭
+            loginModal.addEventListener('click', function(e) {
+                if (e.target === loginModal) {
+                    loginModal.classList.remove('active');
+                    document.getElementById('loginUsername').value = '';
+                    document.getElementById('loginPassword').value = '';
+                }
+            });
+            
+            // 提交登录
+            submitLoginBtn.addEventListener('click', function() {
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // 验证账号密码
+                if (username === 'RIKIMARU' && password === 'RITUAL') {
+                    // 登录成功，跳转到riki微博.html
+                    window.location.href = 'riki微博.html';
+                } else {
+                    // 登录失败，显示错误信息
+                    loginError.style.display = 'block';
+                }
+            });
+            
+            // 按Enter键提交登录
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitLoginBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

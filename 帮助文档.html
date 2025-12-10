@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 游戏帮助</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Playfair Display', 'serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .special-purple-text {
+        font-family: 'Playfair Display', serif;
+        color: #8A6BBE;
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.7);
+        font-weight: 600;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+      }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果 -->
+  <div class="monitor-line"></div>
+  
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-display text-xl md:text-2xl tracking-wider">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 酒店</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 替换为返回按钮 -->
+        <a href="玩家个人页面.html" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+      </nav>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <!-- 替换为返回按钮 -->
+        <a href="玩家个人页面.html" class="text-gray-300 hover:text-white py-2 transition-colors" data-i18n="nav.back">返回</a>
+        
+        <!-- 移动端语言切换 -->
+        <div class="border-t border-gray-700 pt-4 mt-4">
+          <div class="px-4 py-2 text-sm text-gray-400">语言</div>
+          <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+          <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+          <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+          <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容 -->
+  <section class="pt-32 pb-20 relative">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <h1 class="text-[clamp(2rem,5vw,3rem)] font-display font-bold text-white mb-6 text-shadow">
+            <span data-i18n="help.title">服务体验分析师指南</span>
+          </h1>
+          <p class="text-accent text-lg max-w-2xl mx-auto" data-i18n="help.subtitle">
+            欢迎加入R∞M酒店团队，本指南将帮助您完成工作
+          </p>
+        </div>
+        
+        <div class="space-y-12">
+          <!-- 工作简介 -->
+          <div class="bg-primary/40 p-8 rounded-sm border border-accent/20">
+            <h2 class="text-2xl font-display font-semibold mb-6 text-white flex items-center">
+              <i class="fa fa-info-circle text-accent mr-3"></i>
+              <span data-i18n="help.intro.title">工作简介</span>
+            </h2>
+            <p class="text-gray-300 mb-4" data-i18n="help.intro.p1">
+              作为R∞M酒店的"服务体验分析师"，您的主要职责是研究和分析酒店客人的住宿记录，从中提取有价值的信息，为酒店服务优化提供建议。
+            </p>
+            <p class="text-gray-300" data-i18n="help.intro.p2">
+              您将接触到各类客房记录、客人反馈和相关数据。仔细分析这些信息，理解客人需求和体验，是您工作的核心。
+            </p>
+          </div>
+          
+          <!-- 基本操作 -->
+          <div class="bg-primary/40 p-8 rounded-sm border border-accent/20">
+            <h2 class="text-2xl font-display font-semibold mb-6 text-white flex items-center">
+              <i class="fa fa-mouse-pointer text-accent mr-3"></i>
+              <span data-i18n="help.basics.title">基本操作</span>
+            </h2>
+            
+            <div class="space-y-6">
+              <div>
+                <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="help.basics.browsing">信息浏览</h3>
+                <p class="text-gray-300" data-i18n="help.basics.browsingDesc">
+                  您可以通过点击导航链接或页面上的交互元素，在不同页面间切换。仔细阅读所有文本内容，重要信息可能隐藏在看似普通的描述中。
+                </p>
+              </div>
+              
+              <div>
+                <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="help.basics.searching">信息搜索</h3>
+                <p class="text-gray-300 mb-3" data-i18n="help.basics.searchingDesc1">
+                  官网顶部的搜索框是您获取特定信息的重要工具。在搜索框中输入特定关键词，可能会打开相关的信息页面。
+                </p>
+                <p class="text-gray-300" data-i18n="help.basics.searchingDesc2">
+                  例如：尝试在搜索框中输入"邮箱"，可以查看与客人邮件相关的记录。
+                </p>
+              </div>
+              
+              <div>
+                <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="help.basics.notes">记录与分析</h3>
+                <p class="text-gray-300" data-i18n="help.basics.notesDesc">
+                  建议您自行记录发现的重要信息和线索。不同来源的信息可能相互关联，综合分析这些信息将帮助您更好地完成分析报告。
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 线索提示 -->
+          <div class="bg-primary/40 p-8 rounded-sm border border-accent/20">
+            <h2 class="text-2xl font-display font-semibold mb-6 text-white flex items-center">
+              <i class="fa fa-lightbulb-o text-accent mr-3"></i>
+              <span data-i18n="help.clues.title">线索提示</span>
+            </h2>
+            
+            <p class="text-gray-300 mb-6" data-i18n="help.clues.p1">
+              酒店的信息系统包含多种类型的记录，以下是您可能会遇到的信息来源：
+            </p>
+            
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                <span data-i18n="help.clues.item1">客房服务记录与需求</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                <span data-i18n="help.clues.item2">客人留下的笔记与便签</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                <span data-i18n="help.clues.item3">酒店公共区域的公告与信息</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                <span data-i18n="help.clues.item4">系统日志与后台数据</span>
+              </li>
+            </ul>
+            
+            <!-- 神秘纸条图片（移除边框） -->
+            <div class="text-center my-10">
+              <img src="小纸条.jpg" alt="神秘纸条" class="max-w-full h-auto mx-auto rounded-sm shadow-lg">
+              <p class="text-sm text-gray-400 mt-3 italic" data-i18n="help.clues.note">【一张不知道哪里来的手写小纸条】</p>
+            </div>
+            
+            <p class="text-gray-300" data-i18n="help.clues.p2">
+              注意那些看似矛盾或不寻常的信息，它们往往是深入分析的关键。有时，信息的缺失或异常也是一种线索。
+            </p>
+          </div>
+          
+          <!-- 工作建议 -->
+          <div class="bg-primary/40 p-8 rounded-sm border border-accent/20">
+            <h2 class="text-2xl font-display font-semibold mb-6 text-white flex items-center">
+              <i class="fa fa-book text-accent mr-3"></i>
+              <span data-i18n="help.tips.title">工作建议</span>
+            </h2>
+            
+            <div class="space-y-4 text-gray-300">
+              <p data-i18n="help.tips.tip1">
+                1. 耐心与细心是成功的关键。不要放过任何细节，即使它看起来无关紧要。
+              </p>
+              <p data-i18n="help.tips.tip2">
+                2. 定期回顾已获取的信息，新的发现往往会让旧信息呈现出新的意义。
+              </p>
+              <p data-i18n="help.tips.tip3">
+                3. 注意记录信息的日期和时间，时间线分析对理解事件发展非常重要。
+              </p>
+              <p data-i18n="help.tips.tip4">
+                4. 当遇到困难时，可以尝试从不同角度分析问题，换一种思路可能会有新的发现。
+              </p>
+              <p data-i18n="help.tips.tip5">
+                5. 您的分析结论将影响酒店的服务优化方向，请认真对待每一个判断。
+              </p>
+            </div>
+          </div>
+          
+          <!-- 结语（删除返回官网按钮） -->
+          <div class="text-center">
+            <p class="special-purple-text mb-6" data-i18n="help.conclusion">
+              祝您工作顺利。记住，每一个细节都可能改变一切。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- 页脚 -->
+  <footer class="py-10 bg-dark/80 border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="text-center text-gray-400 text-sm">
+        <p data-i18n="footer.copyright">© 2023 R∞M酒店 版权所有</p>
+        <p class="mt-2" data-i18n="footer.note">本指南内容仅供内部员工参考</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 语言切换功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 语言数据（添加返回按钮的多语言支持）
+      const translations = {
+        'en': {
+          'nav.back': 'Back',
+          'nav.home': 'Home',
+          'nav.help': 'Help Document',
+          'help.title': 'Service Experience Analyst Guide',
+          'help.subtitle': 'Welcome to R∞M Hotel team. This guide will help you with your work',
+          'help.intro.title': 'Job Introduction',
+          'help.intro.p1': 'As a "Service Experience Analyst" at R∞M Hotel, your main responsibility is to research and analyze hotel guests\' stay records, extract valuable information from them, and provide suggestions for hotel service optimization.',
+          'help.intro.p2': 'You will have access to various room records, guest feedback, and related data. Carefully analyzing this information and understanding guest needs and experiences is the core of your work.',
+          'help.basics.title': 'Basic Operations',
+          'help.basics.browsing': 'Information Browsing',
+          'help.basics.browsingDesc': 'You can switch between different pages by clicking on navigation links or interactive elements on the page. Read all text content carefully; important information may be hidden in seemingly ordinary descriptions.',
+          'help.basics.searching': 'Information Searching',
+          'help.basics.searchingDesc1': 'The search box at the top of the official website is an important tool for you to obtain specific information. Entering specific keywords in the search box may open related information pages.',
+          'help.basics.searchingDesc2': 'For example: Try entering "邮箱" (email) in the search box to view records related to guest emails.',
+          'help.basics.notes': 'Recording and Analysis',
+          'help.basics.notesDesc': 'It is recommended that you record important information and clues you discover. Information from different sources may be interrelated, and comprehensive analysis of this information will help you better complete the analysis report.',
+          'help.clues.title': 'Clue Tips',
+          'help.clues.p1': 'The hotel\'s information system contains various types of records. Here are the information sources you may encounter:',
+          'help.clues.item1': 'Room service records and requests',
+          'help.clues.item2': 'Notes and memos left by guests',
+          'help.clues.item3': 'Announcements and information in public areas of the hotel',
+          'help.clues.item4': 'System logs and background data',
+          'help.clues.note': '[A handwritten note of unknown origin]',
+          'help.clues.p2': 'Pay attention to information that seems contradictory or unusual, as it is often the key to in-depth analysis. Sometimes, missing or abnormal information is also a clue.',
+          'help.tips.title': 'Work Suggestions',
+          'help.tips.tip1': '1. Patience and carefulness are the keys to success. Don\'t overlook any details, even if they seem insignificant.',
+          'help.tips.tip2': '2. Review the information you have obtained regularly. New discoveries often give old information new meaning.',
+          'help.tips.tip3': '3. Pay attention to recording the date and time of information. Timeline analysis is very important for understanding the development of events.',
+          'help.tips.tip4': '4. When encountering difficulties, try to analyze the problem from different angles. A different way of thinking may lead to new discoveries.',
+          'help.tips.tip5': '5. Your analysis conclusions will affect the direction of the hotel\'s service optimization. Please take every judgment seriously.',
+          'help.conclusion': 'Wish you all the best in your work. Remember, every detail can change everything.',
+          'help.return': 'Return to Official Website',
+          'footer.copyright': '© 2023 R∞M Hotel. All rights reserved.',
+          'footer.note': 'This guide is for internal staff reference only'
+        },
+        'ja': {
+          'nav.back': '戻る',
+          'nav.home': 'ホーム',
+          'nav.help': 'ヘルプドキュメント',
+          'help.title': 'サービス体験アナリストガイド',
+          'help.subtitle': 'R∞Mホテルチームへようこそ。このガイドはあなたの仕事を支援します',
+          'help.intro.title': '仕事の概要',
+          'help.intro.p1': 'R∞Mホテルの「サービス体験アナリスト」として、主な責任はホテルのゲストの滞在記録を調査・分析し、価値のある情報を抽出し、ホテルサービスの最適化に提案を提供することです。',
+          'help.intro.p2': 'さまざまな客室記録、ゲストからのフィードバック、関連データにアクセスできます。これらの情報を注意深く分析し、ゲストのニーズと体験を理解することが仕事の核心です。',
+          'help.basics.title': '基本操作',
+          'help.basics.browsing': '情報の閲覧',
+          'help.basics.browsingDesc': 'ナビゲーションリンクまたはページ上の対話型要素をクリックすることで、異なるページ間を切り替えることができます。すべてのテキストコンテンツを注意深く読んでください。重要な情報は一見平凡な説明の中に隠されている場合があります。',
+          'help.basics.searching': '情報検索',
+          'help.basics.searchingDesc1': '公式サイト上部の検索ボックスは、特定の情報を取得するための重要なツールです。検索ボックスに特定のキーワードを入力すると、関連する情報ページが開く場合があります。',
+          'help.basics.searchingDesc2': '例：検索ボックスに「邮箱」（メール）と入力してみると、ゲストのメール関連の記録を表示できます。',
+          'help.basics.notes': '記録と分析',
+          'help.basics.notesDesc': '発見した重要な情報や手がかりを記録することを推奨します。さまざまな情報源からの情報は相互に関連している場合があり、これらの情報を総合的に分析することで、分析レポートをより良く完成させることができます。',
+          'help.clues.title': '手がかりのヒント',
+          'help.clues.p1': 'ホテルの情報システムにはさまざまな種類の記録が含まれています。以下に遭遇する可能性のある情報源を示します：',
+          'help.clues.item1': '客室サービスの記録とリクエスト',
+          'help.clues.item2': 'ゲストが残したメモとメモ',
+          'help.clues.item3': 'ホテルの公共区域のお知らせと情報',
+          'help.clues.item4': 'システムログとバックグラウンドデータ',
+          'help.clues.note': '[由来不明の手書きメモ]',
+          'help.clues.p2': '矛盾しているように見える情報や異常な情報に注意してください。これらは多くの場合、詳細な分析の鍵となります。時には、情報の欠落や異常も手がかりとなることがあります。',
+          'help.tips.title': '作業上の提案',
+          'help.tips.tip1': '1. 忍耐と注意深さが成功の鍵です。些細なように見えても、どんな細部も見逃さないでください。',
+          'help.tips.tip2': '2. 定期的に入手した情報を確認してください。新しい発見は、多くの場合、古い情報に新しい意味を与えます。',
+          'help.tips.tip3': '3. 情報の日付と時間を記録することに注意してください。タイムライン分析は、イベントの発展を理解する上で非常に重要です。',
+          'help.tips.tip4': '4. 困難に直面した場合は、さまざまな角度から問題を分析してみてください。考え方を変えると、新しい発見があるかもしれません。',
+          'help.tips.tip5': '5. あなたの分析結果は、ホテルのサービス最適化の方向に影響を与えます。すべての判断を真剣に対処してください。',
+          'help.conclusion': '仕事が順調に進むよう祈っています。すべての詳細がすべてを変える可能性があることを忘れないでください。',
+          'help.return': '公式サイトに戻る',
+          'footer.copyright': '© 2023 R∞Mホテル。全著作権所有。',
+          'footer.note': '本ガイドは内部職員の参考用としてのみ使用してください'
+        },
+        'pt': {
+          'nav.back': 'Voltar',
+          'nav.home': 'Página Inicial',
+          'nav.help': 'Documentação de Ajuda',
+          'help.title': 'Guia do Analista de Experiência de Serviço',
+          'help.subtitle': 'Bem-vindo à equipe do Hotel R∞M. Este guia ajudará você no seu trabalho',
+          'help.intro.title': 'Introdução ao Trabalho',
+          'help.intro.p1': 'Como "Analista de Experiência de Serviço" no Hotel R∞M, sua principal responsabilidade é pesquisar e analisar os registros de estadia dos hóspedes do hotel, extrair informações valiosas deles e fornecer sugestões para a otimização do serviço hoteleiro.',
+          'help.intro.p2': 'Você terá acesso a vários registros de quartos, feedbacks de hóspedes e dados relacionados. Analisar cuidadosamente essas informações e entender as necessidades e experiências dos hóspedes é o núcleo do seu trabalho.',
+          'help.basics.title': 'Operações Básicas',
+          'help.basics.browsing': 'Navegação de Informações',
+          'help.basics.browsingDesc': 'Você pode alternar entre diferentes páginas clicando em links de navegação ou elementos interativos na página. Leia todo o conteúdo de texto cuidadosamente; informações importantes podem estar ocultas em descrições aparentemente ordinárias.',
+          'help.basics.searching': 'Pesquisa de Informações',
+          'help.basics.searchingDesc1': 'A caixa de pesquisa no topo do site oficial é uma ferramenta importante para obter informações específicas. Digitar palavras-chave específicas na caixa de pesquisa pode abrir páginas de informações relacionadas.',
+          'help.basics.searchingDesc2': 'Por exemplo: Tente digitar "邮箱" (email) na caixa de pesquisa para visualizar registros relacionados a emails de hóspedes.',
+          'help.basics.notes': 'Registro e Análise',
+          'help.basics.notesDesc': 'Recomenda-se que você registre informações importantes e pistas que descobrir. Informações de diferentes fontes podem estar inter-relacionadas, e a análise abrangente dessas informações ajudará você a completar melhor o relatório de análise.',
+          'help.clues.title': 'Dicas de Pistas',
+          'help.clues.p1': 'O sistema de informação do hotel contém vários tipos de registros. Aqui estão as fontes de informação que você pode encontrar:',
+          'help.clues.item1': 'Registros e solicitações de serviço no quarto',
+          'help.clues.item2': 'Notas e memorandos deixados por hóspedes',
+          'help.clues.item3': 'Anúncios e informações em áreas públicas do hotel',
+          'help.clues.item4': 'Logs de sistema e dados em segundo plano',
+          'help.clues.note': '[Uma nota manuscrita de origem desconhecida]',
+          'help.clues.p2': 'Preste atenção a informações que parecem contraditórias ou incomuns, pois elas são frequentemente a chave para uma análise aprofundada. Às vezes, a falta de informações ou informações anormais também são pistas.',
+          'help.tips.title': 'Sugestões de Trabalho',
+          'help.tips.tip1': '1. Paciência e atenção são a chave para o sucesso. Não ignore nenhum detalhe, mesmo que pareça insignificante.',
+          'help.tips.tip2': '2. Revise regularmente as informações que obteve. Novas descobertas frequentemente dão um novo significado às informações antigas.',
+          'help.tips.tip3': '3. Preste atenção a registrar a data e hora das informações. A análise da linha do tempo é muito importante para entender o desenvolvimento dos eventos.',
+          'help.tips.tip4': '4. Quando encontrar dificuldades, tente analisar o problema desde diferentes ângulos. Uma maneira diferente de pensar pode levar a novas descobertas.',
+          'help.tips.tip5': '5. Suas conclusões de análise influenciarão a direção da otimização do serviço do hotel. Por favor, leve a sério cada julgamento.',
+          'help.conclusion': 'Desejamos muito sucesso no seu trabalho. Lembre-se, cada detalhe pode mudar tudo.',
+          'help.return': 'Voltar ao Site Oficial',
+          'footer.copyright': '© 2023 Hotel R∞M. Todos os direitos reservados.',
+          'footer.note': 'Este guia é apenas para referência de funcionários internos'
+        }
+      };
+      
+      // 语言切换按钮事件
+      document.getElementById('language-toggle').addEventListener('click', function() {
+        document.getElementById('language-menu').classList.toggle('hidden');
+      });
+      
+      // 点击其他区域关闭语言菜单
+      document.addEventListener('click', function(event) {
+        const languageToggle = document.getElementById('language-toggle');
+        const languageMenu = document.getElementById('language-menu');
+        
+        if (!languageToggle.contains(event.target) && !languageMenu.contains(event.target)) {
+          languageMenu.classList.add('hidden');
+        }
+      });
+      
+      // 移动端菜单切换
+      document.getElementById('menu-toggle').addEventListener('click', function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+      });
+      
+      // 语言切换功能
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', function() {
+          const lang = this.getAttribute('data-lang');
+          document.getElementById('current-lang').textContent = this.textContent;
+          document.getElementById('language-menu').classList.add('hidden');
+          
+          // 应用翻译
+          if (lang === 'zh-CN') {
+            // 重置为中文
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+              element.textContent = element.getAttribute('data-i18n-original') || element.textContent;
+            });
+          } else if (translations[lang]) {
+            // 应用其他语言翻译
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+              const key = element.getAttribute('data-i18n');
+              // 保存原始中文文本
+              if (!element.getAttribute('data-i18n-original')) {
+                element.setAttribute('data-i18n-original', element.textContent);
+              }
+              if (translations[lang][key]) {
+                element.textContent = translations[lang][key];
+              }
+            });
+          }
+        });
+      });
+      
+      // 导航栏滚动效果
+      window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-lg');
+          navbar.classList.remove('py-3');
+        } else {
+          navbar.classList.add('py-3');
+          navbar.classList.remove('py-2', 'shadow-lg');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

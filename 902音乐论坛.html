@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地下音乐爱好者社区</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0b1a 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(90, 20, 160, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(70, 10, 130, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        /* 顶部导航 */
+        .top-nav {
+            background: rgba(20, 10, 35, 0.95);
+            padding: 0 30px;
+            border-bottom: 1px solid rgba(120, 80, 200, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #9d6bff, #7b4aff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 12px;
+            background: linear-gradient(90deg, #9d6bff, #7b4aff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 25px;
+        }
+        
+        .nav-links a {
+            color: #d0d0ff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #9d6bff, #7b4aff);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #ffffff;
+            background: rgba(120, 80, 200, 0.1);
+        }
+        
+        .nav-links a:hover::before {
+            width: 100%;
+        }
+        
+        .language-selector {
+            position: relative;
+        }
+        
+        .lang-btn {
+            background: rgba(120, 80, 200, 0.2);
+            color: #d0d0ff;
+            border: 1px solid rgba(120, 80, 200, 0.4);
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .lang-btn:hover {
+            background: rgba(120, 80, 200, 0.3);
+            color: #ffffff;
+            border-color: rgba(120, 80, 200, 0.6);
+        }
+        
+        .lang-btn i {
+            margin-right: 8px;
+        }
+        
+        .lang-options {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(30, 20, 50, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+            min-width: 160px;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(120, 80, 200, 0.3);
+            overflow: hidden;
+        }
+        
+        .lang-options.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .lang-option {
+            padding: 12px 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            color: #d0d0ff;
+            border-bottom: 1px solid rgba(120, 80, 200, 0.1);
+        }
+        
+        .lang-option:last-child {
+            border-bottom: none;
+        }
+        
+        .lang-option:hover {
+            background: rgba(120, 80, 200, 0.2);
+            color: #ffffff;
+        }
+        
+        /* 主要内容布局 */
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            width: 280px;
+            margin-right: 30px;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-section {
+            background: linear-gradient(145deg, rgba(30, 20, 50, 0.8), rgba(20, 10, 35, 0.9));
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(120, 80, 200, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .sidebar-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .sidebar-title {
+            background: linear-gradient(90deg, #9d6bff, #7b4aff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 18px;
+            font-size: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(120, 80, 200, 0.3);
+            font-weight: 600;
+        }
+        
+        .sidebar-links {
+            list-style: none;
+        }
+        
+        .sidebar-links li {
+            margin-bottom: 12px;
+        }
+        
+        .sidebar-links a {
+            color: #c0c0ff;
+            text-decoration: none;
+            display: block;
+            padding: 10px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-links a:hover {
+            background: rgba(120, 80, 200, 0.1);
+            color: #ffffff;
+            border-left: 3px solid #9d6bff;
+            padding-left: 15px;
+        }
+        
+        .sidebar-links i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .user-count {
+            color: #c0c0ff;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-count i {
+            color: #9d6bff;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+        }
+        
+        .forum-header {
+            background: linear-gradient(145deg, rgba(30, 20, 50, 0.8), rgba(20, 10, 35, 0.9));
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(120, 80, 200, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .forum-title {
+            background: linear-gradient(90deg, #9d6bff, #7b4aff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .forum-subtitle {
+            color: #b0b0ff;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+        
+        /* 帖子 */
+        .post {
+            background: linear-gradient(145deg, rgba(30, 20, 50, 0.8), rgba(20, 10, 35, 0.9));
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(120, 80, 200, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .post:hover {
+            transform: translateY(-3px);
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(120, 80, 200, 0.3);
+        }
+        
+        .post-author {
+            font-weight: 700;
+            color: #9d6bff;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-author::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #9d6bff;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .post-time {
+            color: #a0a0cc;
+            font-size: 14px;
+            background: rgba(120, 80, 200, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        
+        .post-content {
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        
+        .post-content p {
+            margin-bottom: 15px;
+            color: #e0e0ff;
+            font-size: 16px;
+        }
+        
+        .linked-name {
+            color: #b69dff;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+            position: relative;
+            padding: 0 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .linked-name::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #b69dff, transparent);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .linked-name:hover {
+            color: #d4c2ff;
+        }
+        
+        .linked-name:hover::after {
+            transform: scaleX(1);
+        }
+        
+        .post-reply {
+            background: rgba(15, 10, 30, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #7b4aff;
+            transition: all 0.3s ease;
+        }
+        
+        .post-reply:hover {
+            background: rgba(20, 15, 40, 0.8);
+        }
+        
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .reply-author {
+            font-weight: 600;
+            color: #4dabf7;
+            font-size: 16px;
+        }
+        
+        .reply-time {
+            color: #8888cc;
+            font-size: 13px;
+        }
+        
+        .admin-notice {
+            background: rgba(40, 10, 30, 0.8);
+            border-left: 4px solid #d32f2f;
+        }
+        
+        .admin-author {
+            color: #ff6b6b;
+        }
+        
+        .deleted-user {
+            color: #8888cc;
+            font-style: italic;
+        }
+        
+        .deleted-user::before {
+            background: #8888cc !important;
+        }
+        
+        /* 页脚 */
+        .footer {
+            background: rgba(20, 10, 35, 0.95);
+            padding: 40px 30px;
+            text-align: center;
+            margin-top: 60px;
+            border-top: 1px solid rgba(120, 80, 200, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .footer p {
+            color: #b0b0ff;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        
+        .footer p:last-child {
+            font-size: 13px;
+            color: #8888cc;
+            margin-top: 20px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                padding: 20px;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 25px;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .sidebar-section {
+                margin-bottom: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .top-nav {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+            }
+            
+            .logo {
+                margin-bottom: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+            
+            .nav-links li {
+                margin: 5px;
+            }
+            
+            .forum-title {
+                font-size: 24px;
+            }
+            
+            .post-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .post-time {
+                margin-top: 10px;
+            }
+        }
+        
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(20, 10, 35, 0.8);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #7b4aff, #9d6bff);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #9d6bff, #b69dff);
+        }
+        
+        /* 红色加粗的l */
+        .red-bold-l {
+            color: #ff3333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="top-nav">
+        <div class="logo">
+            <i class="fas fa-volume-up"></i>
+            地下音乐爱好者社区
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="#"><i class="fas fa-home"></i> 首页</a></li>
+            <li><a href="#"><i class="fas fa-comments"></i> 论坛</a></li>
+            <li><a href="#"><i class="fas fa-music"></i> 音乐库</a></li>
+            <li><a href="#"><i class="fas fa-calendar-alt"></i> 活动</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> 社区</a></li>
+            <li><a href="#"><i class="fas fa-info-circle"></i> 关于</a></li>
+        </ul>
+        
+        <div class="language-selector">
+            <button class="lang-btn" id="langBtn">
+                <i class="fas fa-globe"></i>
+                <span id="currentLang">中文</span>
+                <i class="fas fa-chevron-down" style="margin-left: 5px;"></i>
+            </button>
+            <div class="lang-options" id="langOptions">
+                <div class="lang-option" data-lang="zh">中文</div>
+                <div class="lang-option" data-lang="en">English</div>
+                <div class="lang-option" data-lang="ja">日本語</div>
+                <div class="lang-option" data-lang="pt">Português</div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主要内容区 -->
+    <div class="container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">论坛版块</h3>
+                <ul class="sidebar-links">
+                    <li><a href="#"><i class="fas fa-guitar"></i> 地下摇滚</a></li>
+                    <li><a href="#"><i class="fas fa-sliders-h"></i> 实验音乐</a></li>
+                    <li><a href="#"><i class="fas fa-record-vinyl"></i> 独立唱片</a></li>
+                    <li><a href="#"><i class="fas fa-microphone-alt"></i> 本地演出</a></li>
+                    <li><a href="#"><i class="fas fa-ghost"></i> 消失的音乐人</a></li>
+                    <li><a href="#"><i class="fas fa-compact-disc"></i> 黑胶交易</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">热门话题</h3>
+                <ul class="sidebar-links">
+                    <li><a href="#">2025年地下音乐趋势预测</a></li>
+                    <li><a href="#">寻找90年代地下磁带</a></li>
+                    <li><a href="#">本周最佳现场演出推荐</a></li>
+                    <li><a href="#">独立厂牌生存现状讨论</a></li>
+                    <li><a href="#">如何制作低保真音乐</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">在线用户</h3>
+                <div class="user-count">
+                    <i class="fas fa-user-friends"></i>
+                    <span>目前有 247 位用户在线</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容 -->
+        <main class="main-content">
+            <div class="forum-header">
+                <h1 class="forum-title">【讨论】有人还记得刘星辰吗?他现在怎么样了?</h1>
+                <p class="forum-subtitle">地下音乐人讨论区 - 探索被遗忘的声音</p>
+            </div>
+            
+            <!-- 楼主帖子 -->
+            <article class="post">
+                <div class="post-header">
+                    <span class="post-author">午夜游荡者</span>
+                    <span class="post-time" data-key="postTime1">发帖时间：2025/12/05 14:22</span>
+                </div>
+                <div class="post-content">
+                    <p data-key="postContent1">刚才整理老歌单,翻到了<span class="linked-name" id="liuxingchen-link">刘星辰</span>的《午夜弥撒》,突然很感慨。</p>
+                    <p data-key="postContent2">这哥们当年真的很有才华,《午夜弥撒》那张专辑在地下音乐圈影响力超大。但后来他就完全消失了,连社交媒体都不更新了。</p>
+                    <p data-key="postContent3">有人知道他现在在干什么吗?还在做音乐吗?</p>
+                </div>
+            </article>
+            
+            <!-- 回复1 -->
+            <article class="post">
+                <div class="post-reply">
+                    <div class="reply-header">
+                        <span class="post-author">黑胶收藏家</span>
+                        <span class="post-time" data-key="replyTime1">回复时间：2025/12/05 14:35</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent1">他疯了,兄弟。</p>
+                        <p data-key="replyContent2">我有个朋友以前在他的团队里,说刘星辰2020年之后就变得很奇怪,整天研究什么神秘学、古代仪式之类的东西。后来还搞了个类似邪教的组织,说要用音乐"打开通往神界的门"。</p>
+                        <p data-key="replyContent3">2022年那个组织出事了,十几个成员集体昏迷,到现在还躺在医院里。警察调查过,但没查出违法行为,只能定性为"集体癔症"。</p>
+                        <p data-key="replyContent4">之后刘星辰就彻底消失了。</p>
+                    </div>
+                </div>
+            </article>
+            
+            <!-- 回复2 -->
+            <article class="post">
+                <div class="post-reply">
+                    <div class="reply-header">
+                        <span class="post-author">城市猎人</span>
+                        <span class="post-time" data-key="replyTime2">回复时间：2025/12/05 15:10</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent5">我上个月见过他。</p>
+                        <p data-key="replyContent6">准确说,是在城市郊区的一个废弃教堂附近见过一个很像他的人。那人穿着黑色风衣,戴着兜帽,在教堂门口徘徊。</p>
+                        <p data-key="replyContent7">我当时想上去打招呼,但那人的眼神太吓人了——空洞,狂热,像个活死人。我最后没敢靠近。</p>
+                    </div>
+                </div>
+            </article>
+            
+            <!-- 回复3 -->
+            <article class="post">
+                <div class="post-reply">
+                    <div class="reply-header">
+                        <span class="post-author">声波实验室</span>
+                        <span class="post-time" data-key="replyTime3">回复时间：2025/12/05 16:42</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent8">!!!!!</p>
+                        <p data-key="replyContent9">我有重大发现!!!</p>
+                        <p data-key="replyContent10">我前几天在暗网的一个小众音乐分享站看到了一个匿名上传的音频文件,标题叫《C<span class="red-bold-l">l</span>appin'》 - For the One Who Listen。</p>
+                        <p data-key="replyContent11">文件介绍说这是"刘星辰2025年的最新实验作品"。我下载听了一下……</p>
+                        <p data-key="replyContent12">兄弟们,我他妈再也不敢听第二遍了。</p>
+                        <p data-key="replyContent13">那不是音乐,那是某种……我不知道怎么形容,就是让人极度不安的声音。里面有吉他、人声,还有大量的掌声,但那掌声听起来完全不像人类能发出的。</p>
+                        <p data-key="replyContent14">最恐怖的是,听完之后我连续三天做噩梦,梦里全是镜子和影子。</p>
+                    </div>
+                </div>
+            </article>
+            
+            <!-- 回复4 -->
+            <article class="post">
+                <div class="post-reply">
+                    <div class="reply-header">
+                        <span class="post-author">午夜游荡者（楼主）</span>
+                        <span class="post-time" data-key="replyTime4">回复时间：2025/12/05 17:15</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent15">@声波实验室 能分享一下那个音频吗?我想听听。</p>
+                    </div>
+                </div>
+            </article>
+            
+            <!-- 回复5 -->
+            <article class="post">
+                <div class="post-reply">
+                    <div class="reply-header">
+                        <span class="post-author">声波实验室</span>
+                        <span class="post-time" data-key="replyTime5">回复时间：2025/12/05 17:30</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent16">@午夜游荡者</p>
+                        <p data-key="replyContent17">我劝你别听。真的。</p>
+                        <p data-key="replyContent18">但如果你坚持……</p>
+                        <p><i>[链接已删除 - 论坛管理员]</i></p>
+                    </div>
+                </div>
+            </article>
+            
+            <!-- 回复6 - 管理员 -->
+            <article class="post">
+                <div class="post-reply admin-notice">
+                    <div class="reply-header">
+                        <span class="post-author admin-author">论坛管理员</span>
+                        <span class="post-time" data-key="replyTime6">回复时间：2025/12/05 18:00</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent19">管理员通知：</p>
+                        <p data-key="replyContent20">6楼分享的音频文件涉嫌违规内容,已删除。</p>
+                        <p data-key="replyContent21">多名用户报告该文件含有异常音频信号,可能对听者造成心理影响。为保护社区成员安全,禁止再次分享该文件。</p>
+                        <p data-key="replyContent22">违规用户将被警告。</p>
+                    </div>
+                </div>
+            </article>
+            
+            <!-- 更多回复 -->
+            <article class="post">
+                <div class="post-reply">
+                    <div class="reply-header">
+                        <span class="post-author">黑胶收藏家</span>
+                        <span class="post-time" data-key="replyTime7">回复时间：2025/12/05 19:22</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent23">我他妈下载了那个音频。</p>
+                        <p data-key="replyContent24">我现在严重怀疑刘星辰真的接触到了某种超自然的东西。</p>
+                        <p data-key="replyContent25">那个音频……怎么说呢,它在技术上完全不符合常理。频谱分析显示里面有大量人耳无法听到的超低频和超高频成分,这些频率会直接作用于人的潜意识。</p>
+                        <p data-key="replyContent26">更诡异的是,音频的波形图呈现出某种重复的几何图案,像是……像是某种咒文。</p>
+                        <p data-key="replyContent27">我已经删除了文件,但我脑子里还在回响那些掌声。</p>
+                    </div>
+                </div>
+            </article>
+            
+            <!-- 最后两个回复 -->
+            <article class="post">
+                <div class="post-reply">
+                    <div class="reply-header">
+                        <span class="post-author">深夜访客</span>
+                        <span class="post-time" data-key="replyTime8">回复时间：2025/12/05 21:47</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent28">你们讨论的这个刘星辰,是不是11月在R∞M酒店住过?</p>
+                        <p data-key="replyContent29">我那段时间正好住在那家酒店的8楼,被楼上的噪音折腾得半死。后来听说是9楼有个音乐人在搞创作。</p>
+                        <p data-key="replyContent30">退房那天我在大堂碰到过他——一个很瘦的男人,眼睛深陷,整个人像是几个月没睡觉。</p>
+                        <p data-key="replyContent31">他经过我身边的时候,我听到他在自言自语:"还不够……还差一点……下次一定……"</p>
+                    </div>
+                </div>
+                
+                <div class="post-reply">
+                    <div class="reply-header">
+                        <span class="post-author">午夜游荡者（楼主）</span>
+                        <span class="post-time" data-key="replyTime9">回复时间：2025/12/05 22:30</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent32">好吧,看来这位老哥是真的疯了。</p>
+                        <p data-key="replyContent33">有点可惜,他本来可以成为中国地下音乐的传奇人物的。</p>
+                        <p data-key="replyContent34">算了,就当是怀念一下他当年的作品吧。</p>
+                    </div>
+                </div>
+                
+                <div class="post-reply">
+                    <div class="reply-header">
+                        <span class="post-author deleted-user">匿名用户（已注销）</span>
+                        <span class="post-time" data-key="replyTime10">回复时间：2025/12/06 03:17</span>
+                    </div>
+                    <div class="post-content">
+                        <p data-key="replyContent35">他没有疯。</p>
+                        <p data-key="replyContent36">他只是听到了你们永远听不到的声音。</p>
+                        <p data-key="replyContent37">你们应该感谢他——他用自己的失败,为你们划定了人类的边界。</p>
+                        <p data-key="replyContent38">至于那个边界之外是什么……</p>
+                        <p data-key="replyContent39">最好不要知道。</p>
+                    </div>
+                </div>
+            </article>
+        </main>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>地下音乐爱好者社区 &copy; 2025 - 保留所有权利</p>
+        <p>本论坛仅供音乐爱好者交流使用，所有内容均为用户自发上传</p>
+        <p>提示：请尊重音乐人的隐私，不要传播未经证实的消息</p>
+    </footer>
+    
+    <script>
+        // 多语言翻译数据 - 已全部修正
+        const translations = {
+            zh: {
+                currentLang: "中文",
+                siteTitle: "地下音乐爱好者社区",
+                postTime1: "发帖时间：2025/12/05 14:22",
+                postContent1: "刚才整理老歌单,翻到了刘星辰的《午夜弥撒》,突然很感慨。",
+                postContent2: "这哥们当年真的很有才华,《午夜弥撒》那张专辑在地下音乐圈影响力超大。但后来他就完全消失了,连社交媒体都不更新了。",
+                postContent3: "有人知道他现在在干什么吗?还在做音乐吗?",
+                replyTime1: "回复时间：2025/12/05 14:35",
+                replyContent1: "他疯了,兄弟。",
+                replyContent2: "我有个朋友以前在他的团队里,说刘星辰2020年之后就变得很奇怪,整天研究什么神秘学、古代仪式之类的东西。后来还搞了个类似邪教的组织,说要用音乐\"打开通往神界的门\"。",
+                replyContent3: "2022年那个组织出事了,十几个成员集体昏迷,到现在还躺在医院里。警察调查过,但没查出违法行为,只能定性为\"集体癔症\"。",
+                replyContent4: "之后刘星辰就彻底消失了。",
+                replyTime2: "回复时间：2025/12/05 15:10",
+                replyContent5: "我上个月见过他。",
+                replyContent6: "准确说,是在城市郊区的一个废弃教堂附近见过一个很像他的人。那人穿着黑色风衣,戴着兜帽,在教堂门口徘徊。",
+                replyContent7: "我当时想上去打招呼,但那人的眼神太吓人了——空洞,狂热,像个活死人。我最后没敢靠近。",
+                replyTime3: "回复时间：2025/12/05 16:42",
+                replyContent8: "!!!!!",
+                replyContent9: "我有重大发现!!!",
+                replyContent10: "我前几天在暗网的一个小众音乐分享站看到了一个匿名上传的音频文件,标题叫《C<span class=\"red-bold-l\">l</span>appin'》 - For the One Who Listen。",
+                replyContent11: "文件介绍说这是\"刘星辰2025年的最新实验作品\"。我下载听了一下……",
+                replyContent12: "兄弟们,我他妈再也不敢听第二遍了。",
+                replyContent13: "那不是音乐,那是某种……我不知道怎么形容,就是让人极度不安的声音。里面有吉他、人声,还有大量的掌声,但那掌声听起来完全不像人类能发出的。",
+                replyContent14: "最恐怖的是,听完之后我连续三天做噩梦,梦里全是镜子和影子。",
+                replyTime4: "回复时间：2025/12/05 17:15",
+                replyContent15: "@声波实验室 能分享一下那个音频吗?我想听听。",
+                replyTime5: "回复时间：2025/12/05 17:30",
+                replyContent16: "@午夜游荡者",
+                replyContent17: "我劝你别听。真的。",
+                replyContent18: "但如果你坚持……",
+                replyTime6: "回复时间：2025/12/05 18:00",
+                replyContent19: "管理员通知：",
+                replyContent20: "6楼分享的音频文件涉嫌违规内容,已删除。",
+                replyContent21: "多名用户报告该文件含有异常音频信号,可能对听者造成心理影响。为保护社区成员安全,禁止再次分享该文件。",
+                replyContent22: "违规用户将被警告。",
+                replyTime7: "回复时间：2025/12/05 19:22",
+                replyContent23: "我他妈下载了那个音频。",
+                replyContent24: "我现在严重怀疑刘星辰真的接触到了某种超自然的东西。",
+                replyContent25: "那个音频……怎么说呢,它在技术上完全不符合常理。频谱分析显示里面有大量人耳无法听到的超低频和超高频成分,这些频率会直接作用于人的潜意识。",
+                replyContent26: "更诡异的是,音频的波形图呈现出某种重复的几何图案,像是……像是某种咒文。",
+                replyContent27: "我已经删除了文件,但我脑子里还在回响那些掌声。",
+                replyTime8: "回复时间：2025/12/05 21:47",
+                replyContent28: "你们讨论的这个刘星辰,是不是11月在R∞M酒店住过?",
+                replyContent29: "我那段时间正好住在那家酒店的8楼,被楼上的噪音折腾得半死。后来听说是9楼有个音乐人在搞创作。",
+                replyContent30: "退房那天我在大堂碰到过他——一个很瘦的男人,眼睛深陷,整个人像是几个月没睡觉。",
+                replyContent31: "他经过我身边的时候,我听到他在自言自语:\"还不够……还差一点……下次一定……\"",
+                replyTime9: "回复时间：2025/12/05 22:30",
+                replyContent32: "好吧,看来这位老哥是真的疯了。",
+                replyContent33: "有点可惜,他本来可以成为中国地下音乐的传奇人物的。",
+                replyContent34: "算了,就当是怀念一下他当年的作品吧。",
+                replyTime10: "回复时间：2025/12/06 03:17",
+                replyContent35: "他没有疯。",
+                replyContent36: "他只是听到了你们永远听不到的声音。",
+                replyContent37: "你们应该感谢他——他用自己的失败,为你们划定了人类的边界。",
+                replyContent38: "至于那个边界之外是什么……",
+                replyContent39: "最好不要知道。"
+            },
+            en: {
+                currentLang: "English",
+                siteTitle: "Underground Music Enthusiasts Community",
+                postTime1: "Posted: 2025/12/05 14:22",
+                postContent1: "While organizing my old playlist, I came across Liu Xingchen's 'Midnight Mass' and suddenly felt emotional.",
+                postContent2: "This guy was really talented back in the day. The 'Midnight Mass' album had huge influence in the underground music scene. But then he completely disappeared, not even updating social media.",
+                postContent3: "Does anyone know what he's doing now? Is he still making music?",
+                replyTime1: "Replied: 2025/12/05 14:35",
+                replyContent1: "He's gone crazy, man.",
+                replyContent2: "I have a friend who used to be in his team. He said Liu Xingchen became really strange after 2020, studying mysticism, ancient rituals and stuff all day. Later he started something like a cult, saying he wanted to use music to 'open the door to the divine realm'.",
+                replyContent3: "That organization had an incident in 2022. Over a dozen members collectively fell unconscious and are still lying in hospitals. The police investigated but found no illegal activities, so they could only classify it as 'mass hysteria'.",
+                replyContent4: "After that, Liu Xingchen completely vanished.",
+                replyTime2: "Replied: 2025/12/05 15:10",
+                replyContent5: "I saw him last month.",
+                replyContent6: "To be precise, I saw someone who looked a lot like him near an abandoned church in the city suburbs. The person was wearing a black trench coat with a hood, pacing around the church entrance.",
+                replyContent7: "I wanted to go say hello, but that person's eyes were too terrifying—empty, fanatical, like a living dead person. I didn't dare approach in the end.",
+                replyTime3: "Replied: 2025/12/05 16:42",
+                replyContent8: "!!!!!",
+                replyContent9: "I HAVE A MAJOR DISCOVERY!!!",
+                replyContent10: "A few days ago on a niche music sharing site on the dark web, I saw an anonymously uploaded audio file titled 'C<span class=\"red-bold-l\">l</span>appin' - For the One Who Listen.",
+                replyContent11: "The file description said this was 'Liu Xingchen's latest experimental work from 2025'. I downloaded and listened to it...",
+                replyContent12: "Guys, I fucking never want to listen to it a second time.",
+                replyContent13: "That wasn't music, it was something... I don't know how to describe it, just extremely unsettling sounds. There was guitar, vocals, and lots of applause, but that applause didn't sound like anything humans could produce.",
+                replyContent14: "The scariest part is, after listening, I had nightmares for three days straight, all about mirrors and shadows.",
+                replyTime4: "Replied: 2025/12/05 17:15",
+                replyContent15: "@SoundLab Can you share that audio? I want to listen.",
+                replyTime5: "Replied: 2025/12/05 17:30",
+                replyContent16: "@MidnightWanderer",
+                replyContent17: "I advise you not to listen. Seriously.",
+                replyContent18: "But if you insist...",
+                replyTime6: "Replied: 2025/12/05 18:00",
+                replyContent19: "Administrator Notice:",
+                replyContent20: "The audio file shared on the 6th floor contains suspected inappropriate content and has been deleted.",
+                replyContent21: "Multiple users reported the file contains abnormal audio signals that may cause psychological effects on listeners. To protect community members' safety, sharing this file again is prohibited.",
+                replyContent22: "The offending user will be warned.",
+                replyTime7: "Replied: 2025/12/05 19:22",
+                replyContent23: "I fucking downloaded that audio.",
+                replyContent24: "Now I seriously suspect Liu Xingchen really came into contact with something supernatural.",
+                replyContent25: "That audio... how to put it, it's completely unreasonable technically. Spectral analysis shows it contains a large amount of ultra-low and ultra-high frequency components that human ears can't hear, these frequencies directly affect the subconscious.",
+                replyContent26: "Even more bizarre, the audio's waveform shows some kind of repeating geometric pattern, like... like some kind of incantation.",
+                replyContent27: "I've already deleted the file, but those applause still echo in my mind.",
+                replyTime8: "Replied: 2025/12/05 21:47",
+                replyContent28: "This Liu Xingchen you're discussing, did he stay at the R∞M Hotel in November?",
+                replyContent29: "I happened to be staying on the 8th floor of that hotel during that time, tormented half to death by noise from upstairs. Later I heard there was a musician on the 9th floor doing creative work.",
+                replyContent30: "On checkout day I ran into him in the lobby—a very thin man with sunken eyes, looking like he hadn't slept for months.",
+                replyContent31: "When he passed by me, I heard him muttering to himself: 'Not enough... almost there... next time for sure...'",
+                replyTime9: "Replied: 2025/12/05 22:30",
+                replyContent32: "Alright, seems this old buddy really went crazy.",
+                replyContent33: "Kind of a pity, he could have become a legendary figure in Chinese underground music.",
+                replyContent34: "Whatever, let's just cherish his works from back then.",
+                replyTime10: "Replied: 2025/12/06 03:17",
+                replyContent35: "He's not crazy.",
+                replyContent36: "He just hears sounds you'll never hear.",
+                replyContent37: "You should thank him—with his failure, he delineated the boundaries of humanity for you.",
+                replyContent38: "As for what lies beyond that boundary...",
+                replyContent39: "Better not to know."
+            },
+            ja: {
+                currentLang: "日本語",
+                siteTitle: "アンダーグラウンド音楽愛好家コミュニティ",
+                postTime1: "投稿時間：2025/12/05 14:22",
+                postContent1: "古いプレイリストを整理していたら、劉星辰の『ミッドナイト・マス』に出会い、突然感慨深くなった。",
+                postContent2: "この人は当時本当に才能があった。『ミッドナイト・マス』のアルバムはアンダーグラウンド音楽シーンに大きな影響力を持っていた。だがその後、彼は完全に消え、SNSも更新しなくなった。",
+                postContent3: "彼が今何をしているか知っている人はいますか？まだ音楽を作っていますか？",
+                replyTime1: "返信時間：2025/12/05 14:35",
+                replyContent1: "彼は狂ったよ、兄弟。",
+                replyContent2: "昔彼のチームにいた友人がいるんだが、劉星辰は2020年以降とても奇妙になり、終日神秘学や古代儀式などを研究していたと言っていた。その後、カルトのような組織を作り、音楽で『神界への扉を開く』と言っていた。",
+                replyContent3: "2022年にその組織で事件が起こり、十数人のメンバーが集団で昏睡状態に陥り、今でも病院に寝たきりだ。警察が調査したが、違法行為は見つからず、『集団ヒステリー』としか認定できなかった。",
+                replyContent4: "その後、劉星辰は完全に消えた。",
+                replyTime2: "返信時間：2025/12/05 15:10",
+                replyContent5: "先月、彼を見かけた。",
+                replyContent6: "正確には、都市郊外の廃教会の近くで彼によく似た人を見た。その人は黒いトレンチコートを着て、フードをかぶり、教会の入口をうろついていた。",
+                replyContent7: "挨拶に行こうと思ったが、その人の目が怖すぎた――虚ろで、狂信的で、生ける屍のようだった。結局近づけなかった。",
+                replyTime3: "返信時間：2025/12/05 16:42",
+                replyContent8: "!!!!!",
+                replyContent9: "重大な発見があります!!!",
+                replyContent10: "数日前、ダークウェブのニッチな音楽共有サイトで匿名アップロードされたオーディオファイルを見た。タイトルは『C<span class=\"red-bold-l\">l</span>appin' - For the One Who Listen』。",
+                replyContent11: "ファイルの説明には『劉星辰2025年の最新実験作品』と書かれていた。ダウンロードして聞いてみた……",
+                replyContent12: "みんな、二度と聞きたくないよ。",
+                replyContent13: "あれは音楽じゃない、何か……どう表現していいかわからない、ただ極度に不安になる音だ。ギターやボーカル、大量の拍手が入っていたが、その拍手はまるで人間が発するものとは思えない。",
+                replyContent14: "最も恐ろしいのは、聞いた後、三日連続で悪夢を見たことだ。夢は全部鏡と影だった。",
+                replyTime4: "返信時間：2025/12/05 17:15",
+                replyContent15: "@サウンドラボ そのオーディオを共有してもらえますか？聞いてみたい。",
+                replyTime5: "返信時間：2025/12/05 17:30",
+                replyContent16: "@ミッドナイトワンダラー",
+                replyContent17: "聞かないほうがいい。本当に。",
+                replyContent18: "でもどうしても聞きたいなら……",
+                replyTime6: "返信時間：2025/12/05 18:00",
+                replyContent19: "管理者通知：",
+                replyContent20: "6階で共有されたオーディオファイルは不適切なコンテンツの疑いがあるため、削除されました。",
+                replyContent21: "複数のユーザーから、このファイルには異常なオーディオ信号が含まれており、聴取者に心理的影響を与える可能性があると報告されています。コミュニティメンバーの安全を保護するため、このファイルの再共有は禁止します。",
+                replyContent22: "違反ユーザーは警告されます。",
+                replyTime7: "返信時間：2025/12/05 19:22",
+                replyContent23: "俺はそのオーディオをダウンロードしちまった。",
+                replyContent24: "今では劉星辰が本当に何か超自然的なものに接触したんじゃないかと真剣に疑っている。",
+                replyContent25: "あのオーディオ……なんていうか、技術的に完全に常識外れだ。スペクトル分析によると、人間の耳には聞こえない超低周波と超高周波成分が大量に含まれていて、これらの周波数は直接潜在意識に作用する。",
+                replyContent26: "さらに不気味なことに、オーディオの波形図はある種の繰り返し幾何学模様を呈していて、まるで……まるで呪文のようだ。",
+                replyContent27: "ファイルは削除したが、あの拍手がまだ頭の中で響いている。",
+                replyTime8: "返信時間：2025/12/05 21:47",
+                replyContent28: "あなたたちが議論しているこの劉星辰って、11月にR∞Mホテルに泊まった人ですか？",
+                replyContent29: "ちょうどその期間、私はそのホテルの8階に泊まっていて、上の階の騒音に半殺しにされていた。後で聞いたら、9階に音楽家がいて創作活動をしていたらしい。",
+                replyContent30: "チェックアウトの日、ロビーで彼に会った――とても痩せた男で、目が落ち窪み、まるで数ヶ月寝ていないような感じだった。",
+                replyContent31: "彼が私のそばを通り過ぎるとき、独り言を言っているのを聞いた：『まだ足りない……あと少し……次こそは……』",
+                replyTime9: "返信時間：2025/12/05 22:30",
+                replyContent32: "まあ、この兄貴は本当に狂ったようだ。",
+                replyContent33: "少し残念だ、彼は中国のアンダーグラウンド音楽の伝説的人物になれたかもしれないのに。",
+                replyContent34: "まあいい、彼の当時の作品を懐かしむことにしよう。",
+                replyTime10: "返信時間：2025/12/06 03:17",
+                replyContent35: "彼は狂っていない。",
+                replyContent36: "彼はただ、あなたたちが永遠に聞くことのできない音を聞いているだけだ。",
+                replyContent37: "あなたたちは彼に感謝すべきだ――彼は自分の失敗をもって、あなたたちのために人間の境界線を引いてくれた。",
+                replyContent38: "その境界線の向こうに何があるかは……",
+                replyContent39: "知らないほうがいい。"
+            },
+            pt: {
+                currentLang: "Português",
+                siteTitle: "Comunidade de Entusiastas de Música Underground",
+                postTime1: "Postado em: 2025/12/05 14:22",
+                postContent1: "Enquanto organizava minha playlist antiga, me deparei com 'Midnight Mass' de Liu Xingchen e de repente fiquei emocionado.",
+                postContent2: "Esse cara era realmente talentoso na época. O álbum 'Midnight Mass' teve uma influência enorme na cena musical underground. Mas depois ele desapareceu completamente, nem atualizava mais as redes sociais.",
+                postContent3: "Alguém sabe o que ele está fazendo agora? Ainda faz música?",
+                replyTime1: "Respondido em: 2025/12/05 14:35",
+                replyContent1: "Ele enlouqueceu, cara.",
+                replyContent2: "Tenho um amigo que costumava estar em sua equipe. Ele disse que Liu Xingchen ficou muito estranho depois de 2020, estudando misticismo, rituais antigos e essas coisas o dia todo. Depois criou algo como um culto, dizendo que queria usar a música para 'abrir a porta para o reino divino'.",
+                replyContent3: "Essa organização teve um incidente em 2022. Mais de uma dúzia de membros desmaiaram coletivamente e ainda estão deitados em hospitais. A polícia investigou, mas não encontrou atividades ilegais, então só pôde classificá-lo como 'histeria coletiva'.",
+                replyContent4: "Depois disso, Liu Xingchen desapareceu completamente.",
+                replyTime2: "Respondido em: 2025/12/05 15:10",
+                replyContent5: "Eu o vi no mês passado.",
+                replyContent6: "Para ser preciso, vi alguém muito parecido com ele perto de uma igreja abandonada nos subúrbios da cidade. A pessoa estava usando um sobretudo preto com capuz, andando de um lado para outro na entrada da igreja.",
+                replyContent7: "Queria ir cumprimentá-lo, mas os olhos daquela pessoa eram assustadores demais—vazios, fanáticos, como um morto-vivo. No final, não ousei me aproximar.",
+                replyTime3: "Respondido em: 2025/12/05 16:42",
+                replyContent8: "!!!!!",
+                replyContent9: "EU TENHO UMA DESCOBERTA IMPORTANTE!!!",
+                replyContent10: "Alguns dias atrás, em um site de compartilhamento de música de nicho na dark web, vi um arquivo de áudio enviado anonimamente intitulado 'C<span class=\"red-bold-l\">l</span>appin' - For the One Who Listen.",
+                replyContent11: "A descrição do arquivo dizia que era 'o mais novo trabalho experimental de Liu Xingchen de 2025'. Baixei e ouvi...",
+                replyContent12: "Gente, eu nunca mais quero ouvir isso uma segunda vez.",
+                replyContent13: "Aquilo não era música, era algo... não sei como descrever, apenas sons extremamente perturbadores. Havia guitarra, vocais e muitos aplausos, mas esses aplausos não soavam como algo que humanos poderiam produzir.",
+                replyContent14: "A parte mais assustadora é que, depois de ouvir, tive pesadelos por três dias seguidos, todos sobre espelhos e sombras.",
+                replyTime4: "Respondido em: 2025/12/05 17:15",
+                replyContent15: "@LaboratórioSonoro Você pode compartilhar esse áudio? Quero ouvir.",
+                replyTime5: "Respondido em: 2025/12/05 17:30",
+                replyContent16: "@AndarilhoNoturno",
+                replyContent17: "Aconselho você a não ouvir. Sério.",
+                replyContent18: "Mas se você insiste...",
+                replyTime6: "Respondido em: 2025/12/05 18:00",
+                replyContent19: "Notificação do Administrador:",
+                replyContent20: "O arquivo de áudio compartilhado no 6º andar contém conteúdo suspeito de inapropriado e foi excluído.",
+                replyContent21: "Vários usuários relataram que o arquivo contém sinais de áudio anormais que podem causar efeitos psicológicos nos ouvintes. Para proteger a segurança dos membros da comunidade, é proibido compartilhar este arquivo novamente.",
+                replyContent22: "O usuário infrator será advertido.",
+                replyTime7: "Respondido em: 2025/12/05 19:22",
+                replyContent23: "Eu baixei a porra desse áudio.",
+                replyContent24: "Agora suspeito seriamente que Liu Xingchen realmente entrou em contato com algo sobrenatural.",
+                replyContent25: "Esse áudio... como dizer, é completamente fora do normal tecnicamente. A análise espectral mostra que contém uma grande quantidade de componentes de frequência ultrabaixa e ultra-alta que os ouvidos humanos não podem ouvir, essas frequências afetam diretamente o subconsciente.",
+                replyContent26: "Ainda mais bizarro, a forma de onda do áudio mostra algum tipo de padrão geométrico repetitivo, tipo... tipo algum tipo de encantamento.",
+                replyContent27: "Já excluí o arquivo, mas aqueles aplausos ainda ecoam na minha mente.",
+                replyTime8: "Respondido em: 2025/12/05 21:47",
+                replyContent28: "Esse Liu Xingchen que vocês estão discutindo, ele ficou no Hotel R∞M em novembro?",
+                replyContent29: "Aconteceu de eu estar hospedado no 8º andar daquele hotel durante aquela época, atormentado até a morte pelo barulho de cima. Depois ouvi dizer que havia um músico no 9º andar fazendo trabalho criativo.",
+                replyContent30: "No dia do check-out, o encontrei no saguão—um homem muito magro com olhos fundos, parecendo que não dormia há meses.",
+                replyContent31: "Quando ele passou por mim, ouvi ele resmungando sozinho: 'Não o suficiente... quase lá... da próxima vez com certeza...'",
+                replyTime9: "Respondido em: 2025/12/05 22:30",
+                replyContent32: "Certo, parece que esse camarada realmente enlouqueceu.",
+                replyContent33: "É uma pena, ele poderia ter se tornado uma figura lendária na música underground chinesa.",
+                replyContent34: "Que seja, vamos apenas relembrar seus trabalhos daquela época.",
+                replyTime10: "Respondido em: 2025/12/06 03:17",
+                replyContent35: "Ele não é louco.",
+                replyContent36: "Ele apenas ouve sons que vocês nunca ouvirão.",
+                replyContent37: "Vocês deveriam agradecê-lo—com seu fracasso, ele delineou os limites da humanidade para vocês.",
+                replyContent38: "Quanto ao que está além desse limite...",
+                replyContent39: "Melhor não saber."
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'zh';
+        
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const langBtn = document.getElementById('langBtn');
+            const langOptions = document.getElementById('langOptions');
+            const currentLangSpan = document.getElementById('currentLang');
+            
+            // 切换语言下拉菜单显示/隐藏
+            langBtn.addEventListener('click', function() {
+                langOptions.classList.toggle('show');
+            });
+            
+            // 选择语言
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    switchLanguage(lang);
+                    langOptions.classList.remove('show');
+                    currentLangSpan.textContent = translations[lang].currentLang;
+                });
+            });
+            
+            // 点击页面其他区域关闭语言选择菜单
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.language-selector')) {
+                    langOptions.classList.remove('show');
+                }
+            });
+            
+            // 为刘星辰链接添加点击事件
+            document.getElementById('liuxingchen-link').addEventListener('click', function() {
+                window.open('刘星辰个人博客.html', '_blank');
+            });
+            
+            // 初始化页面为中文
+            switchLanguage('zh');
+        });
+        
+        // 切换语言函数
+        function switchLanguage(lang) {
+            currentLang = lang;
+            
+            // 更新所有带有data-key属性的元素
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[lang][key]) {
+                    // 特殊处理包含刘星辰的句子
+                    if (key === 'postContent1') {
+                        // 根据语言获取对应的人名
+                        const nameMap = {
+                            'zh': '刘星辰',
+                            'en': 'Liu Xingchen',
+                            'ja': '劉星辰',
+                            'pt': 'Liu Xingchen'
+                        };
+                        
+                        const name = nameMap[lang] || '刘星辰';
+                        const text = translations[lang][key].replace(name, `<span class="linked-name" id="liuxingchen-link">${name}</span>`);
+                        element.innerHTML = text;
+                        
+                        // 重新绑定点击事件
+                        setTimeout(() => {
+                            const link = document.getElementById('liuxingchen-link');
+                            if (link) {
+                                link.addEventListener('click', function() {
+                                    window.open('刘星辰个人博客.html', '_blank');
+                                });
+                            }
+                        }, 10);
+                    } else if (key === 'replyContent10') {
+                        // 对于replyContent10，直接使用innerHTML以保持HTML标签
+                        element.innerHTML = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            // 更新网站标题
+            document.title = translations[lang].siteTitle;
+            document.querySelector('.logo').innerHTML = `<i class="fas fa-volume-up"></i> ${translations[lang].siteTitle}`;
+        }
+    </script>
+</body>
+</html>

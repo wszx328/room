@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - RIKI工作日志</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      /* 保留所有原始CSS样式 */
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .security-level-high {
+        border-left: 4px solid #ff4444;
+        background: rgba(255, 68, 68, 0.1);
+      }
+      .security-level-medium {
+        border-left: 4px solid #D4AF37;
+        background: rgba(212, 175, 55, 0.1);
+      }
+      .log-entry {
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+      .log-entry:hover {
+        background: rgba(42, 27, 61, 0.9);
+        border-color: rgba(138, 107, 190, 0.6);
+      }
+      .log-title {
+        color: #D4AF37;
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(138, 107, 190, 0.3);
+        padding-bottom: 5px;
+      }
+      .log-date {
+        color: #8A6BBE;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+      }
+      .log-section {
+        margin-bottom: 15px;
+      }
+      .log-section-title {
+        color: #D4AF37;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .log-list {
+        list-style-type: disc;
+        margin-left: 20px;
+      }
+      .log-list-item {
+        margin-bottom: 5px;
+      }
+      .log-rating {
+        color: #44ff44;
+        font-weight: bold;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M饲主系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 饲主系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">RIKI</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- RIKI工作日志 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">R∞M 酒店 饲主工作日志</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-25</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 4030 - <span data-i18n="log.summary">陈逸风</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="log.status">记录状态</span>: <span class="text-success" data-i18n="log.completed">已归档（供继任者参考）</span>
+            </div>
+          </div>
+          
+          <!-- 工作日志条目 -->
+          <div class="log-entry">
+            <div class="log-title" data-i18n="log.title">主菜：负罪的疗愈</div>
+            <div class="log-date" data-i18n="log.date">记录日期：献祭完成后 24 小时</div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.ingredient">一、食材基础信息</div>
+              <div class="text-gray-300" data-i18n="log.ingredientContent">
+                食材编号：No.663<br>
+                姓名：陈逸风<br>
+                身份：自由画家<br>
+                核心执念：因过失杀害爱人林晓而产生的极致负罪感、渴望被宽恕的强烈执念<br>
+                情感浓度（初始）：8.5/10（负罪感占比70%，渴望宽恕占比30%；情感深沉且矛盾，属于上等食材）<br><br>
+                筛选逻辑：<br>
+                1. 通过警方内部渠道获取"海崖无名女尸案"嫌疑人信息，其心理画像符合"负罪感"主题；<br>
+                2. 其职业特性（画家）便于通过艺术创作进行情感催化与提纯；<br>
+                3. 其选择入住本酒店4030号房（观海房）的行为，表明其试图通过环境进行自我疗愈，符合"疗愈"主题，便于构建"虚假宽恕"情境。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.process">二、献祭流程记录</div>
+              <ul class="log-list">
+                <li class="log-list-item text-gray-300" data-i18n="log.process1">
+                  <strong>阶段 1：诱捕（入住前）</strong><br>
+                  通过匿名渠道向其推送4030号房的宣传信息，强调其"治愈心灵创伤"的功效，并附上美丽海景图片；<br>
+                  目的：利用其负罪感与寻求解脱的心理，引导其主动选择4030号房；<br>
+                  结果：食材于 11 月 12 日入住，携带画具，符合预期。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process2">
+                  <strong>阶段 2：沉沦（入住第 1-3 天）</strong><br>
+                  关闭房间对外联络通道，不主动干扰，仅通过环境施加影响（如播放特定音乐、推送相关新闻）；<br>
+                  目的：让其在孤独中放大负罪感，陷入回忆与自责；<br>
+                  监测结果：食材初期情绪低落，拒绝餐饮，长时间呆坐，负罪感浓度提升至75%。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process3">
+                  <strong>阶段 3：催化（入住第 4-7 天）</strong><br>
+                  通过智能设备推送与亡妻相关的信息（如歌曲、花店广告、甜品推荐），并调整房间香氛，复作案发现场气味（百合与海盐）；<br>
+                  目的：唤醒其创伤记忆，加剧内心冲突，引导其通过绘画宣泄情感；<br>
+                  监测结果：食材开始绘画，情绪波动剧烈，出现幻觉，渴望宽恕的浓度提升至50%。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process4">
+                  <strong>阶段 4：提纯（入住第 8-11 天）</strong><br>
+                  在其绘画过程中，通过幻觉和梦境给予"虚假宽恕"的信号（如亡妻在梦中原谅他）；<br>
+                  目的：让负罪感与宽恕的喜悦形成强烈对冲，提纯情感浓度；<br>
+                  监测结果：食材在绘画中融入更多温暖色彩，情绪在崩溃与狂喜间交替，情感浓度峰值达9.3/10。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process5">
+                  <strong>阶段 5：献祭（入住第12天）</strong><br>
+                  在其完成画作，感受到"被宽恕"的极致喜悦时，启动献祭程序；<br>
+                  过程：食材在虚假宽恕的狂喜中，核心情感（负罪感与宽恕的渴望）被情饕完全吞噬；<br>
+                  结果：食材情感被抽空，仅保留表层记忆，于次日退房，成为空壳。
+                </li>
+              </ul>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.evaluation">三、风味评估</div>
+              <div class="text-gray-300" data-i18n="log.evaluationContent">
+                整体评分：<span class="log-rating">9.1/10</span>（上等主菜）<br><br>
+                风味解析：<br>
+                前调：负罪感的苦涩与海风的咸涩交织，浓郁而深沉；<br>
+                中调：回忆的甜蜜与现实的残酷形成强烈反差，增加风味的层次感；<br>
+                后调：虚假宽恕带来的瞬间释然与随之而来的虚无，是"负罪的疗愈"核心风味，符合情饕偏好。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.aftermath">四、后续事件处理</div>
+              <div class="text-gray-300" data-i18n="log.aftermathContent">
+                事件背景<br>
+                献祭完成后，食材退房。为确保酒店安全，需将食材罪行证据移交警方。案件编号R20251124<br><br>
+                应对措施<br>
+                1. 匿名向警方发送食材的忏悔笔记和与受害者的合照，确保其被法律制裁；<br>
+                2. 清理房间，将画作《夏日疗愈》作为艺术品悬挂，用于吸引下一任食材。<br><br>
+                风险评估<br>
+                风险等级：低（2/10）<br>
+                - 可控因素：食材已失去关键记忆，无法追溯酒店责任；匿名邮件无法追踪；<br>
+                - 潜在隐患：无。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.summary">陈逸风</div>
+              <div class="text-gray-300" data-i18n="log.summaryContent">
+                4030 号房「负罪的疗愈」献祭成功。食材陈逸风因过失杀人而背负沉重负罪感，又极度渴望宽恕，这种矛盾情感使其成为情饕喜爱的上等食材。<br><br>
+                整个流程的关键在于"虚假宽恕"：不直接施加惩罚，而是利用其自身的负罪感与对宽恕的渴望，构建一个让其自我审判并最终感受到"被宽恕"的幻觉，在情感巅峰时完成吞噬。<br><br>
+                此案例可作为继任者的经典教材 —— 理解"负罪感是最佳的情感催化剂，而宽恕则是引爆器"，是成为合格饲主的重要一课。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">饲主系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供饲主使用 - 保密级别：绝密</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': 'R∞M 酒店 饲主工作日志',
+        'log.summary': '陈逸风',
+        'log.status': '记录状态',
+        'log.completed': '已归档（供继任者参考）',
+        'log.title': '主菜：负罪的疗愈',
+        'log.date': '记录日期：献祭完成后 24 小时',
+        'log.ingredient': '一、食材基础信息',
+        'log.ingredientContent': '食材编号：No.663<br>姓名：陈逸风<br>身份：自由画家<br>核心执念：因过失杀害爱人林晓而产生的极致负罪感、渴望被宽恕的强烈执念<br>情感浓度（初始）：8.5/10（负罪感占比70%，渴望宽恕占比30%；情感深沉且矛盾，属于上等食材）<br><br>筛选逻辑：<br>1. 通过警方内部渠道获取"海崖无名女尸案"嫌疑人信息，其心理画像符合"负罪感"主题；<br>2. 其职业特性（画家）便于通过艺术创作进行情感催化与提纯；<br>3. 其选择入住本酒店4030号房（观海房）的行为，表明其试图通过环境进行自我疗愈，符合"疗愈"主题，便于构建"虚假宽恕"情境。',
+        'log.process': '二、献祭流程记录',
+        'log.process1': '<strong>阶段 1：诱捕（入住前）</strong><br>通过匿名渠道向其推送4030号房的宣传信息，强调其"治愈心灵创伤"的功效，并附上美丽海景图片；<br>目的：利用其负罪感与寻求解脱的心理，引导其主动选择4030号房；<br>结果：食材于 11 月 12 日入住，携带画具，符合预期。',
+        'log.process2': '<strong>阶段 2：沉沦（入住第 1-3 天）</strong><br>关闭房间对外联络通道，不主动干扰，仅通过环境施加影响（如播放特定音乐、推送相关新闻）；<br>目的：让其在孤独中放大负罪感，陷入回忆与自责；<br>监测结果：食材初期情绪低落，拒绝餐饮，长时间呆坐，负罪感浓度提升至75%。',
+        'log.process3': '<strong>阶段 3：催化（入住第 4-7 天）</strong><br>通过智能设备推送与亡妻相关的信息（如歌曲、花店广告、甜品推荐），并调整房间香氛，复作案发现场气味（百合与海盐）；<br>目的：唤醒其创伤记忆，加剧内心冲突，引导其通过绘画宣泄情感；<br>监测结果：食材开始绘画，情绪波动剧烈，出现幻觉，渴望宽恕的浓度提升至50%。',
+        'log.process4': '<strong>阶段 4：提纯（入住第 8-11 天）</strong><br>在其绘画过程中，通过幻觉和梦境给予"虚假宽恕"的信号（如亡妻在梦中原谅他）；<br>目的：让负罪感与宽恕的喜悦形成强烈对冲，提纯情感浓度；<br>监测结果：食材在绘画中融入更多温暖色彩，情绪在崩溃与狂喜间交替，情感浓度峰值达9.3/10。',
+        'log.process5': '<strong>阶段 5：献祭（入住第12天）</strong><br>在其完成画作，感受到"被宽恕"的极致喜悦时，启动献祭程序；<br>过程：食材在虚假宽恕的狂喜中，核心情感（负罪感与宽恕的渴望）被情饕完全吞噬；<br>结果：食材情感被抽空，仅保留表层记忆，于次日退房，成为空壳。',
+        'log.evaluation': '三、风味评估',
+        'log.evaluationContent': '整体评分：<span class="log-rating">9.1/10</span>（上等主菜）<br><br>风味解析：<br>前调：负罪感的苦涩与海风的咸涩交织，浓郁而深沉；<br>中调：回忆的甜蜜与现实的残酷形成强烈反差，增加风味的层次感；<br>后调：虚假宽恕带来的瞬间释然与随之而来的虚无，是"负罪的疗愈"核心风味，符合情饕偏好。',
+        'log.aftermath': '四、后续事件处理',
+        'log.aftermathContent': '事件背景<br>献祭完成后，食材退房。为确保酒店安全，需将食材罪行证据移交警方。案件编号R20251124<br><br>应对措施<br>1. 匿名向警方发送食材的忏悔笔记和与受害者的合照，确保其被法律制裁；<br>2. 清理房间，将画作《夏日疗愈》作为艺术品悬挂，用于吸引下一任食材。<br><br>风险评估<br>风险等级：低（2/10）<br>- 可控因素：食材已失去关键记忆，无法追溯酒店责任；匿名邮件无法追踪；<br>- 潜在隐患：无。',
+        'log.summary': '陈逸风',
+        'log.summaryContent': '4030 号房「负罪的疗愈」献祭成功。食材陈逸风因过失杀人而背负沉重负罪感，又极度渴望宽恕，这种矛盾情感使其成为情饕喜爱的上等食材。<br><br>整个流程的关键在于"虚假宽恕"：不直接施加惩罚，而是利用其自身的负罪感与对宽恕的渴望，构建一个让其自我审判并最终感受到"被宽恕"的幻觉，在情感巅峰时完成吞噬。<br><br>此案例可作为继任者的经典教材 —— 理解"负罪感是最佳的情感催化剂，而宽恕则是引爆器"，是成为合格饲主的重要一课。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '饲主系统',
+        'footer.confidential': '仅供饲主使用 - 保密级别：绝密',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'R∞M Hotel Feeder Work Log',
+        'log.summary': 'Chen Yifeng',
+        'log.status': 'Record Status',
+        'log.completed': 'Archived (For Successor Reference)',
+        'log.title': 'Main Course: Healing of Guilt',
+        'log.date': 'Record Date: 24 Hours After Sacrifice Completion',
+        'log.ingredient': 'I. Ingredient Basic Information',
+        'log.ingredientContent': 'Ingredient No.: No.663<br>Name: Chen Yifeng<br>Identity: Freelance Painter<br>Core Obsession: Extreme guilt from accidentally killing lover Lin Xiao, strong obsession with seeking forgiveness<br>Emotional Concentration (Initial): 8.5/10 (Guilt 70%, Desire for forgiveness 30%; Deep and contradictory emotions, premium ingredient)<br><br>Screening Logic:<br>1. Obtained suspect information of "Sea Cliff Unidentified Female Corpse Case" through police internal channels, psychological profile matches "guilt" theme;<br>2. Professional characteristics (painter) facilitate emotional catalysis and purification through artistic creation;<br>3. Choice to stay in Room 4030 (sea view room) indicates attempt at self-healing through environment, matches "healing" theme, facilitates construction of "false forgiveness" scenario.',
+        'log.process': 'II. Sacrifice Process Record',
+        'log.process1': '<strong>Stage 1: Trapping (Before Check-in)</strong><br>Pushed promotional information about Room 4030 through anonymous channels, emphasizing its "healing psychological trauma" effect with beautiful sea view images;<br>Purpose: Utilize guilt and desire for liberation psychology to guide voluntary selection of Room 4030;<br>Result: Ingredient checked in on November 12, carrying painting tools, meeting expectations.',
+        'log.process2': '<strong>Stage 2: Despair (Days 1-3)</strong><br>Closed room external communication channels, no active interference, only environmental influence (e.g., playing specific music, pushing relevant news);<br>Purpose: Amplify guilt in isolation, sink into memories and self-blame;<br>Monitoring Result: Ingredient initially emotionally low, refused meals, sat for long periods, guilt concentration increased to 75%.',
+        'log.process3': '<strong>Stage 3: Catalysis (Days 4-7)</strong><br>Pushed information related to deceased wife through smart devices (e.g., songs, florist ads, dessert recommendations), adjusted room fragrance to replicate crime scene smell (lily and sea salt);<br>Purpose: Awaken trauma memories, intensify internal conflict, guide emotional release through painting;<br>Monitoring Result: Ingredient began painting, intense emotional fluctuations, hallucinations appeared, desire for forgiveness concentration increased to 50%.',
+        'log.process4': '<strong>Stage 4: Purification (Days 8-11)</strong><br>During painting process, gave "false forgiveness" signals through hallucinations and dreams (e.g., deceased wife forgiving him in dreams);<br>Purpose: Create strong contrast between guilt and forgiveness joy, purify emotional concentration;<br>Monitoring Result: Ingredient incorporated warmer colors in painting, emotions alternated between崩溃 and ecstasy, emotional concentration peak reached 9.3/10.',
+        'log.process5': '<strong>Stage 5: Sacrifice (Day 12)</strong><br>Activated sacrifice program when he completed painting and felt extreme joy of "being forgiven";<br>Process: Ingredient\'s core emotions (guilt and desire for forgiveness) completely consumed by emotion devourer in ecstasy of false forgiveness;<br>Result: Ingredient emotions emptied, only retained surface memories, checked out next day, becoming empty shell.',
+        'log.evaluation': 'III. Flavor Assessment',
+        'log.evaluationContent': 'Overall Rating: <span class="log-rating">9.1/10</span> (Premium Main Course)<br><br>Flavor Analysis:<br>Initial: Bitterness of guilt interweaves with saltiness of sea breeze, rich and deep;<br>Middle: Sweetness of memories forms strong contrast with残酷 reality, adding flavor layers;<br>Aftertaste: Instant relief from false forgiveness and subsequent虚无, core flavor of "Healing of Guilt", matching emotion devourer preferences.',
+        'log.aftermath': 'IV. Follow-up Incident Handling',
+        'log.aftermathContent': 'Incident Background<br>After sacrifice completion, ingredient checked out. To ensure hotel safety, need to transfer evidence of ingredient\'s crime to police.Case No. R20251124<br><br>Countermeasures<br>1. Anonymously sent ingredient\'s confession notes and photos with victim to police, ensuring legal punishment;<br>2. Cleaned room, hung painting "Summer Healing" as artwork to attract next ingredient.<br><br>Risk Assessment<br>Risk Level: Low (2/10)<br>- Controllable factors: Ingredient lost key memories, cannot trace hotel responsibility; anonymous email untraceable;<br>- Potential risks: None.',
+        'log.summary': 'Chen Yifeng',
+        'log.summaryContent': 'Room 4030 "Healing of Guilt" sacrifice successful. Ingredient Chen Yifeng carried heavy guilt from accidental killing, yet极度渴望 forgiveness - this contradictory emotion made him premium ingredient beloved by emotion devourers.<br><br>The key to entire process is "false forgiveness": Not directly applying punishment, but utilizing own guilt and desire for forgiveness to construct illusion of self-judgment最终感受到"being forgiven", completing consumption at emotional peak.<br><br>This case can serve as classic teaching material for successors - understand "guilt is best emotional catalyst, while forgiveness is detonator", important lesson for becoming qualified feeder.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Feeder System',
+        'footer.confidential': 'For Feeder Use Only - Confidentiality Level: Top Secret',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': 'R∞Mホテル 飼主作業ログ',
+        'log.summary': '陳逸風',
+        'log.status': '記録ステータス',
+        'log.completed': 'アーカイブ済み（後任者参考用）',
+        'log.title': 'メインディッシュ：罪悪の癒し',
+        'log.date': '記録日：供物完了後24時間',
+        'log.ingredient': '一、食材基本情報',
+        'log.ingredientContent': '食材番号：No.663<br>名前：陳逸風<br>身分：フリーペインター<br>核心執念：過失で恋人林暁を殺害したことによる極致の罪悪感、赦しを渴望する強い執念<br>感情濃度（初期）：8.5/10（罪悪感70%、赦し渴望30%；感情深沈且つ矛盾、上等食材）<br><br>選別ロジック：<br>1. 警察内部経路で"海崖無名女屍案"容疑者情報取得、心理プロファイル"罪悪感"テーマ一致；<br>2. 職業特性（画家）は芸術創作を通じ感情催化と精製に便利；<br>3. 当ホテル4030号室（海景房）選択行為は環境を通じ自己癒し試みを示す、"癒し"テーマ一致、"虚偽赦し"状況構築容易。',
+        'log.process': '二、供物プロセス記録',
+        'log.process1': '<strong>段階1：誘引（宿泊前）</strong><br>匿名経路で4030号室宣伝情報プッシュ、"心的外傷治癒"効果強調、美しい海景画像添付；<br>目的：罪悪感と解放求める心理利用、4030号室自主選択誘導；<br>結果：食材11月12日宿泊、画具携帯、予想通り。',
+        'log.process2': '<strong>段階2：沈淪（宿泊1-3日目）</strong><br>部屋外部連絡通道閉鎖、主動的干渉せず、環境影響のみ施加（特定音楽再生、関連ニュースプッシュ等）；<br>目的：孤独で罪悪感増幅、回想と自己責務に陥る；<br>監視結果：食材初期情緒低落、食事拒否、長時間座り込み、罪悪感濃度75%に上昇。',
+        'log.process3': '<strong>段階3：触媒（宿泊4-7日目）</strong><br>スマートデバイスで亡妻関連情報プッシュ（歌曲、花屋広告、甜品推薦等）、部屋香氛調整、犯行現場气味再現（百合と海塩）；<br>目的：トラウマ記憶喚起、内心衝突激化、絵画を通じ感情発散誘導；<br>監視結果：食材絵画開始、情緒変動激烈、幻覚出現、赦し渴望濃度50%に上昇。',
+        'log.process4': '<strong>段階4：精製（宿泊8-11日目）</strong><br>絵画過程で幻覚と夢を通じ"虚偽赦し"信号与える（例：亡妻夢中で許す）；<br>目的：罪悪感と赦し喜悦強烈対冲形成、感情濃度精製；<br>監視結果：食材絵画により温暖色彩融入、情緒崩壊と歓喜交互、感情濃度ピーク9.3/10達。',
+        'log.process5': '<strong>段階5：供物（宿泊12日目）</strong><br>絵画完成し"赦された"極致喜悦感じる時、供物程序起動；<br>過程：食材虚偽赦し歓喜中、核心感情（罪悪感と赦し渴望）情饕完全吞噬；<br>結果：食材感情空化、表層記憶のみ保持、翌日退去、空殻となる。',
+        'log.evaluation': '三、風味評価',
+        'log.evaluationContent': '総合評価：<span class="log-rating">9.1/10</span>（上等メインディッシュ）<br><br>風味解析：<br>前味：罪悪感苦味と海風塩味交錯、濃郁且つ深沈；<br>中味：回想甘味と現実残酷強烈対照、風味層次感増加；<br>後味：虚偽赦し带来瞬間釋然と随之虚無、"罪悪の癒し"核心風味、情饕嗜好合致。',
+        'log.aftermath': '四、後続事件処理',
+        'log.aftermathContent': '事件背景<br>供物完了後、食材退去。ホテル安全確保のため、食材罪行証拠警察引渡必要。事件番号 R20251124<br><br>対応措置<br>1. 匿名で食材懺悔筆記と被害者合照警察送信、法的制裁確保；<br>2. 部屋清掃、絵画《夏日療癒》芸術品として掲掛、次食材吸引用。<br><br>リスク評価<br>リスクレベル：低（2/10）<br>- 制御可能要因：食材重要記憶喪失、ホテル責任追跡不能；匿名メール追跡不能；<br>- 潜在リスク：無。',
+        'log.summary': '陳逸風',
+        'log.summaryContent': '4030号室「罪悪の癒し」供物成功。食材陳逸風は過失殺人で重い罪悪感を背負い、また赦しを極度に渴望——この矛盾した感情が情饕好む上等食材とした。<br><br>全プロセス鍵は"虚偽赦し"：直接罰施加せず、自身の罪悪感と赦し渴望利用し、自己審判最終的に"赦された"と感じる幻覚構築、感情的頂点で吞噬完了。<br><br>本案例は後任者經典教材として——"罪悪感は最良の感情触媒、赦しは起爆剤"理解、合格飼主となる重要一課。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '飼主システム',
+        'footer.confidential': '飼主専用 - 機密レベル：極秘',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'R∞M Hotel Registro de Trabalho do Alimentador',
+        'log.summary': 'Chen Yifeng',
+        'log.status': 'Status do Registro',
+        'log.completed': 'Arquivado (Para Referência do Sucessor)',
+        'log.title': 'Prato Principal: Cura da Culpa',
+        'log.date': 'Data do Registro: 24 Horas Após Conclusão do Sacrifício',
+        'log.ingredient': 'I. Informações Básicas do Ingrediente',
+        'log.ingredientContent': 'Nº do Ingrediente: No.663<br>Nome: Chen Yifeng<br>Identidade: Pintor Freelance<br>Obsessão Central: Culpa extrema por matar acidentalmente amante Lin Xiao, forte obsessão por buscar perdão<br>Concentração Emocional (Inicial): 8.5/10 (Culpa 70%, Desejo por perdão 30%; Emoções profundas e contraditórias, ingrediente premium)<br><br>Lógica de Seleção:<br>1. Obteve informações do suspeito do "Caso do Cadáver Feminino Não Identificado do Penhasco do Mar" através de canais internos da polícia, perfil psicológico corresponde ao tema "culpa";<br>2. Características profissionais (pintor) facilitam catálise emocional e purificação através da criação artística;<br>3. Escolha de ficar no Quarto 4030 (quarto com vista para o mar) indica tentativa de autocura através do ambiente, corresponde ao tema "cura", facilita construção de cenário de "falso perdão".',
+        'log.process': 'II. Registro do Processo de Sacrifício',
+        'log.process1': '<strong>Estágio 1: Captura (Antes do Check-in)</strong><br>Empurrou informações promocionais sobre o Quarto 4030 através de canais anônimos, enfatizando seu efeito "curar trauma psicológico" com imagens belas da vista do mar;<br>Propósito: Utilizar psicologia de culpa e desejo por liberação para guiar seleção voluntária do Quarto 4030;<br>Resultado: Ingrediente fez check-in em 12 de novembro, carregando ferramentas de pintura, atendendo expectativas.',
+        'log.process2': '<strong>Estágio 2: Desespero (Dias 1-3)</strong><br>Fechou canais de comunicação externos do quarto, nenhuma interferência ativa, apenas influência ambiental (ex.: tocando música específica, empurrando notícias relevantes);<br>Propósito: Amplificar culpa no isolamento, afundar em memórias e auto-culpa;<br>Resultado da Monitoração: Ingrediente inicialmente emocionalmente baixo, recusou refeições, sentou por longos períodos, concentração de culpa aumentou para 75%.',
+        'log.process3': '<strong>Estágio 3: Catálise (Dias 4-7)</strong><br>Empurrou informações relacionadas à esposa falecida através de dispositivos inteligentes (ex.: músicas, anúncios de floricultura, recomendações de sobremesa), ajustou fragrância do quarto para replicar cheiro da cena do crime (lírio e sal marinho);<br>Propósito: Despertar memórias de trauma, intensificar conflito interno, guiar liberação emocional através da pintura;<br>Resultado da Monitoração: Ingrediente começou a pintar, flutuações emocionais intensas, alucinações apareceram, concentração de desejo por perdão aumentou para 50%.',
+        'log.process4': '<strong>Estágio 4: Purificação (Dias 8-11)</strong><br>Durante processo de pintura, deu sinais de "falso perdão" através de alucinações e sonhos (ex.: esposa falecida perdoando-o em sonhos);<br>Propósito: Criar forte contraste entre culpa e alegria do perdão, purificar concentração emocional;<br>Resultado da Monitoração: Ingrediente incorporou cores mais quentes na pintura, emoções alternaram entre崩溃 e êxtase, pico de concentração emocional atingiu 9.3/10.',
+        'log.process5': '<strong>Estágio 5: Sacrifício (Dia 12)</strong><br>Ativou programa de sacrifício quando completou pintura e sentiu alegria extrema de "ser perdoado";<br>Processo: Emoções centrais do ingrediente (culpa e desejo por perdão) completamente consumidas por devorador de emoções em êxtase de falso perdão;<br>Resultado: Emoções do ingrediente esvaziadas, apenas reteve memórias superficiais, fez check-out no dia seguinte, tornando-se casca vazia.',
+        'log.evaluation': 'III. Avaliação de Sabor',
+        'log.evaluationContent': 'Avaliação Geral: <span class="log-rating">9.1/10</span> (Prato Principal Premium)<br><br>Análise de Sabor:<br>Inicial: Amargura da culpa intercala com salinidade da brisa marinha, rico e profundo;<br>Meio: Doçura das memórias forma forte contraste com残酷 realidade, adicionando camadas de sabor;<br>Final: Alívio instantâneo do falso perdão e subsequent虚无, sabor central de "Cura da Culpa", correspondendo às preferências do devorador de emoções.',
+        'log.aftermath': 'IV. Tratamento de Incidente de Acompanhamento',
+        'log.aftermathContent': 'Antecedentes do Incidente<br>Após conclusão do sacrifício, ingrediente fez check-out. Para garantir segurança do hotel, necessidade de transferir evidências do crime do ingrediente para polícia.Número do Caso R20251124<br><br>Contramedidas<br>1. Enviou anonimamente notas de confissão do ingrediente e fotos com vítima para polícia, garantindo punição legal;<br>2. Limpou quarto, pendurou pintura "Cura de Verão" como obra de arte para atrair próximo ingrediente.<br><br>Avaliação de Risco<br>Nível de Risco: Baixo (2/10)<br>- Fatores controláveis: Ingrediente perdeu memórias-chave, não pode rastrear responsabilidade do hotel; e-mail anônimo intrastável;<br>- Riscos potenciais: Nenhum.',
+        'log.summary': 'Chen Yifeng',
+        'log.summaryContent': 'Quarto 4030 "Cura da Culpa" sacrifício bem-sucedido. Ingrediente Chen Yifeng carregou culpa pesada de matar acidentalmente, ainda极度mente desejou perdão - esta emoção contraditória fez dele ingrediente premium amado por devoradores de emoções.<br><br>A chave para todo o processo é "falso perdão": Não aplicar punição diretamente, mas utilizar própria culpa e desejo por perdão para construir ilusão de auto-julgamento最终mente sentir "ser perdoado", completando consumo no pico emocional.<br><br>Este caso pode servir como material de ensino clássico para sucessores - entenda "culpa é melhor catalisador emocional, enquanto perdão é detonador", lição importante para se tornar alimentador qualificado.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema do Alimentador',
+        'footer.confidential': 'Uso do Alimentador Apenas - Nível de Confidencialidade: Ultra Secreto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画和其他交互功能（与之前相同）
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能 - 修改为跳转到RIKI.html
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        window.location.href = 'RIKI工作台.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 302号房记录</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M内部系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 内部系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">尹力</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 302号房记录详情 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">客房记录详情</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 302 - <span data-i18n="guest.name">王天宇</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="guest.checkIn">入住</span>: 2025-11-18 | <span data-i18n="guest.checkOut">退房</span>: 2025-11-25
+            </div>
+          </div>
+          
+          <!-- 登记信息 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.registration">登记信息</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="record.guestName">住客姓名：王天宇</li>
+              <li data-i18n="record.checkInDate">入住日期：2025年11月18日</li>
+              <li data-i18n="record.checkOutDate">退房日期：2025年11月25日</li>
+              <li data-i18n="record.guestCount">入住人数：1人</li>
+            </ul>
+          </div>
+          
+          <!-- 客房记录 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.roomRecord">客房记录</h4>
+            <ul class="list-none text-gray-300 space-y-2">
+              <li data-i18n="record.1">11/18 23:15：住客由两名不明身份人员陪同至前台办理入住，登记时神色紧绷，手指轻微颤抖。携带黑色皮质公文包1个，无其他行李。进入302号房后未再外出。客房预备检查显示，客厅圆桌已预先摆放全新扑克牌1副、高脚杯2只、1982年拉菲1瓶（未开封）。</li>
+              <li data-i18n="record.2">11/19 09:30：早班服务人员配送早餐至门口，听到房内传出两名男子对话声，提及"筹码""股份"等词汇，敲门后对话立即中断。早餐原封不动退回，附纸条"无需送餐"。</li>
+              <li data-i18n="record.3">11/19 22:00：夜间巡查发现302房灯光亮至凌晨，智能系统监测到持续的纸张翻动声与偶尔的牌面摩擦声，未记录到外出记录。</li>
+              <li data-i18n="record.4">11/20 14:20：住客通过内线要求补充1副扑克牌，语气急促。服务人员送达时，房门仅开一条缝，仅见一只手接过物品，房内隐约传来"这局算你赢"的低语。</li>
+              <li data-i18n="record.5">11/21 16:00：保洁申请进入打扫遭拒，回应为"事情没结束"。从门缝观察到圆桌上散落多份文件，住客正俯身书写，身旁似有座椅拉开的痕迹。</li>
+              <li data-i18n="record.6">11/22 07:50：住客首次出门，身着睡衣在酒店露台停留约15分钟，期间独自站立，时而点头自语，时而摇头皱眉。返回房间时步伐轻快，与入住时状态差异明显。</li>
+              <li data-i18n="record.7">11/23 23:10：客房烟雾报警器短暂触发，服务人员敲门询问，住客隔门回应"没事，抽根烟"。随后听到玻璃器皿轻碰声，疑似酒杯碰撞。</li>
+              <li data-i18n="record.8">11/24 10:30：系统记录住客第二次出门，前往酒店商务中心打印文件，耗时约30分钟，返回时手持一叠装订整齐的纸张，面露笑意。</li>
+              <li data-i18n="record.9">11/25 10:00：住客办理退房，西装革履，精神饱满，主动向前台工作人员致谢。房间检查发现：扑克牌已收拢放回盒内，拉菲酒瓶空瓶置于桌角，两只高脚杯均有使用痕迹；圆桌上遗留多份标注"转让协议"的文件，已由前台按规定存档。</li>
+            </ul>
+          </div>
+          
+          <!-- 附件 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.attachments">附件</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li><span data-i18n="record.transferAgreement">《转让协议》扫描件.pdf</span></li>
+              <li><span data-i18n="record.consumptionList">302房物品消耗清单.xls</span></li>
+            </ul>
+          </div>
+          
+          <!-- 备注 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.remarks">备注</h4>
+            <p class="text-gray-300" data-i18n="record.remarksContent">一场高强度的封闭式商务博弈过程。住客在302房期间展现出高度专注的决策状态，通过连续多日的策略性互动（具体形式未明确记录），最终达成多项资源整合成果。房间内预设的博弈场景配置（棋牌道具、谈判用具等）有效适配了高强度决策需求，建议将此案例纳入"商务闭环体验"优化参考，进一步提升高端商务客群的场景适配能力。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">内部系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': '客房记录详情',
+        'guest.name': '王天宇',
+        'guest.checkIn': '入住',
+        'guest.checkOut': '退房',
+        'record.registration': '登记信息',
+        'record.guestName': '住客姓名：王天宇',
+        'record.checkInDate': '入住日期：2025年11月18日',
+        'record.checkOutDate': '退房日期：2025年11月25日',
+        'record.guestCount': '入住人数：1人',
+        'record.roomRecord': '客房记录',
+        'record.1': '11/18 23:15：住客由两名不明身份人员陪同至前台办理入住，登记时神色紧绷，手指轻微颤抖。携带黑色皮质公文包1个，无其他行李。进入302号房后未再外出。客房预备检查显示，客厅圆桌已预先摆放全新扑克牌1副、高脚杯2只、1982年拉菲1瓶（未开封）。',
+        'record.2': '11/19 09:30：早班服务人员配送早餐至门口，听到房内传出两名男子对话声，提及"筹码""股份"等词汇，敲门后对话立即中断。早餐原封不动退回，附纸条"无需送餐"。',
+        'record.3': '11/19 22:00：夜间巡查发现302房灯光亮至凌晨，智能系统监测到持续的纸张翻动声与偶尔的牌面摩擦声，未记录到外出记录。',
+        'record.4': '11/20 14:20：住客通过内线要求补充1副扑克牌，语气急促。服务人员送达时，房门仅开一条缝，仅见一只手接过物品，房内隐约传来"这局算你赢"的低语。',
+        'record.5': '11/21 16:00：保洁申请进入打扫遭拒，回应为"事情没结束"。从门缝观察到圆桌上散落多份文件，住客正俯身书写，身旁似有座椅拉开的痕迹。',
+        'record.6': '11/22 07:50：住客首次出门，身着睡衣在酒店露台停留约15分钟，期间独自站立，时而点头自语，时而摇头皱眉。返回房间时步伐轻快，与入住时状态差异明显。',
+        'record.7': '11/23 23:10：客房烟雾报警器短暂触发，服务人员敲门询问，住客隔门回应"没事，抽根烟"。随后听到玻璃器皿轻碰声，疑似酒杯碰撞。',
+        'record.8': '11/24 10:30：系统记录住客第二次出门，前往酒店商务中心打印文件，耗时约30分钟，返回时手持一叠装订整齐的纸张，面露笑意。',
+        'record.9': '11/25 10:00：住客办理退房，西装革履，精神饱满，主动向前台工作人员致谢。房间检查发现：扑克牌已收拢放回盒内，拉菲酒瓶空瓶置于桌角，两只高脚杯均有使用痕迹；圆桌上遗留多份标注"转让协议"的文件，已由前台按规定存档。',
+        'record.attachments': '附件',
+        'record.transferAgreement': '《转让协议》扫描件.pdf',
+        'record.consumptionList': '302房物品消耗清单.xls',
+        'record.remarks': '备注',
+        'record.remarksContent': '一场高强度的封闭式商务博弈过程。住客在302房期间展现出高度专注的决策状态，通过连续多日的策略性互动（具体形式未明确记录），最终达成多项资源整合成果。房间内预设的博弈场景配置（棋牌道具、谈判用具等）有效适配了高强度决策需求，建议将此案例纳入"商务闭环体验"优化参考，进一步提升高端商务客群的场景适配能力。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '内部系统',
+        'footer.confidential': '仅供内部使用 - 保密级别：高级',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'Room Record Details',
+        'guest.name': 'Wang Tianyu',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'record.registration': 'Registration Information',
+        'record.guestName': 'Guest Name: Wang Tianyu',
+        'record.checkInDate': 'Check-in Date: November 18, 2025',
+        'record.checkOutDate': 'Check-out Date: November 25, 2025',
+        'record.guestCount': 'Number of Guests: 1',
+        'record.roomRecord': 'Room Records',
+        'record.1': '11/18 23:15: Guest checked in accompanied by two unidentified individuals. Appeared tense during registration with slight trembling fingers. Carrying one black leather briefcase, no other luggage. Did not leave the room after entering. Pre-arrival inspection showed one new deck of playing cards, two wine glasses, and one unopened 1982 Lafite wine placed on the living room round table.',
+        'record.2': '11/19 09:30: Breakfast delivered to door by morning staff. Heard two male voices inside room mentioning "chips" and "shares". Conversation immediately stopped after knocking. Breakfast returned untouched with note "No meal service needed".',
+        'record.3': '11/19 22:00: Night patrol found Room 302 lights on until early morning. Smart system detected continuous paper flipping sounds and occasional card friction sounds. No outings recorded.',
+        'record.4': '11/20 14:20: Guest requested additional deck of playing cards via intercom, speaking urgently. When delivered, door only opened a crack, only a hand visible receiving items. Faint whisper heard inside: "This round counts as your win".',
+        'record.5': '11/21 16:00: Housekeeping request to clean denied with response "matter not finished". Observed through door crack multiple documents scattered on round table, guest bending over writing, traces of pulled-out chairs nearby.',
+        'record.6': '11/22 07:50: Guest first time going out, wearing pajamas stayed on hotel terrace about 15 minutes. Standing alone, sometimes nodding and talking to self, sometimes shaking head and frowning. Returned to room with brisk steps, markedly different from check-in state.',
+        'record.7': '11/23 23:10: Room smoke alarm briefly triggered. Staff knocked to inquire, guest responded through door "It\'s fine, just smoking". Later heard light clinking of glassware, suspected wine glasses clinking.',
+        'record.8': '11/24 10:30: System recorded guest second outing, went to hotel business center to print documents, took about 30 minutes. Returned holding stack of neatly bound papers, smiling.',
+        'record.9': '11/25 10:00: Guest checked out, wearing suit and tie, energetic, proactively thanked front desk staff. Room inspection found: playing cards gathered and returned to box, empty Lafite wine bottle placed at table corner, both wine glasses showed usage marks; multiple documents labeled "Transfer Agreement" left on round table, archived by front desk according to regulations.',
+        'record.attachments': 'Attachments',
+        'record.transferAgreement': 'Transfer Agreement Scan.pdf',
+        'record.consumptionList': 'Room 302 Item Consumption List.xls',
+        'record.remarks': 'Remarks',
+        'record.remarksContent': 'A high-intensity closed business negotiation process. The guest demonstrated highly focused decision-making state during stay in Room 302, achieving multiple resource integration outcomes through continuous days of strategic interaction (specific form not clearly recorded). The pre-set negotiation scene configuration in the room (card game props, negotiation tools, etc.) effectively adapted to high-intensity decision-making needs. Recommend including this case in "Business Closed-loop Experience" optimization reference to further enhance scene adaptation capability for high-end business clientele.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Internal System',
+        'footer.confidential': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': '客室記録詳細',
+        'guest.name': '王天宇',
+        'guest.checkIn': 'チェックイン',
+        'guest.checkOut': 'チェックアウト',
+        'record.registration': '登録情報',
+        'record.guestName': '宿泊客名：王天宇',
+        'record.checkInDate': 'チェックイン日：2025年11月18日',
+        'record.checkOutDate': 'チェックアウト日：2025年11月25日',
+        'record.guestCount': '宿泊人数：1名',
+        'record.roomRecord': '客室記録',
+        'record.1': '11/18 23:15：宿泊客は身元不明の2名に同伴されてフロントでチェックイン。登録時は表情がこわばり、指がわずかに震えていた。黒革のブリーフケース1個のみ所持、他の荷物なし。302号室に入室後は外出せず。客室事前検査では、リビングの丸テーブルにあらかじめ新品のトランプ1組、ワイングラス2個、1982年ラフィット1本（未開封）が配置されていた。',
+        'record.2': '11/19 09:30：早番スタッフが朝食をドアまで配達。室内から2名の男性の会話声が聞こえ、「チップ」「株」などの言葉が聞こえた。ノック後すぐに会話中断。朝食は手付かずで返却、「食事サービス不要」のメモ付き。',
+        'record.3': '11/19 22:00：夜間巡回で302号室の明かりが未明まで点灯していることを確認。スマートシステムが持続的な紙めくり音と時折のカード摩擦音を検知。外出記録なし。',
+        'record.4': '11/20 14:20：宿泊客が内線でトランプ1組の追加を要求、口調は切迫。配達時、ドアはわずかに開き、物を受け取る手のみが見えた。室内から「この局は君の勝ちだ」とのささやきがかすかに聞こえた。',
+        'record.5': '11/21 16:00：清掃の申し出に対し「事が終わっていない」と拒否。ドアの隙間から丸テーブルに多数の書類が散乱、宿泊客が身をかがめて書き物をしており、傍には椅子を引いた痕跡があるように見えた。',
+        'record.6': '11/22 07:50：宿泊客初めて外出、パジャマ姿でホテルテラスに約15分滞在。一人で立ち、時々うなずき独り言、時々首を振り眉をひそめる。部屋に戻る際の歩みは軽快で、チェックイン時の状態と明らかに異なる。',
+        'record.7': '11/23 23:10：客室煙感知器が一時作動。スタッフがノックして確認、宿泊客はドア越しに「大丈夫、タバコを吸っているだけ」と応答。その後ガラス器の軽い触れ合う音が聞こえ、ワイングラスの触れ合いと推測。',
+        'record.8': '11/24 10:30：システムが宿泊客2回目の外出を記録、ホテルビジネスセンターで書類印刷、約30分要する。戻る際はきちんと綴じられた紙の束を持ち、笑みを浮かべていた。',
+        'record.9': '11/25 10:00：宿泊客チェックアウト、スーツに身を包み、元気溌剌、進んでフロントスタッフに感謝。客室検査で判明：トランプはまとめて箱に戻され、ラフィットの空瓶はテーブル隅に置かれ、ワイングラス2個とも使用痕あり；丸テーブルには「譲渡契約書」と記された書類複数が残され、フロントが規定通りに保管。',
+        'record.attachments': '添付ファイル',
+        'record.transferAgreement': '譲渡契約書スキャン.pdf',
+        'record.consumptionList': '302号室物品消費リスト.xls',
+        'record.remarks': '備考',
+        'record.remarksContent': '高強度のクローズドビジネス交渉プロセス。宿泊客は302号室滞在中に高度に集中した意思決定状態を示し、連日続く戦略的相互作用（具体的形態は明確に記録されず）を通じて、複数の資源統合成果を達成。室内に事前設定された交渉シーン構成（カードゲーム小道具、交渉用具など）は、高強度意思決定ニーズに効果的に適合。本ケースを「ビジネスクローズドループ体験」最適化参考に組み入れ、ハイエンドビジネスクライアント層へのシーン適応能力をさらに向上させることを推奨。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '内部システム',
+        'footer.confidential': '内部使用のみ - 機密レベル：高',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'Detalhes do Registro do Quarto',
+        'guest.name': 'Wang Tianyu',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'record.registration': 'Informações de Registro',
+        'record.guestName': 'Nome do Hóspede: Wang Tianyu',
+        'record.checkInDate': 'Data de Check-in: 18 de novembro de 2025',
+        'record.checkOutDate': 'Data de Check-out: 25 de novembro de 2025',
+        'record.guestCount': 'Número de Hóspedes: 1',
+        'record.roomRecord': 'Registros do Quarto',
+        'record.1': '18/11 23:15: Hóspede fez check-in acompanhado por dois indivíduos não identificados. Apareceu tenso durante o registro com ligeiro tremor nos dedos. Carregando uma pasta de couro preta, nenhuma outra bagagem. Não saiu do quarto após entrar. Inspeção pré-chegada mostrou um novo baralho de cartas, duas taças de vinho e uma garrafa de Lafite 1982 fechada colocadas na mesa redonda da sala de estar.',
+        'record.2': '19/11 09:30: Café da manhã entregue à porta pela equipe da manhã. Ouviu duas vozes masculinas dentro do quarto mencionando "fichas" e "ações". Conversa parou imediatamente após batida. Café da manhã devolvido intocado com nota "Nenhum serviço de refeição necessário".',
+        'record.3': '19/11 22:00: Patrulha noturna encontrou luzes do Quarto 302 acesas até madrugada. Sistema inteligente detectou sons contínuos de virar papel e sons ocasionais de fricção de cartas. Nenhuma saída registrada.',
+        'record.4': '20/11 14:20: Hóspede solicitou baralho adicional de cartas via interfone, falando urgentemente. Quando entregue, porta apenas aberta uma fresta, apenas uma mão visível recebendo itens. Sussurro fraco ouvido dentro: "Esta rodada conta como sua vitória".',
+        'record.5': '21/11 16:00: Pedido de limpeza negado com resposta "assunto não terminado". Observado através de fresta da porta vários documentos espalhados na mesa redonda, hóspede curvado escrevendo, traços de cadeiras puxadas nas proximidades.',
+        'record.6': '22/11 07:50: Hóspede primeira vez saindo, vestindo pijama permaneceu no terraço do hotel cerca de 15 minutos. Em pé sozinho, às vezes acenando e falando sozinho, às vezes balançando a cabeça e franzindo a testa. Retornou ao quarto com passos rápidos, marcadamente diferente do estado no check-in.',
+        'record.7': '23/11 23:10: Alarme de fumaça do quarto brevemente acionado. Equipe bateu para perguntar, hóspede respondeu através da porta "Está bem, apenas fumando". Depois ouviu tilintar leve de vidros, suspeito de taças de vinho tilintando.',
+        'record.8': '24/11 10:30: Sistema registrou hóspede segunda saída, foi ao centro de negócios do hotel para imprimir documentos, levou cerca de 30 minutos. Retornou segurando pilha de papéis bem encadernados, sorrindo.',
+        'record.9': '25/11 10:00: Hóspede fez check-out, vestindo terno e gravata, energético, agradeceu proativamente equipe da recepção. Inspeção do quarto encontrou: cartas de baralho reunidas e devolvidas à caixa, garrafa vazia de Lafite colocada no canto da mesa, ambas taças de vinho mostraram marcas de uso; vários documentos rotulados "Acordo de Transferência" deixados na mesa redonda, arquivados pela recepção de acordo com regulamentos.',
+        'record.attachments': 'Anexos',
+        'record.transferAgreement': 'Escaneamento do Acordo de Transferência.pdf',
+        'record.consumptionList': 'Lista de Consumo de Itens do Quarto 302.xls',
+        'record.remarks': 'Observações',
+        'record.remarksContent': 'Um processo de negociação empresarial fechado de alta intensidade. O hóspede demonstrou estado de tomada de decisão altamente focado durante a estadia no Quarto 302, alcançando múltiplos resultados de integração de recursos através de dias contínuos de interação estratégica (forma específica não claramente registrada). A configuração pré-definida da cena de negociação no quarto (adereços de jogo de cartas, ferramentas de negociação, etc.) adaptou-se efetivamente às necessidades de tomada de decisão de alta intensidade. Recomenda-se incluir este caso na referência de otimização "Experiência de Ciclo Fechado de Negócios" para melhorar ainda mais a capacidade de adaptação de cena para clientela empresarial de alto padrão.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema Interno',
+        'footer.confidential': 'Uso Interno Apenas - Nível de Confidencialidade: Alto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        // 这里可以替换为您希望返回的页面
+        window.location.href = '玩家个人页面.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

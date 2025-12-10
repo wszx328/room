@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵异事件吧 - [灵异] 我住过那个"吃人"的酒店</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background-color: #0d0d0d;
+            color: #cccccc;
+            line-height: 1.6;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(20, 20, 60, 0.3) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(60, 20, 20, 0.3) 0%, transparent 20%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(15, 15, 25, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+        
+        /* 头部样式 */
+        header {
+            background-color: #111122;
+            padding: 15px 20px;
+            border-bottom: 2px solid #3a1c5c;
+            position: relative;
+        }
+        
+        .forum-title {
+            font-size: 28px;
+            color: #9d7ae0;
+            text-shadow: 0 0 10px rgba(157, 122, 224, 0.5);
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .forum-title::before {
+            content: "👻";
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-links a {
+            color: #a0a0d0;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #9d7ae0;
+            text-shadow: 0 0 5px rgba(157, 122, 224, 0.7);
+        }
+        
+        /* 语言切换器 */
+        .language-switcher {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .lang-btn {
+            background-color: #222244;
+            color: #cccccc;
+            border: 1px solid #444466;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .lang-btn:hover {
+            background-color: #2a2a55;
+            border-color: #666688;
+        }
+        
+        .lang-options {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #222244;
+            border: 1px solid #444466;
+            border-radius: 4px;
+            min-width: 120px;
+            z-index: 100;
+            margin-top: 5px;
+        }
+        
+        .lang-option {
+            padding: 10px 15px;
+            color: #cccccc;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .lang-option:hover {
+            background-color: #2a2a55;
+        }
+        
+        .lang-option.active {
+            background-color: #3a1c5c;
+            color: #9d7ae0;
+        }
+        
+        /* 帖子内容区域 */
+        .post-container {
+            padding: 20px;
+        }
+        
+        .post-header {
+            border-bottom: 1px solid #333355;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .post-title {
+            font-size: 24px;
+            color: #d0d0ff;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .post-meta {
+            color: #8888aa;
+            font-size: 14px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .post-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .post-content {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #333355;
+        }
+        
+        .post-text {
+            white-space: pre-line;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        
+        /* 回复区域 */
+        .replies-section h3 {
+            color: #9d7ae0;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-left: 4px solid #9d7ae0;
+            padding-left: 10px;
+        }
+        
+        .reply {
+            background-color: rgba(30, 30, 45, 0.7);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid #444466;
+            transition: border-color 0.3s;
+        }
+        
+        .reply:hover {
+            border-left-color: #9d7ae0;
+        }
+        
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #8888aa;
+            font-size: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .reply-user {
+            color: #a0a0d0;
+            font-weight: bold;
+        }
+        
+        .reply-content {
+            line-height: 1.6;
+        }
+        
+        .reply.deleted {
+            background-color: rgba(40, 30, 30, 0.7);
+            border-left-color: #aa3333;
+            color: #888888;
+        }
+        
+        .reply.locked {
+            background-color: rgba(40, 40, 30, 0.7);
+            border-left-color: #aaaa33;
+        }
+        
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666688;
+            font-size: 14px;
+            border-top: 1px solid #222244;
+            margin-top: 20px;
+        }
+        
+        /* 特殊效果 */
+        .spooky-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #9d7ae0, transparent);
+            margin: 20px 0;
+        }
+        
+        .warning-note {
+            background-color: rgba(90, 30, 30, 0.3);
+            border-left: 4px solid #aa3333;
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .highlight {
+            color: #e0a0a0;
+            font-weight: bold;
+        }
+        
+        .infinity-symbol {
+            color: #9d7ae0;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .post-container {
+                padding: 15px;
+            }
+            
+            .forum-title {
+                font-size: 22px;
+            }
+            
+            .post-title {
+                font-size: 20px;
+            }
+            
+            .header-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .lang-options {
+                right: auto;
+                left: 0;
+            }
+        }
+        
+        /* 闪烁效果 */
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        .flicker {
+            animation: flicker 3s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="forum-title flicker" id="forumName">灵异事件吧</h1>
+            <div class="header-info">
+                <div class="nav-links">
+                    <a href="#" id="navHome">首页</a>
+                    <a href="#" id="navForum">论坛</a>
+                    <a href="#" id="navHot">热门</a>
+                    <a href="#" id="navNew">最新</a>
+                    <a href="#" id="navAbout">关于</a>
+                </div>
+                
+                <div class="language-switcher">
+                    <button class="lang-btn" id="langBtn">
+                        <span>🌐</span>
+                        <span id="currentLang">中文</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="lang-options" id="langOptions">
+                        <div class="lang-option active" data-lang="zh">🇨🇳 中文</div>
+                        <div class="lang-option" data-lang="en">🇺🇸 English</div>
+                        <div class="lang-option" data-lang="ja">🇯🇵 日本語</div>
+                        <div class="lang-option" data-lang="pt">🇵🇹 Português</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="spooky-divider"></div>
+        
+        <div class="post-container">
+            <div class="post-header">
+                <h2 class="post-title" id="postTitle">[灵异] 我住过那个"吃人"的酒店</h2>
+                <div class="post-meta">
+                    <span id="postAuthorLabel">👤 楼主：<strong id="postAuthor">出差销售员</strong></span>
+                    <span id="postTimeLabel">📅 发帖时间：<strong id="postTime">2023/07/12 22:30</strong></span>
+                    <span id="postViewsLabel">👁️ 浏览：<strong id="postViews">87542</strong></span>
+                    <span id="postRepliesLabel">💬 回复：<strong id="postReplies">6</strong></span>
+                </div>
+            </div>
+            
+            <div class="post-content">
+                <div class="post-text" id="postContent">
+[灵异] 我住过那个"吃人"的酒店  
+
+大家好，我是一个经常出差的销售。这两年住过的酒店没有一百也有八十了。但有一个酒店，我这辈子都不会忘记，也不敢再去。
+
+那个酒店叫R∞M。我不说具体地址，因为我怕你们真的去。
+
+去年夏天，我因为工作需要在那个城市待一个月。朋友给我推荐了这个酒店，说环境好、服务好、价格也不贵。我就订了一个月的房间，314号。
+
+前两周都很正常。房间确实不错，安静、整洁，服务员也很客气。
+
+但从第三周开始，我发现了一些不对劲的地方。
+
+首先是镜子。
+
+314房间有一面很大的落地镜。一开始我没在意，但有一天晚上，我起来上厕所，路过镜子的时候，我发现镜子里的"我"……眨眼的时间和我不一样。
+
+就那么零点几秒的延迟。
+
+我眨眼，然后镜子里的"我"才眨眼。
+
+我以为是我太累了，眼花了。但第二天，我特意对着镜子做了几个动作——举手、转身、点头。
+
+每一个动作，镜子里都有延迟。
+
+我开始害怕了。我用床单把镜子盖上，不敢再看。
+
+然后是声音。
+
+每天晚上，大概凌晨两三点的时候，我会听到一种声音。不是从外面传来的，而是从房间里"长出来"的。
+
+那是一种……怎么说呢……像是有人在很远很远的地方唱歌，但又近得像是在我耳边低语。
+
+那声音很美，美得让人想哭，但又让人浑身发冷。
+
+我睁开眼睛，声音就消失了。我闭上眼睛，它又回来了。
+
+第四周，我实在受不了了，去前台要求换房间。
+
+前台小姐很礼貌地告诉我："先生，我们酒店所有的房间都是一样的配置。您换到哪里都一样。"
+
+我问："那我能退房吗？"
+
+她笑了笑："当然可以。但根据合同，提前退房需要支付违约金。"
+
+违约金是我一个月房费的三倍。
+
+我付不起，所以只能继续住。
+
+最后一周，是我最恐怖的一周。
+
+我开始做梦。梦里，我站在一个黑暗的空间里，四周全是镜子。每一面镜子里都有一个"我",但他们都在做不同的事情。
+
+有的在哭，有的在笑，有的在跳舞,有的在尖叫。
+
+然后，所有的"我"同时转过头来看着我,异口同声地说："Stay。"（留下来）
+
+我在梦里拼命地跑,但无论跑多远，周围都是镜子，都是那些"我"。
+
+我醒来的时候，发现自己站在房间中央，面对着那面被床单盖住的落地镜。
+
+床单已经被拉下来了。
+
+而镜子里的"我"……在笑。
+
+但我没有笑。
+
+第二天一早，我收拾东西逃也似地离开了那个酒店。违约金什么的我不管了，我只想离开那个鬼地方。
+
+离开的时候，前台小姐还很客气地问我："先生，您住得还满意吗？"
+
+我看着她，想说点什么,但最终只是摇了摇头，快步走出了大门。
+
+出门的时候，我回头看了一眼酒店的招牌——R∞M。
+
+那个无穷符号∞，在阳光下反射着诡异的光。
+
+现在已经过去一年了，但我还是会做那个梦。
+
+梦里，所有的"我"还在那些镜子里，等着我回去。
+
+有时候，我甚至怀疑——我真的离开那个酒店了吗？
+
+还是说，我只是换了一面更大的镜子？
+                </div>
+            </div>
+            
+            <div class="warning-note" id="warningNote">
+                ⚠️ 温馨提示：本帖内容为网友个人经历分享，请理性看待，勿传播恐慌信息。
+            </div>
+            
+            <div class="replies-section">
+                <h3 id="replySection">回复列表</h3>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser1">心理医生</span>
+                        <span class="reply-time" id="replyTime1">回复时间：2023/07/12 22:45</span>
+                    </div>
+                    <div class="reply-content" id="replyContent1">
+                        楼主是不是压力太大产生幻觉了？
+                    </div>
+                </div>
+                
+                <div class="reply deleted">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser2">知情人士</span>
+                        <span class="reply-time" id="replyTime2">回复时间：2023/07/12 23:10</span>
+                    </div>
+                    <div class="reply-content" id="replyContent2">
+                        R∞M酒店我知道，确实挺邪门的，我一个朋友也住过……（评论已被删除）
+                    </div>
+                </div>
+                
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser3">酒店常客</span>
+                        <span class="reply-time" id="replyTime3">回复时间：2023/07/12 23:30</span>
+                    </div>
+                    <div class="reply-content" id="replyContent3">
+                        别瞎说，就是个普通酒店，我住过好几次都没事
+                    </div>
+                </div>
+                
+                <div class="reply deleted">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser4">镜子恐惧者</span>
+                        <span class="reply-time" id="replyTime4">回复时间：2023/07/13 00:15</span>
+                    </div>
+                    <div class="reply-content" id="replyContent4">
+                        楼主说的镜子延迟，我也遇到过！我当时住的是902……（评论已被删除）
+                    </div>
+                </div>
+                
+                <div class="reply deleted">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser5">真相探索者</span>
+                        <span class="reply-time" id="replyTime5">回复时间：2023/07/13 01:02</span>
+                    </div>
+                    <div class="reply-content" id="replyContent5">
+                        这帖子怎么删得这么快？是不是真的捅到什么了？（评论已被删除）
+                    </div>
+                </div>
+                
+                <div class="reply locked">
+                    <div class="reply-header">
+                        <span class="reply-user" id="replyUser6">系统提示</span>
+                        <span class="reply-time" id="replyTime6">回复时间：2023/07/13 02:34</span>
+                    </div>
+                    <div class="reply-content" id="replyContent6">
+                        帖子于2023/07/13 02:34被删除，理由：传播虚假信息
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="spooky-divider"></div>
+        
+        <footer>
+            <p id="footerText">© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息</p>
+        </footer>
+    </div>
+
+    <script>
+        // 多语言文本数据
+        const translations = {
+            zh: {
+                forumName: "灵异事件吧",
+                navHome: "首页",
+                navForum: "论坛",
+                navHot: "热门",
+                navNew: "最新",
+                navAbout: "关于",
+                postTitle: "[灵异] 我住过那个\"吃人\"的酒店",
+                postAuthorLabel: "👤 楼主：",
+                postTimeLabel: "📅 发帖时间：",
+                postViewsLabel: "👁️ 浏览：",
+                postRepliesLabel: "💬 回复：",
+                postAuthor: "出差销售员",
+                postTime: "2023/07/12 22:30",
+                postViews: "87542",
+                postReplies: "6",
+                postContent: `[灵异] 我住过那个"吃人"的酒店  
+
+大家好，我是一个经常出差的销售。这两年住过的酒店没有一百也有八十了。但有一个酒店，我这辈子都不会忘记，也不敢再去。
+
+那个酒店叫R∞M。我不说具体地址，因为我怕你们真的去。
+
+去年夏天，我因为工作需要在那个城市待一个月。朋友给我推荐了这个酒店，说环境好、服务好、价格也不贵。我就订了一个月的房间，314号。
+
+前两周都很正常。房间确实不错，安静、整洁，服务员也很客气。
+
+但从第三周开始，我发现了一些不对劲的地方。
+
+首先是镜子。
+
+314房间有一面很大的落地镜。一开始我没在意，但有一天晚上，我起来上厕所，路过镜子的时候，我发现镜子里的"我"……眨眼的时间和我不一样。
+
+就那么零点几秒的延迟。
+
+我眨眼，然后镜子里的"我"才眨眼。
+
+我以为是我太累了，眼花了。但第二天，我特意对着镜子做了几个动作——举手、转身、点头。
+
+每一个动作，镜子里都有延迟。
+
+我开始害怕了。我用床单把镜子盖上，不敢再看。
+
+然后是声音。
+
+每天晚上，大概凌晨两三点的时候，我会听到一种声音。不是从外面传来的，而是从房间里"长出来"的。
+
+那是一种……怎么说呢……像是有人在很远很远的地方唱歌，但又近得像是在我耳边低语。
+
+那声音很美，美得让人想哭，但又让人浑身发冷。
+
+我睁开眼睛，声音就消失了。我闭上眼睛，它又回来了。
+
+第四周，我实在受不了了，去前台要求换房间。
+
+前台小姐很礼貌地告诉我："先生，我们酒店所有的房间都是一样的配置。您换到哪里都一样。"
+
+我问："那我能退房吗？"
+
+她笑了笑："当然可以。但根据合同，提前退房需要支付违约金。"
+
+违约金是我一个月房费的三倍。
+
+我付不起，所以只能继续住。
+
+最后一周，是我最恐怖的一周。
+
+我开始做梦。梦里，我站在一个黑暗的空间里，四周全是镜子。每一面镜子里都有一个"我",但他们都在做不同的事情。
+
+有的在哭，有的在笑，有的在跳舞,有的在尖叫。
+
+然后，所有的"我"同时转过头来看着我,异口同声地说："Stay。"（留下来）
+
+我在梦里拼命地跑,但无论跑多远，周围都是镜子，都是那些"我"。
+
+我醒来的时候，发现自己站在房间中央，面对着那面被床单盖住的落地镜。
+
+床单已经被拉下来了。
+
+而镜子里的"我"……在笑。
+
+但我没有笑。
+
+第二天一早，我收拾东西逃也似地离开了那个酒店。违约金什么的我不管了，我只想离开那个鬼地方。
+
+离开的时候，前台小姐还很客气地问我："先生，您住得还满意吗？"
+
+我看着她，想说点什么,但最终只是摇了摇头，快步走出了大门。
+
+出门的时候，我回头看了一眼酒店的招牌——R∞M。
+
+那个无穷符号∞，在阳光下反射着诡异的光。
+
+现在已经过去一年了，但我还是会做那个梦。
+
+梦里，所有的"我"还在那些镜子里，等着我回去。
+
+有时候，我甚至怀疑——我真的离开那个酒店了吗？
+
+还是说，我只是换了一面更大的镜子？`,
+                warningNote: "⚠️ 温馨提示：本帖内容为网友个人经历分享，请理性看待，勿传播恐慌信息。",
+                replySection: "回复列表",
+                replyTime1: "回复时间：2023/07/12 22:45",
+                replyContent1: "楼主是不是压力太大产生幻觉了？",
+                replyTime2: "回复时间：2023/07/12 23:10",
+                replyContent2: "R∞M酒店我知道，确实挺邪门的，我一个朋友也住过……（评论已被删除）",
+                replyTime3: "回复时间：2023/07/12 23:30",
+                replyContent3: "别瞎说，就是个普通酒店，我住过好几次都没事",
+                replyTime4: "回复时间：2023/07/13 00:15",
+                replyContent4: "楼主说的镜子延迟，我也遇到过！我当时住的是902……（评论已被删除）",
+                replyTime5: "回复时间：2023/07/13 01:02",
+                replyContent5: "这帖子怎么删得这么快？是不是真的捅到什么了？（评论已被删除）",
+                replyTime6: "回复时间：2023/07/13 02:34",
+                replyContent6: "帖子于2023/07/13 02:34被删除，理由：传播虚假信息",
+                footerText: "© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息",
+                replyUser1: "心理医生",
+                replyUser2: "知情人士",
+                replyUser3: "酒店常客",
+                replyUser4: "镜子恐惧者",
+                replyUser5: "真相探索者",
+                replyUser6: "系统提示"
+            },
+            en: {
+                forumName: "Paranormal Events Forum",
+                navHome: "Home",
+                navForum: "Forum",
+                navHot: "Hot",
+                navNew: "New",
+                navAbout: "About",
+                postTitle: "[Paranormal] I've Stayed at That 'Man-Eating' Hotel",
+                postAuthorLabel: "👤 Author: ",
+                postTimeLabel: "📅 Posted: ",
+                postViewsLabel: "👁️ Views: ",
+                postRepliesLabel: "💬 Replies: ",
+                postAuthor: "Business Traveler",
+                postTime: "2023/07/12 22:30",
+                postViews: "87542",
+                postReplies: "6",
+                postContent: `[Paranormal] I've Stayed at That 'Man-Eating' Hotel
+
+Hello everyone, I'm a salesperson who travels frequently for work. In the past two years, I've stayed in at least eighty if not a hundred hotels. But there's one hotel I'll never forget and never dare to visit again.
+
+That hotel is called R∞M. I won't specify the exact address because I'm afraid you might actually go there.
+
+Last summer, I needed to stay in that city for a month for work. A friend recommended this hotel to me, saying it had a good environment, good service, and wasn't expensive. So I booked a room for a month—room 314.
+
+The first two weeks were completely normal. The room was indeed nice—quiet, clean, and the staff were polite.
+
+But starting from the third week, I began to notice something strange.
+
+First was the mirror.
+
+Room 314 had a large floor-to-ceiling mirror. At first, I didn't pay it much attention, but one night when I got up to use the bathroom and passed by the mirror, I noticed that "I" in the mirror... blinked at a different time than I did.
+
+Just a fraction of a second delay.
+
+I would blink, and then the "I" in the mirror would blink.
+
+I thought I was just too tired and seeing things. But the next day, I deliberately made several movements in front of the mirror—raising my hand, turning around, nodding.
+
+Every movement had a delay in the mirror.
+
+I started to get scared. I covered the mirror with a bedsheet and didn't dare look at it again.
+
+Then there were the sounds.
+
+Every night, around 2 or 3 AM, I would hear a sound. It wasn't coming from outside, but seemed to "grow" from within the room itself.
+
+It was a... how should I describe it... like someone singing from very, very far away, yet so close it felt like a whisper in my ear.
+
+The sound was beautiful, so beautiful it made me want to cry, but also sent chills down my spine.
+
+When I opened my eyes, the sound would disappear. When I closed them, it would return.
+
+During the fourth week, I couldn't take it anymore and went to the front desk to request a room change.
+
+The front desk lady politely told me: "Sir, all rooms in our hotel have the same configuration. Changing rooms won't make a difference."
+
+I asked: "Then can I check out?"
+
+She smiled: "Of course. But according to the contract, early checkout requires a penalty fee."
+
+The penalty was three times my monthly room rate.
+
+I couldn't afford it, so I had to keep staying.
+
+The final week was the most terrifying.
+
+I started having dreams. In the dream, I stood in a dark space surrounded entirely by mirrors. Each mirror had a different "me," but they were all doing different things.
+
+Some were crying, some were laughing, some were dancing, some were screaming.
+
+Then, all the "me"s turned to look at me simultaneously and said in unison: "Stay."
+
+In the dream, I ran desperately, but no matter how far I ran, I was surrounded by mirrors, by those "me"s.
+
+When I woke up, I found myself standing in the center of the room, facing the floor-to-ceiling mirror that had been covered by the bedsheet.
+
+The bedsheet had been pulled down.
+
+And the "me" in the mirror... was smiling.
+
+But I wasn't smiling.
+
+Early the next morning, I packed my things and fled that hotel like a refugee. I didn't care about the penalty anymore—I just wanted to leave that haunted place.
+
+As I was leaving, the front desk lady politely asked me: "Sir, were you satisfied with your stay?"
+
+I looked at her, wanting to say something, but ultimately just shook my head and quickly walked out the door.
+
+As I left, I glanced back at the hotel sign—R∞M.
+
+That infinity symbol ∞ reflected a strange light in the sunlight.
+
+A year has passed now, but I still have that dream.
+
+In the dream, all the "me"s are still in those mirrors, waiting for me to return.
+
+Sometimes, I even wonder—did I really leave that hotel?
+
+Or did I just move to a bigger mirror?`,
+                warningNote: "⚠️ Reminder: This post contains personal experiences shared by users. Please view rationally and avoid spreading panic.",
+                replySection: "Replies",
+                replyTime1: "Reply time: 2023/07/12 22:45",
+                replyContent1: "Is the OP under too much stress and having hallucinations?",
+                replyTime2: "Reply time: 2023/07/12 23:10",
+                replyContent2: "I know about R∞M Hotel, it's indeed quite eerie. A friend of mine stayed there once... (Comment deleted)",
+                replyTime3: "Reply time: 2023/07/12 23:30",
+                replyContent3: "Don't talk nonsense, it's just an ordinary hotel. I've stayed there several times without any issues.",
+                replyTime4: "Reply time: 2023/07/13 00:15",
+                replyContent4: "The mirror delay the OP mentioned, I've experienced it too! I was staying in room 902 at the time... (Comment deleted)",
+                replyTime5: "Reply time: 2023/07/13 01:02",
+                replyContent5: "Why was this post deleted so quickly? Did it really hit a nerve? (Comment deleted)",
+                replyTime6: "Reply time: 2023/07/13 02:34",
+                replyContent6: "Post deleted on 2023/07/13 02:34, reason: Spreading false information",
+                footerText: "© 2025 Paranormal Events Forum - For entertainment discussion only, do not believe unverified information",
+                replyUser1: "Psychologist",
+                replyUser2: "Insider",
+                replyUser3: "Frequent Hotel Guest",
+                replyUser4: "Mirror Fear",
+                replyUser5: "Truth Seeker",
+                replyUser6: "System Notice"
+            },
+            ja: {
+                forumName: "心霊事件掲示板",
+                navHome: "ホーム",
+                navForum: "掲示板",
+                navHot: "人気",
+                navNew: "新着",
+                navAbout: "について",
+                postTitle: "[心霊] あの「人を喰う」ホテルに泊まったことがある",
+                postAuthorLabel: "👤 投稿者：",
+                postTimeLabel: "📅 投稿時間：",
+                postViewsLabel: "👁️ 閲覧数：",
+                postRepliesLabel: "💬 返信数：",
+                postAuthor: "出張営業マン",
+                postTime: "2023/07/12 22:30",
+                postViews: "87542",
+                postReplies: "6",
+                postContent: `[心霊] あの「人を喰う」ホテルに泊まったことがある
+
+皆さん、こんにちは。私は頻繁に出張する営業マンです。この2年間で泊まったホテルは百軒はないにしても八十軒はあります。しかし、あるホテルだけは一生忘れられないし、二度と行きたくありません。
+
+そのホテルはR∞Mといいます。具体的な住所は言いません。あなた方が実際に行ってしまうかもしれないからです。
+
+去年の夏、仕事でその街に1ヶ月滞在する必要がありました。友人がこのホテルを勧めてくれました。環境が良く、サービスも良く、値段も高くないと言うので、1ヶ月分の部屋、314号室を予約しました。
+
+最初の2週間はとても正常でした。部屋は確かに良く、静かで清潔で、従業員も礼儀正しかったです。
+
+しかし、第3週から、何かおかしなことに気づき始めました。
+
+まずは鏡です。
+
+314号室には大きなフロアミラーがありました。最初は気にしていませんでしたが、ある夜、トイレに行くために起きて、鏡の前を通りかかったとき、鏡の中の「私」が…瞬きのタイミングが私と違うことに気づきました。
+
+ほんの0数秒の遅れです。
+
+私が瞬きをすると、その後で鏡の中の「私」が瞬きをする。
+
+疲れすぎて目がかすんでいるのだと思いました。しかし翌日、わざと鏡の前でいくつかの動作をしました——手を挙げる、体を回す、うなずく。
+
+どの動作も、鏡の中には遅れがありました。
+
+怖くなりました。私はシーツで鏡を覆い、もう見ないようにしました。
+
+次に音です。
+
+毎晩、深夜2時か3時頃になると、ある音が聞こえるようになりました。外からではなく、部屋の中から「生えてくる」ような音です。
+
+それは…どう言えばいいか…とても遠くで誰かが歌っているようで、でも私の耳元で囁いているように近い。
+
+その音は美しく、美しすぎて泣きたくなるが、全身が凍りつくような寒気も覚える。
+
+目を開けると音は消える。目を閉じると、また聞こえる。
+
+第4週、もう耐えられなくなり、フロントに部屋の変更を求めました。
+
+フロントの女性は礼儀正しく言いました。「お客様、当ホテルのすべての部屋は同じ仕様です。どこの部屋に変えても同じです」
+
+私は聞きました。「では、チェックアウトはできますか？」
+
+彼女は微笑みました。「もちろんです。しかし契約により、早期チェックアウトには違約金がかかります」
+
+違約金は1ヶ月分の宿泊料の3倍でした。
+
+払えません。だから泊まり続けるしかありませんでした。
+
+最後の1週間が、最も恐ろしかった。
+
+夢を見始めました。夢の中で、私は暗い空間に立ち、周りは全て鏡でした。どの鏡の中にも「私」がいましたが、それぞれが違うことをしていました。
+
+泣いている「私」、笑っている「私」、踊っている「私」、叫んでいる「私」。
+
+そして、全ての「私」が同時に私の方を見て、声を揃えて言いました。「Stay。」（残れ）
+
+夢の中で必死に走りましたが、どこまで走っても周りは鏡、あの「私」たちばかり。
+
+目が覚めたとき、私は部屋の中央に立ち、シーツで覆われていたフロアミラーと向き合っていました。
+
+シーツは引きずり下ろされていました。
+
+そして鏡の中の「私」は…笑っていました。
+
+でも私は笑っていません。
+
+翌朝、私は荷物をまとめてそのホテルから逃げるように去りました。違約金などどうでもよかった。ただあの呪われた場所から離れたかった。
+
+去るとき、フロントの女性は丁寧に聞きました。「お客様、ご滞在はいかがでしたか？」
+
+彼女を見て、何か言おうとしましたが、結局ただ首を振り、速足でドアを出ました。
+
+外に出るとき、振り返ってホテルの看板を見ました——R∞M。
+
+あの無限記号∞が、陽光に妖しい光を反射していました。
+
+もう1年が経ちましたが、今でもあの夢を見ます。
+
+夢の中で、全ての「私」はまだあの鏡の中にいて、私が戻るのを待っています。
+
+ときどき、疑ってしまいます——私は本当にあのホテルを離れたのだろうか？
+
+それとも、ただより大きな鏡に移っただけなのだろうか？`,
+                warningNote: "⚠️ 注意：この投稿はユーザーの個人的な体験談です。理性的に見て、パニックを広めないでください。",
+                replySection: "返信リスト",
+                replyTime1: "返信時間：2023/07/12 22:45",
+                replyContent1: "OPはストレスで幻覚を見ているのでは？",
+                replyTime2: "返信時間：2023/07/12 23:10",
+                replyContent2: "R∞Mホテルは知ってる、確かに怪しい。私の友人が泊まったことがある…（コメント削除済み）",
+                replyTime3: "返信時間：2023/07/12 23:30",
+                replyContent3: "でたらめを言うな、ただの普通のホテルだ。何度も泊まったが何もなかった。",
+                replyTime4: "返信時間：2023/07/13 00:15",
+                replyContent4: "OPが言う鏡の遅延、私も体験した！あの時は902号室に泊まっていた…（コメント削除済み）",
+                replyTime5: "返信時間：2023/07/13 01:02",
+                replyContent5: "このスレ、なぜこんなに早く削除された？本当に何かに触れてしまったのか？（コメント削除済み）",
+                replyTime6: "返信時間：2023/07/13 02:34",
+                replyContent6: "スレッドは2023/07/13 02:34に削除されました、理由：虚偽情報の拡散",
+                footerText: "© 2025 心霊事件掲示板 - 娯楽討論のみを目的とし、未確認情報を軽信しないでください",
+                replyUser1: "心理医",
+                replyUser2: "内部関係者",
+                replyUser3: "ホテル常連客",
+                replyUser4: "鏡恐怖症",
+                replyUser5: "真実探求者",
+                replyUser6: "システム通知"
+            },
+            pt: {
+                forumName: "Fórum de Eventos Paranormais",
+                navHome: "Início",
+                navForum: "Fórum",
+                navHot: "Popular",
+                navNew: "Novo",
+                navAbout: "Sobre",
+                postTitle: "[Paranormal] Eu Fiquei naquele Hotel 'Come-Pessoas'",
+                postAuthorLabel: "👤 Autor: ",
+                postTimeLabel: "📅 Postado: ",
+                postViewsLabel: "👁️ Visualizações: ",
+                postRepliesLabel: "💬 Respostas: ",
+                postAuthor: "Vendedor em Viagem",
+                postTime: "2023/07/12 22:30",
+                postViews: "87542",
+                postReplies: "6",
+                postContent: `[Paranormal] Eu Fiquei naquele Hotel 'Come-Pessoas'
+
+Olá a todos, sou um vendedor que viaja frequentemente a trabalho. Nos últimos dois anos, fiquei em pelo menos oitenta, se não cem hotéis. Mas há um hotel que nunca esquecerei e nunca me atreverei a visitar novamente.
+
+Esse hotel chama-se R∞M. Não vou especificar o endereço exato porque tenho medo de que vocês realmente vão lá.
+
+No verão passado, precisei ficar naquela cidade por um mês a trabalho. Um amigo recomendou-me este hotel, dizendo que tinha um bom ambiente, bom serviço e não era caro. Então reservei um quarto por um mês—quarto 314.
+
+As primeiras duas semanas foram completamente normais. O quarto era realmente bom—silencioso, limpo e a equipe era educada.
+
+Mas a partir da terceira semana, comecei a notar algo estranho.
+
+Primeiro foi o espelho.
+
+O quarto 314 tinha um grande espelho de parede a parede. No início, não prestei muita atenção, mas uma noite, quando levantei para ir ao banheiro e passei pelo espelho, notei que o "eu" no espelho... piscava em um momento diferente do que eu.
+
+Apenas uma fração de segundo de atraso.
+
+Eu piscava, e então o "eu" no espelho piscava.
+
+Pensei que estava apenas muito cansado e vendo coisas. Mas no dia seguinte, fiz deliberadamente vários movimentos na frente do espelho—levantando a mão, virando, acenando.
+
+Cada movimento tinha um atraso no espelho.
+
+Comecei a ficar com medo. Cobri o espelho com um lençol e não ousei mais olhar para ele.
+
+Depois vieram os sons.
+
+Todas as noites, por volta das 2 ou 3 da manhã, ouvia um som. Não vinha de fora, mas parecia "crescer" de dentro do próprio quarto.
+
+Era um... como descrever... como alguém cantando de muito, muito longe, mas tão perto que parecia um sussurro no meu ouvido.
+
+O som era lindo, tão lindo que me fazia querer chorar, mas também dava arrepios.
+
+Quando abria os olhos, o som desaparecia. Quando os fechava, voltava.
+
+Durante a quarta semana, não aguentei mais e fui à recepção pedir para trocar de quarto.
+
+A recepcionista disse-me educadamente: "Senhor, todos os quartos do nosso hotel têm a mesma configuração. Trocar de quarto não fará diferença."
+
+Perguntei: "Então posso fazer check-out?"
+
+Ela sorriu: "Claro. Mas de acordo com o contrato, o check-out antecipado requer uma multa."
+
+A multa era três vezes o valor da minha estadia mensal.
+
+Não podia pagar, então tive que continuar.
+
+A última semana foi a mais aterrorizante.
+
+Comecei a ter sonhos. No sonho, estava em um espaço escuro cercado inteiramente por espelhos. Cada espelho tinha um "eu" diferente, mas todos estavam fazendo coisas diferentes.
+
+Alguns chorando, alguns rindo, alguns dançando, alguns gritando.
+
+Então, todos os "eus" viraram-se para me olhar simultaneamente e disseram em uníssono: "Fique."
+
+No sonho, corri desesperadamente, mas não importa o quão longe eu corresse, estava cercado por espelhos, por aqueles "eus".
+
+Quando acordei, me vi de pé no centro do quarto, de frente para o espelho de parede a parede que havia sido coberto pelo lençol.
+
+O lençol havia sido puxado para baixo.
+
+E o "eu" no espelho... estava sorrindo.
+
+Mas eu não estava sorrindo.
+
+Na manhã seguinte, fiz as malas e fugi daquele hotel como um refugiado. Não me importava mais com a multa—só queria sair daquele lugar assombrado.
+
+Ao sair, a recepcionista perguntou educadamente: "Senhor, ficou satisfeito com sua estadia?"
+
+Olhei para ela, querendo dizer algo, mas no final apenas balancei a cabeça e saí rapidamente pela porta.
+
+Ao sair, olhei para trás para a placa do hotel—R∞M.
+
+Aquele símbolo de infinito ∞ refletia uma luz estranha na luz do sol.
+
+Já se passou um ano, mas ainda tenho aquele sonho.
+
+No sonho, todos os "eus" ainda estão naqueles espelhos, esperando que eu volte.
+
+Às vezes, até me pergunto—realmente saí daquele hotel?
+
+Ou apenas me mudei para um espelho maior?`,
+                warningNote: "⚠️ Aviso: Este post contém experiências pessoais compartilhadas por usuários. Por favor, veja racionalmente e evite espalhar pânico.",
+                replySection: "Respostas",
+                replyTime1: "Hora da resposta: 2023/07/12 22:45",
+                replyContent1: "O OP está sob muito estresse e tendo alucinações?",
+                replyTime2: "Hora da resposta: 2023/07/12 23:10",
+                replyContent2: "Eu sei sobre o Hotel R∞M, é realmente muito assustador. Um amigo meu ficou lá uma vez... (Comentário excluído)",
+                replyTime3: "Hora da resposta: 2023/07/12 23:30",
+                replyContent3: "Não fale bobagem, é apenas um hotel comum. Fiquei lá várias vezes sem problemas.",
+                replyTime4: "Hora da resposta: 2023/07/13 00:15",
+                replyContent4: "O atraso no espelho mencionado pelo OP, eu também experimentei! Na época estava no quarto 902... (Comentário excluído)",
+                replyTime5: "Hora da resposta: 2023/07/13 01:02",
+                replyContent5: "Por que este post foi excluído tão rápido? Realmente atingiu um ponto sensível? (Comentário excluído)",
+                replyTime6: "Hora da resposta: 2023/07/13 02:34",
+                replyContent6: "Post excluído em 2023/07/13 02:34, motivo: Espalhando informações falsas",
+                footerText: "© 2025 Fórum de Eventos Paranormais - Apenas para discussão de entretenimento, não acredite em informações não verificadas",
+                replyUser1: "Psicólogo",
+                replyUser2: "Informante",
+                replyUser3: "Hóspede Frequente",
+                replyUser4: "Medo de Espelho",
+                replyUser5: "Buscador da Verdade",
+                replyUser6: "Aviso do Sistema"
+            }
+        };
+
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const langBtn = document.getElementById('langBtn');
+            const langOptions = document.getElementById('langOptions');
+            const currentLangSpan = document.getElementById('currentLang');
+            
+            // 默认语言
+            let currentLang = 'zh';
+            
+            // 切换语言选项显示/隐藏
+            langBtn.addEventListener('click', function() {
+                langOptions.style.display = langOptions.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // 点击语言选项
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    
+                    // 更新当前语言显示
+                    currentLang = lang;
+                    const langNames = {
+                        'zh': '中文',
+                        'en': 'English',
+                        'ja': '日本語',
+                        'pt': 'Português'
+                    };
+                    currentLangSpan.textContent = langNames[lang];
+                    
+                    // 更新活跃状态
+                    document.querySelectorAll('.lang-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 应用翻译
+                    applyTranslation(lang);
+                    
+                    // 隐藏选项
+                    langOptions.style.display = 'none';
+                    
+                    // 保存语言偏好到本地存储
+                    localStorage.setItem('preferredLanguage', lang);
+                });
+            });
+            
+            // 从本地存储获取语言偏好
+            const savedLang = localStorage.getItem('preferredLanguage');
+            if (savedLang && translations[savedLang]) {
+                currentLang = savedLang;
+                
+                // 更新UI
+                const langNames = {
+                    'zh': '中文',
+                    'en': 'English',
+                    'ja': '日本語',
+                    'pt': 'Português'
+                };
+                currentLangSpan.textContent = langNames[savedLang];
+                document.querySelectorAll('.lang-option').forEach(opt => {
+                    opt.classList.remove('active');
+                    if (opt.getAttribute('data-lang') === savedLang) {
+                        opt.classList.add('active');
+                    }
+                });
+                
+                // 应用翻译
+                applyTranslation(savedLang);
+            }
+            
+            // 应用翻译函数
+            function applyTranslation(lang) {
+                const langData = translations[lang];
+                
+                // 更新所有文本内容
+                for (const key in langData) {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.value = langData[key];
+                        } else {
+                            // 处理帖子内容和回复内容中的R∞M符号
+                            if (key === 'postContent' || key.startsWith('replyContent')) {
+                                const processedText = langData[key].replace(/R∞M/g, 'R<span class="infinity-symbol">∞</span>M');
+                                element.innerHTML = processedText;
+                            } else {
+                                element.textContent = langData[key];
+                            }
+                        }
+                    }
+                }
+                
+                // 更新页面标题
+                document.title = `${langData.forumName} - ${langData.postTitle}`;
+            }
+            
+            // 点击页面其他地方关闭语言选项
+            document.addEventListener('click', function(event) {
+                if (!langBtn.contains(event.target) && !langOptions.contains(event.target)) {
+                    langOptions.style.display = 'none';
+                }
+            });
+            
+            // 初始加载时，处理帖子内容中的R∞M符号
+            const postContentElement = document.getElementById('postContent');
+            if (postContentElement) {
+                postContentElement.innerHTML = postContentElement.innerHTML.replace(/R∞M/g, 'R<span class="infinity-symbol">∞</span>M');
+            }
+            
+            // 处理回复内容中的R∞M符号
+            for (let i = 1; i <= 6; i++) {
+                const replyContentElement = document.getElementById(`replyContent${i}`);
+                if (replyContentElement) {
+                    replyContentElement.innerHTML = replyContentElement.innerHTML.replace(/R∞M/g, 'R<span class="infinity-symbol">∞</span>M');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

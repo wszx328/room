@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 902号房记录</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M内部系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 内部系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">尹力</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 902号房记录详情 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">客房记录详情</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-28</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 902 - <span data-i18n="guest.name">刘星辰</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="guest.checkIn">入住</span>: 2025-11-14 | <span data-i18n="guest.checkOut">退房</span>: 2025-11-28
+            </div>
+          </div>
+          
+          <!-- 登记信息 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.registration">登记信息</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="record.guestName">住客姓名：刘星辰</li>
+              <li data-i18n="record.checkInDate">入住日期：2025年11月14日</li>
+              <li data-i18n="record.checkOutDate">退房日期：2025年11月28日</li>
+              <li data-i18n="record.guestCount">入住人数：1人</li>
+            </ul>
+          </div>
+          
+          <!-- 客房记录 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.roomRecord">客房记录</h4>
+            <ul class="list-none text-gray-300 space-y-2">
+              <li data-i18n="record.1">11/14 22:00：住客办理入住，未提前预约，要求入住902号房。支付十四日房费，要求绝对安静，拒绝任何日常清洁与服务，仅需每三日于门口补充威士忌与矿泉水。登记时神色疲惫但异常坚决。</li>
+              <li data-i18n="record.2">11/15 03:00：夜间巡查报告，902房内传出持续低频振动声，非音乐旋律，更像设备运转，同楼层部分房间反馈灯光有瞬时闪烁。</li>
+              <li data-i18n="record.3">11/16 全天：住客自行搬运三个大型黑色设备箱进入房间，拒绝任何协助。搬运过程持续近六小时。</li>
+              <li data-i18n="record.4">11/16 深夜至凌晨：901房客投诉，902房内传出持续金属敲击、摩擦及不明吟诵声，凌晨三点左右所有声音骤停，陷入完全寂静。</li>
+              <li data-i18n="record.5">11/17 12:30：服务员按约定放置物品于门口，瞥见房门未关严。室内所有家具靠墙，地板用白色粉笔画满复杂几何图形，中央架设一套极其专业的音响设备与多把吉他。住客闭目盘坐于图形中央，手指在空中虚划。</li>
+              <li data-i18n="record.6">11/20 - 11/26：每日午夜至凌晨，902房开始传出高强度、结构异常的音乐/声音。投诉激增。值得注意的是，多数投诉为噪音导致心悸、头痛、耳鸣。701房客曾因严重心悸送医，检查无器质性病变，心率却稳定在异常值。</li>
+              <li data-i18n="record.7">11/21 02:00：夜间监控显示，住客演奏时在墙面投射出多臂的扭曲影子（疑为灯光与动作叠加所致）。住客精神状态观测记录为"高度亢奋与专注"。</li>
+              <li data-i18n="record.8">11/24 02:00：住客主动联系前台，浑身湿透，眼神狂躁，要求紧急提供大量蜡烛与二十公斤羊油。在被告知消防安全规定后，住客提出"关闭本层烟雾报警器"的非合规要求并支付高额"特别服务费"。要求被"技术性满足"（记录备注：已同步启动独立消防监控）。</li>
+              <li data-i18n="record.9">11/25 ：901房客与服务人员聊天时提到902昨晚深夜时房门洞开，内里烛光摇曳，住客上身赤裸面对落地镜进行剧烈肢体动作，似在表演或仪式。其手机试图拍摄时莫名黑屏失效。</li>
+              <li data-i18n="record.10">11/27 04:00 - 05:00：902房内声音强度与诡异程度达到顶峰，整层楼感知到物理震动，灯光与消防喷淋系统出现短暂紊乱。902房门缝溢出非自然金色光芒。05:00整，一切响动与异状瞬间停止。</li>
+              <li data-i18n="record.11">11/28 08:00：住客未现身退房。工作人员进入检查，房间已被彻底清理，所有个人物品、设备、粉笔痕迹消失无踪，恢复标准布置，仿佛无人居住。仅于床头柜发现手写便条与一张无标签黑胶唱片。</li>
+              <li data-i18n="record.12">11/28 08:15：播放测试唱片。内容为一段结构完整、编曲复杂的器乐与人声作品，高潮部分叠加入经久不息、由远及近的雷鸣般掌声，直至曲终。</li>
+            </ul>
+          </div>
+          
+          <!-- 附件 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.attachments">附件</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li><a href="便条.jpg" target="_blank" class="text-accent hover:text-secondary transition-colors" data-i18n="record.handwrittenNote">住客遗留手写便条.jpg</a></li>
+              <li data-i18n="record.vinylRecord">无标题黑胶唱片《Clappin'》音频备份.wav</li>
+            </ul>
+          </div>
+          
+          <!-- 备注 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="record.remarks">备注</h4>
+            <p class="text-gray-300" data-i18n="record.remarksContent">一位追求极致声音体验与精神突破的艺术家案例。住客在902房进行了为期十四日的高强度、封闭式个人创作，其过程伴随显著的外部生理影响与空间异常反馈，最终成果展现出强烈的舞台沉浸感与"虚拟掌声"特效，艺术完成度极高。其偏执的创作方式与对环境的极端控制要求，虽带来管理挑战，但最终产出的"作品"及留下的谜团，极具话题性与品牌故事价值。建议归档为"极致情感体验提供者"案例，用于内部研讨。房间已彻底清洁并检查，无结构损坏。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">内部系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': '客房记录详情',
+        'guest.name': '刘星辰',
+        'guest.checkIn': '入住',
+        'guest.checkOut': '退房',
+        'record.registration': '登记信息',
+        'record.guestName': '住客姓名：刘星辰',
+        'record.checkInDate': '入住日期：2025年11月14日',
+        'record.checkOutDate': '退房日期：2025年11月28日',
+        'record.guestCount': '入住人数：1人',
+        'record.roomRecord': '客房记录',
+        'record.1': '11/14 22:00：住客办理入住，未提前预约，要求入住902号房。支付十四日房费，要求绝对安静，拒绝任何日常清洁与服务，仅需每三日于门口补充威士忌与矿泉水。登记时神色疲惫但异常坚决。',
+        'record.2': '11/15 03:00：夜间巡查报告，902房内传出持续低频振动声，非音乐旋律，更像设备运转，同楼层部分房间反馈灯光有瞬时闪烁。',
+        'record.3': '11/16 全天：住客自行搬运三个大型黑色设备箱进入房间，拒绝任何协助。搬运过程持续近六小时。',
+        'record.4': '11/16 深夜至凌晨：901房客投诉，902房内传出持续金属敲击、摩擦及不明吟诵声，凌晨三点左右所有声音骤停，陷入完全寂静。',
+        'record.5': '11/17 12:30：服务员按约定放置物品于门口，瞥见房门未关严。室内所有家具靠墙，地板用白色粉笔画满复杂几何图形，中央架设一套极其专业的音响设备与多把吉他。住客闭目盘坐于图形中央，手指在空中虚划。',
+        'record.6': '11/20 - 11/26：每日午夜至凌晨，902房开始传出高强度、结构异常的音乐/声音。投诉激增。值得注意的是，多数投诉为噪音导致心悸、头痛、耳鸣。701房客曾因严重心悸送医，检查无器质性病变，心率却稳定在异常值。',
+        'record.7': '11/21 02:00：夜间监控显示，住客演奏时在墙面投射出多臂的扭曲影子（疑为灯光与动作叠加所致）。住客精神状态观测记录为"高度亢奋与专注"。',
+        'record.8': '11/24 02:00：住客主动联系前台，浑身湿透，眼神狂躁，要求紧急提供大量蜡烛与二十公斤羊油。在被告知消防安全规定后，住客提出"关闭本层烟雾报警器"的非合规要求并支付高额"特别服务费"。要求被"技术性满足"（记录备注：已同步启动独立消防监控）。',
+        'record.9': '11/25 ：901房客与服务人员聊天时提到902昨晚深夜时房门洞开，内里烛光摇曳，住客上身赤裸面对落地镜进行剧烈肢体动作，似在表演或仪式。其手机试图拍摄时莫名黑屏失效。',
+        'record.10': '11/27 04:00 - 05:00：902房内声音强度与诡异程度达到顶峰，整层楼感知到物理震动，灯光与消防喷淋系统出现短暂紊乱。902房门缝溢出非自然金色光芒。05:00整，一切响动与异状瞬间停止。',
+        'record.11': '11/28 08:00：住客未现身退房。工作人员进入检查，房间已被彻底清理，所有个人物品、设备、粉笔痕迹消失无踪，恢复标准布置，仿佛无人居住。仅于床头柜发现手写便条与一张无标签黑胶唱片。',
+        'record.12': '11/28 08:15：播放测试唱片。内容为一段结构完整、编曲复杂的器乐与人声作品，高潮部分叠加入经久不息、由远及近的雷鸣般掌声，直至曲终。',
+        'record.attachments': '附件',
+        'record.handwrittenNote': '住客遗留手写便条.jpg',
+        'record.vinylRecord': '无标题黑胶唱片《Clappin\'》音频备份.wav',
+        'record.remarks': '备注',
+        'record.remarksContent': '一位追求极致声音体验与精神突破的艺术家案例。住客在902房进行了为期十四日的高强度、封闭式个人创作，其过程伴随显著的外部生理影响与空间异常反馈，最终成果展现出强烈的舞台沉浸感与"虚拟掌声"特效，艺术完成度极高。其偏执的创作方式与对环境的极端控制要求，虽带来管理挑战，但最终产出的"作品"及留下的谜团，极具话题性与品牌故事价值。建议归档为"极致情感体验提供者"案例，用于内部研讨。房间已彻底清洁并检查，无结构损坏。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '内部系统',
+        'footer.confidential': '仅供内部使用 - 保密级别：高级',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'Room Record Details',
+        'guest.name': 'Liu Xingchen',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'record.registration': 'Registration Information',
+        'record.guestName': 'Guest Name: Liu Xingchen',
+        'record.checkInDate': 'Check-in Date: November 14, 2025',
+        'record.checkOutDate': 'Check-out Date: November 28, 2025',
+        'record.guestCount': 'Number of Guests: 1',
+        'record.roomRecord': 'Room Records',
+        'record.1': '11/14 22:00: Guest checked in without prior reservation, specifically requested room 902. Paid for fourteen days, demanded absolute quiet, refused any daily cleaning and services, only required whiskey and mineral water replenished at the door every three days. Appeared exhausted but unusually determined during check-in.',
+        'record.2': '11/15 03:00: Night patrol report - continuous low-frequency vibrations detected from room 902, not melodic music, more like equipment operation. Some rooms on the same floor reported momentary light flickering.',
+        'record.3': '11/16 All day: Guest personally carried three large black equipment cases into the room, refused any assistance. The process lasted nearly six hours.',
+        'record.4': '11/16 Late night to early morning: Guest in room 901 complained about continuous metal knocking, friction, and unintelligible chanting from room 902. All sounds abruptly stopped around 3 AM, plunging into complete silence.',
+        'record.5': '11/17 12:30: Staff placed items at the door as agreed, noticed door slightly ajar. All furniture moved against walls, floor covered with complex geometric patterns drawn in white chalk. A highly professional sound system and multiple guitars set up in center. Guest sat cross-legged in center of pattern with eyes closed, fingers tracing patterns in air.',
+        'record.6': '11/20 - 11/26: Each night from midnight to early morning, room 902 emitted high-intensity, structurally unusual music/sounds. Complaints surged. Notably, most complaints involved palpitations, headaches, and tinnitus caused by the noise. Guest from room 701 was sent to hospital for severe palpitations; examination revealed no organic pathology, yet heart rate remained at abnormal values.',
+        'record.7': '11/21 02:00: Night surveillance shows guest projected multi-armed distorted shadows on walls while performing (likely due to lighting and movement). Guest mental state observation recorded as "highly excited and focused".',
+        'record.8': '11/24 02:00: Guest contacted front desk, drenched in sweat, with frantic eyes, urgently requested large quantities of candles and twenty kilograms of lamb tallow. After being informed of fire safety regulations, guest made non-compliant request to "disable smoke detectors on this floor" and paid substantial "special service fee". Request was "technically fulfilled" (note: independent fire monitoring simultaneously activated).',
+        'record.9': '11/25: Guest from room 901 mentioned to staff that room 902 door was wide open late last night, with flickering candlelight inside. Guest was shirtless performing intense physical movements facing a full-length mirror, resembling performance or ritual. Their phone mysteriously blacked out when attempting to photograph.',
+        'record.10': '11/27 04:00 - 05:00: Sound intensity and bizarre nature from room 902 peaked. Entire floor perceived physical vibrations; lighting and fire sprinkler systems experienced brief disruptions. Non-natural golden light seeped from room 902 door crack. Precisely at 05:00, all sounds and anomalies instantly ceased.',
+        'record.11': '11/28 08:00: Guest did not appear for check-out. Staff entered for inspection; room completely cleaned, all personal items, equipment, chalk marks vanished without trace, restored to standard configuration as if never occupied. Only found handwritten note and unlabeled vinyl record on bedside table.',
+        'record.12': '11/28 08:15: Test playback of record. Content is a structurally complete, complexly arranged instrumental and vocal piece, climax layered with enduring, approaching thunderous applause until song ends.',
+        'record.attachments': 'Attachments',
+        'record.handwrittenNote': 'Guest\'s handwritten note.jpg',
+        'record.vinylRecord': 'Untitled vinyl record《Clappin\'》audio backup.wav',
+        'record.remarks': 'Remarks',
+        'record.remarksContent': 'A case of an artist pursuing ultimate sound experience and spiritual breakthrough. Guest conducted fourteen days of high-intensity, closed-door personal creation in room 902, process accompanied by significant external physiological effects and spatial anomalous feedback. Final outcome exhibits strong stage immersion and "virtual applause" effects, with extremely high artistic completion. While obsessive creative methods and extreme environmental control demands posed management challenges, the resulting "work" and lingering mysteries possess high thematic and brand storytelling value. Recommend archiving as "Ultimate Emotional Experience Provider" case for internal study. Room thoroughly cleaned and inspected, no structural damage found.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Internal System',
+        'footer.confidential': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': '客室記録詳細',
+        'guest.name': '劉星辰',
+        'guest.checkIn': 'チェックイン',
+        'guest.checkOut': 'チェックアウト',
+        'record.registration': '登録情報',
+        'record.guestName': '宿泊客名：劉星辰',
+        'record.checkInDate': 'チェックイン日：2025年11月14日',
+        'record.checkOutDate': 'チェックアウト日：2025年11月28日',
+        'record.guestCount': '宿泊人数：1名',
+        'record.roomRecord': '客室記録',
+        'record.1': '11/14 22:00：宿泊客チェックイン、事前予約なし、902号室を指定。14日分の宿泊費を支払い、絶対的な静寂を要求、日常清掃とサービスを拒否、3日毎にドア前でウィスキーとミネラルウォーターを補充するのみ。登録時、疲弊した様子だが異常に決意に満ちていた。',
+        'record.2': '11/15 03:00：夜間巡回報告、902号室から持続的な低周波振動音、音楽メロディーではなく機器作動音に近い。同階一部客室で照明が瞬間的にちらつくフィードバックあり。',
+        'record.3': '11/16 終日：宿泊客が自ら三つの大型ブラック機器ケースを部屋に搬入、いかなる支援も拒否。搬入過程は約六時間継続。',
+        'record.4': '11/16 深夜から未明：901号室宿泊客が苦情、902号室内から持続的な金属打撃音、摩擦音、不明な詠唱声、午前3時頃に全ての音が急停止、完全な沈黙に陥る。',
+        'record.5': '11/17 12:30：従業員が約束通りに物品をドア前に配置、ドアがわずかに開いているのを一瞥。室内全ての家具は壁際に移動、床は白チョークで複雑な幾何学模様が描き尽くされ、中央には極めてプロフェッショナルな音響機器と複数のギターが設置。宿泊客は図形中央で目を閉じて座禅を組み、指で空中に仮想的な軌跡を描く。',
+        'record.6': '11/20 - 11/26：毎日夜中から未明、902号室から高強度、構造異常な音楽/音声が発生。苦情が急増。注目すべきは、多くの苦情が動悸、頭痛、耳鳴りなど騒音による生理的影響。701号室宿泊客は重度の動悸で救急搬送、検査では器質的病変なし、しかし心拍数は異常値で安定。',
+        'record.7': '11/21 02:00：夜間監視映像、宿泊客の演奏時、壁面に多腕の歪んだ影を投影（照明と動作の重なりによる疑い）。宿泊客の精神状態観察記録は"高度に興奮し集中"。',
+        'record.8': '11/24 02:00：宿泊客がフロントに連絡、全身ずぶ濡れ、狂乱した眼差しで大量のろうそくと二十キロの羊脂を緊急提供要求。防火安全規定を告知後、宿泊客が"当階の煙感知器を無効化"の非準拠要求を提出し高額の"特別サービス料"を支払い。要求は"技術的に満足"（記録備考：独立消防監視を同時起動）。',
+        'record.9': '11/25：901号室宿泊客が従業員との雑談で、902号室が昨晩深夜にドア全開、内側はろうそくの炎が揺らめき、宿泊客は上半身裸で姿見鏡に向かい激しい肢体動作、公演または儀式のよう。携帯電話で撮影試みた際、原因不明のブラックアウトで作動せず。',
+        'record.10': '11/27 04:00 - 05:00：902号室内の音声強度と奇怪さが頂点に達する。フロア全体が物理的振動を感知、照明と消防スプリンクラーシステムが一時的に混乱。902号室のドアの隙間から非自然的な金色の光が漏れる。05:00ちょうど、全ての響きと異状が瞬間的に停止。',
+        'record.11': '11/28 08:00：宿泊客がチェックアウトに現れず。従業員が点検のため進入、部屋は完全に清掃され、全ての私物、機器、チョークの痕跡は跡形もなく消え、標準的な配置に復元、無人のごとし。ベッドサイドテーブルに手書きメモとラベルなしレコード盤のみ発見。',
+        'record.12': '11/28 08:15：レコードのテスト再生。内容は構造的完成度が高く、編曲の複雑な器楽と人声作品、クライマックス部分には経久不息、遠近から迫る雷鳴のような拍手が層状に重畳、曲終まで持続。',
+        'record.attachments': '添付ファイル',
+        'record.handwrittenNote': '宿泊客残した手書きメモ.jpg',
+        'record.vinylRecord': '無題レコード盤《Clappin\'》音声バックアップ.wav',
+        'record.remarks': '備考',
+        'record.remarksContent': '究極の音響体験と精神の突破を追求するアーティスト事例。宿泊客は902号室で14日間の高強度、閉鎖的個人創作を行い、その過程は顕著な外部生理的影響と空間異常フィードバックを伴い、最終成果は強烈な舞台没入感と"仮想拍手"特効を呈し、芸術的完成度は極めて高い。その偏執的な創作方式と環境への極端な制御要求は、管理上の課題をもたらしたが、最終的に産出された"作品"と残された謎は、高い話題性とブランドストーリー価値を有する。"究極感情体験提供者"事例としてアーカイブ化し、内部検討に使用することを推奨。部屋は徹底的に清掃・点検済み、構造損傷なし。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '内部システム',
+        'footer.confidential': '内部使用のみ - 機密レベル：高',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'Detalhes do Registro do Quarto',
+        'guest.name': 'Liu Xingchen',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'record.registration': 'Informações de Registro',
+        'record.guestName': 'Nome do Hóspede: Liu Xingchen',
+        'record.checkInDate': 'Data de Check-in: 14 de novembro de 2025',
+        'record.checkOutDate': 'Data de Check-out: 28 de novembro de 2025',
+        'record.guestCount': 'Número de Hóspedes: 1',
+        'record.roomRecord': 'Registros do Quarto',
+        'record.1': '14/11 22:00: Hóspede fez check-in sem reserva prévia, solicitou especificamente quarto 902. Pagou por catorze dias, exigiu silêncio absoluto, recusou qualquer limpeza diária e serviços, apenas requereu reposição de uísque e água mineral na porta a cada três dias. Apareceu exausto mas excepcionalmente determinado durante check-in.',
+        'record.2': '15/11 03:00: Relatório de patrulha noturna - vibrações contínuas de baixa frequência detectadas do quarto 902, não melodia musical, mais como operação de equipamento. Alguns quartos no mesmo andar relataram cintilação momentânea de luz.',
+        'record.3': '16/11 Dia todo: Hóspede carregou pessoalmente três grandes caixas de equipamento preto para o quarto, recusou qualquer assistência. Processo durou quase seis horas.',
+        'record.4': '16/11 Tarde da noite até madrugada: Hóspede do quarto 901 reclamou de batidas metálicas contínuas, fricção e cânticos ininteligíveis do quarto 902. Todos sons cessaram abruptamente por volta das 3h, mergulhando em silêncio completo.',
+        'record.5': '17/11 12:30: Funcionário colocou itens na porta conforme acordado, notou porta levemente entreaberta. Todos móveis movidos contra paredes, piso coberto com padrões geométricos complexos desenhados em giz branco. Sistema de som altamente profissional e múltiplos violões montados no centro. Hóspede sentou-se de pernas cruzadas no centro do padrão com olhos fechados, dedos traçando padrões no ar.',
+        'record.6': '20/11 - 26/11: Cada noite da meia-noite até madrugada, quarto 902 emitiu música/sons de alta intensidade, estruturalmente incomuns. Reclamações aumentaram. Notavelmente, maioria das reclamações envolviam palpitações, dores de cabeça e zumbido causados pelo ruído. Hóspede do quarto 701 foi enviado ao hospital por palpitações severas; exame não revelou patologia orgânica, mas frequência cardíaca permaneceu em valores anormais.',
+        'record.7': '21/11 02:00: Vigilância noturna mostra hóspede projetando sombras distorcidas de múltiplos braços nas paredes durante apresentação (provavelmente devido a iluminação e movimento). Observação do estado mental do hóspede registrada como "altamente excitado e concentrado".',
+        'record.8': '24/11 02:00: Hóspede contactou recepção, encharcado de suor, com olhos frenéticos, solicitou urgentemente grandes quantidades de velas e vinte quilos de sebo de cordeiro. Após ser informado das regulamentações de segurança contra incêndio, hóspede fez pedido não conforme de "desativar detectores de fumaça neste andar" e pagou substancial "taxa de serviço especial". Pedido foi "tecnicamente atendido" (nota: monitoramento independente de incêndio ativado simultaneamente).',
+        'record.9': '25/11: Hóspede do quarto 901 mencionou à equipe que porta do quarto 902 estava escancarada tarde da noite passada, com luz de vela tremulante dentro. Hóspede estava sem camisa realizando movimentos físicos intensos diante de espelho de corpo inteiro, assemelhando-se a performance ou ritual. Seu telefone escureceu misteriosamente ao tentar fotografar.',
+        'record.10': '27/11 04:00 - 05:00: Intensidade sonora e natureza bizarra do quarto 902 atingiram pico. Andar inteiro percebeu vibrações físicas; sistemas de iluminação e sprinklers de incêndio experimentaram breves interrupções. Luz dourada não natural vazou da fresta da porta do quarto 902. Precisamente às 05:00, todos sons e anomalias cessaram instantaneamente.',
+        'record.11': '28/11 08:00: Hóspede não apareceu para check-out. Equipe entrou para inspeção; quarto completamente limpo, todos itens pessoais, equipamentos, marcas de giz desapareceram sem traço, restaurado para configuração padrão como se nunca ocupado. Apenas encontrou nota manuscrita e disco de vinil sem etiqueta na mesa de cabeceira.',
+        'record.12': '28/11 08:15: Reprodução teste do disco. Conteúdo é uma peça instrumental e vocal estruturalmente completa, arranjada de forma complexa, clímax camado com aplausos duradouros, aproximando-se como trovão até fim da música.',
+        'record.attachments': 'Anexos',
+        'record.handwrittenNote': 'Nota manuscrita do hóspede.jpg',
+        'record.vinylRecord': 'Disco de vinil sem título《Clappin\'》backup de áudio.wav',
+        'record.remarks': 'Observações',
+        'record.remarksContent': 'Um caso de artista buscando experiência sonora definitiva e ruptura espiritual. Hóspede conduziu quatorze dias de criação pessoal de alta intensidade e porta fechada no quarto 902, processo acompanhado por efeitos fisiológicos externos significativos e feedback anômalo espacial. Resultado final exibe forte imersão em palco e efeitos de "aplausos virtuais", com completude artística extremamente alta. Enquanto métodos criativos obsessivos e demandas extremas de controle ambiental apresentaram desafios de gestão, o "trabalho" resultante e mistérios persistentes possuem alto valor temático e de narrativa de marca. Recomenda-se arquivar como caso "Provedor de Experiência Emocional Definitiva" para estudo interno. Quarto completamente limpo e inspecionado, nenhum dano estrutural encontrado.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema Interno',
+        'footer.confidential': 'Uso Interno Apenas - Nível de Confidencialidade: Alto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        // 这里可以替换为您希望返回的页面
+        window.location.href = '玩家个人页面.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

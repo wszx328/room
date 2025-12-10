@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱系统 - 陈逸风</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #d6c2ff 0%, #b19cd9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .email-container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(177, 156, 217, 0.3);
+            overflow: hidden;
+            height: calc(100vh - 40px);
+        }
+        
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(135deg, #b19cd9 0%, #d6c2ff 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+        }
+        
+        .compose-btn {
+            background: white;
+            color: #8a6bc9;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .compose-btn i {
+            margin-right: 8px;
+        }
+        
+        .compose-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .folders {
+            list-style: none;
+            flex-grow: 1;
+        }
+        
+        .folders li {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .folders li i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .folders li.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+        
+        .folders li:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .folder-count {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 邮件列表区域 */
+        .mail-list {
+            flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .mail-list-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .mail-list-header h2 {
+            color: #8a6bc9;
+            font-size: 1.3rem;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f9f7ff;
+            border-radius: 20px;
+            padding: 8px 15px;
+            width: 250px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            margin-left: 8px;
+            outline: none;
+        }
+        
+        /* 语言切换按钮样式 - 移动到右上角 */
+        .language-switcher {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+        
+        .language-btn {
+            background: #8a6bc9;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .language-btn:hover {
+            background: #6a4fa3;
+        }
+        
+        .language-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+            min-width: 120px;
+        }
+        
+        .language-menu.active {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #8a6bc9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .language-option:hover {
+            background: #f9f7ff;
+        }
+        
+        .language-flag {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        .mail-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mail-item:hover {
+            background: #f9f7ff;
+        }
+        
+        .mail-item.active {
+            background: #f0ebff;
+            border-left: 3px solid #8a6bc9;
+        }
+        
+        .mail-item.unread .mail-subject {
+            font-weight: 600;
+        }
+        
+        .mail-checkbox {
+            margin-right: 15px;
+        }
+        
+        .mail-sender {
+            width: 180px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .mail-subject {
+            font-weight: 500;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-preview {
+            color: #777;
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-date {
+            color: #999;
+            font-size: 0.85rem;
+            margin-left: 15px;
+        }
+        
+        /* 邮件内容区域 */
+        .mail-view {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .mail-view.active {
+            display: block;
+        }
+        
+        .mail-view-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mail-view-subject {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .mail-view-info {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .mail-view-sender {
+            font-weight: 600;
+            color: #8a6bc9;
+        }
+        
+        .mail-view-body {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .mail-view-body p {
+            margin-bottom: 15px;
+        }
+        
+        .mail-view-body ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .mail-view-body li {
+            margin-bottom: 8px;
+        }
+        
+        .mail-attachments {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .attachments-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #8a6bc9;
+        }
+        
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .attachment-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .attachment-icon {
+            color: #8a6bc9;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .attachment-name {
+            flex: 1;
+        }
+        
+        .attachment-size {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        /* 草稿箱样式 */
+        .draft-item {
+            background-color: #fff8e1;
+            border-left: 3px solid #ffc107;
+        }
+        
+        .draft-item:hover {
+            background-color: #fff4d4;
+        }
+        
+        .draft-tag {
+            background-color: #ffc107;
+            color: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+        
+        /* 链接样式 */
+        .news-link {
+            color: #8a6bc9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .news-link:hover {
+            color: #6a4fa3;
+            text-decoration: underline;
+        }
+        
+        .failed-mail {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+        
+        .disabled-link {
+            color: #666;
+            text-decoration: none;
+            pointer-events: none;
+        }
+        
+        .non-clickable {
+            color: #666;
+            text-decoration: none;
+            pointer-events: none;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .email-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .mail-sender {
+                width: 120px;
+            }
+            
+            .language-switcher {
+                position: static;
+                margin-top: 10px;
+            }
+            
+            .mail-list-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+        
+        /* 特殊样式：加粗红色T */
+        .red-bold-t {
+            font-weight: bold;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-envelope"></i>
+                <h1 data-i18n="mailbox_title">邮箱系统 - 陈逸风</h1>
+            </div>
+            
+            <button class="compose-btn">
+                <i class="fas fa-edit"></i>
+                <span data-i18n="compose">写邮件</span>
+            </button>
+            
+            <ul class="folders">
+                <li class="active" data-folder="inbox">
+                    <i class="fas fa-inbox"></i>
+                    <span data-i18n="inbox">收件箱</span>
+                    <span class="folder-count">2</span>
+                </li>
+                <li data-folder="draft">
+                    <i class="fas fa-file-alt"></i>
+                    <span data-i18n="draft">草稿箱</span>
+                    <span class="folder-count">1</span>
+                </li>
+                <li data-folder="sent">
+                    <i class="fas fa-paper-plane"></i>
+                    <span data-i18n="sent">已发送</span>
+                    <span class="folder-count">1</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 邮件列表 -->
+            <div class="mail-list">
+                <div class="mail-list-header">
+                    <h2 data-i18n="inbox">收件箱</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" data-i18n-placeholder="search_placeholder" placeholder="搜索邮件...">
+                    </div>
+                    
+                    <!-- 语言切换按钮 - 移动到右上角 -->
+                    <div class="language-switcher">
+                        <button class="language-btn" id="language-btn">
+                            <i class="fas fa-globe"></i>
+                            <span id="current-lang">中文</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="language-menu" id="language-menu">
+                            <div class="language-option" data-lang="zh-CN">
+                                <span>中文</span>
+                            </div>
+                            <div class="language-option" data-lang="en">
+                                <span>English</span>
+                            </div>
+                            <div class="language-option" data-lang="ja">
+                                <span>日本語</span>
+                            </div>
+                            <div class="language-option" data-lang="pt">
+                                <span>Português</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 收件箱邮件列表 -->
+                <div class="mail-list-content" id="inbox-list">
+                    <div class="mail-item unread active" data-mail="1">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">林晓</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail1_subject">关于《潮汐的记忆》版权的最后通知</div>
+                            <div class="mail-preview" data-i18n="mail1_preview">陈逸风，《潮汐的记忆》是我们共同创作的作品，你无权单独将其投稿参赛...</div>
+                        </div>
+                        <div class="mail-date">2025-10-01</div>
+                    </div>
+                    
+                    <div class="mail-item unread" data-mail="2">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">R∞M 酒店</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail2_subject">R∞M 酒店：给你一片治愈的海</div>
+                            <div class="mail-preview" data-i18n="mail2_preview">亲爱的旅人，是否被痛苦回忆纠缠？R∞M 酒店 4030 号房，独享 270° 海景...</div>
+                        </div>
+                        <div class="mail-date">2025-11-09</div>
+                    </div>
+                </div>
+                
+                <!-- 草稿箱邮件列表 -->
+                <div class="mail-list-content" id="draft-list" style="display: none;">
+                    <div class="mail-item draft-item" data-mail="3">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">陈逸风</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail3_subject">对不起</div>
+                            <div class="mail-preview" data-i18n="mail3_preview">晓晓，我错了。那天雨太大了，你说要去告我，我太生气了，推了你一下...</div>
+                        </div>
+                        <div class="mail-date">2025-11-22</div>
+                    </div>
+                </div>
+                
+                <!-- 已发送邮件列表 -->
+                <div class="mail-list-content" id="sent-list" style="display: none;">
+                    <div class="mail-item" data-mail="4">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">陈逸风</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail4_subject">咨询过失杀人量刑</div>
+                            <div class="mail-preview" data-i18n="mail4_preview">张律师您好，我有个朋友失手致人死亡，死者是其亲密伴侣，案发后没有自首...</div>
+                        </div>
+                        <div class="mail-date">2025-11-03</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 邮件内容区域 -->
+            <div class="mail-view" id="mail-view">
+                <!-- 邮件1内容 - 林晓的邮件 -->
+                <div class="mail-view-content" id="mail1-content">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail1_subject">关于《潮汐的记忆》版权的最后通知</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">林晓 (Summer <span class="red-bold-t">T</span>herapy@lx.com)</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-10-01 15:30</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail1_content">
+                        <p>陈逸风，</p>
+                        <p>《潮汐的记忆》是我们共同创作的作品，你无权单独将其投稿参赛。明天下午 3 点在望海崖见面，把版权协议签了，否则我会向组委会提交创作过程记录。</p>
+                        <p>你那些 "独自创作" 的谎言，该结束了。</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件2内容 - R∞M酒店的邮件 -->
+                <div class="mail-view-content" id="mail2-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail2_subject">R∞M 酒店：给你一片治愈的海</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">R∞M 酒店</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-09 09:15</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail2_content">
+                        <p>亲爱的旅人，</p>
+                        <p>是否被痛苦回忆纠缠？R∞M 酒店 4030 号房，独享 270° 海景，每日日落与海浪共舞，专业心理疗愈团队伴你走出阴霾。</p>
+                        <p>点击链接预订，输入暗号 "夏日" 立减 50%。</p>
+                        <p>【链接】<a href="#" class="disabled-link">http://www.room-hotel.com/4030</a>（链接已失效）</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件3内容 - 草稿 -->
+                <div class="mail-view-content" id="mail3-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail3_subject">对不起</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="to">收件人：</span>
+                                <span class="mail-view-sender">无</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-22 03:17</span>
+                            </div>
+                        </div>
+                        <div class="draft-tag" data-i18n="draft_status">草稿</div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail3_content">
+                        <p>晓晓，我错了。那天雨太大了，你说要去告我，我太生气了，推了你一下…… 我不是故意的，真的不是。</p>
+                        <p>这里的海和那天的海一样灰，酒店的音箱总在放我们初见时的歌，我每天都梦见你站在礁石上，不说话，就看着我。</p>
+                        <p>我想画完这幅画就去自首，但我怕，我怕看见你爸妈的眼神……</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件4内容 - 已发送 -->
+                <div class="mail-view-content" id="mail4-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail4_subject">咨询过失杀人量刑</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="to">收件人：</span>
+                                <span class="mail-view-sender">张律师 (lawyer_zhang@126.com)</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-03 10:20</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail4_content">
+                        <p>张律师您好，</p>
+                        <p>我有个朋友失手致人死亡，死者是其亲密伴侣，案发后没有自首，现在很后悔。如果现在去自首，量刑会减轻多少？有没有可能判缓刑？</p>
+                        <p>另外，死者尸体已被发现，现场留有少量物证，这种情况还有辩解空间吗？</p>
+                        <p>盼复，急。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言翻译数据
+        const translations = {
+            'zh-CN': {
+                'mailbox_title': '邮箱系统 - 陈逸风',
+                'compose': '写邮件',
+                'inbox': '收件箱',
+                'draft': '草稿箱',
+                'sent': '已发送',
+                'search_placeholder': '搜索邮件...',
+                'from': '发件人：',
+                'to': '收件人：',
+                'date': '日期：',
+                'draft_status': '草稿',
+                'mail1_subject': '关于《潮汐的记忆》版权的最后通知',
+                'mail1_preview': '陈逸风，《潮汐的记忆》是我们共同创作的作品，你无权单独将其投稿参赛...',
+                'mail1_content': '<p>陈逸风，</p><p>《潮汐的记忆》是我们共同创作的作品，你无权单独将其投稿参赛。明天下午 3 点在望海崖见面，把版权协议签了，否则我会向组委会提交创作过程记录。</p><p>你那些 "独自创作" 的谎言，该结束了。</p>',
+                'mail2_subject': 'R∞M 酒店：给你一片治愈的海',
+                'mail2_preview': '亲爱的旅人，是否被痛苦回忆纠缠？R∞M 酒店 4030 号房，独享 270° 海景...',
+                'mail2_content': '<p>亲爱的旅人，</p><p>是否被痛苦回忆纠缠？R∞M 酒店 4030 号房，独享 270° 海景，每日日落与海浪共舞，专业心理疗愈团队伴你走出阴霾。</p><p>点击链接预订，输入暗号 "夏日" 立减 50%。</p><p>【链接】<a href="#" class="disabled-link">http://www.room-hotel.com/4030</a>（链接已失效）</p>',
+                'mail3_subject': '对不起',
+                'mail3_preview': '晓晓，我错了。那天雨太大了，你说要去告我，我太生气了，推了你一下...',
+                'mail3_content': '<p>晓晓，我错了。那天雨太大了，你说要去告我，我太生气了，推了你一下…… 我不是故意的，真的不是。</p><p>这里的海和那天的海一样灰，酒店的音箱总在放我们初见时的歌，我每天都梦见你站在礁石上，不说话，就看着我。</p><p>我想画完这幅画就去自首，但我怕，我怕看见你爸妈的眼神……</p>',
+                'mail4_subject': '咨询过失杀人量刑',
+                'mail4_preview': '张律师您好，我有个朋友失手致人死亡，死者是其亲密伴侣，案发后没有自首...',
+                'mail4_content': '<p>张律师您好，</p><p>我有个朋友失手致人死亡，死者是其亲密伴侣，案发后没有自首，现在很后悔。如果现在去自首，量刑会减轻多少？有没有可能判缓刑？</p><p>另外，死者尸体已被发现，现场留有少量物证，这种情况还有辩解空间吗？</p><p>盼复，急。</p>'
+            },
+            'en': {
+                'mailbox_title': 'Email System - Chen Yifeng',
+                'compose': 'Compose',
+                'inbox': 'Inbox',
+                'draft': 'Drafts',
+                'sent': 'Sent',
+                'search_placeholder': 'Search emails...',
+                'from': 'From:',
+                'to': 'To:',
+                'date': 'Date:',
+                'draft_status': 'Draft',
+                'mail1_subject': 'Final Notice on Copyright of "Memory of the Tide"',
+                'mail1_preview': 'Chen Yifeng, "Memory of the Tide" is our collaborative work, you have no right to submit it alone...',
+                'mail1_content': '<p>Chen Yifeng,</p><p>"Memory of the Tide" is our collaborative work, you have no right to submit it alone to the competition. Meet at Wanghai Cliff tomorrow at 3 PM, sign the copyright agreement, otherwise I will submit the creation process records to the organizing committee.</p><p>Your lies about "solo creation" should end now.</p>',
+                'mail2_subject': 'R∞M Hotel: A Healing Sea for You',
+                'mail2_preview': 'Dear traveler, are you troubled by painful memories? R∞M Hotel Room 4030, exclusive 270° sea view...',
+                'mail2_content': '<p>Dear traveler,</p><p>Are you troubled by painful memories? R∞M Hotel Room 4030, exclusive 270° sea view, dancing with sunset and waves every day, professional psychological healing team to help you out of the gloom.</p><p>Click the link to book, enter the code "Summer" for 50% off.</p><p>【Link】<a href="#" class="disabled-link">http://www.room-hotel.com/4030</a> (Link expired)</p>',
+                'mail3_subject': 'Sorry',
+                'mail3_preview': 'Xiaoxiao, I was wrong. That day the rain was too heavy, you said you would sue me, I was too angry, pushed you...',
+                'mail3_content': '<p>Xiaoxiao, I was wrong. That day the rain was too heavy, you said you would sue me, I was too angry, pushed you... I didn\'t mean it, really didn\'t.</p><p>The sea here is as gray as that day, the hotel speakers always play the song from when we first met, I dream of you standing on the reef every day, not speaking, just looking at me.</p><p>I want to finish this painting and then turn myself in, but I\'m afraid, afraid to see the look in your parents\' eyes...</p>',
+                'mail4_subject': 'Consultation on Involuntary Manslaughter Sentencing',
+                'mail4_preview': 'Attorney Zhang, a friend of mine accidentally caused someone\'s death, the deceased was their intimate partner...',
+                'mail4_content': '<p>Attorney Zhang,</p><p>A friend of mine accidentally caused someone\'s death, the deceased was their intimate partner, they didn\'t turn themselves in after the incident, and now they regret it. If they turn themselves in now, how much would the sentence be reduced? Is it possible to get probation?</p><p>Additionally, the victim\'s body has been discovered, and there is a small amount of physical evidence at the scene. Is there any room for defense in this situation?</p><p>Looking forward to your reply, urgent.</p>'
+            },
+            'ja': {
+                'mailbox_title': 'メールシステム - 陳逸風',
+                'compose': '作成',
+                'inbox': '受信トレイ',
+                'draft': '下書き',
+                'sent': '送信済み',
+                'search_placeholder': 'メールを検索...',
+                'from': '差出人：',
+                'to': '宛先：',
+                'date': '日付：',
+                'draft_status': '下書き',
+                'mail1_subject': '「潮の記憶」の著作権に関する最終通知',
+                'mail1_preview': '陳逸風、「潮の記憶」は私たちの共同作品であり、あなたは単独でそれを投稿する権利はありません...',
+                'mail1_content': '<p>陳逸風、</p><p>「潮の記憶」は私たちの共同作品であり、あなたは単独でそれをコンテストに投稿する権利はありません。明日午後3時に望海崖で会い、著作権契約に署名してください。さもなければ、創作過程の記録を運営委員会に提出します。</p><p>あなたの「単独創作」という嘘は、終わりにすべきです。</p>',
+                'mail2_subject': 'R∞Mホテル：あなたに癒しの海を',
+                'mail2_preview': '親愛なる旅人、苦い思い出に悩まされていませんか？R∞Mホテル4030号室、独占的な270°の海景色...',
+                'mail2_content': '<p>親愛なる旅人、</p><p>苦い思い出に悩まされていませんか？R∞Mホテル4030号室、独占的な270°の海景色、毎日の夕日と波の共演、専門的な心理癒しチームがあなたを陰鬱から導きます。</p><p>リンクをクリックして予約、「夏」のコードを入力すると50％オフ。</p><p>【リンク】<a href="#" class="disabled-link">http://www.room-hotel.com/4030</a>（リンクは期限切れ）</p>',
+                'mail3_subject': 'ごめんなさい',
+                'mail3_preview': '暁暁、私が悪かった。あの日雨がひどくて、あなたが私を訴えると言ったので、私は怒りすぎてあなたを押してしまった...',
+                'mail3_content': '<p>暁暁、私が悪かった。あの日雨がひどくて、あなたが私を訴えると言ったので、私は怒りすぎてあなたを押してしまった…… 本当にわざとじゃなかったんだ。</p><p>ここの海はあの日と同じように灰色で、ホテルのスピーカーはいつも私たちが初めて会った時の歌を流している。毎日あなたが岩の上に立っている夢を見る、何も言わずにただ私を見つめている。</p><p>この絵を描き終えたら自首しようと思うけど、怖いんだ、あなたの両親の目を見るのが怖い……</p>',
+                'mail4_subject': '過失致死の量刑について相談',
+                'mail4_preview': '張弁護士、私の友人が誤って人を死なせてしまいました、死者は親密なパートナーでした...',
+                'mail4_content': '<p>張弁護士、</p><p>私の友人が誤って人を死なせてしまいました、死者は親密なパートナーでした。事件後自首せず、今とても後悔しています。今自首した場合、量刑はどのくらい軽減されますか？執行猶予の可能性はありますか？</p><p>また、被害者の遺体は発見されており、現場には少量の物的証拠が残っています。この状況で弁護の余地はありますか？</p><p>返信をお待ちしております、至急。</p>'
+            },
+            'pt': {
+                'mailbox_title': 'Sistema de Email - Chen Yifeng',
+                'compose': 'Escrever',
+                'inbox': 'Caixa de Entrada',
+                'draft': 'Rascunhos',
+                'sent': 'Enviados',
+                'search_placeholder': 'Pesquisar emails...',
+                'from': 'De:',
+                'to': 'Para:',
+                'date': 'Data:',
+                'draft_status': 'Rascunho',
+                'mail1_subject': 'Aviso Final sobre os Direitos Autorais de "Memória da Maré"',
+                'mail1_preview': 'Chen Yifeng, "Memória da Maré" é nosso trabalho colaborativo, você não tem direito de enviá-lo sozinho...',
+                'mail1_content': '<p>Chen Yifeng,</p><p>"Memória da Maré" é nosso trabalho colaborativo, você não tem direito de enviá-lo sozinho para a competição. Encontre-se em Wanghai Cliff amanhã às 15h, assine o acordo de direitos autorais, caso contrário enviarei os registros do processo de criação ao comitê organizador.</p><p>Suas mentiras sobre "criação solo" devem acabar agora.</p>',
+                'mail2_subject': 'Hotel R∞M: Um Mar Curativo para Você',
+                'mail2_preview': 'Querido viajante, está atormentado por memórias dolorosas? Quarto 4030 do Hotel R∞M, vista exclusiva de 270° para o mar...',
+                'mail2_content': '<p>Querido viajante,</p><p>Está atormentado por memórias dolorosas? Quarto 4030 do Hotel R∞M, vista exclusiva de 270° para o mar, dançando com o pôr do sol e as ondas todos os dias, equipe profissional de cura psicológica para ajudá-lo a sair da escuridão.</p><p>Clique no link para reservar, insira o código "Verão" para 50% de desconto.</p><p>【Link】<a href="#" class="disabled-link">http://www.room-hotel.com/4030</a> (Link expirado)</p>',
+                'mail3_subject': 'Desculpe',
+                'mail3_preview': 'Xiaoxiao, eu estava errado. Naquele dia a chuva estava muito forte, você disse que iria me processar, eu fiquei muito bravo, empurrei você...',
+                'mail3_content': '<p>Xiaoxiao, eu estava errado. Naquele dia a chuva estava muito forte, você disse que iria me processar, eu fiquei muito bravo, empurrei você... Não foi intencional, realmente não foi.</p><p>O mar aqui é tão cinza quanto naquele dia, as caixas de som do hotel sempre tocam a música de quando nos conhecemos, eu sonho com você em pé no recife todos os dias, sem falar, apenas me olhando.</p><p>Quero terminar esta pintura e então me entregar, mas tenho medo, medo de ver o olhar nos olhos dos seus pais...</p>',
+                'mail4_subject': 'Consulta sobre Sentença de Homicídio Culposo',
+                'mail4_preview': 'Advogado Zhang, um amigo meu causou acidentalmente a morte de alguém, o falecido era seu parceiro íntimo...',
+                'mail4_content': '<p>Advogado Zhang,</p><p>Um amigo meu causou acidentalmente a morte de alguém, o falecido era seu parceiro íntimo, ele não se entregou após o incidente e agora se arrepende. Se ele se entregar agora, quanto a sentença seria reduzida? É possível obter liberdade condicional?</p><p>Além disso, o corpo da vítima foi descoberto e há uma pequena quantidade de evidência física na cena. Há espaço para defesa nesta situação?</p><p>Aguardando sua resposta, urgente.</p>'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 语言切换功能
+            const languageBtn = document.getElementById('language-btn');
+            const languageMenu = document.getElementById('language-menu');
+            const currentLang = document.getElementById('current-lang');
+            
+            // 切换语言菜单显示/隐藏
+            languageBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                languageMenu.classList.toggle('active');
+            });
+            
+            // 点击页面其他区域关闭语言菜单
+            document.addEventListener('click', function() {
+                languageMenu.classList.remove('active');
+            });
+            
+            // 阻止语言菜单内的点击事件冒泡
+            languageMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 语言选择处理
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    languageMenu.classList.remove('active');
+                    
+                    // 更新当前语言显示
+                    currentLang.textContent = this.querySelector('span').textContent;
+                    
+                    // 保存语言选择到本地存储
+                    localStorage.setItem('preferred-language', lang);
+                });
+            });
+            
+            // 设置语言函数
+            function setLanguage(lang) {
+                // 更新html的lang属性
+                document.documentElement.setAttribute('lang', lang);
+                
+                // 更新所有带有data-i18n属性的元素
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.innerHTML = translations[lang][key];
+                    }
+                });
+                
+                // 更新所有带有data-i18n-placeholder属性的元素
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                    const key = element.getAttribute('data-i18n-placeholder');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.setAttribute('placeholder', translations[lang][key]);
+                    }
+                });
+            }
+            
+            // 从本地存储加载用户偏好的语言
+            const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+            setLanguage(savedLang);
+            
+            // 更新当前语言显示
+            const savedLangOption = document.querySelector(`.language-option[data-lang="${savedLang}"]`);
+            if (savedLangOption) {
+                currentLang.textContent = savedLangOption.querySelector('span').textContent;
+            }
+            
+            // 文件夹切换功能
+            const folderItems = document.querySelectorAll('.folders li');
+            const mailLists = document.querySelectorAll('.mail-list-content');
+            const mailView = document.getElementById('mail-view');
+            
+            folderItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    folderItems.forEach(i => i.classList.remove('active'));
+                    mailLists.forEach(list => list.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件列表
+                    const folder = this.getAttribute('data-folder');
+                    document.getElementById(`${folder}-list`).style.display = 'block';
+                    
+                    // 更新邮件列表标题
+                    document.querySelector('.mail-list-header h2').textContent = this.querySelector('span').textContent;
+                    
+                    // 隐藏邮件内容区域
+                    mailView.classList.remove('active');
+                });
+            });
+            
+            // 邮件选择功能
+            const mailItems = document.querySelectorAll('.mail-item');
+            const mailContents = document.querySelectorAll('.mail-view-content');
+            
+            mailItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    mailItems.forEach(i => i.classList.remove('active'));
+                    mailContents.forEach(content => content.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件内容
+                    const mailId = this.getAttribute('data-mail');
+                    document.getElementById(`mail${mailId}-content`).style.display = 'block';
+                    
+                    // 显示邮件内容区域
+                    mailView.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

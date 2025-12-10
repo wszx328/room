@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 住客档案 - 王天宇</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .hidden-note {
+        color: transparent;
+        background-color: transparent;
+        user-select: text;
+      }
+      .hidden-note::selection {
+        color: white;
+        background-color: #8A6BBE;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M内部系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 内部系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">尹力</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 王天宇住客档案详情 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">住客档案详情</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 302 - <span data-i18n="guest.name">王天宇</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="guest.checkIn">入住</span>: 2025-11-18 | <span data-i18n="guest.checkOut">退房</span>: 2025-11-25
+            </div>
+          </div>
+          
+          <!-- 住客档案 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.profile">住客档案</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.fullName">姓名：王天宇</li>
+              <li data-i18n="guest.gender">性别：男</li>
+              <li data-i18n="guest.age">年龄：42</li>
+              <li data-i18n="guest.idNumber">身份证号：11010119830921302X</li>
+              <li data-i18n="guest.contact">联系方式：15012341234</li>
+              <li data-i18n="guest.bookingSource">入住来源：通过邮件预订，预定邮箱wangtianyu@302.com</li>
+              <li data-i18n="guest.roomType">房间类型：总统套房</li>
+            </ul>
+            <!-- 隐藏的管理员备注 -->
+            <div class="mt-4 text-xs text-gray-500">
+              <span class="hidden-note" data-i18n="guest.hiddenNote">（A级食材，贪婪指数9.8，自我博弈周期完成度100%，味觉残留呈金属性亢奋）</span>
+            </div>
+          </div>
+          
+          <!-- 住客背景 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.background">住客背景</h4>
+            <p class="text-gray-300" data-i18n="guest.backgroundContent">
+              王天宇，某地产公司总裁，在业内以果断激进的风格著称。因近期投资失败及私人赌博行为，挪用公司账户资金800万，陷入债务危机。据记录，其与林氏集团总裁林致远为长期商业竞争对手，近三个月曾试图并购林氏集团，双方竞争激烈。入住前处于高压状态，被债主"建议"至酒店调整状态。
+            </p>
+          </div>
+          
+          <!-- 入住观察 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.observations">入住观察</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.observation1">入住初期：情绪焦虑，手指频繁颤抖，深夜仍在客厅活动，多次要求提供高档酒水，房间内圆桌始终保持整洁，桌上固定摆放扑克牌与两个高脚杯。</li>
+              <li data-i18n="guest.observation2">入住中期：精神状态明显亢奋，声称"与重要对手进行关键谈判"，每日要求客房服务更换全新扑克牌，房间内出现多份标注"股权转让""资产协议"的文件，偶尔有自言自语现象。</li>
+              <li data-i18n="guest.observation3">入住后期：表现出强烈的掌控欲，对服务人员态度傲慢，频繁通过客房内电子设备查询商业新闻，退房前一晚曾通宵未眠，监控显示其独自在圆桌前久坐，天亮时将大量文件整理入箱，眼神锐利但略显空洞。</li>
+            </ul>
+          </div>
+          
+          <!-- 服务记录 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.services">服务记录</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.service1">每日供应高档酒水（含1982年拉菲及多款威士忌），高峰期一日内要求补充3次。</li>
+              <li data-i18n="guest.service2">24小时客房服务响应，多次在凌晨时段要求送餐（以牛排、雪茄为主）。</li>
+              <li data-i18n="guest.service3">提供文件打印服务，累计打印各类合同、协议共47页。</li>
+              <li data-i18n="guest.service4">每日更换全新扑克牌，特殊要求"牌面无任何标记"。</li>
+            </ul>
+          </div>
+          
+          <!-- 备注 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.remarks">备注</h4>
+            <p class="text-gray-300" data-i18n="guest.remarksContent">
+              王天宇在酒店期间，自称完成了与林氏集团的关键商业谈判，成功达成多项合作协议。离开时携带大量文件，精神状态饱满，对酒店服务表示高度认可，称"这里的环境帮他做出了重要决策"。据后续行业报道，其于退房后一个月内完成对林氏集团的并购，成为业界焦点。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">内部系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': '住客档案详情',
+        'guest.name': '王天宇',
+        'guest.checkIn': '入住',
+        'guest.checkOut': '退房',
+        'guest.profile': '住客档案',
+        'guest.fullName': '姓名：王天宇',
+        'guest.gender': '性别：男',
+        'guest.age': '年龄：42',
+        'guest.idNumber': '身份证号：11010119830921302X',
+        'guest.contact': '联系方式：15012341234',
+        'guest.bookingSource': '入住来源：通过邮件预订，预定邮箱wangtianyu@302.com',
+        'guest.roomType': '房间类型：总统套房',
+        'guest.hiddenNote': '（A级食材，贪婪指数9.8，自我博弈周期完成度100%，味觉残留呈金属性亢奋）',
+        'guest.background': '住客背景',
+        'guest.backgroundContent': '王天宇，某地产公司总裁，在业内以果断激进的风格著称。因近期投资失败及私人赌博行为，挪用公司账户资金800万，陷入债务危机。据记录，其与林氏集团总裁林致远为长期商业竞争对手，近三个月曾试图并购林氏集团，双方竞争激烈。入住前处于高压状态，被债主"建议"至酒店调整状态。',
+        'guest.observations': '入住观察',
+        'guest.observation1': '入住初期：情绪焦虑，手指频繁颤抖，深夜仍在客厅活动，多次要求提供高档酒水，房间内圆桌始终保持整洁，桌上固定摆放扑克牌与两个高脚杯。',
+        'guest.observation2': '入住中期：精神状态明显亢奋，声称"与重要对手进行关键谈判"，每日要求客房服务更换全新扑克牌，房间内出现多份标注"股权转让""资产协议"的文件，偶尔有自言自语现象。',
+        'guest.observation3': '入住后期：表现出强烈的掌控欲，对服务人员态度傲慢，频繁通过客房内电子设备查询商业新闻，退房前一晚曾通宵未眠，监控显示其独自在圆桌前久坐，天亮时将大量文件整理入箱，眼神锐利但略显空洞。',
+        'guest.services': '服务记录',
+        'guest.service1': '每日供应高档酒水（含1982年拉菲及多款威士忌），高峰期一日内要求补充3次。',
+        'guest.service2': '24小时客房服务响应，多次在凌晨时段要求送餐（以牛排、雪茄为主）。',
+        'guest.service3': '提供文件打印服务，累计打印各类合同、协议共47页。',
+        'guest.service4': '每日更换全新扑克牌，特殊要求"牌面无任何标记"。',
+        'guest.remarks': '备注',
+        'guest.remarksContent': '王天宇在酒店期间，自称完成了与林氏集团的关键商业谈判，成功达成多项合作协议。离开时携带大量文件，精神状态饱满，对酒店服务表示高度认可，称"这里的环境帮他做出了重要决策"。据后续行业报道，其于退房后一个月内完成对林氏集团的并购，成为业界焦点。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '内部系统',
+        'footer.confidential': '仅供内部使用 - 保密级别：高级',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'Guest Profile Details',
+        'guest.name': 'Wang Tianyu',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'guest.profile': 'Guest Profile',
+        'guest.fullName': 'Name: Wang Tianyu',
+        'guest.gender': 'Gender: Male',
+        'guest.age': 'Age: 42',
+        'guest.idNumber': 'ID Number: 11010119830921302X',
+        'guest.contact': 'Contact: 15012341234',
+        'guest.bookingSource': 'Booking Source: Booked via email, booking email wangtianyu@302.com',
+        'guest.roomType': 'Room Type: Presidential Suite',
+        'guest.hiddenNote': '("Grade A ingredient, greed index 9.8, self-game cycle completion 100%, taste residue shows metallic hyperactivity")',
+        'guest.background': 'Guest Background',
+        'guest.backgroundContent': 'Wang Tianyu, president of a real estate company, is known in the industry for his decisive and aggressive style. Due to recent investment failures and private gambling behavior, he embezzled 8 million from the company account and fell into a debt crisis. According to records, he and Lin Zhiyuan, president of the Lin Group, are long-term business competitors. In the past three months, he attempted to acquire the Lin Group, and the competition between the two sides is fierce. Before checking in, he was under high pressure and was "suggested" by creditors to come to the hotel to adjust his state.',
+        'guest.observations': 'Observation During Stay',
+        'guest.observation1': 'Initial stay: Emotionally anxious, fingers trembling frequently, still active in the living room late at night, repeatedly requested premium alcoholic beverages, the round table in the room was always kept tidy, with playing cards and two wine glasses fixedly placed on the table.',
+        'guest.observation2': 'Mid-stay: Mental state obviously excited, claimed to be "conducting key negotiations with important opponents", requested room service to replace brand new playing cards daily, multiple documents marked "equity transfer" and "asset agreement" appeared in the room, occasional self-talk phenomenon.',
+        'guest.observation3': 'Late stay: Showed strong desire for control, arrogant attitude towards service staff, frequently checked business news through electronic devices in the room, stayed up all night the night before check-out, monitoring showed him sitting alone at the round table for a long time, organizing a large number of documents into boxes at dawn, with sharp but slightly hollow eyes.',
+        'guest.services': 'Service Records',
+        'guest.service1': 'Daily supply of premium alcoholic beverages (including 1982 Lafite and multiple whiskeys), peak demand required replenishment 3 times in one day.',
+        'guest.service2': '24-hour room service response, multiple requests for food delivery during early morning hours (mainly steak and cigars).',
+        'guest.service3': 'Provided document printing service, cumulatively printed various contracts and agreements totaling 47 pages.',
+        'guest.service4': 'Daily replacement of brand new playing cards, special requirement "no marks on the card faces".',
+        'guest.remarks': 'Remarks',
+        'guest.remarksContent': 'During his stay at the hotel, Wang Tianyu claimed to have completed key business negotiations with the Lin Group and successfully reached multiple cooperation agreements. When leaving, he carried a large number of documents, was in high spirits, and highly praised the hotel service, saying "the environment here helped him make important decisions." According to subsequent industry reports, he completed the acquisition of the Lin Group within one month after check-out, becoming the focus of the industry.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Internal System',
+        'footer.confidential': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': '宿泊客プロフィール詳細',
+        'guest.name': '王天宇',
+        'guest.checkIn': 'チェックイン',
+        'guest.checkOut': 'チェックアウト',
+        'guest.profile': '宿泊客プロフィール',
+        'guest.fullName': '氏名：王天宇',
+        'guest.gender': '性別：男性',
+        'guest.age': '年齢：42',
+        'guest.idNumber': '身分証明書番号：11010119830921302X',
+        'guest.contact': '連絡先：15012341234',
+        'guest.bookingSource': '予約元：メールで予約、予約メール wangtianyu@302.com',
+        'guest.roomType': '部屋タイプ：プレジデンシャルスイート',
+        'guest.hiddenNote': '（A級食材、貪欲指数9.8、自己ゲーム周期完了度100%、味覚残留は金属性亢進を示す）',
+        'guest.background': '宿泊客背景',
+        'guest.backgroundContent': '王天宇、某不動産会社社長、業界では決断力のある積極的なスタイルで知られている。最近の投資失敗と私的なギャンブル行為により、会社口座から800万を横領し、債務危機に陥った。記録によると、彼と林氏グループの林致遠社長は長年のビジネス競争相手であり、過去3か月間に林氏グループの買収を試み、両者の競争は激しい。宿泊前は高圧状態にあり、債権者からホテルで状態を調整するよう「勧められた」。',
+        'guest.observations': '宿泊中の観察',
+        'guest.observation1': '宿泊初期：感情的には不安で、指が頻繁に震え、深夜でもリビングで活動し、高級アルコール飲料を何度も要求した。部屋内の丸テーブルは常に整頓されており、テーブルにはトランプと2つのワイングラスが固定して置かれていた。',
+        'guest.observation2': '宿泊中期：精神状態は明らかに興奮しており、「重要な相手との重要な交渉を行っている」と主張し、客室サービスに毎日新品のトランプの交換を要求した。部屋には「株式譲渡」「資産契約」と記された複数の書類が現れ、時折独り言を話す現象があった。',
+        'guest.observation3': '宿泊後期：強い支配欲を示し、サービススタッフに対して傲慢な態度をとり、客室内の電子機器で頻繁にビジネスニュースをチェックした。チェックアウト前夜は一晩中眠らず、モニタリングでは彼が一人で丸テーブル前に長く座り、夜明けに大量の書類を箱に整理する様子が映っており、鋭いがやや虚ろな目をしていた。',
+        'guest.services': 'サービス記録',
+        'guest.service1': '毎日高級アルコール飲料（1982年ラフィット及び複数のウイスキーを含む）を提供、ピーク時は1日に3回補充を要求。',
+        'guest.service2': '24時間ルームサービス対応、深夜時間帯に複数回食事配達を要求（主にステーキと葉巻）。',
+        'guest.service3': '書類印刷サービスを提供、様々な契約書や合意書を累計47ページ印刷。',
+        'guest.service4': '毎日新品のトランプを交換、特別な要求「カード表面に一切のマークなし」。',
+        'guest.remarks': '備考',
+        'guest.remarksContent': '王天宇はホテル滞在中、林氏グループとの重要なビジネス交渉を完了し、複数の協力協定を締結したと自称した。退去時には大量の書類を携え、精神状態は充実しており、ホテルサービスを高く評価し、「ここの環境が重要な決断を下すのに役立った」と述べた。その後の業界報道によると、彼はチェックアウト後1か月以内に林氏グループの買収を完了し、業界の注目の的となった。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '内部システム',
+        'footer.confidential': '内部使用のみ - 機密レベル：高',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'Detalhes do Perfil do Hóspede',
+        'guest.name': 'Wang Tianyu',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'guest.profile': 'Perfil do Hóspede',
+        'guest.fullName': 'Nome: Wang Tianyu',
+        'guest.gender': 'Gênero: Masculino',
+        'guest.age': 'Idade: 42',
+        'guest.idNumber': 'Número do Documento: 11010119830921302X',
+        'guest.contact': 'Contato: 15012341234',
+        'guest.bookingSource': 'Fonte da Reserva: Reservado por email, email de reserva wangtianyu@302.com',
+        'guest.roomType': 'Tipo de Quarto: Suíte Presidencial',
+        'guest.hiddenNote': '("Ingrediente Grau A, índice de ganância 9.8, ciclo de autojogo completado 100%, resíduo de sabor mostra hiperatividade metálica")',
+        'guest.background': 'Antecedentes do Hóspede',
+        'guest.backgroundContent': 'Wang Tianyu, presidente de uma empresa imobiliária, é conhecido no setor por seu estilo decisivo e agressivo. Devido a falhas recentes de investimento e comportamento de apostas privadas, ele desviou 8 milhões da conta da empresa e caiu em uma crise de dívida. De acordo com registros, ele e Lin Zhiyuan, presidente do Lin Group, são concorrentes comerciais de longa data. Nos últimos três meses, ele tentou adquirir o Lin Group, e a competição entre os dois lados é acirrada. Antes do check-in, ele estava sob alta pressão e foi "sugerido" pelos credores a vir ao hotel para ajustar seu estado.',
+        'guest.observations': 'Observações Durante a Estadia',
+        'guest.observation1': 'Estadia inicial: Emocionalmente ansioso, dedos tremendo frequentemente, ainda ativo na sala de estar tarde da noite, solicitou repetidamente bebidas alcoólicas premium, a mesa redonda no quarto estava sempre mantida limpa, com cartas de baralho e duas taças de vinho fixamente colocadas sobre a mesa.',
+        'guest.observation2': 'Estadia média: Estado mental obviamente excitado, alegou estar "conduzindo negociações importantes com oponentes importantes", solicitou ao serviço de quarto a substituição diária de cartas de baralho novas, múltiplos documentos marcados "transferência de ações" e "acordo de ativos" apareceram no quarto, fenômeno ocasional de falar sozinho.',
+        'guest.observation3': 'Estadia final: Mostrou forte desejo de controle, atitude arrogante em relação à equipe de serviço, verificou frequentemente notícias de negócios através de dispositivos eletrônicos no quarto, ficou acordado a noite toda na noite anterior ao check-out, monitoramento mostrou-o sentado sozinho na mesa redonda por um longo tempo, organizando um grande número de documentos em caixas ao amanhecer, com olhos afiados mas ligeiramente vazios.',
+        'guest.services': 'Registros de Serviço',
+        'guest.service1': 'Fornecimento diário de bebidas alcoólicas premium (incluindo Lafite 1982 e múltiplos whiskies), pico de demanda exigiu reposição 3 vezes em um dia.',
+        'guest.service2': 'Resposta de serviço de quarto 24 horas, múltiplos pedidos de entrega de comida durante as primeiras horas da manhã (principalmente bife e charutos).',
+        'guest.service3': 'Forneceu serviço de impressão de documentos, impressos cumulativamente vários contratos e acordos totalizando 47 páginas.',
+        'guest.service4': 'Substituição diária de cartas de baralho novas, requisito especial "sem marcas nas faces das cartas".',
+        'guest.remarks': 'Observações',
+        'guest.remarksContent': 'Durante sua estadia no hotel, Wang Tianyu afirmou ter concluído negociações comerciais importantes com o Lin Group e alcançado com sucesso múltiplos acordos de cooperação. Ao sair, ele carregava um grande número de documentos, estava com alto astral e elogiou muito o serviço do hotel, dizendo que "o ambiente aqui o ajudou a tomar decisões importantes." De acordo com relatórios subsequentes do setor, ele completou a aquisição do Lin Group dentro de um mês após o check-out, tornando-se o foco do setor.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema Interno',
+        'footer.confidential': 'Uso Interno Apenas - Nível de Confidencialidade: Alto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        // 这里可以替换为您希望返回的页面
+        window.location.href = '玩家个人页面.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

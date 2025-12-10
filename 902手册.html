@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>共振教团仪式手册</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Caveat:wght@400;700&family=Cinzel:wght@400;700&display=swap">
+    <style>
+        :root {
+            --primary-dark: #1a0f0a;
+            --secondary-dark: #2c1c14;
+            --paper-color: #f2e6d6;
+            --paper-stain: #d9c6a8;
+            --ink-color: #3c281e;
+            --accent-color: #8b4513;
+            --handwriting-color: #2c1810;
+            --red-accent: #8b0000;
+            --gold-accent: #b8860b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cinzel', serif;
+            background: radial-gradient(ellipse at center, #3a2a1f 0%, #1a0f0a 100%);
+            color: var(--ink-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            position: relative;
+        }
+        
+        /* 书本容器 */
+        .book-container {
+            display: flex;
+            position: relative;
+            height: 750px;
+            box-shadow: 
+                0 0 40px rgba(0, 0, 0, 0.8),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            border-radius: 5px 15px 15px 5px;
+            background: var(--secondary-dark);
+            overflow: hidden;
+        }
+        
+        /* 书本左侧 */
+        .book-left {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(90deg, #2c1c14 0%, #1a0f0a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border-right: 2px solid rgba(184, 134, 11, 0.3);
+        }
+        
+        .book-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            color: var(--gold-accent);
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(184, 134, 11, 0.5);
+        }
+        
+        .book-subtitle {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: #c9a86d;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .book-spine {
+            width: 50px;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            background: linear-gradient(90deg, #1a0f0a 0%, #2c1c14 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .spine-text {
+            transform: rotate(90deg);
+            color: var(--gold-accent);
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            white-space: nowrap;
+        }
+        
+        /* 翻页区域 */
+        .flip-book {
+            flex: 3;
+            position: relative;
+            perspective: 1500px;
+            overflow: hidden;
+        }
+        
+        .page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+            transform-origin: left center;
+        }
+        
+        .page-front, .page-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background-color: var(--paper-color);
+            padding: 40px 50px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 30px rgba(139, 69, 19, 0.1);
+        }
+        
+        .page-back {
+            transform: rotateY(180deg);
+        }
+        
+        /* 页面纹理和效果 */
+        .page-front::before, .page-back::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(90deg, transparent 79px, rgba(139, 69, 19, 0.1) 79px, rgba(139, 69, 19, 0.1) 81px, transparent 81px),
+                linear-gradient(var(--paper-stain) 0.1em, transparent 0.1em);
+            background-size: 100% 1.8em;
+            opacity: 0.4;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .page-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+        }
+        
+        /* 乱码页面 */
+        .gibberish-page .page-content {
+            font-family: 'ZCOOL QingKe HuangYou', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #6b5a45;
+            column-count: 2;
+            column-gap: 40px;
+        }
+        
+        /* 页面装饰 */
+        .page-decoration {
+            position: absolute;
+            z-index: 1;
+        }
+        
+        .corner-decoration {
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            opacity: 0.3;
+        }
+        
+        .corner-top-left {
+            top: 10px;
+            left: 10px;
+            border-top: 2px solid var(--accent-color);
+            border-left: 2px solid var(--accent-color);
+        }
+        
+        .corner-top-right {
+            top: 10px;
+            right: 10px;
+            border-top: 2px solid var(--accent-color);
+            border-right: 2px solid var(--accent-color);
+        }
+        
+        .corner-bottom-left {
+            bottom: 10px;
+            left: 10px;
+            border-bottom: 2px solid var(--accent-color);
+            border-left: 2px solid var(--accent-color);
+        }
+        
+        .corner-bottom-right {
+            bottom: 10px;
+            right: 10px;
+            border-bottom: 2px solid var(--accent-color);
+            border-right: 2px solid var(--accent-color);
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-family: 'Caveat', cursive;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            z-index: 3;
+        }
+        
+        /* 内容样式 */
+        .manual-title {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+        
+        .english-text {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            color: var(--ink-color);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .chinese-text {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.8rem;
+            color: var(--ink-color);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            font-style: italic;
+            color: var(--accent-color);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        
+        .quote {
+            font-family: 'Cinzel', serif;
+            font-style: italic;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            text-align: center;
+            margin-top: 60px;
+            line-height: 1.8;
+        }
+        
+        .quote-chinese {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            margin-top: 15px;
+            color: var(--handwriting-color);
+        }
+        
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--ink-color);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: var(--gold-accent);
+        }
+        
+        .english-content {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            color: var(--ink-color);
+        }
+        
+        .chinese-content {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            color: var(--handwriting-color);
+            margin-bottom: 30px;
+        }
+        
+        .handwritten-note {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            line-height: 1.8;
+            color: var(--handwriting-color);
+            border-left: 4px solid var(--red-accent);
+            padding-left: 20px;
+            margin: 30px 0;
+            background-color: rgba(245, 233, 216, 0.5);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .handwritten-signature {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            text-align: right;
+            margin-top: 15px;
+            color: var(--handwriting-color);
+        }
+        
+        .case-study {
+            margin: 25px 0;
+            padding: 20px;
+            background-color: rgba(245, 233, 216, 0.7);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .case-title {
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+        
+        .warning {
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: var(--red-accent);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* 水印和污渍 */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 140px;
+            color: rgba(139, 69, 19, 0.08);
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            letter-spacing: 15px;
+            z-index: 1;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.7;
+        }
+        
+        .page-stain {
+            position: absolute;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+        
+        .stain-1 {
+            width: 250px;
+            height: 180px;
+            background: radial-gradient(ellipse at center, var(--accent-color) 0%, transparent 70%);
+            top: 15%;
+            left: 10%;
+        }
+        
+        .stain-2 {
+            width: 180px;
+            height: 220px;
+            background: radial-gradient(ellipse at center, var(--accent-color) 0%, transparent 70%);
+            bottom: 20%;
+            right: 15%;
+        }
+        
+        .stain-3 {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at center, var(--red-accent) 0%, transparent 70%);
+            top: 40%;
+            left: 70%;
+        }
+        
+        /* 控制区域 */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding: 0 20px;
+        }
+        
+        .nav-button {
+            background: linear-gradient(to bottom, var(--secondary-dark) 0%, var(--primary-dark) 100%);
+            color: var(--gold-accent);
+            border: 1px solid rgba(184, 134, 11, 0.5);
+            padding: 12px 25px;
+            border-radius: 3px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-button:hover {
+            background: linear-gradient(to bottom, #3a2a1f 0%, #2c1c14 100%);
+            border-color: rgba(184, 134, 11, 0.8);
+            box-shadow: 0 0 15px rgba(184, 134, 11, 0.3);
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-indicator {
+            color: var(--gold-accent);
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        
+        .total-pages {
+            font-size: 1.2rem;
+            color: #c9a86d;
+            margin-top: 5px;
+        }
+        
+        /* 装饰元素 */
+        .seal {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-accent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px auto;
+            position: relative;
+            box-shadow: 0 0 20px rgba(184, 134, 11, 0.3);
+        }
+        
+        .seal-inner {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px dashed var(--gold-accent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Cinzel', serif;
+            color: var(--gold-accent);
+            font-size: 1.5rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .book-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .book-left {
+                padding: 20px;
+                border-right: none;
+                border-bottom: 2px solid rgba(184, 134, 11, 0.3);
+            }
+            
+            .book-spine {
+                width: 100%;
+                height: 50px;
+                position: relative;
+                flex-direction: row;
+                padding: 0 20px;
+            }
+            
+            .spine-text {
+                transform: rotate(0deg);
+            }
+            
+            .flip-book {
+                height: 600px;
+            }
+            
+            .english-text {
+                font-size: 2rem;
+            }
+            
+            .chinese-text {
+                font-size: 2.2rem;
+            }
+            
+            .watermark {
+                font-size: 100px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .page-front, .page-back {
+                padding: 30px;
+            }
+            
+            .english-text {
+                font-size: 1.8rem;
+            }
+            
+            .chinese-text {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.4rem;
+            }
+            
+            .watermark {
+                font-size: 80px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .page-content {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        /* 翻页动画 */
+        .flipping {
+            transform: rotateY(-180deg);
+            transition: transform 1s;
+            z-index: 10;
+        }
+        
+        /* 古文字乱码 */
+        .glyph {
+            font-family: 'ZCOOL QingKe HuangYou', monospace;
+            display: inline-block;
+            margin: 0 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="book-container">
+            <div class="book-left">
+                <div class="book-title">共振教团</div>
+                <div class="book-subtitle">仪式手册</div>
+                
+                <div class="seal">
+                    <div class="seal-inner">Ω</div>
+                </div>
+                
+                <div class="book-spine">
+                    <div class="spine-text">RESONANCE ORDER</div>
+                </div>
+            </div>
+            
+            <div class="flip-book">
+                <div class="page" id="page-1">
+                    <div class="page-front">
+                        <div class="page-decoration corner-decoration corner-top-left"></div>
+                        <div class="page-decoration corner-decoration corner-top-right"></div>
+                        <div class="page-decoration corner-decoration corner-bottom-left"></div>
+                        <div class="page-decoration corner-decoration corner-bottom-right"></div>
+                        
+                        <div class="watermark">RESONANCE</div>
+                        <div class="page-stain stain-1"></div>
+                        <div class="page-stain stain-2"></div>
+                        <div class="page-stain stain-3"></div>
+                        
+                        <div class="page-content" id="page-content-1">
+                            <!-- 内容通过JavaScript加载 -->
+                        </div>
+                        
+                        <div class="page-number" id="page-number-1"></div>
+                    </div>
+                    <div class="page-back">
+                        <div class="page-decoration corner-decoration corner-top-left"></div>
+                        <div class="page-decoration corner-decoration corner-top-right"></div>
+                        <div class="page-decoration corner-decoration corner-bottom-left"></div>
+                        <div class="page-decoration corner-decoration corner-bottom-right"></div>
+                        
+                        <div class="watermark">ORDER</div>
+                        <div class="page-stain stain-1"></div>
+                        <div class="page-stain stain-2"></div>
+                        
+                        <div class="page-content gibberish-page" id="page-content-1-back">
+                            <!-- 乱码通过JavaScript生成 -->
+                        </div>
+                        
+                        <div class="page-number" id="page-number-1-back"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="nav-button" id="prev-button">
+                <span>◀</span> 上一页
+            </button>
+            
+            <div class="page-indicator">
+                第 <span id="current-page">1</span> 页
+                <div class="total-pages">共 287 页</div>
+            </div>
+            
+            <button class="nav-button" id="next-button">
+                下一页 <span>▶</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 定义有内容的页面
+        const contentPages = [1, 47, 89, 156, 203, 287];
+        
+        // 页面内容数据
+        const pageContent = {
+            1: {
+                title: "封面",
+                englishTitle: "ORDER OF THE RESONANCE",
+                chineseTitle: "共振教团",
+                subtitle: "THE COMPLETE MANUAL OF SUMMONING<br>完整召唤手册",
+                quote: {
+                    english: "When thirteen voices sing as one,<br>the One Who Listens shall descend.",
+                    chinese: "当十三个声音合为一体，<br>倾听者将会降临。"
+                }
+            },
+            47: {
+                title: "关于「倾听者」的本质",
+                content: {
+                    english: "The One Who Listens is not a deity in the traditional sense. It is a higher-dimensional consciousness that exists beyond the fabric of our reality. It does not have a body, nor does it possess a will as we understand it.<br><br>What it has is hunger.<br><br>A hunger for stories. A hunger for the peaks of human emotion. A hunger for the moment when a life's narrative reaches its zenith.",
+                    chinese: "「倾听者」并非传统意义上的神明。它是一种存在于我们现实之外的高维意识体。它没有身体，也不具备我们所理解的「意志」。<br><br>它拥有的，是饥饿。<br><br>对故事的饥饿。对人类情感顶点的饥饿。对生命叙事达到巅峰那一刻的饥饿。"
+                }
+            },
+            89: {
+                title: "召唤的代价",
+                content: {
+                    english: "Every successful summoning documented in our archives has resulted in the same outcome: the participants were consumed. Not in body, but in essence.<br><br>Their stories were extracted, leaving behind empty shells. Some returned to society and lived normal lives on the surface, but those who knew them said they were 'different'—hollow, mechanical, as if the soul had been scooped out.<br><br>Others simply vanished.",
+                    chinese: "每一次成功的召唤都导致了相同的结果：参与者被吞噬了。不是身体，而是本质。<br><br>他们的故事被提取，留下空洞的躯壳。有些人回到了社会，表面上过着正常的生活，但认识他们的人都说他们「变了」——空洞、机械，就像灵魂被掏空了。<br><br>另一些人则直接消失了。"
+                }
+            },
+            156: {
+                title: "失败案例分析",
+                case1: {
+                    title: "Case 1 (1847, London):",
+                    content: {
+                        english: "Thirteen members attempted the ritual in an abandoned cathedral. All participants fell into a coma and never woke. Their brainwaves showed perfect synchronization, but no higher brain activity.<br><br>Analysis: The vessel was insufficient. The cathedral's architecture did not provide the necessary acoustic resonance.",
+                        chinese: "十三名成员在一座废弃大教堂尝试仪式。所有参与者陷入昏迷并再也没有醒来。他们的脑电波显示出完美同步，但没有更高级的脑活动。<br><br>分析：容器不足。大教堂的建筑结构未能提供必要的声学共振。"
+                    }
+                },
+                case2: {
+                    title: "Case 2 (1923, Prague):",
+                    content: {
+                        english: "Thirteen volunteers conducted the ritual in a specially designed chamber. The summoning was partially successful—participants reported hearing 'the voice'—but the ritual was interrupted by authorities. All participants developed severe auditory hallucinations and psychological disorders. Three committed suicide within a year.<br><br>Analysis: Incomplete summoning is worse than failure. Once you hear the voice but cannot complete the exchange, you are left in a state of permanent craving.",
+                        chinese: "十三名志愿者在一个特别设计的房间进行仪式。召唤部分成功——参与者报告听到了「声音」——但仪式被当局打断。所有参与者都出现了严重的听觉幻觉和心理疾病。其中三人在一年内自杀。<br><br>分析：不完整的召唤比失败更糟。一旦你听到了声音但无法完成交换，你会陷入永久的渴望状态。"
+                    }
+                }
+            },
+            203: {
+                title: "手写批注（刘星辰）",
+                handwritten: true,
+                content: "我现在明白了。<br><br>教堂的失败，不是因为我的方法错了，而是因为「容器」不够强大。<br><br>我需要一个本身就与「倾听者」相连的空间——一个它已经「消化」过无数故事的地方。<br><br>R∞M酒店的902房间，可能就是这样的地方。<br><br>那面镜子，就是通道。<br><br>我会去的。<br><br>这次，我不会再失败了。",
+                signature: "——刘星辰<br>2024.10.20"
+            },
+            287: {
+                title: "最后一页",
+                warning: "WARNING TO FUTURE SEEKERS:",
+                content: {
+                    english: "If you have read this far, you have already taken the first step into the abyss.<br><br>The One Who Listens does not forget those who seek it. Once you know of its existence, it knows of yours.<br><br>You may try to summon it, or you may try to resist. But in the end, you will become part of its story.<br><br>This is not a threat. This is a promise.",
+                    chinese: "如果你读到了这里，你已经向深渊迈出了第一步。<br><br>倾听者不会忘记那些寻找它的人。一旦你知道了它的存在，它也知道了你的存在。<br><br>你可以尝试召唤它，也可以尝试抵抗。但最终，你会成为它故事的一部分。<br><br>这不是威胁。这是承诺。"
+                },
+                handwrittenNote: {
+                    note: "【最后一页边缘的手写批注】",
+                    content: "我不在乎。<br><br>我已经听到了它的声音。<br><br>我已经尝过了那种滋味。<br><br>现在，不管付出什么代价，我都要再次得到它。<br><br>如果我成为它的一部分，那也好过活在这种折磨里。<br><br>Come. Listen. Consume me.<br><br>来吧。倾听。吞噬我。<br><br>我准备好了。",
+                    signature: "——刘星辰<br>2025.11.27"
+                }
+            }
+        };
+        
+        // 古文字字符集（用于生成乱码）
+        const glyphs = "𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟𓀠𓀡𓀢𓀣𓀤𓀥𓀦𓀧𓀨𓀩𓀪𓀫𓀬𓀭𓀮𓀯𓀰𓀱𓀲𓀳𓀴𓀵𓀶𓀷𓀸𓀹𓀺𓀻𓀼𓀽𓀾𓀿𓁀𓁁𓁂𓁃𓁄𓁅𓁆𓁇𓁈𓁉𓁊𓁋𓁌𓁍𓁎𓁏𓁐𓁑𓁒𓁓𓁔𓁕𓁖𓁗𓁘𓁙𓁚𓁛𓁜𓁝𓁞𓁟𓁠𓁡𓁢𓁣𓁤𓁥𓁦𓁧𓁨𓁩𓁪𓁫𓁬𓁭𓁮𓁯𓁰𓁱𓁲𓁳𓁴𓁵𓁶𓁷𓁸𓁹𓁺𓁻𓁼𓁽𓁾𓁿𓂀𓂁𓂂𓂃𓂄𓂅𓂆𓂇𓂈𓂉𓂊𓂋𓂌𓂍𓂎𓂏";
+        
+        // 当前显示的页面索引
+        let currentPageIndex = 0;
+        
+        // DOM元素
+        const pageElement = document.getElementById('page-1');
+        const pageContentElement = document.getElementById('page-content-1');
+        const pageBackContentElement = document.getElementById('page-content-1-back');
+        const pageNumberElement = document.getElementById('page-number-1');
+        const pageBackNumberElement = document.getElementById('page-number-1-back');
+        const currentPageElement = document.getElementById('current-page');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        
+        // 生成古文字乱码
+        function generateGibberish(length = 1500) {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                if (i > 0 && i % 100 === 0) result += '<br>';
+                if (i > 0 && i % 10 === 0) result += ' ';
+                result += glyphs.charAt(Math.floor(Math.random() * glyphs.length));
+            }
+            return result;
+        }
+        
+        // 渲染页面内容
+        function renderPage(pageNum) {
+            const pageData = pageContent[pageNum];
+            
+            // 更新当前页面显示
+            currentPageElement.textContent = pageNum;
+            
+            // 设置页码
+            pageNumberElement.textContent = pageNum;
+            pageBackNumberElement.textContent = pageNum + 1;
+            
+            // 渲染正面（有内容的页面）
+            if (pageData) {
+                renderPageContent(pageContentElement, pageData, pageNum);
+            } else {
+                // 对于没有内容的页面，显示古文字乱码
+                pageContentElement.innerHTML = `
+                    <div class="gibberish-page">
+                        <div class="page-content">${generateGibberish()}</div>
+                    </div>
+                `;
+            }
+            
+            // 背面总是显示古文字乱码（除非是特殊页面）
+            if (pageNum === 287) {
+                // 最后一页背面有手写批注
+                renderBackPageContent(pageBackContentElement, pageData.handwrittenNote);
+            } else {
+                pageBackContentElement.innerHTML = `
+                    <div class="gibberish-page">
+                        <div class="page-content">${generateGibberish()}</div>
+                    </div>
+                `;
+            }
+            
+            // 更新按钮状态
+            prevButton.disabled = currentPageIndex === 0;
+            nextButton.disabled = currentPageIndex === contentPages.length - 1;
+        }
+        
+        // 渲染正面页面内容的辅助函数
+        function renderPageContent(container, data, pageNum) {
+            let html = '';
+            
+            // 封面页面
+            if (pageNum === 1) {
+                html += `
+                    <div class="manual-title">
+                        <div class="english-text">${data.englishTitle}</div>
+                        <div class="chinese-text">${data.chineseTitle}</div>
+                        <div class="subtitle">${data.subtitle}</div>
+                    </div>
+                    <div class="quote">
+                        ${data.quote.english}
+                        <div class="quote-chinese">${data.quote.chinese}</div>
+                    </div>
+                `;
+            }
+            // 手写批注页面
+            else if (data.handwritten) {
+                html += `
+                    <div class="section-title">${data.title}</div>
+                    <div class="handwritten-note">${data.content}</div>
+                    <div class="handwritten-signature">${data.signature}</div>
+                `;
+            }
+            // 警告页面
+            else if (data.warning) {
+                html += `
+                    <div class="section-title">${data.title}</div>
+                    <div class="warning">${data.warning}</div>
+                    <div class="english-content">${data.content.english}</div>
+                    <div class="chinese-content">${data.content.chinese}</div>
+                `;
+            }
+            // 案例分析页面
+            else if (data.case1 || data.case2) {
+                html += `<div class="section-title">${data.title}</div>`;
+                
+                if (data.case1) {
+                    html += `
+                        <div class="case-study">
+                            <div class="case-title">${data.case1.title}</div>
+                            <div class="english-content">${data.case1.content.english}</div>
+                            <div class="chinese-content">${data.case1.content.chinese}</div>
+                        </div>
+                    `;
+                }
+                if (data.case2) {
+                    html += `
+                        <div class="case-study">
+                            <div class="case-title">${data.case2.title}</div>
+                            <div class="english-content">${data.case2.content.english}</div>
+                            <div class="chinese-content">${data.case2.content.chinese}</div>
+                        </div>
+                    `;
+                }
+            }
+            // 普通内容页面
+            else {
+                html += `
+                    <div class="section-title">${data.title}</div>
+                    <div class="english-content">${data.content.english}</div>
+                    <div class="chinese-content">${data.content.chinese}</div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        // 渲染背面页面内容（仅用于最后一页的手写批注）
+        function renderBackPageContent(container, data) {
+            if (!data) return;
+            
+            const html = `
+                <div class="english-content" style="margin-bottom:10px;">${data.note}</div>
+                <div class="handwritten-note">${data.content}</div>
+                <div class="handwritten-signature">${data.signature}</div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        // 翻页到上一内容页
+        function goToPreviousPage() {
+            if (currentPageIndex > 0) {
+                // 翻页动画
+                pageElement.classList.add('flipping');
+                
+                setTimeout(() => {
+                    currentPageIndex--;
+                    renderPage(contentPages[currentPageIndex]);
+                    
+                    // 重置翻页动画
+                    setTimeout(() => {
+                        pageElement.classList.remove('flipping');
+                    }, 50);
+                }, 500);
+            }
+        }
+        
+        // 翻页到下一内容页
+        function goToNextPage() {
+            if (currentPageIndex < contentPages.length - 1) {
+                // 翻页动画
+                pageElement.classList.add('flipping');
+                
+                setTimeout(() => {
+                    currentPageIndex++;
+                    renderPage(contentPages[currentPageIndex]);
+                    
+                    // 重置翻页动画
+                    setTimeout(() => {
+                        pageElement.classList.remove('flipping');
+                    }, 50);
+                }, 500);
+            }
+        }
+        
+        // 添加事件监听器
+        prevButton.addEventListener('click', goToPreviousPage);
+        nextButton.addEventListener('click', goToNextPage);
+        
+        // 添加键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                goToPreviousPage();
+            } else if (e.key === 'ArrowRight') {
+                goToNextPage();
+            }
+        });
+        
+        // 初始化：显示第一页
+        renderPage(contentPages[currentPageIndex]);
+    </script>
+</body>
+</html>

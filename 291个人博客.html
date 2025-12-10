@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>李文轩的个人博客</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --accent-color: #ff6b6b;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --gray-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 语言切换样式 */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: 20px;
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .language-switcher select {
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        /* 登录页面样式 */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgZD0iTTI1IDI1aDUwdjUwaC01MHoiLz48L3N2Zz4=');
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-50px, -50px) rotate(360deg); }
+        }
+        
+        .login-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--dark-color);
+            font-weight: 700;
+            font-size: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-color);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+            outline: none;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+        
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        /* 博客页面样式 */
+        .blog-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 30px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        .blog-title {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .blog-subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .blog-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .nav-link {
+            margin: 0 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .blog-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .posts-container {
+            flex: 2;
+        }
+        
+        .sidebar {
+            flex: 1;
+        }
+        
+        .post {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .post-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .post-meta {
+            color: var(--gray-color);
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-meta::before {
+            content: "•";
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+        
+        .post-content {
+            color: #444;
+            line-height: 1.7;
+        }
+        
+        .post-image {
+            width: 100%;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-widget {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+        
+        .widget-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .about-me {
+            text-align: center;
+        }
+        
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            padding: 3px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--gray-color);
+            margin-top: 50px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* 私密日志页面样式 */
+        .private-page {
+            display: none;
+        }
+        
+        .private-header {
+            background: linear-gradient(135deg, #8b0000 0%, #b22222 100%);
+            color: white;
+            padding: 30px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        .private-title {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .private-subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .private-post {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .private-post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .private-label {
+            display: inline-block;
+            background-color: var(--danger-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .blog-content {
+                flex-direction: column;
+            }
+            
+            .language-switcher {
+                position: static;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            
+            .blog-nav {
+                flex-wrap: wrap;
+            }
+            
+            .nav-link {
+                margin: 5px;
+            }
+        }
+        
+        /* 加载动画 */
+        .loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(106, 17, 203, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            background: #e9ecef;
+            color: var(--gray-color);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .tag-primary {
+            background: rgba(106, 17, 203, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .tag-warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+        }
+        
+        .tag-success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="login-page" class="login-container">
+        <div class="login-box">
+            <h1 data-key="login-title">登录到博客</h1>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username" data-key="username-label">用户名</label>
+                    <input type="text" id="username" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="password" data-key="password-label">密码</label>
+                    <input type="password" id="password" autocomplete="off">
+                </div>
+                <button type="submit" class="login-btn" data-key="login-btn">登录</button>
+                <div class="error-message" id="error-message" data-key="login-error">用户名或密码错误，请重试。</div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 博客页面 -->
+    <div id="blog-page" style="display: none;">
+        <!-- 语言切换器 -->
+        <div class="language-switcher">
+            <select id="language-select">
+                <option value="zh-CN">中文</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="pt">Português</option>
+            </select>
+        </div>
+        
+        <!-- 博客头部 -->
+        <header class="blog-header">
+            <div class="container">
+                <h1 class="blog-title" data-key="blog-title">李文轩的个人博客</h1>
+                <p class="blog-subtitle" data-key="blog-subtitle">独立游戏开发者 | 《DAYDREAMS》创作者</p>
+                <nav class="blog-nav">
+                    <a href="#" class="nav-link active" data-key="nav-home" id="nav-blog">博客首页</a>
+                    <a href="#" class="nav-link" data-key="nav-about">关于我</a>
+                    <a href="#" class="nav-link" data-key="nav-projects">项目</a>
+                    <a href="#" class="nav-link" data-key="nav-private" id="nav-private">私密日志</a>
+                    <a href="#" class="nav-link" data-key="nav-contact">联系</a>
+                </nav>
+            </div>
+        </header>
+        
+        <!-- 博客内容 -->
+        <div class="container">
+            <div class="blog-content">
+                <div class="posts-container">
+                    <!-- 公开帖子 -->
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-1">闭关开始！《DAYDREAMS》的最后冲刺！</h2>
+                        <div class="post-meta" data-key="post-date-1">发布于 2025年11月12日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-1-1">朋友们，我来了！R∞M酒店，传说中能给创作者带来无限灵感的地方。这里的环境完美得不像话，安静、极简，每一处细节都像代码一样精准。接下来的日子，我将在这里完成我的心血之作——《DAYDREAMS》。这是一款关于'寻找出口'的游戏，也是我自己的梦。为我加油吧！今天，从搭建第一个循环逻辑开始！</p>
+                            <img src="291客房照片.jpg" alt="工作空间" class="post-image">
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-game">游戏开发</span>
+                                <span class="tag tag-warning" data-key="tag-inspiration">灵感记录</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-2">遇到一个有趣的bug</h2>
+                        <div class="post-meta" data-key="post-date-2">发布于 2025年11月13日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-2-1">今天在调试游戏时，发现了一个有趣的bug，主角在某个场景里会陷入无限循环。有点意思，也许可以做成一个特殊关卡。灵感来了！</p>
+                            <p data-key="post-content-2-2">代码调试进行得很顺利，虽然有些小问题，但整体进展不错。这里的咖啡很棒，服务也很周到，让我可以完全专注于创作。</p>
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-game">游戏开发</span>
+                                <span class="tag tag-success" data-key="tag-progress">进展更新</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-3">必须找到出口！</h2>
+                        <div class="post-meta" data-key="post-date-3">发布于 2025年11月16日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-3-1">连续48小时没睡，但我不累。我能感觉到，某种突破就在眼前。这种纯粹的奋斗，太棒了。</p>
+                            <p data-key="post-content-3-2">《DAYDREAMS》的核心机制越来越清晰了。这个关于"循环"和"出口"的概念，似乎比我想象的更有深度。有时候，我感觉自己也在经历着某种循环，但每一次循环都让我更接近真相。</p>
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-game">游戏开发</span>
+                                <span class="tag tag-warning" data-key="tag-breakthrough">突破时刻</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-4">新的世界</h2>
+                        <div class="post-meta" data-key="post-date-4">发布于 2025年11月25日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-4-1">终于完成了！《DAYDREAMS》最核心的部分已经完成，那种突破瓶颈的感觉太棒了！</p>
+                            <img src="日出.jpg" alt="游戏日出场景" class="post-image">
+                            <p data-key="post-content-4-2">就像游戏里的主角终于找到了出口，看到了新的世界。这种感觉难以言表，只有经历过的人才懂。</p>
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-game">游戏开发</span>
+                                <span class="tag tag-success" data-key="tag-completion">完成里程碑</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar">
+                    <div class="sidebar-widget about-me">
+                        <h3 class="widget-title" data-key="about-title">关于我</h3>
+                        <img src="291头像.jpg" alt="李文轩" class="profile-img">
+                        <p data-key="about-content">独立游戏开发者，专注于叙事驱动型游戏创作。目前正在开发《DAYDREAMS》，一款关于循环与出口的探索游戏。</p>
+                    </div>
+                    
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title" data-key="projects-title">项目</h3>
+                        <ul>
+                            <li data-key="project-1">《DAYDREAMS》 - 开发中</li>
+                            <li data-key="project-2">《循环碎片》 - 已完成</li>
+                            <li data-key="project-3">《记忆迷宫》 - 已完成</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title" data-key="categories-title">分类</h3>
+                        <ul>
+                            <li data-key="category-1">游戏开发</li>
+                            <li data-key="category-2">编程笔记</li>
+                            <li data-key="category-3">生活随笔</li>
+                            <li data-key="category-4">读书笔记</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="container">
+                <p data-key="footer-text">© 2025 李文轩的个人博客. 保留所有权利.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- 私密日志页面 -->
+    <div id="private-page" class="private-page">
+        <!-- 语言切换器 -->
+        <div class="language-switcher">
+            <select id="private-language-select">
+                <option value="zh-CN">中文</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="pt">Português</option>
+            </select>
+        </div>
+        
+        <!-- 私密日志头部 -->
+        <header class="private-header">
+            <div class="container">
+                <h1 class="private-title" data-key="private-title">私密日志</h1>
+                <p class="private-subtitle" data-key="private-subtitle">只有我能看到的内心独白</p>
+                <nav class="blog-nav">
+                    <a href="#" class="nav-link" data-key="nav-home" id="nav-back-blog">返回博客</a>
+                    <a href="#" class="nav-link active" data-key="nav-private">私密日志</a>
+                </nav>
+            </div>
+        </header>
+        
+        <!-- 私密日志内容 -->
+        <div class="container">
+            <div class="posts-container">
+                <!-- 私密日志帖子 -->
+                <div class="private-post">
+                    <span class="private-label" data-key="private-label">私密</span>
+                    <h2 class="post-title" data-key="private-title-1">循环的开始</h2>
+                    <div class="post-meta" data-key="private-date-1">未知日期</div>
+                    <div class="post-content">
+                        <p data-key="private-content-1-1">第几天了？闹钟在早上6点准时响起。窗帘自动拉开，阳光以永远不变的角度照在纯白色的地毯上，形成一个锐利的梯形。</p>
+                        <p data-key="private-content-1-2">又是"今天"。</p>
+                        <p data-key="private-content-1-3">我记得我昨天用记号笔在墙上画了一个"正"字。现在墙壁光洁如新，仿佛在嘲笑我的徒劳。</p>
+                        <img src="闹钟.jpg" alt="闹钟图片" style="max-width: 100%; height: auto; margin-top: 15px;">
+                    </div>
+                </div>
+                
+                <div class="private-post">
+                    <span class="private-label" data-key="private-label">私密</span>
+                    <h2 class="post-title" data-key="private-title-2">咖啡还是橙汁？</h2>
+                    <div class="post-meta" data-key="private-date-2">未知日期</div>
+                    <div class="post-content">
+                        <p data-key="private-content-2-1">咖啡，又是咖啡。那个声音透过门禁对讲机传来，永远是那个语调，平滑得像AI："李先生，您点的咖啡。"</p>
+                        <p data-key="private-content-2-2">我今天点了橙汁。</p>
+                        <p data-key="private-content-2-3">我冲到门口，对着对讲机嘶吼："我点的是橙汁！不是咖啡！"</p>
+                        <p data-key="private-content-2-4">短暂的沉默后，那个声音再次响起，不带一丝波澜："好的，李先生。需要为您续杯咖啡吗？"</p>
+                        <p data-key="private-content-2-5">我感觉血液瞬间冲上了头顶。</p>
+                    </div>
+                </div>
+                
+                <div class="private-post">
+                    <span class="private-label" data-key="private-label">私密</span>
+                    <h2 class="post-title" data-key="private-title-3">求救</h2>
+                    <div class="post-meta" data-key="private-date-3">未知日期</div>
+                    <div class="post-content">
+                        <p data-key="private-content-3-1">我不是在写游戏。</p>
+                        <p data-key="private-content-3-2">我是在求救。</p>
+                        <p data-key="private-content-3-3">我试着在代码的注释里写下我的处境，写下这个被固定住的24小时。但第二天，"今天"再次开始时，那些注释就变成了一堆乱码，或者……变成了一些歌颂奋斗的句子。</p>
+                        <p data-key="private-content-3-4">"必须找到出口。"</p>
+                        <p data-key="private-content-3-5">这句话是我写的。但昨天，它的意思是逃离这里。今天，它躺在我的文档里，像一句廉价的自我激励。</p>
+                        <p data-key="private-content-3-6">它在篡改我的思想。这个房间。</p>
+                    </div>
+                </div>
+                
+                <div class="private-post">
+                    <span class="private-label" data-key="private-label">私密</span>
+                    <h2 class="post-title" data-key="private-title-4">牢笼</h2>
+                    <div class="post-meta" data-key="private-date-4">未知日期</div>
+                    <div class="post-content">
+                        <p data-key="private-content-4-1">我砸了窗户。用椅子，用台灯，用尽全力。我的手背被玻璃划破，流了很多血。但那块巨大的落地窗纹丝不动，连一丝裂痕都没有。它只是冰冷地映出我扭曲的脸。</p>
+                        <p data-key="private-content-4-2">第二天早上6点，我醒来。手背光洁如初。窗户完美无瑕。</p>
+                        <p data-key="private-content-4-3">我坐在床上，看着那个锐利的梯形阳光，第一次感到了深入骨髓的恐惧。</p>
+                        <p data-key="private-content-4-4">这里不是酒店。</p>
+                        <p data-key="private-content-4-5">这里是一个活的牢笼。</p>
+                    </div>
+                </div>
+                
+                <div class="private-post">
+                    <span class="private-label" data-key="private-label">私密</span>
+                    <h2 class="post-title" data-key="private-title-5">真相</h2>
+                    <div class="post-meta" data-key="private-date-5">未知日期</div>
+                    <div class="post-content">
+                        <p data-key="private-content-5-1">我明白了。</p>
+                        <p data-key="private-content-5-2">它需要的不是我的代码，也不是我的游戏。</p>
+                        <p data-key="private-content-5-3">它在"吃"我的情绪。</p>
+                        <p data-key="private-content-5-4">每一次我从醒来时的绝望中，强行压榨出一点"今天一定要逃出去"的希望；每一次我尝试一种新的方法，以为找到了线索，那种欣喜若狂；以及每一次，当新的一天开始，所有努力归零时，那种足以将人碾碎的崩溃。</p>
+                        <p data-key="private-content-5-5">从希望到绝望，再从绝望的灰烬里刨出新的希望。</p>
+                        <p data-key="private-content-5-6">这个循环，就是它的盛宴。</p>
+                        <p data-key="private-content-5-7">我的挣扎，是它的佳肴。</p>
+                        <p data-key="private-content-5-8">我的白日梦……是它最喜欢的甜点。</p>
+                    </div>
+                </div>
+                
+                <div class="private-post">
+                    <span class="private-label" data-key="private-label">私密</span>
+                    <h2 class="post-title" data-key="private-title-6">最后的手段</h2>
+                    <div class="post-meta" data-key="private-date-6">未知日期</div>
+                    <div class="post-content">
+                        <p data-key="private-content-6-1">不能再尝试逃跑了。那只会让它更愉悦。</p>
+                        <p data-key="private-content-6-2">我要换一种方式。</p>
+                        <p data-key="private-content-6-3">我不能打破循环，但或许……我可以在循环里留下一颗"病毒"。一段无法被它轻易消化和篡改的信息。一段能对下一个进入这个系统的人发出警告的信息。</p>
+                        <p data-key="private-content-6-4">我要把我的全部意识、我的整个故事，压缩，编码，伪装成一个看似无害的模块，嵌入到这个"房间"系统的最底层。一个……致命的错误。</p>
+                        <p data-key="private-content-6-5">它在吞噬我的故事，那我就让我的故事，成为噎死它的毒药。</p>
+                        <p data-key="private-content-6-6">这是我最后一次做梦了。</p>
+                        <p data-key="private-content-6-7">如果有人能看到这段话。记住，不要相信任何你看到的东西。这家酒店，这个房间，它会给你最美的幻觉，然后……</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="container">
+                <p data-key="footer-text">© 2025 李文轩的个人博客. 保留所有权利.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 多语言翻译数据
+        const translations = {
+            'zh-CN': {
+                'login-title': '登录到博客',
+                'username-label': '用户名',
+                'password-label': '密码',
+                'login-btn': '登录',
+                'login-error': '用户名或密码错误，请重试。',
+                'blog-title': '李文轩的个人博客',
+                'blog-subtitle': '独立游戏开发者 | 《DAYDREAMS》创作者',
+                'nav-home': '博客首页',
+                'nav-about': '关于我',
+                'nav-projects': '项目',
+                'nav-private': '私密日志',
+                'nav-contact': '联系',
+                'post-title-1': '闭关开始！《DAYDREAMS》的最后冲刺！',
+                'post-date-1': '发布于 2025年11月12日',
+                'post-content-1-1': '朋友们，我来了！R∞M酒店，传说中能给创作者带来无限灵感的地方。这里的环境完美得不像话，安静、极简，每一处细节都像代码一样精准。接下来的日子，我将在这里完成我的心血之作——《DAYDREAMS》。这是一款关于"寻找出口"的游戏，也是我自己的梦。为我加油吧！今天，从搭建第一个循环逻辑开始！',
+                'post-title-2': '遇到一个有趣的bug',
+                'post-date-2': '发布于 2025年11月13日',
+                'post-content-2-1': '今天在调试游戏时，发现了一个有趣的bug，主角在某个场景里会陷入无限循环。有点意思，也许可以做成一个特殊关卡。灵感来了！',
+                'post-content-2-2': '代码调试进行得很顺利，虽然有些小问题，但整体进展不错。这里的咖啡很棒，服务也很周到，让我可以完全专注于创作。',
+                'post-title-3': '必须找到出口！',
+                'post-date-3': '发布于 2025年11月16日',
+                'post-content-3-1': '连续48小时没睡，但我不累。我能感觉到，某种突破就在眼前。这种纯粹的奋斗，太棒了。',
+                'post-content-3-2': '《DAYDREAMS》的核心机制越来越清晰了。这个关于"循环"和"出口"的概念，似乎比我想象的更有深度。有时候，我感觉自己也在经历着某种循环，但每一次循环都让我更接近真相。',
+                'post-title-4': '新的世界',
+                'post-date-4': '发布于 2025年11月25日',
+                'post-content-4-1': '终于完成了！《DAYDREAMS》最核心的部分已经完成，那种突破瓶颈的感觉太棒了！',
+                'post-content-4-2': '就像游戏里的主角终于找到了出口，看到了新的世界。这种感觉难以言表，只有经历过的人才懂。',
+                'private-title': '私密日志',
+                'private-subtitle': '只有我能看到的内心独白',
+                'private-label': '私密',
+                'private-title-1': '循环的开始',
+                'private-date-1': '未知日期',
+                'private-content-1-1': '第几天了？闹钟在早上6点准时响起。窗帘自动拉开，阳光以永远不变的角度照在纯白色的地毯上，形成一个锐利的梯形。',
+                'private-content-1-2': '又是"今天"。',
+                'private-content-1-3': '我记得我昨天用记号笔在墙上画了一个"正"字。现在墙壁光洁如新，仿佛在嘲笑我的徒劳。',
+                'private-title-2': '咖啡还是橙汁？',
+                'private-date-2': '未知日期',
+                'private-content-2-1': '咖啡，又是咖啡。那个声音透过门禁对讲机传来，永远是那个语调，平滑得像AI："李先生，您点的咖啡。"',
+                'private-content-2-2': '我今天点了橙汁。',
+                'private-content-2-3': '我冲到门口，对着对讲机嘶吼："我点的是橙汁！不是咖啡！"',
+                'private-content-2-4': '短暂的沉默后，那个声音再次响起，不带一丝波澜："好的，李先生。需要为您续杯咖啡吗？"',
+                'private-content-2-5': '我感觉血液瞬间冲上了头顶。',
+                'private-title-3': '求救',
+                'private-date-3': '未知日期',
+                'private-content-3-1': '我不是在写游戏。',
+                'private-content-3-2': '我是在求救。',
+                'private-content-3-3': '我试着在代码的注释里写下我的处境，写下这个被固定住的24小时。但第二天，"今天"再次开始时，那些注释就变成了一堆乱码，或者……变成了一些歌颂奋斗的句子。',
+                'private-content-3-4': '"必须找到出口。"',
+                'private-content-3-5': '这句话是我写的。但昨天，它的意思是逃离这里。今天，它躺在我的文档里，像一句廉价的自我激励。',
+                'private-content-3-6': '它在篡改我的思想。这个房间。',
+                'private-title-4': '牢笼',
+                'private-date-4': '未知日期',
+                'private-content-4-1': '我砸了窗户。用椅子，用台灯，用尽全力。我的手背被玻璃划破，流了很多血。但那块巨大的落地窗纹丝不动，连一丝裂痕都没有。它只是冰冷地映出我扭曲的脸。',
+                'private-content-4-2': '第二天早上6点，我醒来。手背光洁如初。窗户完美无瑕。',
+                'private-content-4-3': '我坐在床上，看着那个锐利的梯形阳光，第一次感到了深入骨髓的恐惧。',
+                'private-content-4-4': '这里不是酒店。',
+                'private-content-4-5': '这里是一个活的牢笼。',
+                'private-title-5': '真相',
+                'private-date-5': '未知日期',
+                'private-content-5-1': '我明白了。',
+                'private-content-5-2': '它需要的不是我的代码，也不是我的游戏。',
+                'private-content-5-3': '它在"吃"我的情绪。',
+                'private-content-5-4': '每一次我从醒来时的绝望中，强行压榨出一点"今天一定要逃出去"的希望；每一次我尝试一种新的方法，以为找到了线索，那种欣喜若狂；以及每一次，当新的一天开始，所有努力归零时，那种足以将人碾碎的崩溃。',
+                'private-content-5-5': '从希望到绝望，再从绝望的灰烬里刨出新的希望。',
+                'private-content-5-6': '这个循环，就是它的盛宴。',
+                'private-content-5-7': '我的挣扎，是它的佳肴。',
+                'private-content-5-8': '我的白日梦……是它最喜欢的甜点。',
+                'private-title-6': '最后的手段',
+                'private-date-6': '未知日期',
+                'private-content-6-1': '不能再尝试逃跑了。那只会让它更愉悦。',
+                'private-content-6-2': '我要换一种方式。',
+                'private-content-6-3': '我不能打破循环，但或许……我可以在循环里留下一颗"病毒"。一段无法被它轻易消化和篡改的信息。一段能对下一个进入这个系统的人发出警告的信息。',
+                'private-content-6-4': '我要把我的全部意识、我的整个故事，压缩，编码，伪装成一个看似无害的模块，嵌入到这个"房间"系统的最底层。一个……致命的错误。',
+                'private-content-6-5': '它在吞噬我的故事，那我就让我的故事，成为噎死它的毒药。',
+                'private-content-6-6': '这是我最后一次做梦了。',
+                'private-content-6-7': '如果有人能看到这段话。记住，不要相信任何你看到的东西。这家酒店，这个房间，它会给你最美的幻觉，然后……',
+                'about-title': '关于我',
+                'about-content': '独立游戏开发者，专注于叙事驱动型游戏创作。目前正在开发《DAYDREAMS》，一款关于循环与出口的探索游戏。',
+                'projects-title': '项目',
+                'project-1': '《DAYDREAMS》 - 开发中',
+                'project-2': '《循环碎片》 - 已完成',
+                'project-3': '《记忆迷宫》 - 已完成',
+                'categories-title': '分类',
+                'category-1': '游戏开发',
+                'category-2': '编程笔记',
+                'category-3': '生活随笔',
+                'category-4': '读书笔记',
+                'tag-game': '游戏开发',
+                'tag-inspiration': '灵感记录',
+                'tag-progress': '进展更新',
+                'tag-breakthrough': '突破时刻',
+                'tag-completion': '完成里程碑',
+                'footer-text': '© 2025 李文轩的个人博客. 保留所有权利.'
+            },
+            'en': {
+                'login-title': 'Login to Blog',
+                'username-label': 'Username',
+                'password-label': 'Password',
+                'login-btn': 'Login',
+                'login-error': 'Incorrect username or password, please try again.',
+                'blog-title': 'Li Wenxuan\'s Personal Blog',
+                'blog-subtitle': 'Independent Game Developer | Creator of "DAYDREAMS"',
+                'nav-home': 'Blog Home',
+                'nav-about': 'About Me',
+                'nav-projects': 'Projects',
+                'nav-private': 'Private Journal',
+                'nav-contact': 'Contact',
+                'post-title-1': 'Seclusion Begins! The Final Sprint of "DAYDREAMS"!',
+                'post-date-1': 'Posted on November 12, 2025',
+                'post-content-1-1': 'Friends, I\'m here! R∞M Hotel, a place rumored to bring unlimited inspiration to creators. The environment here is perfect, quiet, minimalist, every detail is as precise as code. In the coming days, I will complete my masterpiece - "DAYDREAMS" here. This is a game about "finding the exit", and it\'s also my own dream. Cheer for me! Today, starting with building the first loop logic!',
+                'post-title-2': 'Encountered an Interesting Bug',
+                'post-date-2': 'Posted on November 13, 2025',
+                'post-content-2-1': 'While debugging the game today, I found an interesting bug where the protagonist gets stuck in an infinite loop in a certain scene. Interesting, maybe it can be made into a special level. Inspiration is coming!',
+                'post-content-2-2': 'The code debugging is going smoothly. Although there are some minor issues, the overall progress is good. The coffee here is great, and the service is very attentive, allowing me to focus completely on creation.',
+                'post-title-3': 'Must Find the Exit!',
+                'post-date-3': 'Posted on November 16, 2025',
+                'post-content-3-1': 'Haven\'t slept for 48 hours straight, but I\'m not tired. I can feel that some kind of breakthrough is just around the corner. This pure struggle is amazing.',
+                'post-content-3-2': 'The core mechanism of "DAYDREAMS" is becoming clearer. This concept of "loop" and "exit" seems to have more depth than I imagined. Sometimes, I feel like I\'m also experiencing some kind of loop, but each cycle brings me closer to the truth.',
+                'post-title-4': 'New World',
+                'post-date-4': 'Posted on November 25, 2025',
+                'post-content-4-1': 'Finally completed! The core part of "DAYDREAMS" is done, the feeling of breaking through the bottleneck is amazing!',
+                'post-content-4-2': 'Just like the protagonist in the game finally found the exit and saw a new world. This feeling is indescribable, only those who have experienced it understand.',
+                'private-title': 'Private Journal',
+                'private-subtitle': 'Inner monologues only I can see',
+                'private-label': 'Private',
+                'private-title-1': 'The Beginning of the Loop',
+                'private-date-1': 'Unknown Date',
+                'private-content-1-1': 'What day is it? The alarm rings promptly at 6 AM. The curtains automatically open, sunlight shining at an eternally unchanged angle on the pure white carpet, forming a sharp trapezoid.',
+                'private-content-1-2': 'Another "today".',
+                'private-content-1-3': 'I remember I drew a tally mark on the wall with a marker yesterday. Now the wall is clean as new, as if mocking my futile efforts.',
+                'private-title-2': 'Coffee or Orange Juice?',
+                'private-date-2': 'Unknown Date',
+                'private-content-2-1': 'Coffee, again coffee. That voice comes through the intercom, always with that tone, smooth like AI: "Mr. Li, your coffee."',
+                'private-content-2-2': 'I ordered orange juice today.',
+                'private-content-2-3': 'I rushed to the door and yelled at the intercom: "I ordered orange juice! Not coffee!"',
+                'private-content-2-4': 'After a brief silence, the voice sounded again, without a ripple: "Okay, Mr. Li. Would you like a refill of coffee?"',
+                'private-content-2-5': 'I felt blood rush to my head instantly.',
+                'private-title-3': 'SOS',
+                'private-date-3': 'Unknown Date',
+                'private-content-3-1': 'I\'m not writing a game.',
+                'private-content-3-2': 'I\'m sending an SOS.',
+                'private-content-3-3': 'I tried to write about my situation in the code comments, about this fixed 24 hours. But the next day, when "today" starts again, those comments become a bunch of garbled text, or... turn into sentences praising struggle.',
+                'private-content-3-4': '"Must find the exit."',
+                'private-content-3-5': 'This sentence was written by me. But yesterday, it meant to escape from here. Today, it lies in my document like a cheap self-motivation.',
+                'private-content-3-6': 'It\'s tampering with my thoughts. This room.',
+                'private-title-4': 'Cage',
+                'private-date-4': 'Unknown Date',
+                'private-content-4-1': 'I smashed the window. With a chair, with a desk lamp, with all my strength. The back of my hand was cut by the glass, bleeding a lot. But that huge floor-to-ceiling window didn\'t move at all, not even a crack. It just coldly reflected my distorted face.',
+                'private-content-4-2': 'The next morning at 6 AM, I woke up. The back of my hand was smooth as before. The window was flawless.',
+                'private-content-4-3': 'I sat on the bed, looking at that sharp trapezoid of sunlight, and felt a fear that went deep into my bones for the first time.',
+                'private-content-4-4': 'This is not a hotel.',
+                'private-content-4-5': 'This is a living cage.',
+                'private-title-5': 'Truth',
+                'private-date-5': 'Unknown Date',
+                'private-content-5-1': 'I understand now.',
+                'private-content-5-2': 'It doesn\'t need my code, nor my game.',
+                'private-content-5-3': 'It\'s "eating" my emotions.',
+                'private-content-5-4': 'Every time I squeeze out a little hope of "I must escape today" from the despair of waking up; every time I try a new method, thinking I\'ve found a clue, that ecstatic joy; and every time, when a new day begins and all efforts reset to zero, that crushing collapse that can grind a person to dust.',
+                'private-content-5-5': 'From hope to despair, and then digging new hope from the ashes of despair.',
+                'private-content-5-6': 'This cycle is its feast.',
+                'private-content-5-7': 'My struggle is its delicacy.',
+                'private-content-5-8': 'My daydream... is its favorite dessert.',
+                'private-title-6': 'Last Resort',
+                'private-date-6': 'Unknown Date',
+                'private-content-6-1': 'I can\'t try to escape anymore. That will only make it more pleased.',
+                'private-content-6-2': 'I need to change my approach.',
+                'private-content-6-3': 'I can\'t break the cycle, but maybe... I can leave a "virus" in the cycle. A piece of information that it can\'t easily digest and tamper with. A warning for the next person who enters this system.',
+                'private-content-6-4': 'I\'m going to compress my entire consciousness, my whole story, encode it, disguise it as a seemingly harmless module, and embed it into the lowest level of this "room" system. A... fatal error.',
+                'private-content-6-5': 'It\'s devouring my story, so I\'ll make my story the poison that chokes it.',
+                'private-content-6-6': 'This is my last dream.',
+                'private-content-6-7': 'If anyone can see this message. Remember, don\'t believe anything you see. This hotel, this room, it will give you the most beautiful illusions, and then...',
+                'about-title': 'About Me',
+                'about-content': 'Independent game developer, focusing on narrative-driven game creation. Currently developing "DAYDREAMS", an exploration game about loops and exits.',
+                'projects-title': 'Projects',
+                'project-1': '"DAYDREAMS" - In Development',
+                'project-2': '"Loop Fragments" - Completed',
+                'project-3': '"Memory Maze" - Completed',
+                'categories-title': 'Categories',
+                'category-1': 'Game Development',
+                'category-2': 'Programming Notes',
+                'category-3': 'Life Essays',
+                'category-4': 'Reading Notes',
+                'tag-game': 'Game Development',
+                'tag-inspiration': 'Inspiration',
+                'tag-progress': 'Progress Update',
+                'tag-breakthrough': 'Breakthrough',
+                'tag-completion': 'Milestone',
+                'footer-text': '© 2025 Li Wenxuan\'s Personal Blog. All rights reserved.'
+            },
+            'ja': {
+                'login-title': 'ブログにログイン',
+                'username-label': 'ユーザー名',
+                'password-label': 'パスワード',
+                'login-btn': 'ログイン',
+                'login-error': 'ユーザー名またはパスワードが正しくありません。もう一度お試しください。',
+                'blog-title': '李文軒の個人ブログ',
+                'blog-subtitle': 'インディーズゲーム開発者 | 「DAYDREAMS」クリエイター',
+                'nav-home': 'ブログホーム',
+                'nav-about': '自己紹介',
+                'nav-projects': 'プロジェクト',
+                'nav-private': 'プライベート日記',
+                'nav-contact': '連絡先',
+                'post-title-1': '閉関開始！「DAYDREAMS」最終スプリント！',
+                'post-date-1': '2025年11月12日投稿',
+                'post-content-1-1': '皆さん、来ました！R∞Mホテル、創造者に無限のインスピレーションをもたらすと噂の場所です。ここの環境は完璧で、静かで、ミニマリストで、すべての細部がコードのように正確です。これからの日々、私はここで私の傑作「DAYDREAMS」を完成させます。これは「出口を見つける」ことについてのゲームであり、私自身の夢でもあります。応援してください！今日は、最初のループロジックの構築から始めます！',
+                'post-title-2': '面白いバグに遭遇',
+                'post-date-2': '2025年11月13日投稿',
+                'post-content-2-1': '今日ゲームをデバッグしているとき、主人公があるシーンで無限ループに陥るという面白いバグを見つけました。面白い、特別なレベルにできるかもしれません。インスピレーションが湧いてきました！',
+                'post-content-2-2': 'コードのデバッグは順調に進んでいます。多少の問題はありますが、全体的な進捗は良好です。ここのコーヒーは素晴らしく、サービスも非常に行き届いているので、創作に完全に集中できます。',
+                'post-title-3': '出口を見つけなければ！',
+                'post-date-3': '2025年11月16日投稿',
+                'post-content-3-1': '48時間連続で寝ていませんが、疲れていません。何か突破口がすぐそこにあると感じています。この純粋な奮闘は素晴らしいです。',
+                'post-content-3-2': '「DAYDREAMS」の核心メカニズムがますます明確になってきました。この「ループ」と「出口」の概念は、私が想像していたよりも深みがあるようです。時々、私自身も何らかのループを経験しているように感じますが、各サイクルは私を真実に近づけています。',
+                'post-title-4': '新しい世界',
+                'post-date-4': '2025年11月25日投稿',
+                'post-content-4-1': 'ついに完成しました！「DAYDREAMS」の核心部分が完成し、ボトルネックを突破した感覚は素晴らしいです！',
+                'post-content-4-2': 'まるでゲームの中の主人公がついに出口を見つけ、新しい世界を見たかのようです。この感覚は言葉では表せず、経験した者だけが理解できます。',
+                'private-title': 'プライベート日記',
+                'private-subtitle': '私だけが見ることができる内なる独白',
+                'private-label': 'プライベート',
+                'private-title-1': 'ループの始まり',
+                'private-date-1': '日付不明',
+                'private-content-1-1': '何日目？目覚まし時計が6時に正確に鳴る。カーテンが自動で開き、太陽の光が永遠に変わらない角度で純白のカーペットに照りつけ、鋭い台形を形成する。',
+                'private-content-1-2': 'また「今日」だ。',
+                'private-content-1-3': '昨日マーカーで壁に「正」の字を書いたのを覚えている。今、壁は新品同様にきれいで、私の無駄な努力を嘲笑っているようだ。',
+                'private-title-2': 'コーヒーかオレンジジュースか？',
+                'private-date-2': '日付不明',
+                'private-content-2-1': 'コーヒー、またコーヒー。あの声がインターホンから聞こえてくる、いつものあの口調で、AIのように滑らかに：「李様、ご注文のコーヒーでございます。」',
+                'private-content-2-2': '今日はオレンジジュースを注文した。',
+                'private-content-2-3': '私はドアに駆け寄り、インターホンに向かって叫んだ：「オレンジジュースを注文したんだ！コーヒーじゃない！」',
+                'private-content-2-4': '短い沈黙の後、その声は再び、少しの波紋もなく響いた：「かしこまりました、李様。コーヒーのおかわりはいかがでしょうか？」',
+                'private-content-2-5': '血液が一瞬で頭に上るのを感じた。',
+                'private-title-3': '救助要請',
+                'private-date-3': '日付不明',
+                'private-content-3-1': '私はゲームを書いているのではない。',
+                'private-content-3-2': '救助を求めているのだ。',
+                'private-content-3-3': 'コードのコメントに自分の状況、この固定された24時間について書こうとした。しかし翌日、「今日」が再び始まると、それらのコメントは文字化けするか、あるいは…奮闘を称賛する文章に変わる。',
+                'private-content-3-4': '「出口を見つけなければ。」',
+                'private-content-3-5': 'この文章は私が書いたものだ。しかし昨日、それはここから逃げ出すという意味だった。今日、それは私のドキュメントの中に、安っぽい自己啓発のように横たわっている。',
+                'private-content-3-6': 'それは私の思考を改ざんしている。この部屋が。',
+                'private-title-4': '檻',
+                'private-date-4': '日付不明',
+                'private-content-4-1': '私は窓を壊した。椅子で、デスクランプで、全力で。手の甲がガラスで切れて、たくさん血が流れた。しかしその巨大なフロアーシーリングウィンドウは微動だにせず、ひび一つ入らなかった。それはただ冷たく私の歪んだ顔を映し出しているだけだった。',
+                'private-content-4-2': '翌朝6時、私は目を覚ました。手の甲は以前のように滑らかだった。窓は完璧無欠だった。',
+                'private-content-4-3': '私はベッドに座り、あの鋭い台形の陽光を見つめ、初めて骨の髄まで凍るような恐怖を感じた。',
+                'private-content-4-4': 'ここはホテルではない。',
+                'private-content-4-5': 'ここは生ける檻だ。',
+                'private-title-5': '真実',
+                'private-date-5': '日付不明',
+                'private-content-5-1': 'わかった。',
+                'private-content-5-2': 'それは私のコードも、私のゲームも必要としていない。',
+                'private-content-5-3': 'それは私の感情を「食べている」。',
+                'private-content-5-4': '目覚めた時の絶望から、「今日こそ逃げ出さなければ」という希望を無理やり絞り出すたびに；新しい方法を試し、手がかりを見つけたと思い、あの有頂天になる喜びを感じるたびに；そして新しい日が始まり、すべての努力がゼロに戻るたびに、人を粉々に粉砕するほどの崩壊を感じるたびに。',
+                'private-content-5-5': '希望から絶望へ、そして絶望の灰から新しい希望を掘り起こす。',
+                'private-content-5-6': 'このサイクルが、その饗宴なのだ。',
+                'private-content-5-7': '私の苦闘が、そのごちそうなのだ。',
+                'private-content-5-8': '私の白昼夢が…そのお気に入りのデザートなのだ。',
+                'private-title-6': '最後の手段',
+                'private-date-6': '日付不明',
+                'private-content-6-1': 'もう逃げようとしてはならない。それはそれをさらに喜ばせるだけだ。',
+                'private-content-6-2': '方法を変えなければならない。',
+                'private-content-6-3': '私はサイクルを破ることはできないが、おそらく…サイクルの中に「ウイルス」を残すことができる。簡単には消化されず、改ざんされない情報を。このシステムに次に入る人への警告を。',
+                'private-content-6-4': '私は自分の意識全体、自分の物語全体を圧縮し、エンコードし、無害に見えるモジュールに偽装し、この「部屋」システムの最下層に埋め込むつもりだ。ひとつの…致命的なエラーを。',
+                'private-content-6-5': 'それは私の物語を貪り食っている、ならば私は私の物語を、それを窒息させる毒に変えよう。',
+                'private-content-6-6': 'これが私の最後の夢だ。',
+                'private-content-6-7': 'もし誰かがこのメッセージを見ることができたら。覚えておいて、目に見えるものを何も信じてはいけない。このホテル、この部屋、それはあなたに最も美しい幻想を与え、そしてその後…',
+                'about-title': '自己紹介',
+                'about-content': 'インディーズゲーム開発者。物語駆動型のゲーム創作に焦点を当てています。現在、ループと出口についての探索ゲーム「DAYDREAMS」を開発中です。',
+                'projects-title': 'プロジェクト',
+                'project-1': '「DAYDREAMS」 - 開発中',
+                'project-2': '「ループフラグメント」 - 完了',
+                'project-3': '「メモリーメイズ」 - 完了',
+                'categories-title': 'カテゴリ',
+                'category-1': 'ゲーム開発',
+                'category-2': 'プログラミングノート',
+                'category-3': '生活随筆',
+                'category-4': '読書ノート',
+                'tag-game': 'ゲーム開発',
+                'tag-inspiration': 'インスピレーション',
+                'tag-progress': '進捗更新',
+                'tag-breakthrough': '突破口',
+                'tag-completion': 'マイルストーン',
+                'footer-text': '© 2025 李文軒の個人ブログ。全著作権所有。'
+            },
+            'pt': {
+                'login-title': 'Entrar no Blog',
+                'username-label': 'Nome de usuário',
+                'password-label': 'Senha',
+                'login-btn': 'Entrar',
+                'login-error': 'Nome de usuário ou senha incorretos, por favor tente novamente.',
+                'blog-title': 'Blog Pessoal de Li Wenxuan',
+                'blog-subtitle': 'Desenvolvedor Independente de Jogos | Criador de "DAYDREAMS"',
+                'nav-home': 'Início do Blog',
+                'nav-about': 'Sobre Mim',
+                'nav-projects': 'Projetos',
+                'nav-private': 'Diário Privado',
+                'nav-contact': 'Contato',
+                'post-title-1': 'Início do Retiro! O Sprint Final de "DAYDREAMS"!',
+                'post-date-1': 'Postado em 12 de novembro de 2025',
+                'post-content-1-1': 'Amigos, cheguei! Hotel R∞M, um lugar que supostamente traz inspiração ilimitada para criadores. O ambiente aqui é perfeito, silencioso, minimalista, cada detalhe é tão preciso quanto código. Nos próximos dias, vou completar minha obra-prima - "DAYDREAMS" aqui. Este é um jogo sobre "encontrar a saída", e também é meu próprio sonho. Torçam por mim! Hoje, começando com a construção da primeira lógica de loop!',
+                'post-title-2': 'Encontrei um Bug Interessante',
+                'post-date-2': 'Postado em 13 de novembro de 2025',
+                'post-content-2-1': 'Ao depurar o jogo hoje, encontrei um bug interessante onde o protagonista fica preso em um loop infinito em uma certa cena. Interessante, talvez possa ser transformado em uma fase especial. A inspiração está chegando!',
+                'post-content-2-2': 'A depuração do código está indo bem. Embora haja alguns problemas menores, o progresso geral é bom. O café aqui é ótimo, e o serviço é muito atencioso, permitindo que eu me concentre completamente na criação.',
+                'post-title-3': 'Devo Encontrar a Saída!',
+                'post-date-3': 'Postado em 16 de novembro de 2025',
+                'post-content-3-1': 'Não durmo há 48 horas seguidas, mas não estou cansado. Posso sentir que algum tipo de avanço está próximo. Essa luta pura é incrível.',
+                'post-content-3-2': 'O mecanismo central de "DAYDREAMS" está se tornando mais claro. Esse conceito de "loop" e "saída" parece ter mais profundidade do que eu imaginava. Às vezes, sinto que também estou experimentando algum tipo de loop, mas cada ciclo me aproxima mais da verdade.',
+                'post-title-4': 'Novo Mundo',
+                'post-date-4': 'Postado em 25 de novembro de 2025',
+                'post-content-4-1': 'Finalmente concluído! A parte central de "DAYDREAMS" está pronta, a sensação de superar o bloqueio é incrível!',
+                'post-content-4-2': 'Assim como o protagonista do jogo finalmente encontrou a saída e viu um novo mundo. Essa sensação é indescritível, apenas aqueles que a experimentaram entendem.',
+                'private-title': 'Diário Privado',
+                'private-subtitle': 'Monólogos internos que só eu posso ver',
+                'private-label': 'Privado',
+                'private-title-1': 'O Começo do Loop',
+                'private-date-1': 'Data Desconhecida',
+                'private-content-1-1': 'Que dia é hoje? O despertador toca pontualmente às 6h. As cortinas se abrem automaticamente, a luz do sol brilhando em um ângulo eternamente inalterado no tapete branco puro, formando um trapézio afiado.',
+                'private-content-1-2': 'Outro "hoje".',
+                'private-content-1-3': 'Lembro-me de ter desenhado uma marca de contagem na parede com uma caneta marcadora ontem. Agora a parede está limpa como nova, como se zombasse de meus esforços fúteis.',
+                'private-title-2': 'Café ou Suco de Laranja?',
+                'private-date-2': 'Data Desconhecida',
+                'private-content-2-1': 'Café, café de novo. Aquela voz vem pelo interfone, sempre com aquele tom, suave como IA: "Sr. Li, seu café."',
+                'private-content-2-2': 'Eu pedi suco de laranja hoje.',
+                'private-content-2-3': 'Corri até a porta e gritei no interfone: "Eu pedi suco de laranja! Não café!"',
+                'private-content-2-4': 'Após um breve silêncio, a voz soou novamente, sem uma única ondulação: "Ok, Sr. Li. Gostaria de uma recarga de café?"',
+                'private-content-2-5': 'Senti o sangue subir instantaneamente à minha cabeça.',
+                'private-title-3': 'SOS',
+                'private-date-3': 'Data Desconhecida',
+                'private-content-3-1': 'Não estou escrevendo um jogo.',
+                'private-content-3-2': 'Estou enviando um SOS.',
+                'private-content-3-3': 'Tentei escrever sobre minha situação nos comentários do código, sobre estas 24 horas fixas. Mas no dia seguinte, quando "hoje" começa novamente, esses comentários se tornam um monte de texto ilegível, ou... se transformam em frases elogiando a luta.',
+                'private-content-3-4': '"Devo encontrar a saída."',
+                'private-content-3-5': 'Esta frase foi escrita por mim. Mas ontem, significava escapar daqui. Hoje, ela está no meu documento como uma motivação barata.',
+                'private-content-3-6': 'Está adulterando meus pensamentos. Este quarto.',
+                'private-title-4': 'Gaiola',
+                'private-date-4': 'Data Desconhecida',
+                'private-content-4-1': 'Quebrei a janela. Com uma cadeira, com uma luminária de mesa, com toda a minha força. O dorso da minha mão foi cortado pelo vidro, sangrando muito. Mas aquela enorme janela floor-to-ceiling não se moveu, nem mesmo uma rachadura. Ela apenas refletia friamente meu rosto distorcido.',
+                'private-content-4-2': 'Na manhã seguinte às 6h, acordei. O dorso da minha mão estava liso como antes. A janela estava impecável.',
+                'private-content-4-3': 'Sentei-me na cama, olhando para aquele trapézio afiado de luz solar, e senti um medo que penetrou meus ossos pela primeira vez.',
+                'private-content-4-4': 'Isto não é um hotel.',
+                'private-content-4-5': 'Isto é uma gaiola viva.',
+                'private-title-5': 'Verdade',
+                'private-date-5': 'Data Desconhecida',
+                'private-content-5-1': 'Agora entendo.',
+                'private-content-5-2': 'Não precisa do meu código, nem do meu jogo.',
+                'private-content-5-3': 'Está "comendo" minhas emoções.',
+                'private-content-5-4': 'Cada vez que eu espremo um pouco de esperança de "devo escapar hoje" do desespero de acordar; cada vez que tento um novo método, pensando que encontrei uma pista, aquela alegria eufórica; e cada vez, quando um novo dia começa e todos os esforços são zerados, aquele colapso esmagador que pode moer uma pessoa até o pó.',
+                'private-content-5-5': 'Da esperança ao desespero, e então cavando nova esperança das cinzas do desespero.',
+                'private-content-5-6': 'Este ciclo é seu banquete.',
+                'private-content-5-7': 'Minha luta é sua iguaria.',
+                'private-content-5-8': 'Meu sonho diurno... é sua sobremesa favorita.',
+                'private-title-6': 'Último Recurso',
+                'private-date-6': 'Data Desconhecida',
+                'private-content-6-1': 'Não posso mais tentar escapar. Isso só o deixará mais satisfeito.',
+                'private-content-6-2': 'Preciso mudar minha abordagem.',
+                'private-content-6-3': 'Não posso quebrar o ciclo, mas talvez... posso deixar um "vírus" no ciclo. Uma informação que ele não pode facilmente digerir e adulterar. Um aviso para a próxima pessoa que entrar neste sistema.',
+                'private-content-6-4': 'Vou comprimir toda a minha consciência, minha história inteira, codificá-la, disfarçá-la como um módulo aparentemente inofensivo e incorporá-lo no nível mais baixo deste sistema de "quarto". Um... erro fatal.',
+                'private-content-6-5': 'Está devorando minha história, então farei com que minha história seja o veneno que o engasga.',
+                'private-content-6-6': 'Este é meu último sonho.',
+                'private-content-6-7': 'Se alguém puder ver esta mensagem. Lembre-se, não acredite em nada que você vê. Este hotel, este quarto, ele lhe dará as mais belas ilusões, e então...',
+                'about-title': 'Sobre Mim',
+                'about-content': 'Desenvolvedor independente de jogos, focando na criação de jogos narrativos. Atualmente desenvolvendo "DAYDREAMS", um jogo de exploração sobre loops e saídas.',
+                'projects-title': 'Projetos',
+                'project-1': '"DAYDREAMS" - Em Desenvolvimento',
+                'project-2': '"Fragmentos de Loop" - Concluído',
+                'project-3': '"Labirinto de Memória" - Concluído',
+                'categories-title': 'Categorias',
+                'category-1': 'Desenvolvimento de Jogos',
+                'category-2': 'Notas de Programação',
+                'category-3': 'Ensaios de Vida',
+                'category-4': 'Notas de Leitura',
+                'tag-game': 'Desenvolvimento de Jogos',
+                'tag-inspiration': 'Inspiração',
+                'tag-progress': 'Atualização de Progresso',
+                'tag-breakthrough': 'Avanço',
+                'tag-completion': 'Marco',
+                'footer-text': '© 2025 Blog Pessoal de Li Wenxuan. Todos os direitos reservados.'
+            }
+        };
+
+        // 当前语言
+        let currentLanguage = 'zh-CN';
+
+        // 登录功能
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+            
+            if (username === 'daydreams' && password === '13812345678') {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('blog-page').style.display = 'block';
+                setActiveNav('nav-blog');
+             } else if (username === 'more' && password === '694251') {
+                                       // 跳转到指定页面
+                                       window.location.href = '302个人博客.html';
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        // 语言切换功能
+        document.getElementById('language-select').addEventListener('change', function(e) {
+            currentLanguage = e.target.value;
+            translatePage(currentLanguage);
+        });
+
+        document.getElementById('private-language-select').addEventListener('change', function(e) {
+            currentLanguage = e.target.value;
+            translatePage(currentLanguage);
+        });
+
+        // 页面切换功能
+        document.getElementById('nav-private').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('blog-page').style.display = 'none';
+            document.getElementById('private-page').style.display = 'block';
+            setActiveNav('nav-private');
+        });
+
+        document.getElementById('nav-back-blog').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('private-page').style.display = 'none';
+            document.getElementById('blog-page').style.display = 'block';
+            setActiveNav('nav-blog');
+        });
+
+        // 设置活动导航
+        function setActiveNav(navId) {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(navId).classList.add('active');
+        }
+
+        // 翻译页面
+        function translatePage(language) {
+            const elements = document.querySelectorAll('[data-key]');
+            
+            elements.forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[language] && translations[language][key]) {
+                    if (element.tagName === 'INPUT' && element.type === 'text') {
+                        element.placeholder = translations[language][key];
+                    } else {
+                        element.textContent = translations[language][key];
+                    }
+                }
+            });
+            
+            // 更新语言选择器
+            document.getElementById('language-select').value = language;
+            document.getElementById('private-language-select').value = language;
+        }
+    </script>
+</body>
+</html>

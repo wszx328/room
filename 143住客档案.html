@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 住客档案 - 周明哲</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .hidden-note {
+        color: transparent;
+        background-color: transparent;
+        user-select: text;
+      }
+      .hidden-note::selection {
+        color: white;
+        background-color: #8A6BBE;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M内部系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 内部系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">尹力</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 周明哲住客档案详情 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">住客档案详情</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 143 - <span data-i18n="guest.name">周明哲</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="guest.checkIn">入住</span>: 2025-11-15 | <span data-i18n="guest.checkOut">退房</span>: 2025-11-22
+            </div>
+          </div>
+          
+          <!-- 住客档案 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.profile">住客档案</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.fullName">姓名：周明哲</li>
+              <li data-i18n="guest.gender">性别：男</li>
+              <li data-i18n="guest.age">年龄：30</li>
+              <li data-i18n="guest.idNumber">身份证号：181113199505070143</li>
+              <li data-i18n="guest.contact">联系方式：13512345678</li>
+              <li data-i18n="guest.emergencyContact">紧急联系人：无（系统标注「曾填写『吴建宏』，后被删除」）</li>
+              <li data-i18n="guest.bookingSource">入住来源：通过邮件预订，预定邮箱zhoumingzhe@143.com</li>
+              <li data-i18n="guest.roomType">房间类型：标准客房</li>
+            </ul>
+            <!-- 隐藏的管理员备注 -->
+            <div class="mt-4 text-xs text-gray-500">
+              <span class="hidden-note" data-i18n="guest.hiddenNote">「A级食材，执念浓度8.7，需补充『信任幻觉』催化剂」</span>
+            </div>
+          </div>
+          
+          <!-- 住客背景 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.background">住客背景</h4>
+            <p class="text-gray-300" data-i18n="guest.backgroundContent">
+              周明哲，前调查记者，曾因揭露黑产而声名鹊起。数年前因合伙人背叛导致调查失败，事业受挫，从此一蹶不振，陷入酗酒和抑郁状态。入住酒店前处于人生低谷期，无稳定工作，社交关系疏离。
+            </p>
+          </div>
+          
+          <!-- 入住观察 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.observations">入住观察</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.observation1">入住初期：情绪低落，酗酒严重，房间内常有空酒瓶，拒绝客房服务</li>
+              <li data-i18n="guest.observation2">入住中期：精神状态明显改善，开始整理个人形象，订购鲜花和双人晚餐</li>
+              <li data-i18n="guest.observation3">入住后期：积极向上，重新开始商业规划，房间内出现大量商业书籍和手写笔记</li>
+            </ul>
+          </div>
+          
+          <!-- 服务记录 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.services">服务记录</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.service1">每日鲜花配送（白玫瑰）</li>
+              <li data-i18n="guest.service2">双人晚餐服务（菲力牛排、焗龙虾、勃艮第红酒）</li>
+              <li data-i18n="guest.service3">高品质稿纸和钢笔供应</li>
+              <li data-i18n="guest.service4">商业管理类书籍借阅</li>
+            </ul>
+          </div>
+          
+          <!-- 备注 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.remarks">备注</h4>
+            <p class="text-gray-300" data-i18n="guest.remarksContent">
+              周先生在酒店期间经历了显著的个人转变。从最初的颓废状态，到后期重新燃起对生活和事业的热情。这种转变似乎与他在酒店邂逅的一位神秘女性有关，尽管我们无法确认这位女性的身份。周先生离开时精神状态良好，对未来充满信心。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">内部系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': '住客档案详情',
+        'guest.name': '周明哲',
+        'guest.checkIn': '入住',
+        'guest.checkOut': '退房',
+        'guest.profile': '住客档案',
+        'guest.fullName': '姓名：周明哲',
+        'guest.gender': '性别：男',
+        'guest.age': '年龄：30',
+        'guest.idNumber': '身份证号：181113199505070143',
+        'guest.contact': '联系方式：13512345678',
+        'guest.emergencyContact': '紧急联系人：无（系统标注「曾填写『吴建宏』，后被删除」）',
+        'guest.bookingSource': '入住来源：通过邮件预订，预定邮箱zhoumingzhe@143.com',
+        'guest.roomType': '房间类型：标准客房',
+        'guest.hiddenNote': '「A级食材，执念浓度8.7，需补充『信任幻觉』催化剂」',
+        'guest.background': '住客背景',
+        'guest.backgroundContent': '周明哲，前调查记者，曾因揭露黑产而声名鹊起。数年前因合伙人背叛导致调查失败，事业受挫，从此一蹶不振，陷入酗酒和抑郁状态。入住酒店前处于人生低谷期，无稳定工作，社交关系疏离。',
+        'guest.observations': '入住观察',
+        'guest.observation1': '入住初期：情绪低落，酗酒严重，房间内常有空酒瓶，拒绝客房服务',
+        'guest.observation2': '入住中期：精神状态明显改善，开始整理个人形象，订购鲜花和双人晚餐',
+        'guest.observation3': '入住后期：积极向上，重新开始商业规划，房间内出现大量商业书籍和手写笔记',
+        'guest.services': '服务记录',
+        'guest.service1': '每日鲜花配送（白玫瑰）',
+        'guest.service2': '双人晚餐服务（菲力牛排、焗龙虾、勃艮第红酒）',
+        'guest.service3': '高品质稿纸和钢笔供应',
+        'guest.service4': '商业管理类书籍借阅',
+        'guest.remarks': '备注',
+        'guest.remarksContent': '周先生在酒店期间经历了显著的个人转变。从最初的颓废状态，到后期重新燃起对生活和事业的热情。这种转变似乎与他在酒店邂逅的一位神秘女性有关，尽管我们无法确认这位女性的身份。周先生离开时精神状态良好，对未来充满信心。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '内部系统',
+        'footer.confidential': '仅供内部使用 - 保密级别：高级',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'Guest Profile Details',
+        'guest.name': 'Zhou Mingzhe',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'guest.profile': 'Guest Profile',
+        'guest.fullName': 'Name: Zhou Mingzhe',
+        'guest.gender': 'Gender: Male',
+        'guest.age': 'Age: 30',
+        'guest.idNumber': 'ID Number: 181113199505070143',
+        'guest.contact': 'Contact: 13512345678',
+        'guest.emergencyContact': 'Emergency Contact: None (System note: "Previously filled in \'Wu Jianhong\', later deleted")',
+        'guest.bookingSource': 'Booking Source: Booked via email, booking email zhoumingzhe@143.com',
+        'guest.roomType': 'Room Type: Standard Room',
+        'guest.hiddenNote': '「Grade A ingredient, obsession concentration 8.7, requires supplement of \'trust illusion\' catalyst」',
+        'guest.background': 'Guest Background',
+        'guest.backgroundContent': 'Zhou Mingzhe, former investigative journalist, once gained fame for exposing black industries. A few years ago, due to betrayal by his partner, his investigation failed and his career suffered a setback, leading to a state of depression and alcoholism. Before checking into the hotel, he was at a low point in his life, without stable employment and with strained social relationships.',
+        'guest.observations': 'Observation During Stay',
+        'guest.observation1': 'Early stay: Depressed mood, severe alcoholism, frequent empty liquor bottles in room, refused room service',
+        'guest.observation2': 'Mid-stay: Significant improvement in mental state, began personal grooming, ordered flowers and dinners for two',
+        'guest.observation3': 'Late stay: Positive attitude, resumed business planning, numerous business books and handwritten notes appeared in room',
+        'guest.services': 'Service Records',
+        'guest.service1': 'Daily flower delivery (white roses)',
+        'guest.service2': 'Dinner service for two (filet mignon, baked lobster, Burgundy wine)',
+        'guest.service3': 'Supply of high-quality writing paper and pens',
+        'guest.service4': 'Business management book borrowing',
+        'guest.remarks': 'Remarks',
+        'guest.remarksContent': 'Mr. Zhou experienced a significant personal transformation during his stay at the hotel. From an initial state of decadence to later reigniting his passion for life and career. This transformation seems to be related to a mysterious woman he encountered at the hotel, although we cannot confirm this woman\'s identity. Mr. Zhou left in good spirits and full of confidence for the future.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Internal System',
+        'footer.confidential': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': '宿泊客プロフィール詳細',
+        'guest.name': '周明哲',
+        'guest.checkIn': 'チェックイン',
+        'guest.checkOut': 'チェックアウト',
+        'guest.profile': '宿泊客プロフィール',
+        'guest.fullName': '氏名：周明哲',
+        'guest.gender': '性別：男性',
+        'guest.age': '年齢：30',
+        'guest.idNumber': '身分証明書番号：181113199505070143',
+        'guest.contact': '連絡先：13512345678',
+        'guest.emergencyContact': '緊急連絡先：なし（システム注記：「以前は『呉建宏』と記入されていたが、後に削除された」）',
+        'guest.bookingSource': '予約元：メールで予約、予約メール zhoumingzhe@143.com',
+        'guest.roomType': '部屋タイプ：スタンダードルーム',
+        'guest.hiddenNote': '「A級食材、執着濃度8.7、「信頼幻想」触媒の補充が必要」',
+        'guest.background': '宿泊客背景',
+        'guest.backgroundContent': '周明哲、元調査ジャーナリスト、闇産業を暴露したことでかつて名声を得た。数年前、パートナーの裏切りにより調査が失敗し、キャリアが挫折、抑うつ状態とアルコール依存症に陥った。ホテルチェックイン前は人生のどん底にあり、安定した仕事がなく、社会的関係も希薄だった。',
+        'guest.observations': '宿泊中の観察',
+        'guest.observation1': '宿泊初期：気分が落ち込み、重度のアルコール依存症、部屋に空き瓶が頻繁にあり、ルームサービスを拒否',
+        'guest.observation2': '宿泊中期：精神状態が著しく改善、身だしなみを整え始め、花と2人分のディナーを注文',
+        'guest.observation3': '宿泊後期：積極的な態度、ビジネス計画を再開、部屋に多数のビジネス書籍と手書きメモが出現',
+        'guest.services': 'サービス記録',
+        'guest.service1': '毎日の花の配達（白バラ）',
+        'guest.service2': '2人用ディナーサービス（フィレミニョン、ロブスターのオーブン焼き、ブルゴーニュワイン）',
+        'guest.service3': '高品質の原稿用紙とペンの供給',
+        'guest.service4': 'ビジネス管理書籍の貸出',
+        'guest.remarks': '備考',
+        'guest.remarksContent': '周氏はホテル滞在中に著しい個人的変容を経験した。当初の退廃的な状態から、後に人生とキャリアへの情熱を再燃させた。この変容はホテルで出会った謎の女性と関係があるようだが、この女性の身元は確認できない。周氏は良好な精神状態で退去し、未来に自信を持っていた。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '内部システム',
+        'footer.confidential': '内部使用のみ - 機密レベル：高',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'Detalhes do Perfil do Hóspede',
+        'guest.name': 'Zhou Mingzhe',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'guest.profile': 'Perfil do Hóspede',
+        'guest.fullName': 'Nome: Zhou Mingzhe',
+        'guest.gender': 'Gênero: Masculino',
+        'guest.age': 'Idade: 30',
+        'guest.idNumber': 'Número do Documento: 181113199505070143',
+        'guest.contact': 'Contato: 13512345678',
+        'guest.emergencyContact': 'Contato de Emergência: Nenhum (Nota do sistema: "Previamente preenchido \'Wu Jianhong\', posteriormente deletado")',
+        'guest.bookingSource': 'Fonte da Reserva: Reservado por email, email de reserva zhoumingzhe@143.com',
+        'guest.roomType': 'Tipo de Quarto: Quarto Padrão',
+        'guest.hiddenNote': '「Ingrediente Grau A, concentração de obsessão 8.7, requer suplemento de catalisador de \'ilusão de confiança\'」',
+        'guest.background': 'Antecedentes do Hóspede',
+        'guest.backgroundContent': 'Zhou Mingzhe, ex-jornalista investigativo, uma vez ganhou fama por expor indústrias ilegais. Alguns anos atrás, devido à traição de seu parceiro, sua investigação falhou e sua carreira sofreu um revés, levando a um estado de depressão e alcoolismo. Antes de fazer check-in no hotel, ele estava em um ponto baixo na vida, sem emprego estável e com relacionamentos sociais tensos.',
+        'guest.observations': 'Observações Durante a Estadia',
+        'guest.observation1': 'Início da estadia: Humor deprimido, alcoolismo severo, garrafas de licor vazias frequentes no quarto, recusou serviço de quarto',
+        'guest.observation2': 'Meio da estadia: Melhora significativa no estado mental, começou a cuidar da aparência pessoal, pediu flores e jantares para dois',
+        'guest.observation3': 'Final da estadia: Atitude positiva, retomou o planejamento de negócios, numerosos livros de negócios e anotações manuscritas apareceram no quarto',
+        'guest.services': 'Registros de Serviço',
+        'guest.service1': 'Entrega diária de flores (rosas brancas)',
+        'guest.service2': 'Serviço de jantar para dois (filé mignon, lagosta assada, vinho da Borgonha)',
+        'guest.service3': 'Fornecimento de papel de escrita e canetas de alta qualidade',
+        'guest.service4': 'Empréstimo de livros de gestão empresarial',
+        'guest.remarks': 'Observações',
+        'guest.remarksContent': 'O Sr. Zhou experimentou uma transformação pessoal significativa durante sua estadia no hotel. De um estado inicial de decadência para depois reacender sua paixão pela vida e carreira. Esta transformação parece estar relacionada a uma mulher misteriosa que ele encontrou no hotel, embora não possamos confirmar a identidade desta mulher. O Sr. Zhou partiu de bom humor e cheio de confiança no futuro.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema Interno',
+        'footer.confidential': 'Uso Interno Apenas - Nível de Confidencialidade: Alto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        // 这里可以替换为您希望返回的页面
+        window.location.href = '玩家个人页面.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

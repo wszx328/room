@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R∞M酒店 - 1102号房</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Nanum+Pen+Script&family=Yomogi&family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Ma Shan Zheng', cursive;
+            background-color: #1a0a2a;
+            color: #e6d4ff;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(120, 50, 180, 0.2) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(150, 70, 220, 0.15) 0%, transparent 20%),
+                linear-gradient(to bottom, rgba(26, 10, 42, 0.9), rgba(42, 20, 70, 0.9));
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        /* 语言切换按钮 - 整合为下拉菜单 */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .lang-btn {
+            background-color: rgba(90, 40, 140, 0.8);
+            color: #d4c2ff;
+            border: 1px solid #a080d0;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 16px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 150px;
+            justify-content: space-between;
+        }
+        
+        .lang-btn:hover {
+            background-color: rgba(110, 60, 160, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.4);
+        }
+        
+        .lang-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: rgba(40, 20, 70, 0.95);
+            border: 1px solid #8a60c0;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: none;
+            overflow: hidden;
+            min-width: 150px;
+            margin-top: 5px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .lang-dropdown.show {
+            display: block;
+        }
+        
+        .lang-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-family: 'Ma Shan Zheng', cursive;
+            color: #d4c2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .lang-option:hover {
+            background-color: rgba(90, 45, 130, 0.9);
+        }
+        
+        .lang-option.active {
+            background-color: rgba(110, 60, 160, 0.9);
+            color: #fff;
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            background-color: rgba(40, 20, 70, 0.7);
+            border: 2px solid #6a40a0;
+            border-radius: 10px;
+            padding: 40px;
+            margin-top: 80px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 0 30px rgba(100, 60, 160, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .main-content::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, transparent, #a080d0, transparent);
+        }
+        
+        .scene-title {
+            text-align: center;
+            font-size: 28px;
+            color: #d0b0ff;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(160, 100, 220, 0.5);
+        }
+        
+        .scene-description {
+            font-size: 20px;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            color: #e6d4ff;
+            text-align: justify;
+        }
+        
+        .scene-description p {
+            margin-bottom: 20px;
+            text-indent: 2em;
+        }
+        
+        .items-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .item {
+            flex: 1;
+            min-width: 250px;
+            background-color: rgba(60, 30, 100, 0.6);
+            border: 1px solid #8a60c0;
+            border-radius: 8px;
+            padding: 25px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 180px;
+        }
+        
+        .item:hover {
+            background-color: rgba(80, 40, 130, 0.8);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .item-title {
+            font-size: 24px;
+            color: #d8c0ff;
+            margin-bottom: 15px;
+        }
+        
+        .item-desc {
+            font-size: 16px;
+            color: #c8b0e8;
+        }
+        
+        .riki-dialogue {
+            background-color: rgba(50, 25, 90, 0.8);
+            border-left: 5px solid #a080d0;
+            padding: 25px 50px;
+            margin: 40px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 22px;
+            line-height: 1.6;
+            color: #f0e0ff;
+            position: relative;
+            text-align: center;
+        }
+        
+        .riki-dialogue::before {
+            content: "“";
+            font-size: 60px;
+            color: #a080d0;
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            opacity: 0.5;
+        }
+        
+        .riki-dialogue::after {
+            content: "”";
+            font-size: 60px;
+            color: #a080d0;
+            position: absolute;
+            bottom: -20px;
+            right: 15px;
+            opacity: 0.5;
+        }
+        
+        /* 选项区域 */
+        .choices-container {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px dashed #8a60c0;
+        }
+        
+        .choices-title {
+            text-align: center;
+            font-size: 24px;
+            color: #e0c0ff;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+        
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .choice {
+            background-color: rgba(70, 35, 110, 0.7);
+            border: 2px solid #8a60c0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .choice:hover {
+            background-color: rgba(90, 45, 130, 0.9);
+            border-color: #a080d0;
+            transform: translateX(10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .choice:hover .choice-detail {
+            opacity: 1;
+            max-height: 100px;
+            margin-top: 15px;
+        }
+        
+        .choice-main {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        
+        .choice-text {
+            font-size: 22px;
+            color: #f0e0ff;
+            width: 100%;
+        }
+        
+        .choice-detail {
+            font-size: 18px;
+            color: #d8c0ff;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            padding-left: 20px;
+            border-left: 3px solid #a080d0;
+            margin-left: 0;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #6a40a0;
+            color: #a080d0;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        /* 语言特定的字体 */
+        body.lang-zh {
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        
+        body.lang-en {
+            font-family: 'Nanum Pen Script', cursive;
+        }
+        
+        body.lang-ja {
+            font-family: 'Yomogi', cursive;
+        }
+        
+        body.lang-pt {
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 30px;
+            }
+            
+            .scene-title {
+                font-size: 24px;
+            }
+            
+            .scene-description {
+                font-size: 18px;
+            }
+            
+            .riki-dialogue {
+                font-size: 20px;
+                padding: 20px 40px;
+            }
+            
+            .items-container {
+                flex-direction: column;
+            }
+            
+            .choice-text {
+                font-size: 20px;
+            }
+            
+            .choice-detail {
+                font-size: 16px;
+            }
+            
+            .language-switcher {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .lang-btn {
+                padding: 8px 15px;
+                font-size: 14px;
+                min-width: 130px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .main-content {
+                padding: 20px;
+                margin-top: 100px;
+            }
+            
+            .scene-title {
+                font-size: 20px;
+            }
+            
+            .scene-description {
+                font-size: 16px;
+            }
+            
+            .riki-dialogue {
+                font-size: 18px;
+                padding: 15px 30px;
+            }
+            
+            .choice-text {
+                font-size: 18px;
+            }
+            
+            .language-switcher {
+                top: 5px;
+                right: 5px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .pulse {
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(160, 100, 220, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(160, 100, 220, 0.8); }
+        }
+        
+        .glow {
+            animation: glow 2s infinite;
+        }
+    </style>
+</head>
+<body class="lang-zh">
+    <div class="container">
+        <!-- 语言切换按钮 - 整合为下拉菜单 -->
+        <div class="language-switcher">
+            <button class="lang-btn" id="langBtn">
+                <span id="currentLangText">中文</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="lang-dropdown" id="langDropdown">
+                <div class="lang-option active" data-lang="zh">
+                    <span>简体中文</span>
+                </div>
+                <div class="lang-option" data-lang="en">
+                    <span>English</span>
+                </div>
+                <div class="lang-option" data-lang="ja">
+                    <span>日本語</span>
+                </div>
+                <div class="lang-option" data-lang="pt">
+                    <span>Português</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容 -->
+        <div class="main-content fade-in">
+            <h1 class="scene-title" id="sceneTitle">1102号房 - 最后的抉择</h1>
+            
+            <div class="scene-description" id="sceneDescription">
+                <p>当你来到1102号房，看到RIKI坐在一张老式的木桌旁，桌上摆着三样东西：</p>
+            </div>
+            
+            <div class="items-container">
+                <div class="item pulse">
+                    <div class="item-title" id="item1Title">一份契约书</div>
+                    <div class="item-desc" id="item1Desc">泛着微弱的暗红色光芒</div>
+                </div>
+                
+                <div class="item pulse">
+                    <div class="item-title" id="item2Title">一把手术刀</div>
+                    <div class="item-desc" id="item2Desc">刀刃上刻满了古老的符文</div>
+                </div>
+                
+                <div class="item pulse">
+                    <div class="item-title" id="item3Title">一个U盘</div>
+                    <div class="item-desc" id="item3Desc">普通的黑色U盘，但插口处隐约有血迹</div>
+                </div>
+            </div>
+            
+            <div class="riki-dialogue glow" id="rikiDialogue">
+                "选吧。每个选择都有它的代价，但至少，你可以自己决定要付出什么。"
+            </div>
+            
+            <div class="choices-container">
+                <div class="choices-title" id="choicesTitle">你的选择</div>
+                
+                <div class="choices">
+                    <a href="契约.html" target="_self" class="choice" id="choice1">
+                        <div class="choice-main">
+                            <div class="choice-text" id="choice1Text">签署契约</div>
+                        </div>
+                        <div class="choice-detail" id="choice1Detail">接受诅咒，成为新的饲主，延续这个血腥的循环。</div>
+                    </a>
+                    
+                    <a href="手术刀.html" target="_self" class="choice" id="choice2">
+                        <div class="choice-main">
+                            <div class="choice-text" id="choice2Text">拿起手术刀</div>
+                        </div>
+                        <div class="choice-detail" id="choice2Detail">用自己的生命切断契约，让"情饕"陷入沉睡，但代价是你将成为最后的祭品。</div>
+                    </a>
+                    
+                    <a href="U盘.html" target="_self" class="choice" id="choice3">
+                        <div class="choice-main">
+                            <div class="choice-text" id="choice3Text">拿走U盘</div>
+                        </div>
+                        <div class="choice-detail" id="choice3Detail">将所有真相公之于众，摧毁酒店的隐秘性，但代价是无法预测的混乱。</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <div class="footer">
+            R∞M酒店 - 1102号房抉择 | 最后访问: <span id="currentDate">2025年12月1日</span>
+        </div>
+    </div>
+
+    <script>
+        // 多语言内容
+        const contentData = {
+            zh: {
+                sceneTitle: "1102号房 - 最后的抉择",
+                sceneDescription: "<p>当你来到1102号房，看到RIKI坐在一张老式的木桌旁，桌上摆着三样东西：</p>",
+                item1Title: "一份契约书",
+                item1Desc: "泛着微弱的暗红色光芒",
+                item2Title: "一把手术刀",
+                item2Desc: "刀刃上刻满了古老的符文",
+                item3Title: "一个U盘",
+                item3Desc: "普通的黑色U盘，但插口处隐约有血迹",
+                rikiDialogue: "\"选吧。每个选择都有它的代价，但至少，你可以自己决定要付出什么。\"",
+                choicesTitle: "你的选择",
+                choice1Text: "签署契约",
+                choice1Detail: "接受诅咒，成为新的饲主，延续这个血腥的循环。",
+                choice2Text: "拿起手术刀",
+                choice2Detail: "用自己的生命切断契约，让\"情饕\"陷入沉睡，但代价是你将成为最后的祭品。",
+                choice3Text: "拿走U盘",
+                choice3Detail: "将所有真相公之于众，摧毁酒店的隐秘性，但代价是无法预测的混乱。",
+                footerDate: "2025年12月1日",
+                langButtonText: "中文"
+            },
+            en: {
+                sceneTitle: "Room 1102 - The Final Choice",
+                sceneDescription: "<p>When you arrive at Room 1102, you see RIKI sitting at an old wooden table. On the table are three items:</p>",
+                item1Title: "A Contract",
+                item1Desc: "Emitting a faint dark red glow",
+                item2Title: "A Scalpel",
+                item2Desc: "The blade is engraved with ancient runes",
+                item3Title: "A USB Drive",
+                item3Desc: "An ordinary black USB drive, but with faint bloodstains near the port",
+                rikiDialogue: "\"Choose. Each choice has its price, but at least you can decide what to pay.\"",
+                choicesTitle: "Your Choice",
+                choice1Text: "Sign the Contract",
+                choice1Detail: "Accept the curse, become the new keeper, continue this bloody cycle.",
+                choice2Text: "Take the Scalpel",
+                choice2Detail: "Use your own life to sever the contract, putting the 'Emotional Devourer' to sleep, but the price is becoming the final sacrifice.",
+                choice3Text: "Take the USB Drive",
+                choice3Detail: "Expose all truths to the world, destroy the hotel's secrecy, but the price is unpredictable chaos.",
+                footerDate: "December 1, 2025",
+                langButtonText: "English"
+            },
+            ja: {
+                sceneTitle: "1102号室 - 最後の選択",
+                sceneDescription: "<p>1102号室に来ると、RIKIが古い木製のテーブルに座っているのが見えます。テーブルの上には3つのアイテムがあります：</p>",
+                item1Title: "契約書",
+                item1Desc: "かすかな暗赤色の光を放っている",
+                item2Title: "手術刀",
+                item2Desc: "刃には古代のルーン文字が刻まれている",
+                item3Title: "USBドライブ",
+                item3Desc: "普通の黒いUSBドライブだが、ポート付近に薄く血痕がある",
+                rikiDialogue: "\"選べ。それぞれの選択には代価があるが、少なくとも何を支払うかは自分で決められる。\"",
+                choicesTitle: "あなたの選択",
+                choice1Text: "契約に署名する",
+                choice1Detail: "呪いを受け入れ、新たな飼い主となり、この血なまぐさい循環を続ける。",
+                choice2Text: "手術刀を取る",
+                choice2Detail: "自分の命を使って契約を断ち切り、「情饕」を眠りにつかせるが、代償はあなたが最後の生贄となること。",
+                choice3Text: "USBドライブを取る",
+                choice3Detail: "全ての真実を世間に公表し、ホテルの秘密性を破壊するが、代償は予測不可能な混乱。",
+                footerDate: "2025年12月1日",
+                langButtonText: "日本語"
+            },
+            pt: {
+                sceneTitle: "Quarto 1102 - A Escolha Final",
+                sceneDescription: "<p>Quando você chega ao Quarto 1102, vê RIKI sentado a uma velha mesa de madeira. Sobre a mesa estão três itens:</p>",
+                item1Title: "Um Contrato",
+                item1Desc: "Emitindo um brilho vermelho escuro fraco",
+                item2Title: "Um Bisturi",
+                item2Desc: "A lâmina está gravada com runas antigas",
+                item3Title: "Um Pen Drive",
+                item3Desc: "Um pen drive preto comum, mas com manchas de sangue fracas perto da porta",
+                rikiDialogue: "\"Escolha. Cada escolha tem seu preço, mas pelo menos você pode decidir o que pagar.\"",
+                choicesTitle: "Sua Escolha",
+                choice1Text: "Assinar o Contrato",
+                choice1Detail: "Aceite a maldição, torne-se o novo guardião, continue este ciclo sangrento.",
+                choice2Text: "Pegar o Bisturi",
+                choice2Detail: "Use sua própria vida para cortar o contrato, colocando o 'Devorador Emocional' para dormir, mas o preço é se tornar o sacrifício final.",
+                choice3Text: "Pegar o Pen Drive",
+                choice3Detail: "Exponha todas as verdades ao mundo, destrua o sigilo do hotel, mas o preço é o caos imprevisível.",
+                footerDate: "1 de dezembro de 2025",
+                langButtonText: "Português"
+            }
+        };
+
+        // 初始化变量
+        let currentLanguage = 'zh';
+
+        // DOM元素
+        const langBtn = document.getElementById('langBtn');
+        const langDropdown = document.getElementById('langDropdown');
+        const currentLangText = document.getElementById('currentLangText');
+        const langOptions = document.querySelectorAll('.lang-option');
+        const body = document.body;
+        const currentDateSpan = document.getElementById('currentDate');
+
+        // 初始化页面
+        function initPage() {
+            // 更新当前日期
+            updateCurrentDate();
+            
+            // 设置语言按钮点击事件
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langDropdown.classList.toggle('show');
+            });
+            
+            // 设置语言选项点击事件
+            langOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const selectedLang = option.getAttribute('data-lang');
+                    switchLanguage(selectedLang);
+                });
+            });
+            
+            // 点击页面其他地方关闭语言下拉菜单
+            document.addEventListener('click', (e) => {
+                if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+                    langDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // 切换语言
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // 更新body的类以应用正确的字体
+            body.className = `lang-${lang}`;
+            
+            // 更新所有文本内容
+            updateContent();
+            
+            // 更新语言按钮文本
+            currentLangText.textContent = contentData[lang].langButtonText;
+            
+            // 更新语言选项状态
+            langOptions.forEach(option => {
+                if (option.getAttribute('data-lang') === lang) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            // 关闭下拉菜单
+            langDropdown.classList.remove('show');
+        }
+
+        // 更新所有文本内容
+        function updateContent() {
+            const data = contentData[currentLanguage];
+            
+            // 更新场景标题
+            document.getElementById('sceneTitle').textContent = data.sceneTitle;
+            
+            // 更新场景描述
+            document.getElementById('sceneDescription').innerHTML = data.sceneDescription;
+            
+            // 更新物品信息
+            document.getElementById('item1Title').textContent = data.item1Title;
+            document.getElementById('item1Desc').textContent = data.item1Desc;
+            document.getElementById('item2Title').textContent = data.item2Title;
+            document.getElementById('item2Desc').textContent = data.item2Desc;
+            document.getElementById('item3Title').textContent = data.item3Title;
+            document.getElementById('item3Desc').textContent = data.item3Desc;
+            
+            // 更新RIKI对话
+            document.getElementById('rikiDialogue').textContent = data.rikiDialogue;
+            
+            // 更新选择标题
+            document.getElementById('choicesTitle').textContent = data.choicesTitle;
+            
+            // 更新选项文本
+            document.getElementById('choice1Text').textContent = data.choice1Text;
+            document.getElementById('choice1Detail').textContent = data.choice1Detail;
+            document.getElementById('choice2Text').textContent = data.choice2Text;
+            document.getElementById('choice2Detail').textContent = data.choice2Detail;
+            document.getElementById('choice3Text').textContent = data.choice3Text;
+            document.getElementById('choice3Detail').textContent = data.choice3Detail;
+            
+            // 更新页脚日期
+            currentDateSpan.textContent = data.footerDate;
+        }
+
+        // 更新当前日期
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            
+            // 根据当前语言格式化日期
+            let formattedDate;
+            switch(currentLanguage) {
+                case 'zh':
+                    formattedDate = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
+                    break;
+                case 'en':
+                    formattedDate = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                    break;
+                case 'ja':
+                    formattedDate = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
+                    break;
+                case 'pt':
+                    formattedDate = now.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
+                    break;
+                default:
+                    formattedDate = now.toLocaleDateString();
+            }
+            
+            currentDateSpan.textContent = formattedDate;
+        }
+
+        // 初始化页面
+        initPage();
+    </script>
+</body>
+</html>

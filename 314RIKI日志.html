@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - RIKI工作日志</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      /* 保留所有原始CSS样式 */
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .security-level-high {
+        border-left: 4px solid #ff4444;
+        background: rgba(255, 68, 68, 0.1);
+      }
+      .security-level-medium {
+        border-left: 4px solid #D4AF37;
+        background: rgba(212, 175, 55, 0.1);
+      }
+      .log-entry {
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+      .log-entry:hover {
+        background: rgba(42, 27, 61, 0.9);
+        border-color: rgba(138, 107, 190, 0.6);
+      }
+      .log-title {
+        color: #D4AF37;
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(138, 107, 190, 0.3);
+        padding-bottom: 5px;
+      }
+      .log-date {
+        color: #8A6BBE;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+      }
+      .log-section {
+        margin-bottom: 15px;
+      }
+      .log-section-title {
+        color: #D4AF37;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .log-list {
+        list-style-type: disc;
+        margin-left: 20px;
+      }
+      .log-list-item {
+        margin-bottom: 5px;
+      }
+      .log-rating {
+        color: #44ff44;
+        font-weight: bold;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M饲主系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 饲主系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">RIKI</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- RIKI工作日志 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">R∞M 酒店 饲主工作日志</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-25</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 314 - <span data-i18n="log.summary">赵雨婷</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="log.status">记录状态</span>: <span class="text-success" data-i18n="log.completed">已归档（供继任者参考）</span>
+            </div>
+          </div>
+          
+          <!-- 工作日志条目 -->
+          <div class="log-entry">
+            <div class="log-title" data-i18n="log.title">主菜：痴迷的沉沦</div>
+            <div class="log-date" data-i18n="log.date">记录日期：献祭完成后 24 小时</div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.ingredient">一、食材基础信息</div>
+              <div class="text-gray-300" data-i18n="log.ingredientContent">
+                食材编号：No.665<br>
+                姓名：赵雨婷<br>
+                身份：前芭蕾舞演员<br>
+                核心执念：对舞蹈艺术病态的痴迷、因伤失去舞台的极致绝望、对"完美自我"的虚幻追寻<br>
+                情感浓度（初始）：8.5/10（痴迷占比70%，绝望占比30%；情感纯粹且具有强烈成瘾性，属于高价值食材）<br><br>
+                筛选逻辑：<br>
+                1. 创伤与执念的完美结合：右脚踝粉碎性骨折终结职业生涯，但心理上从未接受，执念强度持续攀升；<br>
+                2. 社交媒体监测显示其陷入重度抑郁与自杀倾向（评估分8.7），情绪处于崩溃临界点，易被"希望幻觉"俘获；<br>
+                3. 其"舞蹈"作为毕生追求，具备高度仪式感与感官性，与314号房"镜像幻象+感官沉浸"机制高度契合；<br>
+                4. 社会关系简单，失踪后关注度低，符合"低风险可控献祭"标准。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.process">二、献祭流程记录</div>
+              <ul class="log-list">
+                <li class="log-list-item text-gray-300" data-i18n="log.process1">
+                  <strong>阶段1：诱捕</strong><br>
+                  在其心理最低谷期（车祸康复后三个月），通过精准广告投放（"海边疗养，找回自我"）将酒店宣传册置入其邮箱；<br>
+                  目的：利用其"逃避现实"与"渴望重生"的矛盾心理，引导其主动寻求酒店的"庇护"；<br>
+                  结果：食材于11月16日入住，携带少量行李，神情疲惫但眼神中仍有未熄灭的火光，符合预期。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process2">
+                  <strong>阶段2：沉沦</strong><br>
+                  提供"私人舞蹈室"作为环境诱饵，布置专业器材与柔光氛围，唤醒其肌肉记忆与舞蹈本能；<br>
+                  通过每日特制巧克力（含神经兴奋剂与痛觉抑制剂）逐步降低其身体痛觉反馈，营造"可以再次跳舞"的虚假希望；<br>
+                  目的：让其在生理与心理上建立对房间环境的依赖，将"舞蹈"与"甜蜜幻觉"绑定；<br>
+                  监测结果：食材从第2天开始恢复练习，脚踝伤势因药物掩盖被忽略，痴迷浓度迅速提升至75%。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process3">
+                  <strong>阶段3：催化</strong><br>
+                  启动"镜像投射系统"，读取其深层记忆中的"完美舞伴"形象，在镜子中生成与之共舞的完整幻象；<br>
+                  同步调控房间温湿度、灯光及经过次声波处理的古典音乐，全面强化沉浸体验；<br>
+                  目的：用完美的幻觉满足其终极渴望，使其彻底割裂与现实世界的连接；<br>
+                  监测结果：食材从第5晚开始与幻象互动，情绪从绝望转为狂喜，依赖浓度升至60%，日均睡眠时间降至不足3小时。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process4">
+                  <strong>阶段4：提纯</strong><br>
+                  逐步增加巧克力中致幻成分的剂量，使其在舞蹈中体验越来越强烈的"巅峰快感"；<br>
+                  幻象引导其挑战伤前都无法完成的极限动作，并在"成功"时给予即时的"甜蜜反馈"；<br>
+                  目的：让"虚幻的完美"与"身体的真实"形成不可调和的撕裂，在极致愉悦中提纯其痴迷的纯粹度；<br>
+                  监测结果：食材完全停止正常进食，仅靠巧克力维持，脚踝出现不可逆损伤但浑然不觉。情感浓度于第7天夜间达到峰值9.3/10。
+                </li>
+                <li class="log-list-item text-gray-300" data-i18n="log.process5">
+                  <strong>阶段5：献祭（延迟模式）</strong><br>
+                  原计划于11月22日其舞蹈巅峰时启动收割程序，但监测发现其潜意识中因母亲短信残留一丝现实牵挂，痴迷纯度未达完美标准；<br>
+                  临时决策：中止当场献祭，改为"延迟献祭"方案——让其退房回归现实；<br>
+                  过程：在其背包中放入最后三颗特制巧克力，确保其回归后仍能维持短暂幻觉。当现实与虚幻的落差达到最大，戒断反应最剧烈时，诱导其自我完成献祭；<br>
+                  结果：食材退房一周后，于公司天台以芭蕾舞姿坠楼身亡。尸检报告显示其身体已被"糖毒"彻底侵蚀，在极乐中完成了对"情饕"的最终奉献。
+                </li>
+              </ul>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.evaluation">三、风味评估</div>
+              <div class="text-gray-300" data-i18n="log.evaluationContent">
+                整体评分：<span class="log-rating">9.7/10</span>（顶级主菜，风味纯粹度与戏剧性均达极致）<br><br>
+                风味解析：<br>
+                前调：芭蕾舞鞋的皮革香与血丝的微腥交织，优雅之下暗藏痛苦的基底，瞬间抓住情饕的注意力；<br>
+                中调：虚幻的甜蜜（巧克力）与清醒的痛苦（旧伤）形成剧烈反差，每一口都伴随着"得到即失去"的残酷回味，层次极为丰富；<br>
+                后调：自我献祭的决绝与虚无的余韵绵长，她在坠落瞬间仍保持Arabesque的完美姿态，将"痴迷"凝固成了永恒的艺术品，此风味为情饕所罕见且极为珍爱。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.aftermath">四、后续事件处理</div>
+              <div class="text-gray-300" data-i18n="log.aftermathContent">
+                事件背景：<br>
+                食材退房后第7日，于其任职的广告公司天台坠亡。警方介入调查，因其血液中检出未知化学成分及生前异常行为，曾对酒店进行例行问询。<br><br>
+                应对措施：<br>
+                1. 提供合规记录：出示完整的入住与退房记录（11月16日-11月23日），监控仅保留其正常出入、取餐片段，无任何异常。<br>
+                2. 标准话术应对：强调"客人在住期间专注于个人休养，情绪稳定，退房时表示满意"，并提及她多次感谢酒店提供的"安静环境"。<br>
+                3. 引导调查方向：暗示其可能因职业生涯终结的长期抑郁及身体疼痛而依赖非法药物（巧克力中的未知成分可被引导为"新型镇痛剂"），将焦点转移至其个人心理问题。<br><br>
+                风险评估<br>
+                风险等级：低（2/10）<br>
+                - 可控因素：食材的死亡最终被定性为自杀，社会关注迅速消退；酒店记录毫无破绽。<br>
+                - 潜在隐患：无。其母亲虽悲痛，但无追查能力与社会资源。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.conclusion">五、总结</div>
+              <div class="text-gray-300" data-i18n="log.conclusionContent">
+                314号房「痴迷的沉沦」献祭以意料之外的"延迟模式"完美收官。食材赵雨婷的核心特质——艺术家对完美的偏执、对失去身份认同的恐惧、以及将全部价值系于单一载体的脆弱性——被314号房的"糖衣陷阱"精准利用。<br><br>
+                整个流程的关键转折在于"放弃当场收割，选择放逐培育"。当发现食材的痴迷因一丝亲情羁绊而不够纯粹时，主动让她带着被"糖毒"侵蚀的身心回归现实。现实世界的平庸、疼痛的回归、幻觉的消散，三者共同作用，将她推向了比酒店内更极致的绝望。她最终在真实的天空下，以最仪式化的方式完成了自我献祭，其情感在那一刻达到了绝对纯粹。<br><br>
+                此案例应作为饲主的高级战略教材——理解"最高明的收割，有时是放手"。让食材在自身命运与酒店催化共同作用下，主动走向终局，其产出的风味往往超越机械流程的产物。
+              </div>
+            </div>
+            
+            <div class="log-section">
+              <div class="log-section-title" data-i18n="log.note">六、饲主笔记</div>
+              <div class="text-gray-300" data-i18n="log.noteContent">
+                注意"艺术家"类别食材的极高价值与风险。他们的情感强烈、纯粹且富有美感，但往往也更为敏感脆弱。需精确控制"甜蜜幻觉"的剂量与节奏，稍有不慎可能导致食材提前崩溃（情感泄露）或产生抗性（风味下降）。建议后续可重点关注其他因伤退役的运动员、艺术家，其情感模板与本案例高度相似。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">饲主系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供饲主使用 - 保密级别：绝密</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': 'R∞M 酒店 饲主工作日志',
+        'log.summary': '赵雨婷',
+        'log.status': '记录状态',
+        'log.completed': '已归档（供继任者参考）',
+        'log.title': '主菜：痴迷的沉沦',
+        'log.date': '记录日期：献祭完成后 24 小时',
+        'log.ingredient': '一、食材基础信息',
+        'log.ingredientContent': '食材编号：No.665<br>姓名：赵雨婷<br>身份：前芭蕾舞演员<br>核心执念：对舞蹈艺术病态的痴迷、因伤失去舞台的极致绝望、对"完美自我"的虚幻追寻<br>情感浓度（初始）：8.5/10（痴迷占比70%，绝望占比30%；情感纯粹且具有强烈成瘾性，属于高价值食材）<br><br>筛选逻辑：<br>1. 创伤与执念的完美结合：右脚踝粉碎性骨折终结职业生涯，但心理上从未接受，执念强度持续攀升；<br>2. 社交媒体监测显示其陷入重度抑郁与自杀倾向（评估分8.7），情绪处于崩溃临界点，易被"希望幻觉"俘获；<br>3. 其"舞蹈"作为毕生追求，具备高度仪式感与感官性，与314号房"镜像幻象+感官沉浸"机制高度契合；<br>4. 社会关系简单，失踪后关注度低，符合"低风险可控献祭"标准。',
+        'log.process': '二、献祭流程记录',
+        'log.process1': '<strong>阶段1：诱捕</strong><br>在其心理最低谷期（车祸康复后三个月），通过精准广告投放（"海边疗养，找回自我"）将酒店宣传册置入其邮箱；<br>目的：利用其"逃避现实"与"渴望重生"的矛盾心理，引导其主动寻求酒店的"庇护"；<br>结果：食材于11月16日入住，携带少量行李，神情疲惫但眼神中仍有未熄灭的火光，符合预期。',
+        'log.process2': '<strong>阶段2：沉沦</strong><br>提供"私人舞蹈室"作为环境诱饵，布置专业器材与柔光氛围，唤醒其肌肉记忆与舞蹈本能；<br>通过每日特制巧克力（含神经兴奋剂与痛觉抑制剂）逐步降低其身体痛觉反馈，营造"可以再次跳舞"的虚假希望；<br>目的：让其在生理与心理上建立对房间环境的依赖，将"舞蹈"与"甜蜜幻觉"绑定；<br>监测结果：食材从第2天开始恢复练习，脚踝伤势因药物掩盖被忽略，痴迷浓度迅速提升至75%。',
+        'log.process3': '<strong>阶段3：催化</strong><br>启动"镜像投射系统"，读取其深层记忆中的"完美舞伴"形象，在镜子中生成与之共舞的完整幻象；<br>同步调控房间温湿度、灯光及经过次声波处理的古典音乐，全面强化沉浸体验；<br>目的：用完美的幻觉满足其终极渴望，使其彻底割裂与现实世界的连接；<br>监测结果：食材从第5晚开始与幻象互动，情绪从绝望转为狂喜，依赖浓度升至60%，日均睡眠时间降至不足3小时。',
+        'log.process4': '<strong>阶段4：提纯</strong><br>逐步增加巧克力中致幻成分的剂量，使其在舞蹈中体验越来越强烈的"巅峰快感"；<br>幻象引导其挑战伤前都无法完成的极限动作，并在"成功"时给予即时的"甜蜜反馈"；<br>目的：让"虚幻的完美"与"身体的真实"形成不可调和的撕裂，在极致愉悦中提纯其痴迷的纯粹度；<br>监测结果：食材完全停止正常进食，仅靠巧克力维持，脚踝出现不可逆损伤但浑然不觉。情感浓度于第7天夜间达到峰值9.3/10。',
+        'log.process5': '<strong>阶段5：献祭（延迟模式）</strong><br>原计划于11月22日其舞蹈巅峰时启动收割程序，但监测发现其潜意识中因母亲<a href="314微信.html" target="_blank" class="text-accent hover:underline">短信</a>残留一丝现实牵挂，痴迷纯度未达完美标准；<br>临时决策：中止当场献祭，改为"延迟献祭"方案——让其退房回归现实；<br>过程：在其背包中放入最后三颗特制巧克力，确保其回归后仍能维持短暂幻觉。当现实与虚幻的落差达到最大，戒断反应最剧烈时，诱导其自我完成献祭；<br>结果：食材退房一周后，于公司天台以芭蕾舞姿坠楼身亡。尸检报告显示其身体已被"糖毒"彻底侵蚀，在极乐中完成了对"情饕"的最终奉献。',
+        'log.evaluation': '三、风味评估',
+        'log.evaluationContent': '整体评分：<span class="log-rating">9.7/10</span>（顶级主菜，风味纯粹度与戏剧性均达极致）<br><br>风味解析：<br>前调：芭蕾舞鞋的皮革香与血丝的微腥交织，优雅之下暗藏痛苦的基底，瞬间抓住情饕的注意力；<br>中调：虚幻的甜蜜（巧克力）与清醒的痛苦（旧伤）形成剧烈反差，每一口都伴随着"得到即失去"的残酷回味，层次极为丰富；<br>后调：自我献祭的决绝与虚无的余韵绵长，她在坠落瞬间仍保持Arabesque的完美姿态，将"痴迷"凝固成了永恒的艺术品，此风味为情饕所罕见且极为珍爱。',
+        'log.aftermath': '四、后续事件处理',
+        'log.aftermathContent': '事件背景：<br>食材退房后第7日，于其任职的广告公司天台坠亡。警方介入调查，因其血液中检出未知化学成分及生前异常行为，曾对酒店进行例行问询。<br><br>应对措施：<br>1. 提供合规记录：出示完整的入住与退房记录（11月16日-11月23日），监控仅保留其正常出入、取餐片段，无任何异常。<br>2. 标准话术应对：强调"客人在住期间专注于个人休养，情绪稳定，退房时表示满意"，并提及她多次感谢酒店提供的"安静环境"。<br>3. 引导调查方向：暗示其可能因职业生涯终结的长期抑郁及身体疼痛而依赖非法药物（巧克力中的未知成分可被引导为"新型镇痛剂"），将焦点转移至其个人心理问题。<br><br>风险评估<br>风险等级：低（2/10）<br>- 可控因素：食材的死亡最终被定性为自杀，社会关注迅速消退；酒店记录毫无破绽。<br>- 潜在隐患：无。其母亲虽悲痛，但无追查能力与社会资源。',
+        'log.conclusion': '五、总结',
+        'log.conclusionContent': '314号房「痴迷的沉沦」献祭以意料之外的"延迟模式"完美收官。食材赵雨婷的核心特质——艺术家对完美的偏执、对失去身份认同的恐惧、以及将全部价值系于单一载体的脆弱性——被314号房的"糖衣陷阱"精准利用。<br><br>整个流程的关键转折在于"放弃当场收割，选择放逐培育"。当发现食材的痴迷因一丝亲情羁绊而不够纯粹时，主动让她带着被"糖毒"侵蚀的身心回归现实。现实世界的平庸、疼痛的回归、幻觉的消散，三者共同作用，将她推向了比酒店内更极致的绝望。她最终在真实的天空下，以最仪式化的方式完成了自我献祭，其情感在那一刻达到了绝对纯粹。<br><br>此案例应作为饲主的高级战略教材——理解"最高明的收割，有时是放手"。让食材在自身命运与酒店催化共同作用下，主动走向终局，其产出的风味往往超越机械流程的产物。',
+        'log.note': '六、饲主笔记',
+        'log.noteContent': '注意"艺术家"类别食材的极高价值与风险。他们的情感强烈、纯粹且富有美感，但往往也更为敏感脆弱。需精确控制"甜蜜幻觉"的剂量与节奏，稍有不慎可能导致食材提前崩溃（情感泄露）或产生抗性（风味下降）。建议后续可重点关注其他因伤退役的运动员、艺术家，其情感模板与本案例高度相似。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '饲主系统',
+        'footer.confidential': '仅供饲主使用 - 保密级别：绝密',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'R∞M Hotel Feeder Work Log',
+        'log.summary': 'Zhao Yuting',
+        'log.status': 'Record Status',
+        'log.completed': 'Archived (For Successor Reference)',
+        'log.title': 'Main Course: Obsessive Descent',
+        'log.date': 'Record Date: 24 Hours After Sacrifice Completion',
+        'log.ingredient': 'I. Ingredient Basic Information',
+        'log.ingredientContent': 'Ingredient No.: No.665<br>Name: Zhao Yuting<br>Identity: Former Ballet Dancer<br>Core Obsession: Pathological obsession with dance art, extreme despair from losing the stage due to injury, illusory pursuit of the "perfect self"<br>Emotional Concentration (Initial): 8.5/10 (Obsession 70%, Despair 30%; Emotionally pure with strong addictiveness, high-value ingredient)<br><br>Screening Logic:<br>1. Perfect combination of trauma and obsession: Right ankle comminuted fracture ended career, but psychologically never accepted, obsession intensity continuously escalating;<br>2. Social media monitoring shows severe depression and suicidal tendencies (assessment score 8.7), emotional state at breaking point, easily captured by "illusion of hope";<br>3. Her "dance" as lifelong pursuit possesses high ritual and sensory qualities, highly compatible with Room 314 "mirror illusion + sensory immersion" mechanism;<br>4. Simple social relationships, low attention after disappearance, meeting "low-risk controllable sacrifice" criteria.',
+        'log.process': 'II. Sacrifice Process Record',
+        'log.process1': '<strong>Stage 1: Trapping</strong><br>During her psychological lowest point (three months after car accident recovery), placed hotel brochure in her mailbox through targeted advertising ("Seaside recuperation, rediscover yourself");<br>Purpose: Utilize contradictory psychology of "escaping reality" and "longing for rebirth" to guide active seeking of hotel "sanctuary";<br>Result: Ingredient checked in on November 16th, carrying minimal luggage, appearing exhausted but with unextinguished fire in eyes, meeting expectations.',
+        'log.process2': '<strong>Stage 2: Descent</strong><br>Provided "private dance studio" as environmental bait, arranged professional equipment and soft lighting atmosphere, awakening muscle memory and dance instinct;<br>Through daily special chocolate (containing neural stimulants and pain inhibitors) gradually reducing physical pain feedback, creating false hope of "being able to dance again";<br>Purpose: Establish physiological and psychological dependence on room environment, binding "dance" with "sweet illusion";<br>Monitoring Result: Ingredient resumed practice from Day 2, ankle injury ignored due to medication masking, obsession concentration rapidly increased to 75%.',
+        'log.process3': '<strong>Stage 3: Catalysis</strong><br>Activated "mirror projection system", read "perfect dance partner" image from deep memory, generating complete dancing illusion in mirror;<br>Synchronously regulated room temperature/humidity, lighting, and infrasound-processed classical music, comprehensively enhancing immersive experience;<br>Purpose: Satisfy ultimate longing with perfect illusion, completely severing connection with real world;<br>Monitoring Result: Ingredient began interacting with illusion from Night 5, emotions shifted from despair to ecstasy, dependence concentration rose to 60%, average daily sleep time reduced to under 3 hours.',
+        'log.process4': '<strong>Stage 4: Purification</strong><br>Gradually increased hallucinogenic component dosage in chocolate, making her experience increasingly intense "peak pleasure" while dancing;<br>Illusion guided her to attempt extreme movements impossible even before injury, providing instant "sweet feedback" upon "success";<br>Purpose: Create irreconcilable tearing between "illusory perfection" and "physical reality", purifying obsession purity in extreme pleasure;<br>Monitoring Result: Ingredient completely stopped normal eating, sustained only by chocolate, ankle suffered irreversible damage but remained unaware. Emotional concentration peaked at 9.3/10 on Night 7.',
+        'log.process5': '<strong>Stage 5: Sacrifice (Delayed Mode)</strong><br>Originally planned to activate harvest program on November 22nd at her dance peak, but monitoring revealed subconscious residual real-world attachment due to mother\'s <a href="314微信.html" target="_blank" class="text-accent hover:underline">text message</a>, obsession purity not reaching perfect standard;<br>Temporary decision: Abort immediate sacrifice, switch to "delayed sacrifice" plan - letting her check out and return to reality;<br>Process: Placed final three special chocolates in her backpack, ensuring brief illusion maintenance after return. When reality-illusion disparity reached maximum and withdrawal symptoms most intense, induced self-completion of sacrifice;<br>Result: Ingredient fell from company rooftop in ballet pose one week after check-out. Autopsy showed body completely eroded by "sugar poison", completing final devotion to "Emotion Devourer" in ecstasy.',
+        'log.evaluation': 'III. Flavor Assessment',
+        'log.evaluationContent': 'Overall Rating: <span class="log-rating">9.7/10</span> (Top-tier main course, flavor purity and drama both reach extremes)<br><br>Flavor Analysis:<br>Initial: Leather scent of ballet shoes interwoven with slight metallic hint of blood, elegance concealing painful base, instantly capturing Emotion Devourer\'s attention;<br>Middle: Intense contrast between illusory sweetness (chocolate) and sober pain (old injury), each bite accompanied by cruel aftertaste of "gain equals loss", extremely rich layers;<br>Aftertaste: Resolute self-sacrifice and lingering虚无 aftertaste, she maintained perfect Arabesque pose during fall moment, solidifying "obsession" into eternal artwork, this flavor rare and highly cherished by Emotion Devourer.',
+        'log.aftermath': 'IV. Follow-up Incident Handling',
+        'log.aftermathContent': 'Incident Background:<br>Ingredient fell from company rooftop on Day 7 after check-out. Police investigation initiated due to unknown chemical components in blood and abnormal pre-death behavior, hotel received routine inquiry.<br><br>Response Measures:<br>1. Provide compliant records: Presented complete check-in/check-out records (November 16-23), surveillance only retained normal entry/exit and meal pickup segments, no abnormalities.<br>2. Standard response phrasing: Emphasized "guest focused on personal recuperation during stay, emotionally stable, expressed satisfaction upon check-out", mentioned her repeatedly thanking hotel for "quiet environment".<br>3. Guide investigation direction: Hinted at possible illegal drug dependence due to long-term depression from career end and physical pain (unknown chocolate components could be guided as "new analgesic"), shifting focus to personal psychological issues.<br><br>Risk Assessment<br>Risk Level: Low (2/10)<br>- Controllable factors: Ingredient\'s death ultimately classified as suicide, social attention quickly faded; hotel records flawless.<br>- Potential risks: None. Her mother though grieving, lacks investigation capability and social resources.',
+        'log.conclusion': 'V. Conclusion',
+        'log.conclusionContent': 'Room 314 "Obsessive Descent" sacrifice perfectly concluded with unexpected "delayed mode". Ingredient Zhao Yuting\'s core traits - artist\'s perfectionist obsession, fear of losing identity, vulnerability of tying all value to single carrier - were precisely utilized by Room 314\'s "sugar-coated trap".<br><br>The key turning point was "abandoning immediate harvest, choosing exile cultivation". When discovering ingredient\'s obsession not pure enough due to residual familial attachment, actively let her return to reality with "sugar poison"-eroded body and mind. Reality\'s mediocrity, pain\'s return, illusion\'s dissipation collectively pushed her toward more extreme despair than inside hotel. She ultimately completed self-sacrifice under real sky in most ritualized manner, her emotions reaching absolute purity at that moment.<br><br>This case should serve as advanced strategic teaching material for feeders - understand "most sophisticated harvest sometimes requires letting go". Letting ingredients actively move toward conclusion under combined influence of personal fate and hotel catalysis often produces flavors surpassing mechanical process outcomes.',
+        'log.note': 'VI. Feeder Notes',
+        'log.noteContent': 'Note extreme value and risk of "artist" category ingredients. Their emotions are intense, pure, and aesthetically rich, but often more sensitive and fragile. Must precisely control "sweet illusion" dosage and rhythm, slightest mishap may cause premature breakdown (emotional leakage) or resistance development (flavor decline). Suggest focusing on other injured retired athletes/artists subsequently, their emotional templates highly similar to this case.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Feeder System',
+        'footer.confidential': 'For Feeder Use Only - Confidentiality Level: Top Secret',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': 'R∞Mホテル 飼主作業ログ',
+        'log.summary': '趙雨婷',
+        'log.status': '記録ステータス',
+        'log.completed': 'アーカイブ済み（後任者参考用）',
+        'log.title': 'メインディッシュ：妄執の沈没',
+        'log.date': '記録日：供物完了後24時間',
+        'log.ingredient': '一、食材基本情報',
+        'log.ingredientContent': '食材番号：No.665<br>名前：趙雨婷<br>身分：元バレエダンサー<br>核心執念：舞踊芸術への病的妄執、負傷による舞台喪失の絶対的絶望、「完璧な自己」への虚構的追求<br>感情濃度（初期）：8.5/10（妄執70%、絶望30%；感情純粋且つ強烈な中毒性、高価値食材）<br><br>選別ロジック：<br>1. トラウマと執念の完美結合：右足首粉砕骨折がキャリア終焉、心理的には未だ受容せず、執念強度持続上昇；<br>2. SNS監視で重度鬱病と自殺傾向発見（評価点8.7）、感情崩壊臨界点、「希望幻覚」に捕捉され易い；<br>3. 「舞踊」は生涯追求として高度な儀式性と感覚性を有し、314号室「鏡像幻覚＋感覚没入」機構と高度適合；<br>4. 社会関係単純、失踪後注目度低く、「低風險制御可能供物」基準合致。',
+        'log.process': '二、供物プロセス記録',
+        'log.process1': '<strong>段階1：誘引</strong><br>心理的最低谷期（事故回復後3ヶ月）、精密広告配信（"海辺療養、自己再生"）でホテルパンフレットを郵便箱へ挿入；<br>目的：「現実逃避」と「再生渴望」の矛盾心理利用、ホテル「庇護」への自主的寻求誘導；<br>結果：食材11月16日宿泊、少荷物、表情疲労だが瞳に未だ消えざる炎光あり、予想通り。',
+        'log.process2': '<strong>段階2：沈淪</strong><br>「私設舞踊室」を環境餌として提供、専門機材と柔光雰囲気布置、筋肉記憶と舞踊本能覚醒；<br>毎日特別チョコレート（神経興奮剤と痛覚抑制剤含有）で身体痛覚反応漸減、「再舞踊可能」虚偽希望創出；<br>目的：生理的・心理的部屋環境依存性確立、「舞踊」と「甘美幻覚」結合；<br>監視結果：食材2日目より練習再開、足首負傷は薬物隠蔽で無視、妄執濃度急速上昇75%へ。',
+        'log.process3': '<strong>段階3：触媒</strong><br>「鏡像投射システム」起動、深層記憶中の「完璧な舞踊相手」形象読取、鏡中で共舞する完全幻覚生成；<br>同期で部屋温度湿度・照明・超低周波処理クラシック音楽調整、没入体験全面強化；<br>目的：完璧幻覚で究極渴望充足、現実世界接続完全断絶；<br>監視結果：食材5晩目より幻覚と互動開始、感情絶望から狂喜へ転換、依存濃度60%上昇、日均睡眠時間3時間未満低下。',
+        'log.process4': '<strong>段階4：精製</strong><br>チョコレート中の幻覚成分投与量漸増、舞踊中の「頂点快感」体験を増強；<br>幻覚は負傷前すら不可能な極限動作挑戦を誘導、「成功」時に即時「甘美反饋」提供；<br>目的：「虚構的完璧」と「身体的現実」の不可調和断裂形成、極致快楽で妄執純度精製；<br>監視結果：食材正常摂食完全停止、チョコレートのみ維持、足首不可逆損傷発生も全く自覚せず。感情濃度7日目夜間峰值9.3/10到達。',
+        'log.process5': '<strong>段階5：供物（遅延モード）</strong><br>原計画は11月22日舞踊頂点時収穫程序起動、但し監視で母の<a href="314微信.html" target="_blank" class="text-accent hover:underline">メッセージ</a>による現実未練残留発見、妄執純度完璧基準未達；<br>臨時決定：即時供物中止、「遅延供物」方案へ切替——退去現実回帰許可；<br>過程：バッグに最後の特別チョコレート3個挿入、帰還後も短期幻覚維持確保。現実-虚構格差最大時、禁断症状最激時、自己供物完遂へ誘導；<br>結果：食材退去一週間後、会社屋上でバレエ姿勢墜落死亡。剖検報告は身体「糖毒」完全侵食、極楽で「情饕」への最終奉献完遂を示す。',
+        'log.evaluation': '三、風味評価',
+        'log.evaluationContent': '総合評価：<span class="log-rating">9.7/10</span>（頂級メインディッシュ、風味純度と劇性共に極致到達）<br><br>風味解析：<br>前味：バレエシューズ皮革香と血の微かな鉄臭さ交錯、優雅の下に苦痛の基層潜蔵、情饕の注意力瞬時捕捉；<br>中味：虚構的甘美（チョコレート）と清醒的痛苦（旧傷）の激烈対照、「得る即ち失う」残酷な余韻を各口に伴う、層次極めて豊富；<br>後味：自己供物の決絶と虚无の余韻長引く、彼女は墜落瞬間もアラベスクの完璧姿勢保持、「妄執」を永遠の芸術品に凝固、此の風味は情饕に稀有且つ極めて珍愛される。',
+        'log.aftermath': '四、後続事件処理',
+        'log.aftermathContent': '事件背景：<br>食材退去7日目、勤務先広告会社屋上墜落死亡。血液中未知化学物質検出及び生前異常行動で警察介入調査、ホテルに定期照会。<br><br>対応措置：<br>1. コンプライアンス記録提供：完全な宿泊・退去記録提示（11月16日-23日）、監視カメラは正常出入・食事取得片段のみ保持、異常一切無し。<br>2. 標準応答文言：強調「宿泊期間中ゲストは個人療養に集中、情緒安定、退去時満足表明」、彼女がホテル「静環境」提供に繰り返し感謝したこと言及。<br>3. 調査方向誘導：キャリア終焉による長期鬱病及び身体疼痛で不法薬物依存可能性示唆（チョコレート中未知成分は「新型鎮痛剤」と誘導可能）、焦点を個人心理問題へ転移。<br><br>リスク評価<br>リスクレベル：低（2/10）<br>- 制御可能要因：食材の死は最終的に自殺と認定、社会的注目速やかに消退；ホテル記録は完全無欠。<br>- 潜在リスク：無し。母親は悲嘆するも、追跡能力と社会的資源を欠く。',
+        'log.conclusion': '五、総括',
+        'log.conclusionContent': '314号室「妄執の沈没」供物は予想外の「遅延モード」で完美終了。食材趙雨婷の核心特質——芸術家の完璧主義的偏執、アイデンティティ喪失の恐怖、全価値を単一キャリアに縛る脆弱性——は314号室の「糖衣罠」で精確利用された。<br><br>全プロセスの鍵転換点は「即時収穫放棄、放逐育成選択」。食材の妄執が親情の絆で純度不足と発見時、積極的に「糖毒」侵食の身心を携えて現実回帰許可。現実世界の平凡さ、痛みの回帰、幻覚の消散、三者共同作用でホテル内より更に極致の絶望へ追い詰めた。彼女は最終的に真実の空の下、最も儀式的な方法で自己供物完遂、其の感情は其の瞬間に絶対純度に到達した。<br><br>本案例は飼主の上級戦略教材として——「最も高名な収穫は、時には手放すこと」理解。食材が自身の運命とホテル触媒共同作用下で、主動的に終局へ向かわせることは、機械的プロセスの産物を超える風味を往々にして生み出す。',
+        'log.note': '六、飼主筆記',
+        'log.noteContent': '「芸術家」カテゴリー食材の極高価値とリスクに注意。彼らの感情は強烈、純粋且つ美的であるが、往々にしてより敏感脆弱。需精確制御「甘美幻覚」の投与量とリズム、稍々不慎は食材早期崩壊（感情漏洩）或いは耐性発生（風味低下）を招き得る。後続は他の負傷引退運動員・芸術家に重点注目を提案、其の感情テンプレートは本案例と高度類似。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '飼主システム',
+        'footer.confidential': '飼主専用 - 機密レベル：極秘',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'R∞M Hotel Registro de Trabalho do Alimentador',
+        'log.summary': 'Zhao Yuting',
+        'log.status': 'Status do Registro',
+        'log.completed': 'Arquivado (Para Referência do Sucessor)',
+        'log.title': 'Prato Principal: Descent Obsessiva',
+        'log.date': 'Data do Registro: 24 Horas Após Conclusão do Sacrifício',
+        'log.ingredient': 'I. Informações Básicas do Ingrediente',
+        'log.ingredientContent': 'Nº do Ingrediente: No.665<br>Nome: Zhao Yuting<br>Identidade: Ex-Bailarina de Balé<br>Obsessão Central: Obsessão patológica pela arte da dança, desespero extremo por perder o palco devido a lesão, busca ilusória do "eu perfeito"<br>Concentração Emocional (Inicial): 8.5/10 (Obsessão 70%, Desespero 30%; Emocionalmente puro com forte aditividade, ingrediente de alto valor)<br><br>Lógica de Seleção:<br>1. Combinação perfeita de trauma e obsessão: Fratura cominutiva do tornozelo direito terminou carreira, mas psicologicamente nunca aceito, intensidade da obsessão continuamente ascendente;<br>2. Monitoramento de mídia social mostra depressão severa e tendências suicidas (pontuação de avaliação 8.7), estado emocional no ponto de ruptura, facilmente capturado por "ilusão de esperança";<br>3. Sua "dança" como busca vital possui alta qualidade ritual e sensorial, altamente compatível com mecanismo de "ilusão de espelho + imersão sensorial" do Quarto 314;<br>4. Relações sociais simples, baixa atenção após desaparecimento, atendendo critérios de "sacrifício controlável de baixo risco".',
+        'log.process': 'II. Registro do Processo de Sacrifício',
+        'log.process1': '<strong>Estágio 1: Captura</strong><br>Durante seu ponto psicológico mais baixo (três meses após recuperação de acidente de carro), colocou brochura do hotel em sua caixa de correio através de publicidade direcionada ("Recuperação à beira-mar, redescubra-se");<br>Propósito: Utilizar psicologia contraditória de "escapar da realidade" e "anseio por renascimento" para guiar busca ativa por "santuário" do hotel;<br>Resultado: Ingrediente fez check-in em 16 de novembro, carregando bagagem mínima, aparecendo exausta mas com fogo não extinto nos olhos, atendendo expectativas.',
+        'log.process2': '<strong>Estágio 2: Descida</strong><br>Forneceu "estúdio de dança privativo" como isca ambiental, organizou equipamento profissional e atmosfera de iluminação suave, despertando memória muscular e instinto de dança;<br>Através de chocolate especial diário (contendo estimulantes neurais e inibidores de dor) reduzindo gradualmente feedback de dor física, criando falsa esperança de "poder dançar novamente";<br>Propósito: Estabelecer dependência fisiológica e psicológica no ambiente da sala, vinculando "dança" com "ilusão doce";<br>Resultado da Monitoração: Ingrediente retomou prática a partir do Dia 2, lesão no tornozelo ignorada devido a mascaramento medicamentoso, concentração de obsessão aumentou rapidamente para 75%.',
+        'log.process3': '<strong>Estágio 3: Catálise</strong><br>Ativou "sistema de projeção de espelho", leu imagem do "parceiro de dança perfeito" da memória profunda, gerando ilusão completa de dança no espelho;<br>Sincronizou regulação de temperatura/umidade da sala, iluminação e música clássica processada por infrassom, aprimorando abrangentemente experiência imersiva;<br>Propósito: Satisfazer anseio final com ilusão perfeita, cortando completamente conexão com mundo real;<br>Resultado da Monitoração: Ingrediente começou a interagir com ilusão a partir da Noite 5, emoções mudaram de desespero para êxtase, concentração de dependência subiu para 60%, tempo médio de sono diário reduzido para menos de 3 horas.',
+        'log.process4': '<strong>Estágio 4: Purificação</strong><br>Aumentou gradualmente dosagem de componente alucinógeno no chocolate, fazendo-a experimentar "prazer de pico" cada vez mais intenso enquanto dançava;<br>Ilusão a guiou a tentar movimentos extremos impossíveis mesmo antes da lesão, fornecendo "feedback doce" instantâneo sobre "sucesso";<br>Propósito: Criar rasgo irreconciliável entre "perfeição ilusória" e "realidade física", purificando pureza da obsessão em prazer extremo;<br>Resultado da Monitoração: Ingrediente parou completamente alimentação normal, sustentada apenas por chocolate, tornozelo sofreu dano irreversível mas permaneceu alheio. Concentração emocional atingiu pico de 9.3/10 na Noite 7.',
+        'log.process5': '<strong>Estágio 5: Sacrifício (Modo Atrasado)</strong><br>Originalmente planejado ativar programa de colheita em 22 de novembro em seu pico de dança, mas monitoramento revelou apego residual subconsciente ao mundo real devido a <a href="314微信.html" target="_blank" class="text-accent hover:underline">mensagem de texto</a> da mãe, pureza da obsessão não atingindo padrão perfeito;<br>Decisão temporária: Abortar sacrifício imediato, mudar para plano de "sacrifício atrasado" - deixando-a fazer check-out e retornar à realidade;<br>Processo: Colocou três chocolates especiais finais em sua mochila, garantindo manutenção de ilusão breve após retorno. Quando disparidade realidade-ilusão atingiu máximo e sintomas de abstinência mais intensos, induziu auto-conclusão de sacrifício;<br>Resultado: Ingrediente caiu do terraço da empresa em pose de balé uma semana após check-out. Autópsia mostrou corpo completamente erodido por "veneno de açúcar", completando devoção final ao "Devorador de Emoções" em êxtase.',
+        'log.evaluation': 'III. Avaliação de Sabor',
+        'log.evaluationContent': 'Avaliação Geral: <span class="log-rating">9.7/10</span> (Prato principal de alto nível, pureza do sabor e drama ambos atingem extremos)<br><br>Análise de Sabor:<br>Inicial: Scent de couro de sapatilhas de balé entrelaçado com leve toque metálico de sangue, elegância ocultando base dolorosa, instantaneamente capturando atenção do Devorador de Emoções;<br>Meio: Intenso contraste entre doçura ilusória (chocolate) e dor sóbria (lesão antiga), cada mordida acompanhada por retrogosto cruel de "ganho igual perda", camadas extremamente ricas;<br>Final: Auto-sacrifício resoluto e retrogosto虚无 prolongado, ela manteve pose perfeita de Arabesque durante momento da queda, solidificando "obsessão" em obra de arte eterna, este sabor raro e altamente estimado pelo Devorador de Emoções.',
+        'log.aftermath': 'IV. Tratamento de Incidente de Acompanhamento',
+        'log.aftermathContent': 'Contexto do Incidente:<br>Ingrediente caiu do terraço da empresa no Dia 7 após check-out. Investigação policial iniciada devido a componentes químicos desconhecidos no sangue e comportamento anormal pré-morte, hotel recebeu inquérito de rotina.<br><br>Medidas de Resposta:<br>1. Fornecer registros conformes: Apresentou registros completos de check-in/check-out (16-23 de novembro), vigilância apenas reteve segmentos normais de entrada/saída e refeições, sem anormalidades.<br>2. Fraseologia de resposta padrão: Enfatizou "hóspede focada em recuperação pessoal durante estadia, emocionalmente estável, expressou satisfação no check-out", mencionou ela agradecendo repetidamente hotel por "ambiente tranquilo".<br>3. Orientar direção da investigação: Insinuou possível dependência de drogas ilegais devido à depressão de longo prazo do fim da carreira e dor física (componentes desconhecidos do chocolate poderiam ser orientados como "novo analgésico"), deslocando foco para questões psicológicas pessoais.<br><br>Avaliação de Risco<br>Nível de Risco: Baixo (2/10)<br>- Fatores controláveis: Morte do ingrediente finalmente classificada como suicídio, atenção social rapidamente desapareceu; registros do hotel impecáveis.<br>- Riscos potenciais: Nenhum. Sua mãe embora de luto, falta capacidade de investigação e recursos sociais.',
+        'log.conclusion': 'V. Conclusão',
+        'log.conclusionContent': 'Quarto 314 "Descent Obsessiva" sacrifício perfeitamente concluído com inesperado "modo atrasado". Traços centrais do ingrediente Zhao Yuting - obsessão perfeccionista do artista, medo de perder identidade, vulnerabilidade de amarrar todo valor a único portador - foram precisamente utilizados pela "armadilha açucarada" do Quarto 314.<br><br>O ponto de virada crucial foi "abandonar colheita imediata, escolher cultivo de exílio". Ao descobrir obsessão do ingrediente não pura o suficiente devido a apego familiar residual, ativamente a deixou retornar à realidade com corpo e mente erodidos por "veneno de açúcar". Mediocridade da realidade, retorno da dor, dissipação da ilusão coletivamente a empurraram para desespero mais extremo que dentro do hotel. Ela finalmente completou auto-sacrifício sob céu real na maneira mais ritualizada, suas emoções atingindo pureza absoluta naquele momento.<br><br>Este caso deve servir como material de ensino estratégico avançado para alimentadores - entenda "colheita mais sofisticada às vezes requer soltar". Deixar ingredientes moverem-se ativamente em direção à conclusão sob influência combinada do destino pessoal e catalisação do hotel frequentemente produz sabores superando resultados de processos mecânicos.',
+        'log.note': 'VI. Notas do Alimentador',
+        'log.noteContent': 'Note valor extremo e risco de ingredientes da categoria "artista". Suas emoções são intensas, puras e esteticamente ricas, mas frequentemente mais sensíveis e frágeis. Deve controlar precisamente dosagem e ritmo da "ilusão doce", menor descuido pode causar colapso prematuro (vazamento emocional) ou desenvolvimento de resistência (declínio de sabor). Sugerir focar posteriormente em outros atletas/artistas aposentados por lesão, seus modelos emocionais altamente similares a este caso.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema do Alimentador',
+        'footer.confidential': 'Uso do Alimentador Apenas - Nível de Confidencialidade: Ultra Secreto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画和其他交互功能（与之前相同）
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能 - 修改为跳转到RIKI.html
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        window.location.href = 'RIKI工作台.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

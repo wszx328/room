@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 住客档案 - 刘星辰</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .hidden-note {
+        color: transparent;
+        background-color: transparent;
+        user-select: text;
+      }
+      .hidden-note::selection {
+        color: white;
+        background-color: #8A6BBE;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M内部系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 内部系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">尹力</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 刘星辰住客档案详情 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">住客档案详情</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 902 - <span data-i18n="guest.name">刘星辰</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="guest.checkIn">入住</span>: 2025-11-14 | <span data-i18n="guest.checkOut">退房</span>: 2025-11-28
+            </div>
+          </div>
+          
+          <!-- 住客档案 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.profile">住客档案</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.fullName">姓名：刘星辰</li>
+              <li data-i18n="guest.gender">性别：男</li>
+              <li data-i18n="guest.age">年龄：34</li>
+              <li data-i18n="guest.idNumber">身份证号：46873519914270902</li>
+              <li data-i18n="guest.contact">联系方式：13844441234</li>
+              <li data-i18n="guest.bookingSource">入住来源：现场入住</li>
+              <li data-i18n="guest.email">邮箱：liuxingchen@902.com</li>
+              <li data-i18n="guest.roomType">房间类型：总统套房</li>
+            </ul>
+            <!-- 隐藏的管理员备注 -->
+            <div class="mt-4 text-xs text-gray-500">
+              <span class="hidden-note" data-i18n="guest.hiddenNote">（S级食材，狂妄指数9.9，音律共振契合度100%，听觉残留呈神性污染状态——持续收割中）</span>
+            </div>
+          </div>
+          
+          <!-- 住客背景 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.background">住客背景</h4>
+            <p class="text-gray-300" data-i18n="guest.backgroundContent">
+              刘星辰，前独立音乐人，五年前凭借单曲《午夜弥撒》在地下音乐圈获得极高声誉，随后突然从公众视野消失。据业内传闻，其消失后沉迷于神秘学与声波仪式研究，组建小型追随团体，自称"声音先知"。入住前处于长期隐居状态，此次突然现身酒店，自称需"绝对安静的空间完成最终创作"。
+            </p>
+          </div>
+          
+          <!-- 入住观察 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.observations">入住观察</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.observation1">入住初期：情绪高度紧张，拒绝所有客房服务，自行搬运三个大型黑色箱体入内。房间内很快传出低频嗡鸣声，整层楼灯光出现规律性闪烁。监控显示其彻夜未眠，在房间内来回踱步，偶尔对着空气低声自语。</li>
+              <li data-i18n="guest.observation2">入住中期：行为模式显著异常。清空房间中央区域，用白色粉笔绘制复杂几何图案，所有家具沿墙摆放。每日午夜至凌晨五点，房间传出非正常音乐——极端音量下的单一音符延长、无规律噪音轰炸及突然的绝对寂静。邻房住客普遍报告心悸、耳鸣及幻觉体验，701房客因心率被强制同步至120bpm送医。</li>
+              <li data-i18n="guest.observation3">入住后期：进入狂热状态。要求酒店提供大量蜡烛及羊油，并临时关闭本层烟雾报警系统。监控捕捉到其赤裸上身于镜前进行仪式性动作，镜中影像存在1-2秒延迟。最终夜（11.28）凌晨，房间传出使整栋建筑震动的轰鸣，所有灯光剧烈闪烁，消防喷淋无端启动。五点整，一切骤然停止。</li>
+            </ul>
+          </div>
+          
+          <!-- 服务记录 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.services">服务记录</h4>
+            <ul class="list-disc list-inside text-gray-300">
+              <li data-i18n="guest.service1">每隔三日于门口放置一箱威士忌及矿泉水（全程未取用）</li>
+              <li data-i18n="guest.service2">11月24日提供特制白蜡烛二十支、羊油二十公斤</li>
+              <li data-i18n="guest.service3">应要求临时关闭902所在楼层烟雾报警系统（11.24-11.28）</li>
+              <li data-i18n="guest.service4">退房后发现房间已恢复原状，所有个人物品及设备消失，仅留黑胶唱片一张</li>
+            </ul>
+          </div>
+          
+          <!-- 备注 -->
+          <div class="record-item">
+            <h4 class="text-accent font-semibold mb-2" data-i18n="guest.remarks">备注</h4>
+            <p class="text-gray-300" data-i18n="guest.remarksContent">
+              刘先生在入住期间进行了深度艺术创作与个人精神探索。尽管其创作形式较为前卫且对周围环境产生了一定程度的物理扰动（已对受影响住客进行安抚与补偿），但其对艺术的极致追求与专注力令人印象深刻。
+              监控与观察显示，他通过高强度的声音实践与冥想，完成了一场对自我创造力极限的挑战。初期对环境的改造可视为构建个人"神圣空间"，中期的声音实验是对传统音乐边界的突破，后期的仪式性行为则体现了他将艺术与灵性融合的独特理念。其最终离开时状态虽显疲惫，但眼神中透露出达成目标的释然与满足。
+              酒店尊重每一位客人的创作隐私与独特需求。刘先生留下的黑胶唱片《Clappin'》已作为纪念品珍藏。据后续了解，其离开后已重新投入音乐创作，相信在R∞M的这段沉浸式体验，为其未来的艺术道路注入了新的灵感与力量。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">内部系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': '住客档案详情',
+        'guest.name': '刘星辰',
+        'guest.checkIn': '入住',
+        'guest.checkOut': '退房',
+        'guest.profile': '住客档案',
+        'guest.fullName': '姓名：刘星辰',
+        'guest.gender': '性别：男',
+        'guest.age': '年龄：34',
+        'guest.idNumber': '身份证号：46873519914270902',
+        'guest.contact': '联系方式：13844441234',
+        'guest.bookingSource': '入住来源：现场入住',
+        'guest.email': '邮箱：liuxingchen@902.com',
+        'guest.roomType': '房间类型：总统套房',
+        'guest.hiddenNote': '（S级食材，狂妄指数9.9，音律共振契合度100%，听觉残留呈神性污染状态——持续收割中）',
+        'guest.background': '住客背景',
+        'guest.backgroundContent': '刘星辰，前独立音乐人，五年前凭借单曲《<strong>午夜弥撒</strong>》在地下音乐圈获得极高声誉，随后突然从公众视野消失。据业内传闻，其消失后沉迷于神秘学与声波仪式研究，组建小型追随团体，自称"声音先知"。入住前处于长期隐居状态，此次突然现身酒店，自称需"绝对安静的空间完成最终创作"。',
+        'guest.observations': '入住观察',
+        'guest.observation1': '入住初期：情绪高度紧张，拒绝所有客房服务，自行搬运三个大型黑色箱体入内。房间内很快传出低频嗡鸣声，整层楼灯光出现规律性闪烁。监控显示其彻夜未眠，在房间内来回踱步，偶尔对着空气低声自语。',
+        'guest.observation2': '入住中期：行为模式显著异常。清空房间中央区域，用白色粉笔绘制复杂几何图案，所有家具沿墙摆放。每日午夜至凌晨五点，房间传出非正常音乐——极端音量下的单一音符延长、无规律噪音轰炸及突然的绝对寂静。邻房住客普遍报告心悸、耳鸣及幻觉体验，701房客因心率被强制同步至120bpm送医。',
+        'guest.observation3': '入住后期：进入狂热状态。要求酒店提供大量蜡烛及羊油，并临时关闭本层烟雾报警系统。监控捕捉到其赤裸上身于镜前进行仪式性动作，镜中影像存在1-2秒延迟。最终夜（11.28）凌晨，房间传出使整栋建筑震动的轰鸣，所有灯光剧烈闪烁，消防喷淋无端启动。五点整，一切骤然停止。',
+        'guest.services': '服务记录',
+        'guest.service1': '每隔三日于门口放置一箱威士忌及矿泉水（全程未取用）',
+        'guest.service2': '11月24日提供特制白蜡烛二十支、羊油二十公斤',
+        'guest.service3': '应要求临时关闭902所在楼层烟雾报警系统（11.24-11.28）',
+        'guest.service4': '退房后发现房间已恢复原状，所有个人物品及设备消失，仅留黑胶唱片一张',
+        'guest.remarks': '备注',
+        'guest.remarksContent': '刘先生在入住期间进行了深度艺术创作与个人精神探索。尽管其创作形式较为前卫且对周围环境产生了一定程度的物理扰动（已对受影响住客进行安抚与补偿），但其对艺术的极致追求与专注力令人印象深刻。监控与观察显示，他通过高强度的声音实践与冥想，完成了一场对自我创造力极限的挑战。初期对环境的改造可视为构建个人"神圣空间"，中期的声音实验是对传统音乐边界的突破，后期的仪式性行为则体现了他将艺术与灵性融合的独特理念。其最终离开时状态虽显疲惫，但眼神中透露出达成目标的释然与满足。酒店尊重每一位客人的创作隐私与独特需求。刘先生留下的黑胶唱片《Clappin\'》已作为纪念品珍藏。据后续了解，其离开后已重新投入音乐创作，相信在R∞M的这段沉浸式体验，为其未来的艺术道路注入了新的灵感与力量。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '内部系统',
+        'footer.confidential': '仅供内部使用 - 保密级别：高级',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'Guest Profile Details',
+        'guest.name': 'Liu Xingchen',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'guest.profile': 'Guest Profile',
+        'guest.fullName': 'Name: Liu Xingchen',
+        'guest.gender': 'Gender: Male',
+        'guest.age': 'Age: 34',
+        'guest.idNumber': 'ID Number: 46873519914270902',
+        'guest.contact': 'Contact: 13844441234',
+        'guest.bookingSource': 'Booking Source: Walk-in',
+        'guest.email': 'Email: liuxingchen@902.com',
+        'guest.roomType': 'Room Type: Presidential Suite',
+        'guest.hiddenNote': '(S-grade ingredient, arrogance index 9.9, acoustic resonance compatibility 100%, auditory afterimage in divine pollution state — ongoing harvest)',
+        'guest.background': 'Guest Background',
+        'guest.backgroundContent': 'Liu Xingchen, former independent musician, gained high reputation in the underground music scene five years ago with the single "<strong>Midnight Mass</strong>," then suddenly disappeared from public view. According to industry rumors, after disappearing, he became obsessed with occultism and acoustic ritual research, forming a small follower group, calling himself the "Voice Prophet." Before checking in, he was in a long-term reclusive state. This sudden appearance at the hotel was claimed to need an "absolutely quiet space to complete the final creation."',
+        'guest.observations': 'Observation During Stay',
+        'guest.observation1': 'Initial stay: Highly nervous, refused all room services, personally carried three large black boxes inside. Soon low-frequency humming sounds came from the room, lights on the entire floor showed regular flickering. Monitoring showed he stayed awake all night, pacing back and forth in the room, occasionally whispering to the air.',
+        'guest.observation2': 'Mid-stay: Significantly abnormal behavior patterns. Cleared the central area of the room, drew complex geometric patterns with white chalk, all furniture placed along walls. From midnight to 5 a.m. daily, abnormal music came from the room — extreme volume single-note extensions, irregular noise bombardments, and sudden absolute silence. Neighboring guests commonly reported palpitations, tinnitus, and hallucination experiences. Room 701 guest was sent to hospital due to heart rate forcibly synchronized to 120 bpm.',
+        'guest.observation3': 'Late stay: Entered a fanatical state. Requested large amounts of candles and tallow from the hotel, and temporarily disabled the floor smoke alarm system. Monitoring captured him shirtless performing ritualistic movements in front of the mirror, with mirror image showing 1-2 second delay. Final night (11.28) early morning, room emitted a roar that shook the entire building, all lights flickered violently, fire sprinklers activated without cause. At 5 a.m. sharp, everything suddenly stopped.',
+        'guest.services': 'Service Records',
+        'guest.service1': 'Placed a box of whiskey and mineral water at the door every three days (not used throughout)',
+        'guest.service2': 'Provided twenty special white candles and twenty kilograms of tallow on November 24',
+        'guest.service3': 'Temporarily disabled smoke alarm system on floor 902 as requested (11.24-11.28)',
+        'guest.service4': 'After check-out, room found restored to original state, all personal items and equipment disappeared, only a vinyl record left',
+        'guest.remarks': 'Remarks',
+        'guest.remarksContent': 'Mr. Liu engaged in deep artistic creation and personal spiritual exploration during his stay. Although his creative form was relatively avant-garde and caused some degree of physical disturbance to the surrounding environment (affected guests have been appeased and compensated), his ultimate pursuit of art and concentration is impressive. Monitoring and observations show that through high-intensity sound practice and meditation, he completed a challenge to the limits of his creativity. The initial environmental transformation can be seen as constructing a personal "sacred space," the mid-term sound experiments were a breakthrough of traditional music boundaries, and the late ritualistic behavior reflected his unique concept of integrating art and spirituality. Although he appeared tired when finally leaving, his eyes revealed the relief and satisfaction of achieving his goal. The hotel respects every guest\'s creative privacy and unique needs. The vinyl record "Clappin\'" left by Mr. Liu has been treasured as a souvenir. According to follow-up information, after leaving, he has returned to music creation. It is believed that this immersive experience at R∞M has injected new inspiration and strength into his future artistic path.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Internal System',
+        'footer.confidential': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': '宿泊客プロフィール詳細',
+        'guest.name': '劉星辰',
+        'guest.checkIn': 'チェックイン',
+        'guest.checkOut': 'チェックアウト',
+        'guest.profile': '宿泊客プロフィール',
+        'guest.fullName': '氏名：劉星辰',
+        'guest.gender': '性別：男性',
+        'guest.age': '年齢：34',
+        'guest.idNumber': '身分証明書番号：46873519914270902',
+        'guest.contact': '連絡先：13844441234',
+        'guest.bookingSource': '予約元：フロント直接',
+        'guest.email': 'メール：liuxingchen@902.com',
+        'guest.roomType': '部屋タイプ：プレジデンシャルスイート',
+        'guest.hiddenNote': '（S級食材、傲慢指数9.9、音律共振適合度100%、聴覚残留が神性汚染状態――継続収穫中）',
+        'guest.background': '宿泊客背景',
+        'guest.backgroundContent': '劉星辰、元インディペンデントミュージシャン、五年前にシングル「<strong>ミッドナイトミサ</strong>」でアンダーグラウンド音楽シーンで高い評価を得た後、突然公の場から姿を消す。業界の噂によると、失踪後は神秘学と音波儀式の研究に没頭し、小規模な追随グループを結成し、「音声預言者」と自称。宿泊前は長期にわたる隠遁状態にあり、今回突然ホテルに現れ、「最終創作を完成させるための絶対的な静寂の空間」が必要と自称。',
+        'guest.observations': '宿泊中の観察',
+        'guest.observation1': '宿泊初期：感情が非常に緊張し、すべての客室サービスを拒否し、自ら三個の大型黒色箱を搬入。室内からすぐに低周波のブーンという音が聞こえ、フロア全体の照明が規則的な点滅を発生。モニタリングでは徹夜で眠らず、室内を行き来しながら歩き回り、時々空気に向かって小声で独語する様子が確認された。',
+        'guest.observation2': '宿泊中期：行動パターンが著しく異常。部屋の中央領域を空け、白色のチョークで複雑な幾何学模様を描画、すべての家具を壁沿いに配置。毎日深夜から午前五時まで、室内から異常な音楽――極端な音量での単一音符の延長、不規則なノイズ爆撃、そして突然の完全な静寂――が聞こえる。隣室の宿泊客は広く動悸、耳鳴り、幻覚体験を報告し、701号室の客は心拍数が強制的に120bpmに同期化され病院へ搬送。',
+        'guest.observation3': '宿泊後期：狂信的な状態に突入。ホテルに大量のろうそくと羊油を要求し、該当階の煙探知機システムを一時的に停止。モニタリングでは上半身裸で鏡の前で儀式的動作を行っている様子が捕捉され、鏡像に1-2秒の遅延が存在。最終夜（11.28）未明、部屋から建物全体を震動させる轟音が発生、すべての照明が激しく点滅し、消防スプリンクラーが原因なく作動。午前五時ちょうど、すべてが突然停止。',
+        'guest.services': 'サービス記録',
+        'guest.service1': '三日ごとにドア前にウイスキー一箱とミネラルウォーターを設置（全期間使用なし）',
+        'guest.service2': '11月24日、特製白ろうそく二十本と羊油二十キログラムを提供',
+        'guest.service3': '要求に応じて902号室所在階の煙探知機システムを一時停止（11.24-11.28）',
+        'guest.service4': 'チェックアウト後、部屋は原状回復され、すべての私物及び設備が消失、黒膠レコード一枚のみ残留',
+        'guest.remarks': '備考',
+        'guest.remarksContent': '劉氏は宿泊期間中、深い芸術創作と個人的精神探求を行った。その創作形式は前衛的であり周辺環境にある程度の物理的擾乱を生じさせたものの（影響を受けた宿泊客には慰謝と補償を実施）、芸術への極限的追求と集中力には印象を受ける。モニタリングと観察によれば、彼は高強度の音響実践と瞑想を通じて、自己創造力の限界への挑戦を完了した。初期の環境改造は個人の「聖なる空間」構築と見なし得、中期の音響実験は伝統的音楽境界の突破であり、後期の儀式的行為は芸術と霊性の融合という彼独自の理念を体現している。最終的に退去時の状態は疲労しているように見えたが、目には目標達成の安堵と満足が垣間見えた。ホテルは各宿泊客の創作プライバシーと独自のニーズを尊重する。劉氏が残した黒膠レコード『Clappin\'』は記念品として保存。後続情報によれば、彼は退去後音楽創作に再投入しており、R∞Mでのこの没入型体験が、彼の未来の芸術の道に新たなインスピレーションと力を注入したと信じられる。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '内部システム',
+        'footer.confidential': '内部使用のみ - 機密レベル：高',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'Detalhes do Perfil do Hóspede',
+        'guest.name': 'Liu Xingchen',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'guest.profile': 'Perfil do Hóspede',
+        'guest.fullName': 'Nome: Liu Xingchen',
+        'guest.gender': 'Gênero: Masculino',
+        'guest.age': 'Idade: 34',
+        'guest.idNumber': 'Número do Documento: 46873519914270902',
+        'guest.contact': 'Contato: 13844441234',
+        'guest.bookingSource': 'Fonte da Reserva: Check-in direto',
+        'guest.email': 'E-mail: liuxingchen@902.com',
+        'guest.roomType': 'Tipo de Quarto: Suíte Presidencial',
+        'guest.hiddenNote': '(Ingrediente Grau S, índice de arrogância 9.9, compatibilidade de ressonância acústica 100%, afterimage auditiva em estado de poluição divina — colheita em andamento)',
+        'guest.background': 'Antecedentes do Hóspede',
+        'guest.backgroundContent': 'Liu Xingchen, ex-músico independente, ganhou alta reputação na cena musical underground há cinco anos com o single "<strong>Midnight Mass</strong>", então desapareceu subitamente da vista pública. Segundo rumores da indústria, após desaparecer, tornou-se obcecado por ocultismo e pesquisa de rituais acústicos, formando um pequeno grupo de seguidores, autodenominando-se "Profeta da Voz". Antes do check-in, estava em estado recluso de longo prazo. Esta aparição repentina no hotel foi alegada necessitar de um "espaço absolutamente silencioso para completar a criação final".',
+        'guest.observations': 'Observações Durante a Estadia',
+        'guest.observation1': 'Estadia inicial: Altamente nervoso, recusou todos os serviços de quarto, carregou pessoalmente três grandes caixas pretas para dentro. Logo sons de zumbido de baixa frequência vieram do quarto, luzes em todo o andar mostraram cintilação regular. Monitoramento mostrou que ficou acordado a noite toda, andando para frente e para trás no quarto, ocasionalmente sussurrando para o ar.',
+        'guest.observation2': 'Estadia média: Padrões de comportamento significativamente anormais. Limpou a área central do quarto, desenhou padrões geométricos complexos com giz branco, todos os móveis colocados junto às paredes. Da meia-noite às 5h diariamente, música anormal vinha do quarto — extensões de nota única em volume extremo, bombardeios de ruído irregulares e silêncio absoluto repentino. Hóspedes vizinhos relataram comumente palpitações, zumbido e experiências de alucinação. Hóspede do quarto 701 foi enviado ao hospital devido à frequência cardíaca forçadamente sincronizada a 120 bpm.',
+        'guest.observation3': 'Estadia final: Entrou em estado fanático. Solicitou grandes quantidades de velas e sebo de carneiro ao hotel, e desativou temporariamente o sistema de alarme de fumaça do andar. Monitoramento capturou-o sem camisa realizando movimentos ritualísticos em frente ao espelho, com imagem espelhada mostrando atraso de 1-2 segundos. Última noite (28/11) início da manhã, quarto emitiu um rugido que sacudiu todo o edifício, todas as luzes cintilaram violentamente, sprinklers de incêndio ativados sem causa. Às 5h em ponto, tudo parou subitamente.',
+        'guest.services': 'Registros de Serviço',
+        'guest.service1': 'Colocada uma caixa de uísque e água mineral na porta a cada três dias (não usada durante todo o período)',
+        'guest.service2': 'Fornecidas vinte velas brancas especiais e vinte quilos de sebo em 24 de novembro',
+        'guest.service3': 'Sistema de alarme de fumaça do andar 902 temporariamente desativado conforme solicitado (24/11-28/11)',
+        'guest.service4': 'Após check-out, quarto encontrado restaurado ao estado original, todos os itens pessoais e equipamentos desaparecidos, apenas um disco de vinil deixado',
+        'guest.remarks': 'Observações',
+        'guest.remarksContent': 'O Sr. Liu engajou-se em criação artística profunda e exploração espiritual pessoal durante sua estadia. Embora sua forma criativa fosse relativamente vanguardista e causasse algum grau de perturbação física ao ambiente circundante (hóspedes afetados foram apaziguados e compensados), sua busca definitiva pela arte e concentração é impressionante. Monitoramento e observações mostram que através de prática sonora de alta intensidade e meditação, ele completou um desafio aos limites de sua criatividade. A transformação ambiental inicial pode ser vista como construção de um "espaço sagrado" pessoal, os experimentos sonoros de médio prazo foram uma ruptura dos limites musicais tradicionais, e o comportamento ritualístico tardio refletiu seu conceito único de integrar arte e espiritualidade. Embora parecesse cansado ao finalmente partir, seus olhos revelaram o alívio e satisfação de alcançar seu objetivo. O hotel respeita a privacidade criativa e necessidades únicas de cada hóspede. O disco de vinil "Clappin\'" deixado pelo Sr. Liu foi guardado como lembrança. Segundo informações de acompanhamento, após partir, ele retornou à criação musical. Acredita-se que esta experiência imersiva na R∞M injetou nova inspiração e força em seu futuro caminho artístico.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema Interno',
+        'footer.confidential': 'Uso Interno Apenas - Nível de Confidencialidade: Alto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        // 这里可以替换为您希望返回的页面
+        window.location.href = '玩家个人页面.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

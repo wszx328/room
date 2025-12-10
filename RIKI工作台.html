@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 管理员系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        fontSize: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .special-room {
+        position: relative;
+        overflow: hidden;
+      }
+      .special-room::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(138, 107, 190, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+      }
+      .room-number-large {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.7);
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M管理员系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 管理员系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="admin-dashboard">
+          <span data-i18n="nav.dashboard">管理员工作台</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="special-rooms">
+          <span data-i18n="nav.specialRooms">特殊房间监控</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="candidate-analysis">
+          <span data-i18n="nav.candidateAnalysis">候选人分析</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="work-log">
+          <span data-i18n="nav.worklog">工作日志</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="system-config">
+          <span data-i18n="nav.system">系统配置</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 搜索框 -->
+        <div class="relative group">
+          <input type="text" placeholder="搜索..." class="bg-primary/40 border border-accent/30 rounded-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent w-40 transition-all duration-300 group-hover:w-52 terminal-font">
+          <i class="fa fa-search text-accent absolute right-3 top-1/2 transform -translate-y-1/2"></i>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">RIKI</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20">管理员 - RIKI</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="admin-dashboard" data-i18n="nav.dashboard">管理员工作台</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="special-rooms" data-i18n="nav.specialRooms">特殊房间监控</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="candidate-analysis" data-i18n="nav.candidateAnalysis">候选人分析</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="work-log" data-i18n="nav.worklog">工作日志</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="system-config" data-i18n="nav.system">系统配置</a>
+        
+        <!-- 移动端语言切换 -->
+        <div class="border-t border-gray-700 pt-4 mt-4">
+          <div class="px-4 py-2 text-sm text-gray-400" data-i18n="language">语言</div>
+          <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+          <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+          <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+          <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 管理员工作台 -->
+    <section id="admin-dashboard" class="page-section active py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white" data-i18n="dashboard.title">管理员工作台</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <!-- 快速访问卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="special-rooms">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.specialRooms">特殊房间</h3>
+              <i class="fa fa-eye text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.specialRoomsDesc">当前活跃的特殊房间</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">6个房间</span>
+              <span class="text-warning text-sm">3个进行中</span>
+            </div>
+          </a>
+          
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="candidate-analysis">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.candidates">候选人分析</h3>
+              <i class="fa fa-users text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.candidatesDesc">服务体验分析师候选人</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">12位候选人</span>
+              <span class="text-success text-sm">3位重点关注</span>
+            </div>
+          </a>
+          
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="work-log">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.energyLevel">能量水平</h3>
+              <i class="fa fa-bolt text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.energyLevelDesc">当前酒店整体能量水平</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">78.4%</span>
+              <span class="text-success text-sm">稳定</span>
+            </div>
+          </a>
+          
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="system-config">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.systemHealth">系统健康</h3>
+              <i class="fa fa-heartbeat text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.systemHealthDesc">酒店系统运行状态</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">98.2%</span>
+              <span class="text-success text-sm">正常</span>
+            </div>
+          </a>
+        </div>
+        
+        <!-- 今日重要提醒 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+          <h2 class="text-xl font-semibold mb-4 text-white" data-i18n="dashboard.importantReminders">今日重要提醒</h2>
+          <div class="space-y-4">
+            <div class="system-message">
+              <p class="text-success terminal-font">> <span data-i18n="dashboard.systemStatus">系统状态：正常运行</span></p>
+            </div>
+            <div class="system-message">
+              <p class="text-warning terminal-font">
+                > <span data-i18n="dashboard.room143">143号房间：情感浓度已达83%，预计48小时内完成</span>
+              </p>
+            </div>
+            <div class="system-message">
+              <p class="text-warning terminal-font">> <span data-i18n="dashboard.room902">902号房间：能量对抗加剧，需要密切监控</span></p>
+            </div>
+            <div class="system-message">
+              <p class="text-warning terminal-font">
+                > <span data-i18n="dashboard.candidate">候选人评估：服务体验分析师候选人表现超出预期</span>
+              </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-accent/20">
+              <p class="text-gray-400 text-sm terminal-font">> <span data-i18n="dashboard.schedule">今日任务：完成143号房间最终评估 | 分析候选人数据</span></p>
+              <p class="text-gray-400 text-sm terminal-font">> <span data-i18n="dashboard.performance">系统效率：情感收集效率 92% | 能量转化率 87%</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 特殊房间监控部分 -->
+    <section id="special-rooms" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="specialRooms.title">特殊房间监控</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- 143号房间 -->
+          <div class="special-room bg-primary/40 p-6 rounded-sm border border-accent/20 hover-lift">
+            <div class="room-number-large">143</div>
+            <div class="flex justify-between">
+              <a href="143RIKI日志.html" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-file-text-o mr-2"></i>
+                <span data-i18n="specialRooms.viewLog">查看日志</span>
+              </a>
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors flex items-center">
+                <i class="fa fa-bar-chart mr-2"></i>
+                <span data-i18n="specialRooms.analyze">分析</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 291号房间 -->
+          <div class="special-room bg-primary/40 p-6 rounded-sm border border-accent/20 hover-lift">
+            <div class="room-number-large">291</div>
+            <div class="flex justify-between">
+              <a href="291RIKI日志.html" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-file-text-o mr-2"></i>
+                <span data-i18n="specialRooms.viewLog">查看日志</span>
+              </a>
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors flex items-center">
+                <i class="fa fa-bar-chart mr-2"></i>
+                <span data-i18n="specialRooms.analyze">分析</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 4030号房间 -->
+          <div class="special-room bg-primary/40 p-6 rounded-sm border border-accent/20 hover-lift">
+            <div class="room-number-large">4030</div>
+            <div class="flex justify-between">
+              <a href="4030RIKI日志.html" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-file-text-o mr-2"></i>
+                <span data-i18n="specialRooms.viewLog">查看日志</span>
+              </a>
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors flex items-center">
+                <i class="fa fa-bar-chart mr-2"></i>
+                <span data-i18n="specialRooms.analyze">分析</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 302号房间 -->
+          <div class="special-room bg-primary/40 p-6 rounded-sm border border-accent/20 hover-lift">
+            <div class="room-number-large">302</div>
+            <div class="flex justify-between">
+              <a href="302RIKI日志.html" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-file-text-o mr-2"></i>
+                <span data-i18n="specialRooms.viewLog">查看日志</span>
+              </a>
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors flex items-center">
+                <i class="fa fa-bar-chart mr-2"></i>
+                <span data-i18n="specialRooms.analyze">分析</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 314号房间 -->
+          <div class="special-room bg-primary/40 p-6 rounded-sm border border-accent/20 hover-lift">
+            <div class="room-number-large">314</div>
+            <div class="flex justify-between">
+              <a href="314RIKI日志.html" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-file-text-o mr-2"></i>
+                <span data-i18n="specialRooms.viewLog">查看日志</span>
+              </a>
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors flex items-center">
+                <i class="fa fa-bar-chart mr-2"></i>
+                <span data-i18n="specialRooms.analyze">分析</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 902号房间 -->
+          <div class="special-room bg-primary/40 p-6 rounded-sm border border-accent/20 hover-lift">
+            <div class="room-number-large">902</div>
+            <div class="flex justify-between">
+              <a href="902RIKI日志.html" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-file-text-o mr-2"></i>
+                <span data-i18n="specialRooms.viewLog">查看日志</span>
+              </a>
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors flex items-center">
+                <i class="fa fa-bar-chart mr-2"></i>
+                <span data-i18n="specialRooms.analyze">分析</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 候选人分析部分 -->
+    <section id="candidate-analysis" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="candidate.title">候选人分析</h2>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-white" data-i18n="candidate.candidateAnalysis">候选人分析</h3>
+            <div class="flex space-x-4">
+              <div class="relative">
+                <input type="text" placeholder="搜索候选人..." class="bg-primary/60 border border-accent/30 rounded-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent w-64 terminal-font" data-i18n-placeholder="candidate.searchPlaceholder">
+                <i class="fa fa-search text-accent absolute right-3 top-1/2 transform -translate-y-1/2"></i>
+              </div>
+              <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-filter mr-2"></i>
+                <span data-i18n="candidate.filter">筛选</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="space-y-4">
+            <!-- 候选人项目 -->
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">候选人 #007 - <span data-i18n="candidate.serviceAnalyst">服务体验分析师</span></h4>
+                <div class="flex items-center space-x-2">
+                  <span class="text-success text-sm" data-i18n="candidate.excellent">优秀</span>
+                  <span class="text-gray-400 text-sm">87%</span>
+                </div>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="candidate.candidateDesc1">洞察力优秀，逻辑推理能力突出，对情感模式识别有天赋。已完成六个房间的初步分析。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="candidate.analysisProgress">分析进度：<span class="text-warning">92%</span></span>
+                <span data-i18n="candidate.nextAssessment">下次评估：<span class="text-accent">3天后</span></span>
+              </div>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">候选人 #012 - <span data-i18n="candidate.serviceAnalyst">服务体验分析师</span></h4>
+                <div class="flex items-center space-x-2">
+                  <span class="text-warning text-sm" data-i18n="candidate.good">良好</span>
+                  <span class="text-gray-400 text-sm">74%</span>
+                </div>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="candidate.candidateDesc2">情感共鸣能力强，但逻辑分析有待提高。对143号房间分析准确，但未能识别291号房间的异常。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="candidate.analysisProgress">分析进度：<span class="text-warning">65%</span></span>
+                <span data-i18n="candidate.nextAssessment">下次评估：<span class="text-accent">5天后</span></span>
+              </div>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">候选人 #003 - <span data-i18n="candidate.serviceAnalyst">服务体验分析师</span></h4>
+                <div class="flex items-center space-x-2">
+                  <span class="text-accent text-sm" data-i18n="candidate.average">一般</span>
+                  <span class="text-gray-400 text-sm">58%</span>
+                </div>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="candidate.candidateDesc3">技术能力突出，但缺乏对情感细微差别的敏感性。可能需要重新评估岗位适配性。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="candidate.analysisProgress">分析进度：<span class="text-warning">45%</span></span>
+                <span data-i18n="candidate.nextAssessment">下次评估：<span class="text-accent">7天后</span></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 分页控件 -->
+          <div class="mt-6 flex justify-between items-center">
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="candidate.showing">显示 1-3 条，共 12 位候选人</span>
+            </div>
+            <div class="flex space-x-2">
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="candidate.previous">上一页</span>
+              </button>
+              <button class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="candidate.next">下一页</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 工作日志部分 -->
+    <section id="work-log" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="worklog.title">工作日志</h2>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="worklog.newLog">新建工作日志</h3>
+          <form class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2 text-white" data-i18n="worklog.title">标题</label>
+              <input type="text" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="输入日志标题" data-i18n-placeholder="worklog.titlePlaceholder">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2 text-white" data-i18n="worklog.content">内容</label>
+              <textarea rows="12" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="记录特殊房间状态、能量水平变化和候选人评估..." data-i18n-placeholder="worklog.contentPlaceholder"></textarea>
+            </div>
+            <div class="pt-2">
+              <button type="submit" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300">
+                <span data-i18n="worklog.save">保存日志</span>
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- 历史日志 -->
+        <div class="mt-6 bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="worklog.history">历史工作日志</h3>
+          <div class="space-y-4">
+            <!-- 143号房间日志 -->
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">ROOM 143 - <span data-i18n="worklog.betrayalRedemption">背叛的救赎</span></h4>
+                <a href="143RIKI日志.html" class="text-accent hover:text-white transition-colors flex items-center">
+                  <i class="fa fa-external-link mr-1"></i>
+                  <span data-i18n="worklog.viewDetails">查看详情</span>
+                </a>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log143">周明哲的情感浓度已达83%。"她"的幻象效果良好，救赎感与背叛痛苦形成完美对比。预计48小时内完成收集。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="worklog.lastUpdate">最后更新：<span class="text-accent">2025-11-20 13:45</span></span>
+                <span data-i18n="worklog.status">状态：<span class="text-warning">进行中</span></span>
+              </div>
+            </div>
+            
+            <!-- 291号房间日志 -->
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">ROOM 291 - <span data-i18n="worklog.desperateStruggle">绝望的挣扎</span></h4>
+                <a href="291RIKI日志.html" class="text-accent hover:text-white transition-colors flex items-center">
+                  <i class="fa fa-external-link mr-1"></i>
+                  <span data-i18n="worklog.viewDetails">查看详情</span>
+                </a>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log291">李文轩已进入第37次循环。每次循环产生的希望与绝望能量稳定增长。时间循环运行正常，无需干预。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="worklog.lastUpdate">最后更新：<span class="text-accent">2025-11-20 11:20</span></span>
+                <span data-i18n="worklog.status">状态：<span class="text-warning">进行中</span></span>
+              </div>
+            </div>
+            
+            <!-- 4030号房间日志 -->
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">ROOM 4030 - <span data-i18n="worklog.guiltyHealing">负罪的疗愈</span></h4>
+                <a href="4030RIKI日志.html" class="text-accent hover:text-white transition-colors flex items-center">
+                  <i class="fa fa-external-link mr-1"></i>
+                  <span data-i18n="worklog.viewDetails">查看详情</span>
+                </a>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log4030">陈逸风的负罪感在甜蜜回忆与残酷现实间反复拉扯，已达到67%。新闻推送刺激效果良好，预计72小时内达到峰值。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="worklog.lastUpdate">最后更新：<span class="text-accent">2025-11-20 09:15</span></span>
+                <span data-i18n="worklog.status">状态：<span class="text-warning">进行中</span></span>
+              </div>
+            </div>
+            
+            <!-- 302号房间日志 -->
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">ROOM 302 - <span data-i18n="worklog.greedyGame">贪婪的游戏</span></h4>
+                <a href="302RIKI日志.html" class="text-accent hover:text-white transition-colors flex items-center">
+                  <i class="fa fa-external-link mr-1"></i>
+                  <span data-i18n="worklog.viewDetails">查看详情</span>
+                </a>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log302">王天宇的贪婪情绪正在培育中。赌局设置已完成，对手幻象运行稳定。目前进度28%，需要更多时间让贪婪充分发展。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="worklog.lastUpdate">最后更新：<span class="text-accent">2025-11-19 16:40</span></span>
+                <span data-i18n="worklog.status">状态：<span class="text-accent">准备中</span></span>
+              </div>
+            </div>
+            
+            <!-- 314号房间日志 -->
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">ROOM 314 - <span data-i18n="worklog.obsessiveIndulgence">痴迷的沉沦</span></h4>
+                <a href="314RIKI日志.html" class="text-accent hover:text-white transition-colors flex items-center">
+                  <i class="fa fa-external-link mr-1"></i>
+                  <span data-i18n="worklog.viewDetails">查看详情</span>
+                </a>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log314">赵雨婷的舞蹈仪式进展顺利。完美舞伴幻象引导效果良好，痴迷情绪稳定增长。当前进度52%，能量收集效率优秀。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="worklog.lastUpdate">最后更新：<span class="text-accent">2025-11-19 14:25</span></span>
+                <span data-i18n="worklog.status">状态：<span class="text-warning">进行中</span></span>
+              </div>
+            </div>
+            
+            <!-- 902号房间日志 -->
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text白色">ROOM 902 - <span data-i18n="worklog.arrogantPeak">狂妄的顶点</span></h4>
+                <a href="902RIKI日志.html" class="text-accent hover:text-white transition-colors flex items-center">
+                  <i class="fa fa-external-link mr-1"></i>
+                  <span data-i18n="worklog.viewDetails">查看详情</span>
+                </a>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log902">刘星辰的能量对抗加剧。他试图控制情饕的仪式强度增加，产生的狂妄能量已达91%。需要密切关注，防止意外。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="worklog.lastUpdate">最后更新：<span class="text-accent">2025-11-19 11:50</span></span>
+                <span data-i18n="worklog.status">状态：<span class="text-warning">关键阶段</span></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 分页控件 -->
+          <div class="mt-6 flex justify-between items-center">
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="worklog.showing">显示 1-6 条，共 24 条日志</span>
+            </div>
+            <div class="flex space-x-2">
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="worklog.previous">上一页</span>
+              </button>
+              <button class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="worklog.next">下一页</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 系统配置部分 -->
+    <section id="system-config" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="system.title">系统配置</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <!-- 系统状态 -->
+          <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="system.systemStatus">系统状态</h3>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center p-3 hover:bg-accent/10 rounded-sm">
+                <div>
+                  <h4 class="text-white font-medium" data-i18n="system.hotelSystem">酒店系统</h4>
+                  <p class="text-gray-400 text-sm" data-i18n="system.coreOperations">核心运营系统</p>
+                </div>
+                <span class="text-success text-sm" data-i18n="system.online">在线</span>
+              </div>
+              <div class="flex justify-between items-center p-3 hover:bg-accent/10 rounded-sm">
+                <div>
+                  <h4 class="text-white font-medium" data-i18n="system.emotionAnalysis">情感分析系统</h4>
+                  <p class="text-gray-400 text-sm" data-i18n="system.specialRoomMonitoring">特殊房间监控</p>
+                </div>
+                <span class="text-success text-sm" data-i18n="system.online">在线</span>
+              </div>
+              <div class="flex justify-between items-center p-3 hover:bg-accent/10 rounded-sm">
+                <div>
+                  <h4 class="text-white font-medium" data-i18n="system.energyCollection">能量收集系统</h4>
+                  <p class="text-gray-400 text-sm" data-i18n="system.emotionEnergyProcessing">情感能量处理</p>
+                </div>
+                <span class="text-success text-sm" data-i18n="system.online">在线</span>
+              </div>
+              <div class="flex justify-between items-center p-3 hover:bg-accent/10 rounded-sm">
+                <div>
+                  <h4 class="text-white font-medium" data-i18n="system.candidateAssessment">候选人评估系统</h4>
+                  <p class="text-gray-400 text-sm" data-i18n="system.serviceAnalystCandidates">服务体验分析师候选人</p>
+                </div>
+                <span class="text-success text-sm" data-i18n="system.online">在线</span>
+              </div>
+              <div class="flex justify-between items-center p-3 hover:bg-accent/10 rounded-sm">
+                <div>
+                  <h4 class="text-white font-medium" data-i18n="system.securitySystem">安全系统</h4>
+                  <p class="text-gray-400 text-sm" data-i18n="system.accessControlMonitoring">访问控制与监控</p>
+                </div>
+                <span class="text-success text-sm" data-i18n="system.online">在线</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 系统设置 -->
+          <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="system.systemSettings">系统设置</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-2 text-white" data-i18n="system.energyThreshold">能量阈值</label>
+                <input type="range" min="0" max="100" value="85" class="w-full">
+                <div class="flex justify-between text-xs text-gray-400 mt-1">
+                  <span data-i18n="system.low">低</span>
+                  <span data-i18n="system.medium">中</span>
+                  <span data-i18n="system.high">高</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2 text-white" data-i18n="system.collectionEfficiency">收集效率</label>
+                <div class="flex items-center space-x-2">
+                  <span class="text-gray-300 text-sm">87%</span>
+                  <div class="flex-1 bg-primary/60 rounded-full h-2">
+                    <div class="bg-accent h-2 rounded-full" style="width: 87%"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2 text-white" data-i18n="system.autoBackup">自动备份</label>
+                  <div class="relative inline-block w-12 h-6 rounded-full bg-primary/60">
+                    <input type="checkbox" class="opacity-0 w-0 h-0" id="auto-backup">
+                    <label for="auto-backup" class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-primary/60 rounded-full transition-all duration-300 before:absolute before:content-[''] before:h-4 before:w-4 before:left-1 before:bottom-1 before:bg-accent before:rounded-full before:transition-all before:duration-300"></label>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2 text-white" data-i18n="system.alertNotifications">警报通知</label>
+                  <div class="relative inline-block w-12 h-6 rounded-full bg-primary/60">
+                    <input type="checkbox" class="opacity-0 w-0 h-0" id="alert-notifications" checked>
+                    <label for="alert-notifications" class="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-accent rounded-full transition-all duration-300 before:absolute before:content-[''] before:h-4 before:w-4 before:left-7 before:bottom-1 before:bg-white before:rounded-full before:transition-all before:duration-300"></label>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-2">
+                <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300 w-full">
+                  <span data-i18n="system.saveSettings">保存设置</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 系统日志 -->
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="system.systemLogs">系统日志</h3>
+          <div class="space-y-2 max-h-64 overflow-y-auto terminal-font text-sm">
+            <div class="text-success">> 2025-11-20 14:30:05 <span data-i18n="system.log1">系统运行正常，所有服务在线</span></div>
+            <div class="text-gray-300">> 2025-11-20 14:28:32 <span data-i18n="system.log2">情感能量收集效率：87.2%</span></div>
+            <div class="text-warning">> 2025-11-20 14:25:18 <span data-i18n="system.log3">902号房间能量波动异常，已记录</span></div>
+            <div class="text-gray-300">> 2025-11-20 14:22:45 <span data-i18n="system.log4">候选人#007分析进度更新：92%</span></div>
+            <div class="text-success">> 2025-11-20 14:20:10 <span data-i18n="system.log5">自动备份完成，数据完整性验证通过</span></div>
+            <div class="text-gray-300">> 2025-11-20 14:18:33 <span data-i18n="system.log6">系统安全检查完成，无异常</span></div>
+            <div class="text-warning">> 2025-11-20 14:15:27 <span data-i18n="system.log7">143号房间情感浓度达到83%，接近阈值</span></div>
+            <div class="text-gray-300">> 2025-11-20 14:12:55 <span data-i18n="system.log8">员工权限验证完成，所有访问正常</span></div>
+            <div class="text-success">> 2025-11-20 14:10:40 <span data-i18n="system.log9">系统性能优化完成，响应时间提升12%</span></div>
+            <div class="text-gray-300">> 2025-11-20 14:08:15 <span data-i18n="system.log10">日常维护任务执行完成</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">管理员系统 v3.0.1</span></span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.usage">仅供管理员使用 - 保密级别：最高</p>
+        </div>
+        
+        <div class="text-sm">
+          <p data-i18n="footer.lastUpdate">最后系统更新: 2025-11-15 09:45</p>
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.systemStatus">系统状态:</span> <span class="text-success" data-i18n="footer.optimal">最优运行</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+<script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.dashboard': '管理员工作台',
+        'nav.specialRooms': '特殊房间监控',
+        'nav.candidateAnalysis': '候选人分析',
+        'nav.worklog': '工作日志',
+        'nav.system': '系统配置',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'language': '语言',
+        'dashboard.title': '管理员工作台',
+        'dashboard.specialRooms': '特殊房间',
+        'dashboard.specialRoomsDesc': '当前活跃的特殊房间',
+        'dashboard.candidates': '候选人分析',
+        'dashboard.candidatesDesc': '服务体验分析师候选人',
+        'dashboard.energyLevel': '能量水平',
+        'dashboard.energyLevelDesc': '当前酒店整体能量水平',
+        'dashboard.systemHealth': '系统健康',
+        'dashboard.systemHealthDesc': '酒店系统运行状态',
+        'dashboard.importantReminders': '今日重要提醒',
+        'dashboard.systemStatus': '系统状态：正常运行',
+        'dashboard.room143': '143号房间：情感浓度已达83%，预计48小时内完成',
+        'dashboard.room902': '902号房间：能量对抗加剧，需要密切监控',
+        'dashboard.candidate': '候选人评估：服务体验分析师候选人表现超出预期',
+        'dashboard.schedule': '今日任务：完成143号房间最终评估 | 分析候选人数据',
+        'dashboard.performance': '系统效率：情感收集效率 92% | 能量转化率 87%',
+        'specialRooms.title': '特殊房间监控',
+        'specialRooms.viewLog': '查看日志',
+        'specialRooms.analyze': '分析',
+        'candidate.title': '候选人分析',
+        'candidate.candidateAnalysis': '候选人分析',
+        'candidate.searchPlaceholder': '搜索候选人...',
+        'candidate.filter': '筛选',
+        'candidate.serviceAnalyst': '服务体验分析师',
+        'candidate.excellent': '优秀',
+        'candidate.candidateDesc1': '洞察力优秀，逻辑推理能力突出，对情感模式识别有天赋。已完成六个房间的初步分析。',
+        'candidate.analysisProgress': '分析进度',
+        'candidate.nextAssessment': '下次评估',
+        'candidate.good': '良好',
+        'candidate.candidateDesc2': '情感共鸣能力强，但逻辑分析有待提高。对143号房间分析准确，但未能识别291号房间的异常。',
+        'candidate.average': '一般',
+        'candidate.candidateDesc3': '技术能力突出，但缺乏对情感细微差别的敏感性。可能需要重新评估岗位适配性。',
+        'candidate.showing': '显示 1-3 条，共 12 位候选人',
+        'candidate.previous': '上一页',
+        'candidate.next': '下一页',
+        'worklog.title': '工作日志',
+        'worklog.newLog': '新建工作日志',
+        'worklog.titlePlaceholder': '输入日志标题',
+        'worklog.content': '内容',
+        'worklog.contentPlaceholder': '记录特殊房间状态、能量水平变化和候选人评估...',
+        'worklog.save': '保存日志',
+        'worklog.history': '历史工作日志',
+        'worklog.betrayalRedemption': '背叛的救赎',
+        'worklog.viewDetails': '查看详情',
+        'worklog.log143': '周明哲的情感浓度已达83%。"她"的幻象效果良好，救赎感与背叛痛苦形成完美对比。预计48小时内完成收集。',
+        'worklog.lastUpdate': '最后更新',
+        'worklog.status': '状态',
+        'worklog.desperateStruggle': '绝望的挣扎',
+        'worklog.log291': '李文轩已进入第37次循环。每次循环产生的希望与绝望能量稳定增长。时间循环运行正常，无需干预。',
+        'worklog.guiltyHealing': '负罪的疗愈',
+        'worklog.log4030': '陈逸风的负罪感在甜蜜回忆与残酷现实间反复拉扯，已达到67%。新闻推送刺激效果良好，预计72小时内达到峰值。',
+        'worklog.greedyGame': '贪婪的游戏',
+        'worklog.log302': '王天宇的贪婪情绪正在培育中。赌局设置已完成，对手幻象运行稳定。目前进度28%，需要更多时间让贪婪充分发展。',
+        'worklog.obsessiveIndulgence': '痴迷的沉沦',
+        'worklog.log314': '赵雨婷的舞蹈仪式进展顺利。完美舞伴幻象引导效果良好，痴迷情绪稳定增长。当前进度52%，能量收集效率优秀。',
+        'worklog.arrogantPeak': '狂妄的顶点',
+        'worklog.log902': '刘星辰的能量对抗加剧。他试图控制情饕的仪式强度增加，产生的狂妄能量已达91%。需要密切关注，防止意外。',
+        'worklog.showing': '显示 1-6 条，共 24 条日志',
+        'worklog.previous': '上一页',
+        'worklog.next': '下一页',
+        'system.title': '系统配置',
+        'system.systemStatus': '系统状态',
+        'system.hotelSystem': '酒店系统',
+        'system.coreOperations': '核心运营系统',
+        'system.online': '在线',
+        'system.emotionAnalysis': '情感分析系统',
+        'system.specialRoomMonitoring': '特殊房间监控',
+        'system.energyCollection': '能量收集系统',
+        'system.emotionEnergyProcessing': '情感能量处理',
+        'system.candidateAssessment': '候选人评估系统',
+        'system.serviceAnalystCandidates': '服务体验分析师候选人',
+        'system.securitySystem': '安全系统',
+        'system.accessControlMonitoring': '访问控制与监控',
+        'system.systemSettings': '系统设置',
+        'system.energyThreshold': '能量阈值',
+        'system.low': '低',
+        'system.medium': '中',
+        'system.high': '高',
+        'system.collectionEfficiency': '收集效率',
+        'system.autoBackup': '自动备份',
+        'system.alertNotifications': '警报通知',
+        'system.saveSettings': '保存设置',
+        'system.systemLogs': '系统日志',
+        'system.log1': '系统运行正常，所有服务在线',
+        'system.log2': '情感能量收集效率：87.2%',
+        'system.log3': '902号房间能量波动异常，已记录',
+        'system.log4': '候选人#007分析进度更新：92%',
+        'system.log5': '自动备份完成，数据完整性验证通过',
+        'system.log6': '系统安全检查完成，无异常',
+        'system.log7': '143号房间情感浓度达到83%，接近阈值',
+        'system.log8': '员工权限验证完成，所有访问正常',
+        'system.log9': '系统性能优化完成，响应时间提升12%',
+        'system.log10': '日常维护任务执行完成',
+        'footer.system': '管理员系统 v3.0.1',
+        'footer.usage': '仅供管理员使用 - 保密级别：最高',
+        'footer.lastUpdate': '最后系统更新: 2025-11-15 09:45',
+        'footer.systemStatus': '系统状态:',
+        'footer.optimal': '最优运行'
+      },
+      'en': {
+        'nav.dashboard': 'Admin Dashboard',
+        'nav.specialRooms': 'Special Room Monitoring',
+        'nav.candidateAnalysis': 'Candidate Analysis',
+        'nav.worklog': 'Work Log',
+        'nav.system': 'System Configuration',
+        'user.profile': 'Profile',
+        'user.settings': 'Settings',
+        'user.help': 'Help',
+        'user.logout': 'Logout',
+        'language': 'Language',
+        'dashboard.title': 'Admin Dashboard',
+        'dashboard.specialRooms': 'Special Rooms',
+        'dashboard.specialRoomsDesc': 'Currently active special rooms',
+        'dashboard.candidates': 'Candidate Analysis',
+        'dashboard.candidatesDesc': 'Service Experience Analyst candidates',
+        'dashboard.energyLevel': 'Energy Level',
+        'dashboard.energyLevelDesc': 'Current hotel overall energy level',
+        'dashboard.systemHealth': 'System Health',
+        'dashboard.systemHealthDesc': 'Hotel system operation status',
+        'dashboard.importantReminders': 'Important Reminders Today',
+        'dashboard.systemStatus': 'System Status: Normal Operation',
+        'dashboard.room143': 'Room 143: Emotional concentration reached 83%, expected completion within 48 hours',
+        'dashboard.room902': 'Room 902: Energy confrontation intensifying, need close monitoring',
+        'dashboard.candidate': 'Candidate Assessment: Service Experience Analyst candidate performance exceeds expectations',
+        'dashboard.schedule': 'Today Tasks: Complete Room 143 final assessment | Analyze candidate data',
+        'dashboard.performance': 'System Efficiency: Emotion collection efficiency 92% | Energy conversion rate 87%',
+        'specialRooms.title': 'Special Room Monitoring',
+        'specialRooms.viewLog': 'View Log',
+        'specialRooms.analyze': 'Analyze',
+        'candidate.title': 'Candidate Analysis',
+        'candidate.candidateAnalysis': 'Candidate Analysis',
+        'candidate.searchPlaceholder': 'Search candidates...',
+        'candidate.filter': 'Filter',
+        'candidate.serviceAnalyst': 'Service Experience Analyst',
+        'candidate.excellent': 'Excellent',
+        'candidate.candidateDesc1': 'Excellent insight, outstanding logical reasoning ability, talent for emotional pattern recognition. Completed preliminary analysis of six rooms.',
+        'candidate.analysisProgress': 'Analysis Progress',
+        'candidate.nextAssessment': 'Next Assessment',
+        'candidate.good': 'Good',
+        'candidate.candidateDesc2': 'Strong emotional resonance ability, but logical analysis needs improvement. Accurate analysis of Room 143, but failed to identify Room 291 anomaly.',
+        'candidate.average': 'Average',
+        'candidate.candidateDesc3': 'Outstanding technical ability, but lacks sensitivity to emotional nuances. May need reassessment of position suitability.',
+        'candidate.showing': 'Showing 1-3 of 12 candidates',
+        'candidate.previous': 'Previous',
+        'candidate.next': 'Next',
+        'worklog.title': 'Work Log',
+        'worklog.newLog': 'New Work Log',
+        'worklog.titlePlaceholder': 'Enter log title',
+        'worklog.content': 'Content',
+        'worklog.contentPlaceholder': 'Record special room status, energy level changes and candidate assessments...',
+        'worklog.save': 'Save Log',
+        'worklog.history': 'Historical Work Logs',
+        'worklog.betrayalRedemption': 'Betrayal Redemption',
+        'worklog.viewDetails': 'View Details',
+        'worklog.log143': 'Zhou Mingzhe\'s emotional concentration reached 83%. The "her" illusion works well, redemption feeling and betrayal pain form perfect contrast. Expected completion within 48 hours.',
+        'worklog.lastUpdate': 'Last Update',
+        'worklog.status': 'Status',
+        'worklog.desperateStruggle': 'Desperate Struggle',
+        'worklog.log291': 'Li Wenxuan has entered the 37th cycle. Hope and despair energy generated each cycle grows steadily. Time loop operating normally, no intervention needed.',
+        'worklog.guiltyHealing': 'Guilty Healing',
+        'worklog.log4030': 'Chen Yifeng\'s guilt oscillates between sweet memories and harsh reality, reached 67%. News push stimulation works well, expected to peak within 72 hours.',
+        'worklog.greedyGame': 'Greedy Game',
+        'worklog.log302': 'Wang Tianyu\'s greed emotion being cultivated. Gambling setup completed, opponent illusion operating stably. Current progress 28%, needs more time for greed to fully develop.',
+        'worklog.obsessiveIndulgence': 'Obsessive Indulgence',
+        'worklog.log314': 'Zhao Yuting\'s dance ritual progressing smoothly. Perfect dance partner illusion guidance works well, obsessive emotion growing steadily. Current progress 52%, energy collection efficiency excellent.',
+        'worklog.arrogantPeak': 'Arrogant Peak',
+        'worklog.log902': 'Liu Xingchen\'s energy confrontation intensifying. His attempt to control Qingtao ritual intensity increasing, generated arrogance energy reached 91%. Need close monitoring to prevent accidents.',
+        'worklog.showing': 'Showing 1-6 of 24 logs',
+        'worklog.previous': 'Previous',
+        'worklog.next': 'Next',
+        'system.title': 'System Configuration',
+        'system.systemStatus': 'System Status',
+        'system.hotelSystem': 'Hotel System',
+        'system.coreOperations': 'Core Operations System',
+        'system.online': 'Online',
+        'system.emotionAnalysis': 'Emotion Analysis System',
+        'system.specialRoomMonitoring': 'Special Room Monitoring',
+        'system.energyCollection': 'Energy Collection System',
+        'system.emotionEnergyProcessing': 'Emotion Energy Processing',
+        'system.candidateAssessment': 'Candidate Assessment System',
+        'system.serviceAnalystCandidates': 'Service Experience Analyst Candidates',
+        'system.securitySystem': 'Security System',
+        'system.accessControlMonitoring': 'Access Control & Monitoring',
+        'system.systemSettings': 'System Settings',
+        'system.energyThreshold': 'Energy Threshold',
+        'system.low': 'Low',
+        'system.medium': 'Medium',
+        'system.high': 'High',
+        'system.collectionEfficiency': 'Collection Efficiency',
+        'system.autoBackup': 'Auto Backup',
+        'system.alertNotifications': 'Alert Notifications',
+        'system.saveSettings': 'Save Settings',
+        'system.systemLogs': 'System Logs',
+        'system.log1': 'System running normally, all services online',
+        'system.log2': 'Emotion energy collection efficiency: 87.2%',
+        'system.log3': 'Room 902 energy fluctuation abnormal, recorded',
+        'system.log4': 'Candidate #007 analysis progress updated: 92%',
+        'system.log5': 'Auto backup completed, data integrity verified',
+        'system.log6': 'System security check completed, no anomalies',
+        'system.log7': 'Room 143 emotional concentration reached 83%, approaching threshold',
+        'system.log8': 'Staff permission verification completed, all access normal',
+        'system.log9': 'System performance optimization completed, response time improved 12%',
+        'system.log10': 'Daily maintenance tasks execution completed',
+        'footer.system': 'Admin System v3.0.1',
+        'footer.usage': 'For admin use only - Security level: Highest',
+        'footer.lastUpdate': 'Last system update: 2025-11-15 09:45',
+        'footer.systemStatus': 'System Status:',
+        'footer.optimal': 'Optimal operation'
+      },
+      'ja': {
+        'nav.dashboard': '管理者ダッシュボード',
+        'nav.specialRooms': '特別客室モニタリング',
+        'nav.candidateAnalysis': '候補者分析',
+        'nav.worklog': '作業ログ',
+        'nav.system': 'システム設定',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプ',
+        'user.logout': 'ログアウト',
+        'language': '言語',
+        'dashboard.title': '管理者ダッシュボード',
+        'dashboard.specialRooms': '特別客室',
+        'dashboard.specialRoomsDesc': '現在アクティブな特別客室',
+        'dashboard.candidates': '候補者分析',
+        'dashboard.candidatesDesc': 'サービス体験アナリスト候補',
+        'dashboard.energyLevel': 'エネルギー水準',
+        'dashboard.energyLevelDesc': '現在のホテル全体のエネルギー水準',
+        'dashboard.systemHealth': 'システム健全性',
+        'dashboard.systemHealthDesc': 'ホテルシステム運用状況',
+        'dashboard.importantReminders': '本日の重要リマインダー',
+        'dashboard.systemStatus': 'システムステータス：正常動作',
+        'dashboard.room143': '143号室：感情濃度が83%に達しました。48時間以内の完了が見込まれます',
+        'dashboard.room902': '902号室：エネルギー対立が激化。緊密な監視が必要',
+        'dashboard.candidate': '候補者評価：サービス体験アナリスト候補のパフォーマンスが期待を上回る',
+        'dashboard.schedule': '本日のタスク：143号室最終評価の完了 | 候補者データの分析',
+        'dashboard.performance': 'システム効率：感情収集効率 92% | エネルギー変換率 87%',
+        'specialRooms.title': '特別客室モニタリング',
+        'specialRooms.viewLog': 'ログ表示',
+        'specialRooms.analyze': '分析',
+        'candidate.title': '候補者分析',
+        'candidate.candidateAnalysis': '候補者分析',
+        'candidate.searchPlaceholder': '候補者を検索...',
+        'candidate.filter': 'フィルター',
+        'candidate.serviceAnalyst': 'サービス体験アナリスト',
+        'candidate.excellent': '優秀',
+        'candidate.candidateDesc1': '洞察力に優れ、論理的思考能力が突出。感情パターン認識に才能を発揮。6つの客室の予備分析を完了。',
+        'candidate.analysisProgress': '分析進捗',
+        'candidate.nextAssessment': '次回評価',
+        'candidate.good': '良好',
+        'candidate.candidateDesc2': '感情共感能力は強いが、論理分析に改善の余地あり。143号室の分析は正確だが、291号室の異常を特定できず。',
+        'candidate.average': '普通',
+        'candidate.candidateDesc3': '技術能力は突出しているが、感情の微妙な差異への感受性に欠ける。ポジション適性の再評価が必要な可能性。',
+        'candidate.showing': '1-3件表示 / 全12候補者',
+        'candidate.previous': '前へ',
+        'candidate.next': '次へ',
+        'worklog.title': '作業ログ',
+        'worklog.newLog': '新規作業ログ',
+        'worklog.titlePlaceholder': 'ログタイトルを入力',
+        'worklog.content': '内容',
+        'worklog.contentPlaceholder': '特別客室の状態、エネルギー水準の変化、候補者評価を記録...',
+        'worklog.save': 'ログ保存',
+        'worklog.history': '過去の作業ログ',
+        'worklog.betrayalRedemption': '裏切りの救済',
+        'worklog.viewDetails': '詳細表示',
+        'worklog.log143': '周明哲の感情濃度は83%に達した。「彼女」の幻影効果は良好で、救済感と裏切りの苦痛が完璧な対比を形成。48時間以内の収集完了が見込まれる。',
+        'worklog.lastUpdate': '最終更新',
+        'worklog.status': 'ステータス',
+        'worklog.desperateStruggle': '絶望の闘い',
+        'worklog.log291': '李文軒は37回目のサイクルに入った。各サイクルで生成される希望と絶望のエネルギーは着実に増加。時間ループは正常に動作しており、介入の必要なし。',
+        'worklog.guiltyHealing': '罪悪感の癒し',
+        'worklog.log4030': '陳逸風の罪悪感は甘い思い出と残酷な現実の間で揺れ動き、67%に達した。ニュース配信の刺激効果は良好で、72時間以内にピークに達すると予想される。',
+        'worklog.greedyGame': '貪欲なゲーム',
+        'worklog.log302': '王天宇の貪欲感情は育成中。賭博の設定は完了し、対戦相手の幻影は安定して動作している。現在の進捗は28%、貪欲が十分に発展するためにはさらなる時間が必要。',
+        'worklog.obsessiveIndulgence': '執着の没落',
+        'worklog.log314': '趙雨婷の舞踊儀式は順調に進行中。完璧なパートナーの幻影誘導効果は良好で、執着感情は着実に増加している。現在の進捗は52%、エネルギー収集効率は優秀。',
+        'worklog.arrogantPeak': '傲慢の頂点',
+        'worklog.log902': '劉星辰のエネルギー対立が激化。彼が情饕を制御しようとする儀式の強度が増加し、生成された傲慢エネルギーは91%に達した。事故防止のため緊密な監視が必要。',
+        'worklog.showing': '1-6件表示 / 全24ログ',
+        'worklog.previous': '前へ',
+        'worklog.next': '次へ',
+        'system.title': 'システム設定',
+        'system.systemStatus': 'システムステータス',
+        'system.hotelSystem': 'ホテルシステム',
+        'system.coreOperations': 'コア運用システム',
+        'system.online': 'オンライン',
+        'system.emotionAnalysis': '感情分析システム',
+        'system.specialRoomMonitoring': '特別客室モニタリング',
+        'system.energyCollection': 'エネルギー収集システム',
+        'system.emotionEnergyProcessing': '感情エネルギー処理',
+        'system.candidateAssessment': '候補者評価システム',
+        'system.serviceAnalystCandidates': 'サービス体験アナリスト候補',
+        'system.securitySystem': 'セキュリティシステム',
+        'system.accessControlMonitoring': 'アクセス制御と監視',
+        'system.systemSettings': 'システム設定',
+        'system.energyThreshold': 'エネルギー閾値',
+        'system.low': '低',
+        'system.medium': '中',
+        'system.high': '高',
+        'system.collectionEfficiency': '収集効率',
+        'system.autoBackup': '自動バックアップ',
+        'system.alertNotifications': 'アラート通知',
+        'system.saveSettings': '設定保存',
+        'system.systemLogs': 'システムログ',
+        'system.log1': 'システム正常動作、全サービスオンライン',
+        'system.log2': '感情エネルギー収集効率：87.2%',
+        'system.log3': '902号室エネルギー変動異常、記録済み',
+        'system.log4': '候補者#007分析進捗更新：92%',
+        'system.log5': '自動バックアップ完了、データ完全性検証済み',
+        'system.log6': 'システムセキュリティチェック完了、異常なし',
+        'system.log7': '143号室感情濃度が83%に達し、閾値に接近',
+        'system.log8': 'スタッフ権限検証完了、全アクセス正常',
+        'system.log9': 'システムパフォーマンス最適化完了、応答時間12%改善',
+        'system.log10': '日常メンテナンスタスク実行完了',
+        'footer.system': '管理者システム v3.0.1',
+        'footer.usage': '管理者専用 - 機密レベル：最高',
+        'footer.lastUpdate': '最終システム更新: 2025-11-15 09:45',
+        'footer.systemStatus': 'システムステータス:',
+        'footer.optimal': '最適動作'
+      },
+      'pt': {
+        'nav.dashboard': 'Painel do Administrador',
+        'nav.specialRooms': 'Monitoramento de Salas Especiais',
+        'nav.candidateAnalysis': 'Análise de Candidatos',
+        'nav.worklog': 'Registro de Trabalho',
+        'nav.system': 'Configuração do Sistema',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações',
+        'user.help': 'Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'language': 'Idioma',
+        'dashboard.title': 'Painel do Administrador',
+        'dashboard.specialRooms': 'Salas Especiais',
+        'dashboard.specialRoomsDesc': 'Salas especiais ativas atualmente',
+        'dashboard.candidates': 'Análise de Candidatos',
+        'dashboard.candidatesDesc': 'Candidatos a Analista de Experiência de Serviço',
+        'dashboard.energyLevel': 'Nível de Energia',
+        'dashboard.energyLevelDesc': 'Nível geral de energia atual do hotel',
+        'dashboard.systemHealth': 'Saúde do Sistema',
+        'dashboard.systemHealthDesc': 'Status de operação do sistema do hotel',
+        'dashboard.importantReminders': 'Lembretes Importantes de Hoje',
+        'dashboard.systemStatus': 'Status do Sistema: Operação Normal',
+        'dashboard.room143': 'Sala 143: Concentração emocional atingiu 83%, conclusão esperada em 48 horas',
+        'dashboard.room902': 'Sala 902: Confronto energético intensificando, necessidade de monitoramento próximo',
+        'dashboard.candidate': 'Avaliação de Candidato: Desempenho do candidato a Analista de Experiência de Serviço excede expectativas',
+        'dashboard.schedule': 'Tarefas de Hoje: Concluir avaliação final da Sala 143 | Analisar dados de candidatos',
+        'dashboard.performance': 'Eficiência do Sistema: Eficiência de coleta emocional 92% | Taxa de conversão energética 87%',
+        'specialRooms.title': 'Monitoramento de Salas Especiais',
+        'specialRooms.viewLog': 'Ver Registro',
+        'specialRooms.analyze': 'Analisar',
+        'candidate.title': 'Análise de Candidatos',
+        'candidate.candidateAnalysis': 'Análise de Candidatos',
+        'candidate.searchPlaceholder': 'Pesquisar candidatos...',
+        'candidate.filter': 'Filtrar',
+        'candidate.serviceAnalyst': 'Analista de Experiência de Serviço',
+        'candidate.excellent': 'Excelente',
+        'candidate.candidateDesc1': 'Excelente perspicácia, capacidade de raciocínio lógico destacada, talento para reconhecimento de padrões emocionais. Concluiu análise preliminar de seis salas.',
+        'candidate.analysisProgress': 'Progresso da Análise',
+        'candidate.nextAssessment': 'Próxima Avaliação',
+        'candidate.good': 'Bom',
+        'candidate.candidateDesc2': 'Forte capacidade de ressonância emocional, mas análise lógica precisa melhorar. Análise precisa da Sala 143, mas não identificou anomalia da Sala 291.',
+        'candidate.average': 'Médio',
+        'candidate.candidateDesc3': 'Habilidade técnica destacada, mas carece de sensibilidade para nuances emocionais. Pode necessitar reavaliação da adequação ao cargo.',
+        'candidate.showing': 'Mostrando 1-3 de 12 candidatos',
+        'candidate.previous': 'Anterior',
+        'candidate.next': 'Próximo',
+        'worklog.title': 'Registro de Trabalho',
+        'worklog.newLog': 'Novo Registro de Trabalho',
+        'worklog.titlePlaceholder': 'Digite o título do registro',
+        'worklog.content': 'Conteúdo',
+        'worklog.contentPlaceholder': 'Registrar status de salas especiais, mudanças no nível de energia e avaliações de candidatos...',
+        'worklog.save': 'Salvar Registro',
+        'worklog.history': 'Registros de Trabalho Históricos',
+        'worklog.betrayalRedemption': 'Redenção da Traição',
+        'worklog.viewDetails': 'Ver Detalhes',
+        'worklog.log143': 'A concentração emocional de Zhou Mingzhe atingiu 83%. A ilusão de "ela" funciona bem, sentimento de redenção e dor da traição formam contraste perfeito. Conclusão esperada em 48 horas.',
+        'worklog.lastUpdate': 'Última Atualização',
+        'worklog.status': 'Status',
+        'worklog.desperateStruggle': 'Luta Desesperada',
+        'worklog.log291': 'Li Wenxuan entrou no 37º ciclo. Energia de esperança e desespero gerada a cada ciclo cresce constantemente. Loop temporal operando normalmente, nenhuma intervenção necessária.',
+        'worklog.guiltyHealing': 'Cura Culpada',
+        'worklog.log4030': 'A culpa de Chen Yifeng oscila entre memórias doces e realidade cruel, atingiu 67%. Estímulo por notícias funciona bem, esperado atingir pico em 72 horas.',
+        'worklog.greedyGame': 'Jogo Ganancioso',
+        'worklog.log302': 'Emoção de ganância de Wang Tianyu sendo cultivada. Configuração de jogo concluída, ilusão do oponente operando estável. Progresso atual 28%, precisa de mais tempo para ganância desenvolver plenamente.',
+        'worklog.obsessiveIndulgence': 'Indulgência Obsessiva',
+        'worklog.log314': 'Ritual de dança de Zhao Yuting progredindo suavemente. Orientação por ilusão de parceiro perfeito funciona bem, emoção obsessiva crescendo constantemente. Progresso atual 52%, eficiência de coleta de energia excelente.',
+        'worklog.arrogantPeak': 'Pico Arrogante',
+        'worklog.log902': 'Confronto energético de Liu Xingchen intensificando. Sua tentativa de controlar ritual Qingtao aumentando intensidade, energia de arrogância gerada atingiu 91%. Necessidade de monitoramento próximo para prevenir acidentes.',
+        'worklog.showing': 'Mostrando 1-6 de 24 registros',
+        'worklog.previous': 'Anterior',
+        'worklog.next': 'Próximo',
+        'system.title': 'Configuração do Sistema',
+        'system.systemStatus': 'Status do Sistema',
+        'system.hotelSystem': 'Sistema do Hotel',
+        'system.coreOperations': 'Sistema de Operações Principais',
+        'system.online': 'Online',
+        'system.emotionAnalysis': 'Sistema de Análise Emocional',
+        'system.specialRoomMonitoring': 'Monitoramento de Salas Especiais',
+        'system.energyCollection': 'Sistema de Coleta de Energia',
+        'system.emotionEnergyProcessing': 'Processamento de Energia Emocional',
+        'system.candidateAssessment': 'Sistema de Avaliação de Candidatos',
+        'system.serviceAnalystCandidates': 'Candidatos a Analista de Experiência de Serviço',
+        'system.securitySystem': 'Sistema de Segurança',
+        'system.accessControlMonitoring': 'Controle de Acesso e Monitoramento',
+        'system.systemSettings': 'Configurações do Sistema',
+        'system.energyThreshold': 'Limiar de Energia',
+        'system.low': 'Baixo',
+        'system.medium': 'Médio',
+        'system.high': 'Alto',
+        'system.collectionEfficiency': 'Eficiência de Coleta',
+        'system.autoBackup': 'Backup Automático',
+        'system.alertNotifications': 'Notificações de Alerta',
+        'system.saveSettings': 'Salvar Configurações',
+        'system.systemLogs': 'Registros do Sistema',
+        'system.log1': 'Sistema funcionando normalmente, todos os serviços online',
+        'system.log2': 'Eficiência de coleta de energia emocional: 87.2%',
+        'system.log3': 'Flutuação energética anormal na Sala 902, registrada',
+        'system.log4': 'Progresso da análise do Candidato #007 atualizado: 92%',
+        'system.log5': 'Backup automático concluído, integridade dos dados verificada',
+        'system.log6': 'Verificação de segurança do sistema concluída, sem anomalias',
+        'system.log7': 'Concentração emocional da Sala 143 atingiu 83%, aproximando-se do limiar',
+        'system.log8': 'Verificação de permissões de funcionários concluída, todos os acessos normais',
+        'system.log9': 'Otimização de desempenho do sistema concluída, tempo de resposta melhorado 12%',
+        'system.log10': 'Execução de tarefas de manutenção diária concluída',
+        'footer.system': 'Sistema do Administrador v3.0.1',
+        'footer.usage': 'Uso exclusivo do administrador - Nível de confidencialidade: Máximo',
+        'footer.lastUpdate': 'Última atualização do sistema: 2025-11-15 09:45',
+        'footer.systemStatus': 'Status do Sistema:',
+        'footer.optimal': 'Operação ideal'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 页面切换功能
+      function switchPage(sectionId) {
+        // 隐藏所有页面
+        document.querySelectorAll('.page-section').forEach(section => {
+          section.classList.remove('active');
+        });
+        
+        // 显示选中的页面
+        document.getElementById(sectionId).classList.add('active');
+        
+        // 滚动到页面顶部
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+        
+        // 关闭移动菜单
+        if (!mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          const icon = menuToggle.querySelector('i');
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        }
+      }
+      
+      // 为导航链接添加事件监听器
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const sectionId = this.getAttribute('data-section');
+          switchPage(sectionId);
+        });
+      });
+      
+      // 为导航卡片添加事件监听器
+      document.querySelectorAll('.nav-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+          e.preventDefault();
+          const sectionId = this.getAttribute('data-section');
+          switchPage(sectionId);
+        });
+      });
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

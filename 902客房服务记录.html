@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 902号房服务记录</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+      .record-item {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+      }
+      .summary-section {
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.7);
+        border: 1px solid rgba(138, 107, 190, 0.3);
+      }
+      .service-record {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: rgba(42, 27, 61, 0.5);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        position: relative;
+        padding-left: 30px;
+      }
+      .service-record:before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 20px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #8A6BBE;
+      }
+      .service-record:after {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 32px;
+        bottom: -15px;
+        width: 2px;
+        background-color: rgba(138, 107, 190, 0.3);
+      }
+      .service-record:last-child:after {
+        display: none;
+      }
+      .service-date {
+        font-weight: bold;
+        color: #D4AF37;
+        margin-bottom: 5px;
+        font-family: 'Courier New', monospace;
+      }
+      .service-content {
+        color: #E5E5E5;
+        line-height: 1.5;
+      }
+      .category-title {
+        background: rgba(138, 107, 190, 0.2);
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin: 25px 0 15px 0;
+        border-left: 4px solid #8A6BBE;
+        font-weight: bold;
+      }
+      .warning-note {
+        background: rgba(255, 68, 68, 0.1);
+        border-left: 4px solid #ff4444;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 5px;
+      }
+      .special-note {
+        background: rgba(212, 175, 55, 0.1);
+        border-left: 4px solid #D4AF37;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 5px;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M内部系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 内部系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 返回按钮 -->
+        <button id="back-button" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </button>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">李丽</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20" data-i18n="user.loggedIn">登录用户</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <button id="back-button-mobile" class="text-gray-300 hover:text-white py-2 transition-colors text-left flex items-center">
+          <i class="fa fa-arrow-left mr-2"></i>
+          <span data-i18n="nav.back">返回</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 902号房服务记录 -->
+    <section class="py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white terminal-font" data-i18n="page.title">客房服务 - 服务记录</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-24</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-white terminal-font">ROOM 902 - <span data-i18n="guest.name">刘星辰</span></h2>
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="guest.checkIn">入住</span>: 2025-11-14 | <span data-i18n="guest.checkOut">退房</span>: 2025-11-28
+            </div>
+          </div>
+          
+          <!-- 服务记录时间线 -->
+          <div class="mt-6">
+            <h3 class="text-accent font-semibold mb-4 text-lg" data-i18n="record.serviceRecords">服务记录</h3>
+            
+            <!-- 按照提供的文本顺序，严格保持顺序 -->
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date1">11/15 10:00</div>
+              <div class="service-content" data-i18n="record.content1">按指示在902门外放置首箱威士忌与矿泉水。房门紧闭，门内无声响。晚20:00回收空箱时，发现威士忌与矿泉水均已取入房内，门口无其他物品。</div>
+            </div>
+            
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date2">11/16 全天</div>
+              <div class="service-content" data-i18n="record.content2">无服务要求。走廊经过时可听到房内持续低沉嗡鸣声，非音乐，类似设备运转。灯光无异常。</div>
+            </div>
+            
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date3">11/17 10:00</div>
+              <div class="service-content" data-i18n="record.content3">放置第二箱威士忌与矿泉水。房门微开约十厘米缝隙，瞥见室内景象：所有家具（沙发、床、桌椅）均被推至墙边，地板中央用白色粉末绘制大型复杂几何图案，线路交错。住客背对门口，蹲在图案中心调试设备（黑色大型音箱三台、混音台一台）。未打扰，放置物品后离开。</div>
+            </div>
+            
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date4">11/19 全天</div>
+              <div class="service-content" data-i18n="record.content4">无直接服务。夜间（约02:00-04:00）多名同层住客致电客房部投诉"持续震动与耳鸣感"，来源指向902。服务员至902门外确认，确实感到地板轻微震颤，门内传出极低频声波，非听觉可清晰捕捉，但引起生理不适。按酒店政策未打扰住客，记录投诉并上报。</div>
+            </div>
+            
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date5">11/20 10:00</div>
+              <div class="service-content" data-i18n="record.content5">放置第三箱威士忌与矿泉水。住客亲自开门领取，状态异常：眼圈深黑，汗流浃背，呼吸急促。身穿黑色背心，手臂与胸口可见新鲜红色印记（非伤口，似颜料或咒文绘制）。住客主动提出新要求："今晚需要二十公斤羊油和三十根白色长蜡烛，最晚20点前送到门口。"</div>
+            </div>
+            
+            <!-- 特批备注，紧跟在相关记录后面 -->
+            <div class="special-note">
+              <p data-i18n="record.specialRemarkContent">备注：该要求涉及消防隐患，已按流程上报。后接到管理层通知（RIKI特批）予以满足。</p>
+            </div>
+            
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date6">11/20 19:50</div>
+              <div class="service-content" data-i18n="record.content6">将羊油（密封桶装）与蜡烛（整箱）放置于902门口。敲门告知后迅速离开。房门未开。</div>
+            </div>
+            
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date7">11/21 上午</div>
+              <div class="service-content" data-i18n="record.content7">清洁901房时，客人反映昨夜902持续传来"吟唱与拍击声"，且闻到浓郁油脂燃烧气味。检查902门外，无异味残留，门缝下方有少量凝固白色蜡油。</div>
+            </div>
+            
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date8">11/25 16:00</div>
+              <div class="service-content" data-i18n="record.content8">放置第四箱威士忌与矿泉水。门上贴有手写纸条："明晚勿近此门。——刘"。纸条字迹潦草有力。</div>
+            </div>
+            
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date9">11/26-11/27</div>
+              <div class="service-content" data-i18n="record.content9">多名服务员表示靠近902时产生"被注视感"与莫名焦虑。房门始终紧闭。</div>
+            </div>
+            
+            <div class="service-record">
+              <div class="service-date" data-i18n="record.date10">11/28</div>
+              <div class="service-content" data-i18n="record.content10">住客退房。RIKI先生表示要亲自前往902号房查房。</div>
+            </div>
+            
+            <!-- 最终备注 -->
+            <div class="warning-note">
+              <p data-i18n="record.remarkContent">备注：本房间入住期间未接受任何传统客房服务（铺床、清洁、补给），所有交互仅限于门口物品交接。住客行为异常但对房间设施无物理损害。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">内部系统</span> v2.1.4</span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.confidential">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.status">系统状态</span>: <span class="text-success" data-i18n="footer.running">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.back': '返回',
+        'page.title': '客房服务 - 服务记录',
+        'guest.name': '刘星辰',
+        'guest.checkIn': '入住',
+        'guest.checkOut': '退房',
+        'record.serviceRecords': '服务记录',
+        'record.remarkContent': '备注：本房间入住期间未接受任何传统客房服务（铺床、清洁、补给），所有交互仅限于门口物品交接。住客行为异常但对房间设施无物理损害。',
+        'record.specialRemarkContent': '备注：该要求涉及消防隐患，已按流程上报。后接到管理层通知（RIKI特批）予以满足。',
+        'record.date1': '11/15 10:00',
+        'record.content1': '按指示在902门外放置首箱威士忌与矿泉水。房门紧闭，门内无声响。晚20:00回收空箱时，发现威士忌与矿泉水均已取入房内，门口无其他物品。',
+        'record.date2': '11/16 全天',
+        'record.content2': '无服务要求。走廊经过时可听到房内持续低沉嗡鸣声，非音乐，类似设备运转。灯光无异常。',
+        'record.date3': '11/17 10:00',
+        'record.content3': '放置第二箱威士忌与矿泉水。房门微开约十厘米缝隙，瞥见室内景象：所有家具（沙发、床、桌椅）均被推至墙边，地板中央用白色粉末绘制大型复杂几何图案，线路交错。住客背对门口，蹲在图案中心调试设备（黑色大型音箱三台、混音台一台）。未打扰，放置物品后离开。',
+        'record.date4': '11/19 全天',
+        'record.content4': '无直接服务。夜间（约02:00-04:00）多名同层住客致电客房部投诉"持续震动与耳鸣感"，来源指向902。服务员至902门外确认，确实感到地板轻微震颤，门内传出极低频声波，非听觉可清晰捕捉，但引起生理不适。按酒店政策未打扰住客，记录投诉并上报。',
+        'record.date5': '11/20 10:00',
+        'record.content5': '放置第三箱威士忌与矿泉水。住客亲自开门领取，状态异常：眼圈深黑，汗流浃背，呼吸急促。身穿黑色背心，手臂与胸口可见新鲜红色印记（非伤口，似颜料或咒文绘制）。住客主动提出新要求："今晚需要二十公斤羊油和三十根白色长蜡烛，最晚20点前送到门口。"',
+        'record.date6': '11/20 19:50',
+        'record.content6': '将羊油（密封桶装）与蜡烛（整箱）放置于902门口。敲门告知后迅速离开。房门未开。',
+        'record.date7': '11/21 上午',
+        'record.content7': '清洁901房时，客人反映昨夜902持续传来"吟唱与拍击声"，且闻到浓郁油脂燃烧气味。检查902门外，无异味残留，门缝下方有少量凝固白色蜡油。',
+        'record.date8': '11/25 16:00',
+        'record.content8': '放置第四箱威士忌与矿泉水。门上贴有手写纸条："明晚勿近此门。——刘"。纸条字迹潦草有力。',
+        'record.date9': '11/26-11/27',
+        'record.content9': '多名服务员表示靠近902时产生"被注视感"与莫名焦虑。房门始终紧闭。',
+        'record.date10': '11/28',
+        'record.content10': '住客退房。RIKI先生表示要亲自前往902号房查房。',
+        'user.loggedIn': '登录用户',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'footer.system': '内部系统',
+        'footer.confidential': '仅供内部使用 - 保密级别：高级',
+        'footer.status': '系统状态',
+        'footer.running': '运行正常'
+      },
+      'en': {
+        'nav.back': 'Back',
+        'page.title': 'Room Service - Service Record',
+        'guest.name': 'Liu Xingchen',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'record.serviceRecords': 'Service Records',
+        'record.remarkContent': 'Note: During the stay, this room did not receive any traditional housekeeping services (bed making, cleaning, replenishment). All interactions were limited to item exchanges at the door. Guest behavior was abnormal but caused no physical damage to room facilities.',
+        'record.specialRemarkContent': 'Note: This request involved fire safety hazards and was reported through proper channels. Subsequently, management approval (RIKI special approval) was granted to fulfill the request.',
+        'record.date1': '11/15 10:00',
+        'record.content1': 'First box of whiskey and mineral water placed outside Room 902 as instructed. Door closed tightly, no sound from inside. When retrieving empty box at 20:00, found both whiskey and water had been taken inside, no other items at door.',
+        'record.date2': '11/16 All Day',
+        'record.content2': 'No service requests. When passing through corridor, continuous low humming sound audible from room - not music, resembling equipment operation. No abnormal lighting observed.',
+        'record.date3': '11/17 10:00',
+        'record.content3': 'Placed second box of whiskey and mineral water. Door slightly ajar about ten centimeters. Glimpse inside: all furniture (sofa, bed, tables, chairs) pushed against walls. Large complex geometric pattern drawn on floor center with white powder, intersecting lines. Guest facing away from door, squatting in pattern center adjusting equipment (three large black speakers, one mixing console). Did not disturb, left after placing items.',
+        'record.date4': '11/19 All Day',
+        'record.content4': 'No direct service. Nighttime (approx. 02:00-04:00) multiple guests on same floor called housekeeping complaining of "continuous vibration and ringing sensation," source traced to Room 902. Staff confirmed at door: felt slight floor tremors, extremely low-frequency waves emanating from inside - not clearly audible but causing physical discomfort. Did not disturb guest per hotel policy, recorded complaints and reported.',
+        'record.date5': '11/20 10:00',
+        'record.content5': 'Placed third box of whiskey and mineral water. Guest personally opened door to receive, appearing abnormal: dark circles under eyes, sweating profusely, breathing rapidly. Wearing black tank top, fresh red marks visible on arms and chest (not wounds, resembling paint or ritual inscriptions). Guest actively requested: "Need twenty kilograms of mutton fat and thirty white long candles tonight, deliver to door by 20:00 latest."',
+        'record.date6': '11/20 19:50',
+        'record.content6': 'Placed mutton fat (sealed bucket) and candles (full box) outside Room 902. Knocked to inform, then quickly left. Door did not open.',
+        'record.date7': '11/21 Morning',
+        'record.content7': 'While cleaning Room 901, guest reported hearing "chanting and slapping sounds" from 902 all last night, and smelled strong burning fat odor. Checked outside 902: no residual odor, small amount of solidified white wax under door crack.',
+        'record.date8': '11/25 16:00',
+        'record.content8': 'Placed fourth box of whiskey and mineral water. Handwritten note on door: "Tomorrow night, stay away from this door. — Liu". Note handwriting scrawled but forceful.',
+        'record.date9': '11/26-11/27',
+        'record.content9': 'Multiple staff reported feeling "being watched" and unexplained anxiety when approaching 902. Door remained tightly closed.',
+        'record.date10': '11/28',
+        'record.content10': 'Guest checked out. Mr. RIKI indicated he would personally inspect Room 902.',
+        'user.loggedIn': 'Logged In User',
+        'user.profile': 'Profile',
+        'user.settings': 'System Settings',
+        'user.help': 'Help Documentation',
+        'user.logout': 'Logout',
+        'footer.system': 'Internal System',
+        'footer.confidential': 'For Internal Use Only - Confidentiality Level: High',
+        'footer.status': 'System Status',
+        'footer.running': 'Running Normally'
+      },
+      'ja': {
+        'nav.back': '戻る',
+        'page.title': '客室サービス - サービス記録',
+        'guest.name': '劉星辰',
+        'guest.checkIn': 'チェックイン',
+        'guest.checkOut': 'チェックアウト',
+        'record.serviceRecords': 'サービス記録',
+        'record.remarkContent': '備考：宿泊期間中、この部屋は従来型の客室サービス（ベッドメイキング、清掃、備品補充）を一切受けていません。すべてのやり取りはドア前での物品交換に限られていました。宿泊客の行動は異常でしたが、客室設備への物理的損傷はありませんでした。',
+        'record.specialRemarkContent': '備考：この要求は消防法上の危険を伴うため、適切な経路で報告されました。その後、管理層の承認（RIKI特別承認）を得て要求を満たすこととなりました。',
+        'record.date1': '11/15 10:00',
+        'record.content1': '指示通り902号室外にウイスキーとミネラルウォーターの初回箱を設置。ドアは固く閉じられ、室内から音はなし。20:00に空箱を回収時、ウイスキーとミネラルウォーターは両方とも室内に取り込まれており、ドア前には他に物品なし。',
+        'record.date2': '11/16 終日',
+        'record.content2': 'サービス要求なし。廊下を通る際、室内から継続的な低い唸り音が聞こえる（音楽ではなく、機器運転音に類似）。照明に異常なし。',
+        'record.date3': '11/17 10:00',
+        'record.content3': 'ウイスキーとミネラルウォーターの第2箱を設置。ドアは約10センチ隙間が開いていた。室内を一瞥：すべての家具（ソファ、ベッド、机、椅子）が壁際に押しやられている。床中央に白色粉末で描かれた大型複雑な幾何学模様、線路交錯。宿泊客はドアに背を向け、模様の中心で設備（大型黒スピーカー3台、ミキシングコンソール1台）を調整中。邪魔せず、物品設置後退室。',
+        'record.date4': '11/19 終日',
+        'record.content4': '直接サービスなし。夜間（約02:00-04:00）同階層の複数宿泊客から客室係へ「継続的な振動と耳鳴り感」の苦情、発生源は902号室と指摘。係員が902号室外で確認：確かに床の微細な振動を感じ、室内から極低周波音波が伝わる（明確に聴取できるものではないが、身体的違和感を引き起こす）。ホテル方針に従い宿泊客を邪魔せず、苦情を記録し報告。',
+        'record.date5': '11/20 10:00',
+        'record.content5': 'ウイスキーとミネラルウォーターの第3箱を設置。宿泊客が自らドアを開けて受け取り、状態異常：目の下に濃い黒い輪、汗だく、呼吸荒い。黒タンクトップ着用、腕と胸に新鮮な赤い印（傷ではなく、絵の具または呪文的な描画）。宿泊客が自ら新要求：「今夜、羊油20キロと白色長ロウソク30本が必要、遅くとも20時までにドア前に届けてほしい」。',
+        'record.date6': '11/20 19:50',
+        'record.content6': '羊油（密封バケツ）とロウソク（箱入り）を902号室前に設置。ノックで通知後、速やかに退去。ドアは開かず。',
+        'record.date7': '11/21 午前',
+        'record.content7': '901号室清掃時、宿泊客から昨夜902号室から「詠唱と叩きつける音」が続き、濃厚な油脂燃焼臭がしたと報告。902号室外を検査：異臭残存なし、ドアの隙間下に少量の凝固した白色ろうそく油。',
+        'record.date8': '11/25 16:00',
+        'record.content8': 'ウイスキーとミネラルウォーターの第4箱を設置。ドアに手書きメモ：「明日の夜、このドアに近づくな。——劉」。メモの筆跡は乱暴だが力強い。',
+        'record.date9': '11/26-11/27',
+        'record.content9': '複数の係員が902号室に近づくと「見られている感覚」と説明不能な不安を感じると報告。ドアは常に固く閉じられたまま。',
+        'record.date10': '11/28',
+        'record.content10': '宿泊客がチェックアウト。RIKI氏が自ら902号室を点検すると表明。',
+        'user.loggedIn': 'ログインユーザー',
+        'user.profile': 'プロフィール',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプドキュメント',
+        'user.logout': 'ログアウト',
+        'footer.system': '内部システム',
+        'footer.confidential': '内部使用のみ - 機密レベル：高',
+        'footer.status': 'システムステータス',
+        'footer.running': '正常に動作中'
+      },
+      'pt': {
+        'nav.back': 'Voltar',
+        'page.title': 'Serviço de Quarto - Registro de Serviço',
+        'guest.name': 'Liu Xingchen',
+        'guest.checkIn': 'Check-in',
+        'guest.checkOut': 'Check-out',
+        'record.serviceRecords': 'Registros de Serviço',
+        'record.remarkContent': 'Observação: Durante a estadia, este quarto não recebeu nenhum serviço tradicional de governança (arrumação de cama, limpeza, reposição). Todas as interações limitaram-se a trocas de itens na porta. O comportamento do hóspede foi anormal, mas não causou danos físicos às instalações do quarto.',
+        'record.specialRemarkContent': 'Observação: Esta solicitação envolvia riscos de segurança contra incêndio e foi relatada através dos canais adequados. Posteriormente, a aprovação da administração (aprovação especial RIKI) foi concedida para atender à solicitação.',
+        'record.date1': '15/11 10:00',
+        'record.content1': 'Primeira caixa de uísque e água mineral colocada fora do Quarto 902 conforme instruído. Porta fechada firmemente, nenhum som vindo de dentro. Ao recuperar a caixa vazia às 20:00, constatou-se que tanto o uísque quanto a água haviam sido levados para dentro, nenhum outro item na porta.',
+        'record.date2': '16/11 Dia Inteiro',
+        'record.content2': 'Nenhuma solicitação de serviço. Ao passar pelo corredor, som contínuo de zumbido baixo audível do quarto - não música, assemelhando-se a operação de equipamento. Nenhuma anormalidade de iluminação observada.',
+        'record.date3': '17/11 10:00',
+        'record.content3': 'Colocada segunda caixa de uísque e água mineral. Porta levemente entreaberta cerca de dez centímetros. Vislumbre do interior: todos os móveis (sofá, cama, mesas, cadeiras) empurrados contra as paredes. Grande padrão geométrico complexo desenhado no centro do chão com pó branco, linhas que se intersectam. Hóspede de costas para a porta, agachado no centro do padrão ajustando equipamento (três grandes alto-falantes pretos, uma mesa de mixagem). Não perturbou, saiu após colocar os itens.',
+        'record.date4': '19/11 Dia Inteiro',
+        'record.content4': 'Nenhum serviço direto. Noite (aproximadamente 02:00-04:00) múltiplos hóspedes no mesmo andar ligaram para a governança reclamando de "vibração contínua e sensação de zumbido", fonte rastreada até o Quarto 902. Funcionário confirmou na porta: sentiu leves tremores no chão, ondas de frequência extremamente baixa emanando de dentro - não claramente audíveis, mas causando desconforto físico. Não perturbou o hóspede conforme política do hotel, registrou reclamações e reportou.',
+        'record.date5': '20/11 10:00',
+        'record.content5': 'Colocada terceira caixa de uísque e água mineral. Hóspede abriu a porta pessoalmente para receber, aparecendo anormal: olheiras escuras, suando profusamente, respirando rapidamente. Vestindo regata preta, marcas vermelhas frescas visíveis nos braços e peito (não feridas, assemelhando-se a tinta ou inscrições rituais). Hóspede solicitou ativamente: "Preciso de vinte quilos de gordura de carneiro e trinta velas brancas longas esta noite, entregue na porta até 20:00 no máximo."',
+        'record.date6': '20/11 19:50',
+        'record.content6': 'Colocada gordura de carneiro (balde selado) e velas (caixa completa) fora do Quarto 902. Bateu para informar, depois saiu rapidamente. Porta não abriu.',
+        'record.date7': '21/11 Manhã',
+        'record.content7': 'Durante a limpeza do Quarto 901, hóspede relatou ouvir "cantos e sons de batidas" do 902 durante toda a noite passada, e cheirou odor forte de queima de gordura. Verificado fora do 902: nenhum odor residual, pequena quantidade de cera branca solidificada sob a fresta da porta.',
+        'record.date8': '25/11 16:00',
+        'record.content8': 'Colocada quarta caixa de uísque e água mineral. Nota manuscrita na porta: "Amanhã à noite, mantenha-se longe desta porta. — Liu". Caligrafia da nota desordenada, mas vigorosa.',
+        'record.date9': '26/11-27/11',
+        'record.content9': 'Vários funcionários relataram sentir "sensação de estar sendo observado" e ansiedade inexplicável ao se aproximar do 902. Porta permaneceu firmemente fechada.',
+        'record.date10': '28/11',
+        'record.content10': 'Hóspede fez check-out. Sr. RIKI indicou que inspecionaria pessoalmente o Quarto 902.',
+        'user.loggedIn': 'Usuário Logado',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações do Sistema',
+        'user.help': 'Documentação de Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'footer.system': 'Sistema Interno',
+        'footer.confidential': 'Uso Interno Apenas - Nível de Confidencialidade: Alto',
+        'footer.status': 'Status do Sistema',
+        'footer.running': 'Executando Normalmente'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 返回按钮功能
+      const backButton = document.getElementById('back-button');
+      const backButtonMobile = document.getElementById('back-button-mobile');
+      
+      function goBack() {
+        window.location.href = '李丽.html';
+      }
+      
+      backButton.addEventListener('click', goBack);
+      backButtonMobile.addEventListener('click', goBack);
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+  </script>
+</body>
+</html>

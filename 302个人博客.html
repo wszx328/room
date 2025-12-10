@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MORE的个人博客</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2d3748;
+            --accent-color: #c53030;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --gray-color: #6c757d;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 语言切换样式 */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: 20px;
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .language-switcher select {
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        /* 博客页面样式 */
+        .blog-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 30px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        .blog-title {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .blog-title .highlight-r {
+            color: #ff0000;
+            font-weight: bold;
+        }
+        
+        .blog-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .nav-link {
+            margin: 0 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .blog-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .posts-container {
+            flex: 2;
+        }
+        
+        .sidebar {
+            flex: 1;
+        }
+        
+        .post {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .post-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .post-meta {
+            color: var(--gray-color);
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-meta::before {
+            content: "•";
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+        
+        .post-content {
+            color: #444;
+            line-height: 1.7;
+        }
+        
+        .post-image {
+            width: 100%;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-widget {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+        
+        .widget-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .about-me {
+            text-align: center;
+        }
+        
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            padding: 3px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--gray-color);
+            margin-top: 50px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* 私密日志页面样式 */
+        .private-page {
+            display: none;
+        }
+        
+        .private-header {
+            background: linear-gradient(135deg, #8b0000 0%, #b22222 100%);
+            color: white;
+            padding: 30px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        .private-title {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .private-subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .private-post {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .private-post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .private-label {
+            display: inline-block;
+            background-color: var(--danger-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .blog-content {
+                flex-direction: column;
+            }
+            
+            .language-switcher {
+                position: static;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            
+            .blog-nav {
+                flex-wrap: wrap;
+            }
+            
+            .nav-link {
+                margin: 5px;
+            }
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            background: #e9ecef;
+            color: var(--gray-color);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .tag-primary {
+            background: rgba(26, 54, 93, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .tag-warning {
+            background: rgba(214, 158, 46, 0.1);
+            color: #744210;
+        }
+        
+        .tag-success {
+            background: rgba(56, 161, 105, 0.1);
+            color: #22543d;
+        }
+    </style>
+</head>
+<body>
+    <!-- 博客页面 -->
+    <div id="blog-page">
+        <!-- 语言切换器 -->
+        <div class="language-switcher">
+            <select id="language-select">
+                <option value="zh-CN">中文</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="pt">Português</option>
+            </select>
+        </div>
+        
+        <!-- 博客头部 -->
+        <header class="blog-header">
+            <div class="container">
+                <h1 class="blog-title" data-key="blog-title">MO<span class="highlight-r">R</span>E的个人博客</h1>
+                <nav class="blog-nav">
+                    <a href="#" class="nav-link active" data-key="nav-home" id="nav-blog">博客首页</a>
+                    <a href="#" class="nav-link" data-key="nav-about">关于我</a>
+                    <a href="#" class="nav-link" data-key="nav-projects">项目</a>
+                    <a href="#" class="nav-link" data-key="nav-private" id="nav-private">私密日志</a>
+                    <a href="#" class="nav-link" data-key="nav-contact">联系</a>
+                </nav>
+            </div>
+        </header>
+        
+        <!-- 博客内容 -->
+        <div class="container">
+            <div class="blog-content">
+                <div class="posts-container">
+                    <!-- 公开帖子 -->
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-1">《刚需赛道破局：用 "快周转" 敲开地产行业的门》</h2>
+                        <div class="post-meta" data-key="post-date-1">发布于 2018年6月12日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-1-1">创业第三年，终于靠刚需盘站稳脚跟。昨天项目第一次开盘售罄，团队在工地旁的小饭馆喝到凌晨，我却在角落里翻了一夜的财务报表 —— 不是不信任，是习惯了 "只有数字才让人安心"。</p>
+                            <p data-key="post-content-1-2">这三年，住过工地板房，吃了无数桶泡面，被供应商堵过门，被竞品抢过地块。有人劝我 "稳一点"，但我知道，在这个行业，"稳" 就是 "慢死"。我们的核心策略很简单：拿地快、建设快、销售快，用最短时间回笼资金，再扑向下一个地块。</p>
+                            <p data-key="post-content-1-3">睡前摸了摸口袋里磨损的创业计划书，扉页写着 "赚够 1000 万就退休"。现在离目标只剩一步，但奇怪的是，我已经开始盘算下一个项目了。也许人就是这样，一旦尝到 "赢" 的滋味，就再也停不下来。</p>
+                            <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="地产项目" class="post-image">
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-realestate">地产</span>
+                                <span class="tag tag-warning" data-key="tag-strategy">策略</span>
+                                <span class="tag tag-success" data-key="tag-startup">创业</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-2">《从刚需到高端：地产行业的 "阶层跃迁" 逻辑》</h2>
+                        <div class="post-meta" data-key="post-date-2">发布于 2020年9月5日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-2-1">正式放弃纯刚需赛道，聚焦高端改善型住宅。分享两个关键决策：</p>
+                            <p data-key="post-content-2-2">客群升级：随着新中产崛起，"居住品质" 取代 "价格敏感" 成为核心需求，高端盘的毛利的是刚需盘的 2 倍，且客户复购率更高；</p>
+                            <p data-key="post-content-2-3">资源整合：与国际设计团队合作，引入智能家居系统和私人会所配套，把 "房子" 变成 "身份标签"—— 富人愿意为 "专属感" 支付溢价；</p>
+                            <p data-key="post-content-2-4">风险对冲：同时布局商业公寓，用稳定的租金收入覆盖高端住宅的建设周期风险。</p>
+                            <p data-key="post-content-2-5">上周去看了新项目的样板间，落地窗能俯瞰整个 CBD，突然想起三年前在板房里啃泡面的日子。原来所谓 "成功"，就是把曾经仰望的东西，变成自己的 "标配"。</p>
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-realestate">地产</span>
+                                <span class="tag tag-warning" data-key="tag-upgrade">升级</span>
+                                <span class="tag tag-success" data-key="tag-business">商业</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-3">《名表、豪车与空洞：物质堆砌的 "安全感"》</h2>
+                        <div class="post-meta" data-key="post-date-3">发布于 2022年3月28日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-3-1">生日那天，给自己买了块百达翡丽，表盘上的钻石在阳光下闪得刺眼。开着新买的迈巴赫回家，路过曾经挤公交的站台，竟没有一丝怀念，只剩 "终于摆脱底层" 的庆幸。</p>
+                            <p data-key="post-content-3-2">家里的衣帽间已经放不下新衣服，酒柜里的茅台、拉菲堆成了小山，可每次朋友聚会，看着满桌的山珍海味，却总觉得不如当年工地旁的烤串香。</p>
+                            <p data-key="post-content-3-3">最近开始失眠，凌晨三点坐在客厅里，对着满墙的荣誉证书发呆。手机里的银行余额不断增长，可心里的空落落却越来越明显。我试着去健身、去旅游，甚至报了马术班，但无论做什么，那种 "不满足" 的情绪总像影子一样跟着我。</p>
+                            <p data-key="post-content-3-4">昨天整理旧物，翻到一张大学合影，里面有个笑得很灿烂的男生，我竟想不起他的名字。只记得他曾经和我一起构思过创业项目，后来…… 好像发生了什么不好的事？想不起来了。</p>
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-reflection">反思</span>
+                                <span class="tag tag-warning" data-key="tag-wealth">财富</span>
+                                <span class="tag tag-success" data-key="tag-life">生活</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-4">《并购的本质：把 "对手" 变成 "自己的一部分"》</h2>
+                        <div class="post-meta" data-key="post-date-4">发布于 2023年7月18日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-4-1">历时半年，终于完成对城东建材公司的并购。这次谈判堪称 "教科书级"：抓住对方资金链断裂的痛点，先放出 "合作" 信号，再突然切断其融资渠道，最后以低价全盘收购。</p>
+                            <p data-key="post-content-4-2">有人说 "太狠了"，但商业世界本就没有 "温情"。所谓 "竞争"，就是让对方失去反抗能力，然后将其资源、渠道、团队全部纳入自己的体系。</p>
+                            <p data-key="post-content-4-3">现在公司的版图又扩大了一块，可我反而更焦虑了 —— 下一个并购目标在哪里？还有哪些资源是我没掌控的？每次站在办公室落地窗前，看着城市里密密麻麻的高楼，我总觉得 "还不够"。</p>
+                            <p data-key="post-content-4-4">那个声音又出现了，在深夜里，在谈判桌上，在独处时 ——"More"。它像一根无形的鞭子，驱使着我不断向前，不能停，也不敢停。</p>
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-merger">并购</span>
+                                <span class="tag tag-warning" data-key="tag-business">商业</span>
+                                <span class="tag tag-success" data-key="tag-strategy">策略</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-5">《城市更新：下一个十年的财富密码》</h2>
+                        <div class="post-meta" data-key="post-date-5">发布于 2024年1月15日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-5-1">经过一年调研，确定未来核心布局方向：一线城市核心区旧改。分享三个判断：</p>
+                            <p data-key="post-content-5-2">政策窗口：住建部明确 "支持核心区存量更新"，拆迁补偿标准优化，拿地成本降低 15%-20%；</p>
+                            <p data-key="post-content-5-3">需求升级：新富阶层不再满足 "大户型"，而是追求 "稀缺地段 + 定制化服务"，旧改项目恰好能满足 "市中心 + 高私密性" 的需求；</p>
+                            <p data-key="post-content-5-4">盈利模式：采用 "住宅 + 商业 + 文创" 复合开发，住宅快速回款，商业和文创长期持有收租，形成 "短期现金流 + 长期资产增值" 的双闭环。</p>
+                            <p data-key="post-content-5-5">目前正在推进的 "鼓楼壹号" 项目，原是老旧街区，预计改造后单价突破 15 万 / 平。记住：地产业的终极竞争，是 "对核心资源的绝对占有"。</p>
+                            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="城市更新" class="post-image">
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-realestate">地产</span>
+                                <span class="tag tag-warning" data-key="tag-urban">城市更新</span>
+                                <span class="tag tag-success" data-key="tag-investment">投资</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-6">《项目压力与 "冷静" 的选择》</h2>
+                        <div class="post-meta" data-key="post-date-6">发布于 2025年10月22日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-6-1">最近项目推进得不太顺利，资金周转出现了一些问题（懂的都懂，行业常态）。合作方施压，银行催款，还有一些 "麻烦事" 需要处理。</p>
+                            <p data-key="post-content-6-2">朋友推荐了一家叫 R∞M 的酒店，说那里 "环境安静，适合沉淀思考"。我查了下，位置偏僻，私密性极强，正好适合躲一躲这些烦心事。</p>
+                            <p data-key="post-content-6-3">这阵子脑中总有个声音，几乎每时每刻都在耳边回响。它让我快点解决眼前的问题，快点拿下下一个项目，快点拥有更多。我知道自己已经停不下来了，就像被卷入了一个漩涡，只能顺着惯性向前。</p>
+                            <p data-key="post-content-6-4">订了 11 月中旬的房间，希望在那里能 "冷静" 下来，想清楚下一步的布局。毕竟，只有解决了眼前的麻烦，才能去追逐更多的可能。</p>
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-reflection">反思</span>
+                                <span class="tag tag-warning" data-key="tag-pressure">压力</span>
+                                <span class="tag tag-success" data-key="tag-retreat">休养</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post">
+                        <h2 class="post-title" data-key="post-title-7">《沉淀后的突破：新项目启动》</h2>
+                        <div class="post-meta" data-key="post-date-7">发布于 2025年11月26日</div>
+                        <div class="post-content">
+                            <p data-key="post-content-7-1">在 R∞M 酒店住了一周，确实 "沉淀" 了不少。远离了喧嚣，静下心来梳理了项目逻辑，回来后立刻调整了团队架构，解决了资金周转问题。</p>
+                            <p data-key="post-content-7-2">目前 "鼓楼壹号" 项目已经顺利开工，同时签下了城西两块核心地块，未来三年的布局基本确定。业界都在说我 "逆势扩张"，但他们不懂，"危机" 就是 "转机"，越是混乱的时候，越容易抢占资源。</p>
+                            <p data-key="post-content-7-3">只是…… 总觉得有什么地方不对劲。在酒店里的日子，好像做了一场很长的梦，梦里有一张黑色的圆桌，有扑克牌，有模糊的声音，可具体是什么，怎么也想不起来。</p>
+                            <p data-key="post-content-7-4">回来后，空洞感比以前更强烈了。我买了更多的奢侈品，签了更多的项目，可心里的那块空白，却越来越大。脑中的声音也变得更急切了，好像在催促我回到某个地方，某个…… 让我感到既熟悉又陌生的地方。</p>
+                            <div>
+                                <span class="tag tag-primary" data-key="tag-business">商业</span>
+                                <span class="tag tag-warning" data-key="tag-breakthrough">突破</span>
+                                <span class="tag tag-success" data-key="tag-project">项目</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar">
+                    <div class="sidebar-widget about-me">
+                        <h3 class="widget-title" data-key="about-title">博主简介</h3>
+                        <img src="王天宇.jpg" alt="MORE" class="profile-img">
+                        <p data-key="about-content">天宇集团总裁。专注财富与权力的边界探索。记录财富进阶与自我探索之路。</p>
+                    </div>
+                    
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title" data-key="projects-title">项目</h3>
+                        <ul>
+                            <li data-key="project-1">"鼓楼壹号" 城市更新 - 进行中</li>
+                            <li data-key="project-2">城西核心地块开发 - 筹备中</li>
+                            <li data-key="project-3">天宇商业广场 - 已完成</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title" data-key="categories-title">分类</h3>
+                        <ul>
+                            <li data-key="category-1">地产开发</li>
+                            <li data-key="category-2">商业策略</li>
+                            <li data-key="category-3">投资并购</li>
+                            <li data-key="category-4">人生感悟</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="container">
+                <p data-key="footer-text">© 2025 MORE的个人博客. 保留所有权利.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- 私密日志页面 -->
+    <div id="private-page" class="private-page">
+        <!-- 语言切换器 -->
+        <div class="language-switcher">
+            <select id="private-language-select">
+                <option value="zh-CN">中文</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="pt">Português</option>
+            </select>
+        </div>
+        
+        <!-- 私密日志头部 -->
+        <header class="private-header">
+            <div class="container">
+                <h1 class="private-title" data-key="private-title">私密日志</h1>
+                <p class="private-subtitle" data-key="private-subtitle">只有我能看到的内心独白</p>
+                <nav class="blog-nav">
+                    <a href="#" class="nav-link" data-key="nav-home" id="nav-back-blog">返回博客</a>
+                    <a href="#" class="nav-link active" data-key="nav-private">私密日志</a>
+                </nav>
+            </div>
+        </header>
+        
+        <!-- 私密日志内容 -->
+        <div class="container">
+            <div class="posts-container">
+                <!-- 私密日志帖子 -->
+                <div class="private-post">
+                    <span class="private-label" data-key="private-label">私密</span>
+                    <h2 class="post-title" data-key="private-title-1">赢了所有，却空空如也</h2>
+                    <div class="post-meta" data-key="private-date-1">发布于 2025年12月19日</div>
+                    <div class="post-content">
+                        <p data-key="private-content-1-1">我赢了，我得到了想要的一切财富和权力。</p>
+                        <p data-key="private-content-1-2">他们都羡慕我，说我是商业传奇，但只有我知道，心里好像少了一块东西。</p>
+                        <p data-key="private-content-1-3">我记不清很多事了，比如我为什么要这么拼命赚钱，比如那个跳楼的发小叫什么名字，甚至记不清某个模糊的身影到底是谁 —— 是对手？是朋友？还是…… 别的什么？</p>
+                    </div>
+                </div>
+                
+                <div class="private-post">
+                    <span class="private-label" data-key="private-label">私密</span>
+                    <h2 class="post-title" data-key="private-title-2">深夜的召唤：那个无法忘记的房间号</h2>
+                    <div class="post-meta" data-key="private-date-2">发布于 2026年12月19日</div>
+                    <div class="post-content">
+                        <p data-key="private-content-2-1">最近总在深夜里惊醒，梦里反复出现一个房间号：302。</p>
+                        <p data-key="private-content-2-2">我不知道这个数字为什么会缠着我，只记得在 R∞M 酒店时，这是我的房间号。那天路过酒店门口，前台那个微笑的女孩问我 "王总，还要入住 302 房吗？"，我差点脱口而出 "好"。</p>
+                        <p data-key="private-content-2-3">我开始频繁地忘记事情：昨天的会议内容，合作方的名字，甚至自己前一天做过什么。医生说我需要静养，但我不敢停。一旦停下来，那些模糊的记忆碎片就会冒出来 —— 跳楼的身影，争吵的声音，黑色圆桌…… 我害怕这些，更害怕面对这些。</p>
+                        <p data-key="private-content-2-4">"More" 的声音还在耳边，它说 "去 302 房，那里有你想要的答案"，又说 "去 302 房，那里有更多的可能"。我不知道它说的是真是假，但我知道，我早晚都会回去的。</p>
+                        <p data-key="private-content-2-5">毕竟，对于一个永远不满足的人来说，任何 "可能" 都值得追逐，哪怕它背后是深渊。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="container">
+                <p data-key="footer-text">© 2025 MORE的个人博客. 保留所有权利.</p>
+            </div>
+        </footer>
+    </div>
+    <script>
+        // 多语言翻译数据
+        const translations = {
+            'zh-CN': {
+                'blog-title': 'MO<span class="highlight-r">R</span>E的个人博客',
+                'nav-home': '博客首页',
+                'nav-about': '关于我',
+                'nav-projects': '项目',
+                'nav-private': '私密日志',
+                'nav-contact': '联系',
+                'post-title-1': '《刚需赛道破局：用 "快周转" 敲开地产行业的门》',
+                'post-date-1': '发布于 2018年6月12日',
+                'post-content-1-1': '创业第三年，终于靠刚需盘站稳脚跟。昨天项目第一次开盘售罄，团队在工地旁的小饭馆喝到凌晨，我却在角落里翻了一夜的财务报表 —— 不是不信任，是习惯了 "只有数字才让人安心"。',
+                'post-content-1-2': '这三年，住过工地板房，吃了无数桶泡面，被供应商堵过门，被竞品抢过地块。有人劝我 "稳一点"，但我知道，在这个行业，"稳" 就是 "慢死"。我们的核心策略很简单：拿地快、建设快、销售快，用最短时间回笼资金，再扑向下一个地块。',
+                'post-content-1-3': '睡前摸了摸口袋里磨损的创业计划书，扉页写着 "赚够 1000 万就退休"。现在离目标只剩一步，但奇怪的是，我已经开始盘算下一个项目了。也许人就是这样，一旦尝到 "赢" 的滋味，就再也停不下来。',
+                'post-title-2': '《从刚需到高端：地产行业的 "阶层跃迁" 逻辑》',
+                'post-date-2': '发布于 2020年9月5日',
+                'post-content-2-1': '正式放弃纯刚需赛道，聚焦高端改善型住宅。分享两个关键决策：',
+                'post-content-2-2': '客群升级：随着新中产崛起，"居住品质" 取代 "价格敏感" 成为核心需求，高端盘的毛利的是刚需盘的 2 倍，且客户复购率更高；',
+                'post-content-2-3': '资源整合：与国际设计团队合作，引入智能家居系统和私人会所配套，把 "房子" 变成 "身份标签"—— 富人愿意为 "专属感" 支付溢价；',
+                'post-content-2-4': '风险对冲：同时布局商业公寓，用稳定的租金收入覆盖高端住宅的建设周期风险。',
+                'post-content-2-5': '上周去看了新项目的样板间，落地窗能俯瞰整个 CBD，突然想起三年前在板房里啃泡面的日子。原来所谓 "成功"，就是把曾经仰望的东西，变成自己的 "标配"。',
+                'post-title-3': '《名表、豪车与空洞：物质堆砌的 "安全感"》',
+                'post-date-3': '发布于 2022年3月28日',
+                'post-content-3-1': '生日那天，给自己买了块百达翡丽，表盘上的钻石在阳光下闪得刺眼。开着新买的迈巴赫回家，路过曾经挤公交的站台，竟没有一丝怀念，只剩 "终于摆脱底层" 的庆幸。',
+                'post-content-3-2': '家里的衣帽间已经放不下新衣服，酒柜里的茅台、拉菲堆成了小山，可每次朋友聚会，看着满桌的山珍海味，却总觉得不如当年工地旁的烤串香。',
+                'post-content-3-3': '最近开始失眠，凌晨三点坐在客厅里，对着满墙的荣誉证书发呆。手机里的银行余额不断增长，可心里的空落落却越来越明显。我试着去健身、去旅游，甚至报了马术班，但无论做什么，那种 "不满足" 的情绪总像影子一样跟着我。',
+                'post-content-3-4': '昨天整理旧物，翻到一张大学合影，里面有个笑得很灿烂的男生，我竟想不起他的名字。只记得他曾经和我一起构思过创业项目，后来…… 好像发生了什么不好的事？想不起来了。',
+                'post-title-4': '《并购的本质：把 "对手" 变成 "自己的一部分"》',
+                'post-date-4': '发布于 2023年7月18日',
+                'post-content-4-1': '历时半年，终于完成对城东建材公司的并购。这次谈判堪称 "教科书级"：抓住对方资金链断裂的痛点，先放出 "合作" 信号，再突然切断其融资渠道，最后以低价全盘收购。',
+                'post-content-4-2': '有人说 "太狠了"，但商业世界本就没有 "温情"。所谓 "竞争"，就是让对方失去反抗能力，然后将其资源、渠道、团队全部纳入自己的体系。',
+                'post-content-4-3': '现在公司的版图又扩大了一块，可我反而更焦虑了 —— 下一个并购目标在哪里？还有哪些资源是我没掌控的？每次站在办公室落地窗前，看着城市里密密麻麻的高楼，我总觉得 "还不够"。',
+                'post-content-4-4': '那个声音又出现了，在深夜里，在谈判桌上，在独处时 ——"More"。它像一根无形的鞭子，驱使着我不断向前，不能停，也不敢停。',
+                'post-title-5': '《城市更新：下一个十年的财富密码》',
+                'post-date-5': '发布于 2024年1月15日',
+                'post-content-5-1': '经过一年调研，确定未来核心布局方向：一线城市核心区旧改。分享三个判断：',
+                'post-content-5-2': '政策窗口：住建部明确 "支持核心区存量更新"，拆迁补偿标准优化，拿地成本降低 15%-20%；',
+                'post-content-5-3': '需求升级：新富阶层不再满足 "大户型"，而是追求 "稀缺地段 + 定制化服务"，旧改项目恰好能满足 "市中心 + 高私密性" 的需求；',
+                'post-content-5-4': '盈利模式：采用 "住宅 + 商业 + 文创" 复合开发，住宅快速回款，商业和文创长期持有收租，形成 "短期现金流 + 长期资产增值" 的双闭环。',
+                'post-content-5-5': '目前正在推进的 "鼓楼壹号" 项目，原是老旧街区，预计改造后单价突破 15 万 / 平。记住：地产业的终极竞争，是 "对核心资源的绝对占有"。',
+                'post-title-6': '《项目压力与 "冷静" 的选择》',
+                'post-date-6': '发布于 2025年10月22日',
+                'post-content-6-1': '最近项目推进得不太顺利，资金周转出现了一些问题（懂的都懂，行业常态）。合作方施压，银行催款，还有一些 "麻烦事" 需要处理。',
+                'post-content-6-2': '朋友推荐了一家叫 R∞M 的酒店，说那里 "环境安静，适合沉淀思考"。我查了下，位置偏僻，私密性极强，正好适合躲一躲这些烦心事。',
+                'post-content-6-3': '这阵子脑中总有个声音，几乎每时每刻都在耳边回响。它让我快点解决眼前的问题，快点拿下下一个项目，快点拥有更多。我知道自己已经停不下来了，就像被卷入了一个漩涡，只能顺着惯性向前。',
+                'post-content-6-4': '订了 11 月中旬的房间，希望在那里能 "冷静" 下来，想清楚下一步的布局。毕竟，只有解决了眼前的麻烦，才能去追逐更多的可能。',
+                'post-title-7': '《沉淀后的突破：新项目启动》',
+                'post-date-7': '发布于 2025年11月26日',
+                'post-content-7-1': '在 R∞M 酒店住了一周，确实 "沉淀" 了不少。远离了喧嚣，静下心来梳理了项目逻辑，回来后立刻调整了团队架构，解决了资金周转问题。',
+                'post-content-7-2': '目前 "鼓楼壹号" 项目已经顺利开工，同时签下了城西两块核心地块，未来三年的布局基本确定。业界都在说我 "逆势扩张"，但他们不懂，"危机" 就是 "转机"，越是混乱的时候，越容易抢占资源。',
+                'post-content-7-3': '只是…… 总觉得有什么地方不对劲。在酒店里的日子，好像做了一场很长的梦，梦里有一张黑色的圆桌，有扑克牌，有模糊的声音，可具体是什么，怎么也想不起来。',
+                'post-content-7-4': '回来后，空洞感比以前更强烈了。我买了更多的奢侈品，签了更多的项目，可心里的那块空白，却越来越大。脑中的声音也变得更急切了，好像在催促我回到某个地方，某个…… 让我感到既熟悉又陌生的地方。',
+                'private-title': '私密日志',
+                'private-subtitle': '只有我能看到的内心独白',
+                'private-label': '私密',
+                'private-title-1': '赢了所有，却空空如也',
+                'private-date-1': '发布于 2025年12月19日',
+                'private-content-1-1': '我赢了，我得到了想要的一切财富和权力。',
+                'private-content-1-2': '他们都羡慕我，说我是商业传奇，但只有我知道，心里好像少了一块东西。',
+                'private-content-1-3': '我记不清很多事了，比如我为什么要这么拼命赚钱，比如那个跳楼的发小叫什么名字，甚至记不清某个模糊的身影到底是谁 —— 是对手？是朋友？还是…… 别的什么？',
+                'private-title-2': '深夜的召唤：那个无法忘记的房间号',
+                'private-date-2': '发布于 2026年12月19日',
+                'private-content-2-1': '最近总在深夜里惊醒，梦里反复出现一个房间号：302。',
+                'private-content-2-2': '我不知道这个数字为什么会缠着我，只记得在 R∞M 酒店时，这是我的房间号。那天路过酒店门口，前台那个微笑的女孩问我 "王总，还要入住 302 房吗？"，我差点脱口而出 "好"。',
+                'private-content-2-3': '我开始频繁地忘记事情：昨天的会议内容，合作方的名字，甚至自己前一天做过什么。医生说我需要静养，但我不敢停。一旦停下来，那些模糊的记忆碎片就会冒出来 —— 跳楼的身影，争吵的声音，黑色圆桌…… 我害怕这些，更害怕面对这些。',
+                'private-content-2-4': '"More" 的声音还在耳边，它说 "去 302 房，那里有你想要的答案"，又说 "去 302 房，那里有更多的可能"。我不知道它说的是真是假，但我知道，我早晚都会回去的。',
+                'private-content-2-5': '毕竟，对于一个永远不满足的人来说，任何 "可能" 都值得追逐，哪怕它背后是深渊。',
+                'about-title': '博主简介',
+                'about-content': '天宇集团总裁。专注财富与权力的边界探索。记录财富进阶与自我探索之路。',
+                'projects-title': '项目',
+                'project-1': '"鼓楼壹号" 城市更新 - 进行中',
+                'project-2': '城西核心地块开发 - 筹备中',
+                'project-3': '天宇商业广场 - 已完成',
+                'categories-title': '分类',
+                'category-1': '地产开发',
+                'category-2': '商业策略',
+                'category-3': '投资并购',
+                'category-4': '人生感悟',
+                'tag-realestate': '地产',
+                'tag-strategy': '策略',
+                'tag-startup': '创业',
+                'tag-upgrade': '升级',
+                'tag-business': '商业',
+                'tag-reflection': '反思',
+                'tag-wealth': '财富',
+                'tag-life': '生活',
+                'tag-merger': '并购',
+                'tag-urban': '城市更新',
+                'tag-investment': '投资',
+                'tag-pressure': '压力',
+                'tag-retreat': '休养',
+                'tag-breakthrough': '突破',
+                'tag-project': '项目',
+                'footer-text': '© 2025 MORE的个人博客. 保留所有权利.'
+            },
+            'en': {
+                'blog-title': 'MO<span class="highlight-r">R</span>E\'s Personal Blog',
+                'nav-home': 'Home',
+                'nav-about': 'About',
+                'nav-projects': 'Projects',
+                'nav-private': 'Private Journal',
+                'nav-contact': 'Contact',
+                'post-title-1': 'Breaking into Real Estate: The "Fast Turnover" Strategy for Entry-Level Markets',
+                'post-date-1': 'Posted on June 12, 2018',
+                'post-content-1-1': 'Three years into entrepreneurship, I\'ve finally established a foothold with affordable housing projects. Yesterday marked our first completely sold-out launch. While the team celebrated at a small restaurant near the construction site until dawn, I spent the night reviewing financial reports in the corner—not out of distrust, but because "only numbers bring me peace of mind."',
+                'post-content-1-2': 'These past three years, I\'ve lived in construction site shacks, eaten countless instant noodles, been cornered by suppliers, and lost land deals to competitors. Some advised me to "play it safe," but in this industry, I know that "safe" means "slow death." Our core strategy is straightforward: acquire land quickly, build quickly, sell quickly, recoup funds in the shortest time possible, then move to the next project.',
+                'post-content-1-3': 'Before sleeping, I touched the worn business plan in my pocket. The cover page reads "Retire after making 10 million." Now I\'m just one step away, yet strangely, I\'m already planning the next venture. Perhaps this is human nature—once you taste victory, you can\'t stop.',
+                'post-title-2': 'From Entry-Level to Luxury: The Logic of "Class Transition" in Real Estate',
+                'post-date-2': 'Posted on September 5, 2020',
+                'post-content-2-1': 'I\'ve officially shifted from pure entry-level markets to focus on high-end residential properties. Sharing two key decisions:',
+                'post-content-2-2': 'Client Upgrade: As the new middle class emerges, "living quality" has replaced "price sensitivity" as the core demand. Luxury projects yield twice the gross profit of entry-level ones with higher client retention;',
+                'post-content-2-3': 'Resource Integration: Partnering with international design teams, introducing smart home systems and private club amenities—transforming "houses" into "status symbols." The wealthy willingly pay premiums for exclusivity;',
+                'post-content-2-4': 'Risk Hedging: Simultaneously developing commercial apartments to offset construction cycle risks of luxury homes with stable rental income.',
+                'post-content-2-5': 'Last week, visiting the new project\'s showroom with floor-to-ceiling windows overlooking the entire CBD, I suddenly remembered eating instant noodles in shacks three years ago. True "success" is turning what you once admired into your standard.',
+                'post-title-3': 'Luxury Watches, Cars and Emptiness: The Illusion of Material Security',
+                'post-date-3': 'Posted on March 28, 2022',
+                'post-content-3-1': 'For my birthday, I bought a Patek Philippe. The diamonds on the dial glittered blindingly in the sun. Driving home in my new Maybach, passing the crowded bus stops I once used, I felt no nostalgia—only relief at having "escaped the bottom."',
+                'post-content-3-2': 'My walk-in closet can\'t hold more clothes. The wine cabinet overflows with Moutai and Lafite, yet at every lavish dinner with friends, I still reminisce about the street-side skewers near construction sites.',
+                'post-content-3-3': 'Lately, insomnia strikes. Sitting in the living room at 3 AM, staring blankly at walls covered with achievement certificates. My bank balance grows steadily, but the emptiness inside expands. I\'ve tried gyms, travel, even horseback riding—but that sense of "dissatisfaction" shadows me relentlessly.',
+                'post-content-3-4': 'Yesterday, organizing old items, I found a college group photo with a brightly smiling young man whose name I couldn\'t recall. I only remember we brainstormed startup ideas together, then... something bad happened? The memory escapes me.',
+                'post-title-4': 'The Essence of M&A: Absorbing Competitors into Your Ecosystem',
+                'post-date-4': 'Posted on July 18, 2023',
+                'post-content-4-1': 'After six months, finally completed the acquisition of Chengdong Building Materials. This negotiation was textbook: identified their cash flow weakness, extended "cooperation" signals, then abruptly cut financing channels, acquiring the entire company at bargain price.',
+                'post-content-4-2': 'Some called it "ruthless," but business has no room for sentiment. True competition means disabling opponents\' resistance, then absorbing their resources, channels, and teams into your system.',
+                'post-content-4-3': 'Our corporate territory expanded again, yet anxiety grows—where\'s the next acquisition target? What resources remain beyond my control? Each time I stand by my office window overlooking the city\'s dense skyline, I feel "it\'s not enough."',
+                'post-content-4-4': 'That voice returns—in late nights, at negotiation tables, in solitude—"More." An invisible whip driving me forward, unable to stop, afraid to stop.',
+                'post-title-5': 'Urban Regeneration: The Wealth Code for the Next Decade',
+                'post-date-5': 'Posted on January 15, 2024',
+                'post-content-5-1': 'After year-long research, confirmed our future direction: urban renewal in prime locations of tier-one cities. Three key insights:',
+                'post-content-5-2': 'Policy Window: The Ministry of Housing explicitly "supports stock renewal in core areas," with optimized compensation standards reducing land acquisition costs by 15%-20%;',
+                'post-content-5-3': 'Demand Evolution: The new affluent class seeks "prime location + customized services" over mere "large units." Urban renewal perfectly meets demands for "city center living + high privacy";',
+                'post-content-5-4': 'Revenue Model: Adopt "residential + commercial + cultural" mixed-use development—residential for quick returns, commercial/cultural for long-term rental income, creating dual cash flow cycles.',
+                'post-content-5-5': 'Our ongoing "Gulou One" project, transformed from old neighborhoods, targets over ¥150,000/square meter post-renovation. Remember: real estate\'s ultimate competition is "absolute control of core resources."',
+                'post-title-6': 'Project Pressures and Choosing "Calm"',
+                'post-date-6': 'Posted on October 22, 2025',
+                'post-content-6-1': 'Recent project progress has stalled with cash flow issues (industry veterans understand). Partners pressure, banks demand repayments, and some "complicated matters" need handling.',
+                'post-content-6-2': 'A friend recommended R∞M Hotel, describing it as "quiet environment ideal for contemplation." Research shows remote location, extreme privacy—perfect for avoiding these troubles.',
+                'post-content-6-3': 'Lately, a constant voice echoes in my mind, urging me to solve problems faster, secure the next project quicker, acquire more. I\'m caught in a vortex, moving forward by inertia alone.',
+                'post-content-6-4': 'Booked a mid-November stay, hoping to find "clarity" there and plan the next phase. After all, only by resolving current challenges can I pursue greater possibilities.',
+                'post-title-7': 'Breakthrough After Retreat: New Projects Launch',
+                'post-date-7': 'Posted on November 26, 2025',
+                'post-content-7-1': 'One week at R∞M Hotel provided much-needed "contemplation." Away from noise, I calmly restructured project logic, then immediately reorganized teams and resolved cash flow issues upon return.',
+                'post-content-7-2': '"Gulou One" has commenced construction smoothly, plus we secured two prime western city plots—basically setting our three-year roadmap. The industry calls it "counter-cyclical expansion," but they miss the point: "crisis" means "opportunity"—chaos makes resource grabs easier.',
+                'post-content-7-3': 'Yet... something feels off. My hotel stay felt like an extended dream—black round tables, playing cards, muffled voices—but specifics remain elusive.',
+                'post-content-7-4': 'Since returning, the void has deepened. I bought more luxuries, signed more projects, yet the emptiness grows. The mental voice intensifies, urging return to someplace... both familiar and alien.',
+                'private-title': 'Private Journal',
+                'private-subtitle': 'Inner monologues for my eyes only',
+                'private-label': 'Private',
+                'private-title-1': 'Won Everything, Yet Empty Inside',
+                'private-date-1': 'Posted on December 19, 2025',
+                'private-content-1-1': 'I\'ve won. I possess all the wealth and power I desired.',
+                'private-content-1-2': 'Everyone envies me, calls me a business legend, but only I know something feels missing inside.',
+                'private-content-1-3': 'I\'ve forgotten so much—why I worked so hard for money, the name of that childhood friend who jumped, even who that vague figure is—rival? Friend? Or... something else?',
+                'private-title-2': 'Midnight Calls: The Unforgettable Room Number',
+                'private-date-2': 'Posted on December 19, 2026',
+                'private-content-2-1': 'Lately I wake startled at midnight, repeatedly dreaming of room number: 302.',
+                'private-content-2-2': 'I don\'t know why this number haunts me, only remembering it was my room at R∞M Hotel. Passing the hotel entrance recently, the smiling receptionist asked, "Mr. Wang, will you be staying in room 302 again?" I nearly said "Yes."',
+                'private-content-2-3': 'I\'ve started forgetting constantly: yesterday\'s meetings, partners\' names, even my own previous actions. Doctors advise rest, but I dare not stop. Once I pause, those blurred memories surface—falling figures, arguing voices, black round tables... I fear these, fear confronting them more.',
+                'private-content-2-4': 'The "More" voice persists, whispering "Go to room 302, answers await there," then "Go to room 302, more possibilities exist." I don\'t know what\'s true, but I know I\'ll return eventually.',
+                'private-content-2-5': 'After all, for someone perpetually unsatisfied, any "possibility" warrants pursuit, even if it leads to abyss.',
+                'about-title': 'About Me',
+                'about-content': 'Chairman of Tianyu Group. Exploring boundaries of wealth and power. Documenting the journey of wealth accumulation and self-discovery.',
+                'projects-title': 'Projects',
+                'project-1': '"Gulou One" Urban Renewal - Ongoing',
+                'project-2': 'West City Core Plots Development - Planning',
+                'project-3': 'Tianyu Commercial Plaza - Completed',
+                'categories-title': 'Categories',
+                'category-1': 'Real Estate Development',
+                'category-2': 'Business Strategy',
+                'category-3': 'Investment & M&A',
+                'category-4': 'Life Reflections',
+                'tag-realestate': 'Real Estate',
+                'tag-strategy': 'Strategy',
+                'tag-startup': 'Startup',
+                'tag-upgrade': 'Upgrade',
+                'tag-business': 'Business',
+                'tag-reflection': 'Reflection',
+                'tag-wealth': 'Wealth',
+                'tag-life': 'Life',
+                'tag-merger': 'M&A',
+                'tag-urban': 'Urban Renewal',
+                'tag-investment': 'Investment',
+                'tag-pressure': 'Pressure',
+                'tag-retreat': 'Retreat',
+                'tag-breakthrough': 'Breakthrough',
+                'tag-project': 'Project',
+                'footer-text': '© 2025 MO<span class="highlight-r">R</span>E\'s Personal Blog. All rights reserved.'
+            },
+            'ja': {
+                'blog-title': 'MO<span class="highlight-r">R</span>Eの個人ブログ',
+                'nav-home': 'ホーム',
+                'nav-about': '自己紹介',
+                'nav-projects': 'プロジェクト',
+                'nav-private': 'プライベート日記',
+                'nav-contact': 'お問い合わせ',
+                'post-title-1': '《不動産参入：「高速回転」戦略によるエントリーマーケット開拓》',
+                'post-date-1': '2018年6月12日投稿',
+                'post-content-1-1': '起業3年目、ついに庶民向け住宅で地盤を固めました。昨日、初の完売を達成。チームは現場近くの食堂で朝まで祝杯を挙げる中、私は隅で財務諸表と向き合っていました——不信感からではなく、「数字だけが安心をもたらす」という習慣のためです。',
+                'post-content-1-2': 'この3年、現場の仮設住宅に住み、数え切れないカップ麺を食べ、仕入れ業者に詰め寄られ、競合に土地を奪われました。「慎重に」という助言もありましたが、この業界では「慎重」は「緩やかな死」を意味します。当社の基本戦略は明快です：迅速な土地取得、迅速な建設、迅速な販売、最短での資金回収、そして次の案件へ。',
+                'post-content-1-3': '寝る前にポケットの擦り切れた事業計画書に触れました。表紙には「1000万円達成で引退」とあります。目標まであと一歩なのに、不思議なことに既に次の計画を練り始めています。おそらくこれが人間というものなのでしょう——一度「勝ち」を味わうと、もう止まれなくなるのです。',
+                'post-title-2': '《エントリーから高級へ：不動産における「階層移行」の論理》',
+                'post-date-2': '2020年9月5日投稿',
+                'post-content-2-1': '純粋なエントリーマーケットから戦略を転換し、高級住宅に注力することにしました。重要な判断を二つ共有します：',
+                'post-content-2-2': '顧客層の高度化：新中間層の台頭により、「居住品質」が「価格感度」に取って代わり、高級物件の粗利益はエントリー物件の2倍、顧客の定着率も高い；',
+                'post-content-2-3': 'リソース統合：国際的なデザインチームと連携し、スマートホームシステムやプライベートクラブを導入——「家」を「ステータスシンボル」へと変革。富裕層は独占性にプレミアムを支払う；',
+                'post-content-2-4': 'リスク分散：高級住宅の建設リスクを、安定した賃貸収入が見込める商業用アパートの開発で相殺。',
+                'post-content-2-5': '先週、新プロジェクトのモデルルームを訪れ、CBDを見下ろすフロアから天井までの窓から、3年前に仮設住宅でカップ麺を食べていた日々を思い出しました。真の「成功」とは、かつて憧れたものを自分の標準とすることなのです。',
+                'post-title-3': '《高級時計、高級車、そして虚無：物質的な安全感の幻想》',
+                'post-date-3': '2022年3月28日投稿',
+                'post-content-3-1': '誕生日にパテックフィリップを購入しました。文字盤のダイヤが陽光でまぶしく輝いています。新調したマイバッハで帰宅途中、かつて混雑したバス停を通り過ぎても、懐かしさは感じません——「底辺からの脱出」という安堵だけです。',
+                'post-content-3-2': 'ウォークインクローゼットにはこれ以上服が入りません。ワインセラーには茅台とラフィットがあふれていますが、豪華な食事会でも、いつも建設現場近くの屋台の串焼きを思い出します。',
+                'post-content-3-3': '最近、不眠に悩まされています。深夜3時にリビングに座り、賞状で埋め尽くされた壁をぼんやり見つめます。預金残高は増える一方ですが、内面の空虚は広がるばかり。ジム、旅行、乗馬と試しましたが、「満たされなさ」という感覚は執拗に付きまといます。',
+                'post-content-3-4': '昨日、整理していたら大学時代の集合写真が出てきました。そこに写る明るく笑う青年の名前が思い出せません。一緒に起業のアイデアを練ったことだけは覚えていますが、その後……何か悪いことが起こったでしょうか？記憶が定かではありません。',
+                'post-title-4': '《M&Aの本質：競合を自社エコシステムに組み込む》',
+                'post-date-4': '2023年7月18日投稿',
+                'post-content-4-1': '半年をかけ、ようやく城東建材の買収を完了しました。この交渉は見事でした：資金繰りの弱点を見極め、「協業」の信号を送り、融資ルートを断ち、割安価格で全株式を取得。',
+                'post-content-4-2': '「冷酷」との声もありますが、ビジネスに温情の余地はありません。真の競争とは、相手の抵抗力を奪い、そのリソース、チャネル、チームを自社システムに組み込むことです。',
+                'post-content-4-3': '事業領域は再び拡大しましたが、不安は増すばかり——次の買収対象はどこか？まだ手中に収めていないリソースは何か？オフィスの窓辺に立ち、密集する高層ビル群を見下ろすたび、「まだ足りない」と感じます。',
+                'post-content-4-4': 'あの声が戻ってきました——深夜の帳の中で、交渉の席で、孤独の中で——「More」。見えざる鞭のように私を駆り立て、止まれず、止まることを恐れさせます。',
+                'post-title-5': '《都市再生：今後10年の富のコード》',
+                'post-date-5': '2024年1月15日投稿',
+                'post-content-5-1': '1年間の調査を経て、今後の方向性を決定しました：一流都市の中心部における都市再生です。3つの重要な洞察：',
+                'post-content-5-2': '政策の窓：住宅都市農村建設部が「中心部のストック更新を支援」と明言し、補償基準の最適化で土地取得コストが15～20％低下；',
+                'post-content-5-3': '需要の進化：新富裕層は単なる「広い間取り」より「好立地＋カスタマイズサービス」を求める。都市再生は「都心居住＋高いプライバシー」の需要に完璧に合致；',
+                'post-content-5-4': '収益モデル：「住宅＋商業＋文化」の複合開発を採用——住宅で迅速な回収、商業・文化で長期賃貸収入、二重のキャッシュフローを創出。',
+                'post-content-5-5': '進行中の「鼓楼壱号」プロジェクトは旧市街から生まれ変わり、改修後は1平方メートルあたり15万元を超える見込み。覚えておいてください：不動産の最終競争は「核心リソースの絶対的支配」なのです。',
+                'post-title-6': '《プロジェクトの重圧と「静寂」の選択》',
+                'post-date-6': '2025年10月22日投稿',
+                'post-content-6-1': '最近、プロジェクトの進捗が停滞し、資金繰りに問題が生じています（業界関係者ならご存知の通り）。パートナーからの圧力、銀行からの返済要求、そして処理が必要な「複雑な問題」があります。',
+                'post-content-6-2': '友人からR∞Mホテルを勧められ、「思索に適した静かな環境」と聞きました。調べてみると、僻地に位置し、極めてプライベート——これらの煩わしさから逃れるのに最適です。',
+                'post-content-6-3': '最近、絶え間ない声が頭の中で反響し、もっと早く問題を解決し、次のプロジェクトを確保し、より多くを獲得するよう促します。私は渦中にあり、惰性で前に進むしかありません。',
+                'post-content-6-4': '11月中旬に予約しました。そこで「明確さ」を見出し、次の段階を計画できればと願っています。結局のところ、現在の課題を解決して初めて、より大きな可能性を追求できるのですから。',
+                'post-title-7': '《静養後の突破口：新プロジェクト始動》',
+                'post-date-7': '2025年11月26日投稿',
+                'post-content-7-1': 'R∞Mホテルでの1週間は、必要とされていた「思索」の時間をもたらしました。雑音から離れ、プロジェクトの論理を冷静に再構築し、戻ってすぐにチームを再編し、資金繰りの問題を解決しました。',
+                'post-content-7-2': '「鼓楼壱号」は順調に着工し、さらに都心西部の2つの優良土地も確保——3か年のロードマップがほぼ確定しました。業界は「逆サイクル拡大」と呼びますが、彼らは要点を見逃しています：「危機」は「機会」を意味し——混沌はリソース獲得を容易にするのです。',
+                'post-content-7-3': 'しかし……何かがおかしい。ホテルでの滞在は長い夢のようでした——黒い丸テーブル、トランプ、くぐもった声——しかし詳細はつかめません。',
+                'post-content-7-4': '帰って以来、虚無は深まりました。より多くの奢侈品を買い、より多くのプロジェクトに署名しましたが、空虚は広がるばかりです。心の中の声は強まり、どこかへ戻るよう促します……どこか……馴染み深くも異質な場所へ。',
+                'private-title': 'プライベート日記',
+                'private-subtitle': '私だけのための内なる独白',
+                'private-label': '非公開',
+                'private-title-1': 'すべてを勝ち取ったが、内面は空虚',
+                'private-date-1': '2025年12月19日投稿',
+                'private-content-1-1': '私は勝ちました。望んでいた富と権力をすべて手に入れました。',
+                'private-content-1-2': '誰もが私を羨み、ビジネスの伝説と呼びますが、内面で何かが欠けていると感じるのは私だけです。',
+                'private-content-1-3': 'あまりにも多くのことを忘れてしまいました——なぜこれほどまでにお金を稼ごうとしたのか、飛び降りた幼なじみの名前、あのぼんやりとした人物が誰なのかさえ——敵？友？それとも……何か別のもの？',
+                'private-title-2': '《真夜中の呼び声：忘れられない部屋番号》',
+                'private-date-2': '2026年12月19日投稿',
+                'private-content-2-1': '最近、真夜中に驚いて目覚め、繰り返し部屋番号を夢見ます：302。',
+                'private-content-2-2': 'なぜこの番号に取り憑かれているのかわかりません。R∞Mホテルで私の部屋だったことだけは覚えています。最近ホテルの入口を通りかかったとき、笑顔の受付が「王様、また302号室にご宿泊になりますか？」と尋ね、私はもう少しで「はい」と言いそうになりました。',
+                'private-content-2-3': '絶えず忘れるようになりました：昨日の会議、パートナーの名前、自分の前の行動さえ。医師は休息を勧めますが、私は止まることを恐れています。一度止まると、それらのぼんやりとした記憶が浮上します——落下する人影、議論する声、黒い丸テーブル……これらを恐れ、これらに向き合うことをさらに恐れています。',
+                'private-content-2-4': '「More」の声は続き、「302号室へ行け、答えが待っている」、「302号室へ行け、より多くの可能性がある」と囁きます。何が真実かわかりませんが、いずれ戻ることを知っています。',
+                'private-content-2-5': '結局のところ、永遠に満足しない者にとって、いかなる「可能性」も追求する価値があり、たとえそれが深淵へと導くとしても。',
+                'about-title': '自己紹介',
+                'about-content': '天宇グループ会長。富と権力の境界を探求。富の蓄積と自己発見の旅を記録。',
+                'projects-title': 'プロジェクト',
+                'project-1': '「鼓楼壱号」都市再生 - 進行中',
+                'project-2': '都心西部土地開発 - 計画中',
+                'project-3': '天宇商業広場 - 完了',
+                'categories-title': 'カテゴリ',
+                'category-1': '不動産開発',
+                'category-2': 'ビジネス戦略',
+                'category-3': '投資・M&A',
+                'category-4': '人生考察',
+                'tag-realestate': '不動産',
+                'tag-strategy': '戦略',
+                'tag-startup': '起業',
+                'tag-upgrade': '高度化',
+                'tag-business': 'ビジネス',
+                'tag-reflection': '考察',
+                'tag-wealth': '富',
+                'tag-life': '人生',
+                'tag-merger': 'M&A',
+                'tag-urban': '都市再生',
+                'tag-investment': '投資',
+                'tag-pressure': '圧力',
+                'tag-retreat': '静養',
+                'tag-breakthrough': '突破口',
+                'tag-project': 'プロジェクト',
+                'footer-text': '© 2025 MO<span class="highlight-r">R</span>Eの個人ブログ。全著作権所有。'
+            },
+            'pt': {
+                'blog-title': 'Blog Pessoal do MO<span class="highlight-r">R</span>E',
+                'nav-home': 'Início',
+                'nav-about': 'Sobre',
+                'nav-projects': 'Projetos',
+                'nav-private': 'Diário Privado',
+                'nav-contact': 'Contato',
+                'post-title-1': '《Entrando no Mercado Imobiliário: A Estratégia de "Rotação Rápida" para Mercados de Entrada》',
+                'post-date-1': 'Postado em 12 de junho de 2018',
+                'post-content-1-1': 'Três anos de empreendedorismo, finalmente estabeleci uma base com habitações populares. Ontem foi nosso primeiro lançamento completamente vendido. Enquanto a equipe comemorava num pequeno restaurante perto da obra até o amanhecer, passei a noite revisando relatórios financeiros no canto—não por desconfiança, mas porque "apenas números me trazem paz".',
+                'post-content-1-2': 'Nestes três anos, morei em barracos de obra, comi incontáveis instantâneos, fui cercado por fornecedores, perdi terrenos para concorrentes. Alguns aconselharam "jogar seguro", mas nesta indústria, "seguro" significa "morte lenta". Nossa estratégia é clara: adquirir terrenos rápido, construir rápido, vender rápido, recuperar fundos no menor tempo, então partir para o próximo projeto.',
+                'post-content-1-3': 'Antes de dormir, toquei o plano de negócios gasto no bolso. A capa diz "Aposentar após fazer 10 milhões". Agora estou a um passo, mas estranhamente, já planejo o próximo empreendimento. Talvez seja a natureza humana—uma vez que se prova a vitória, não se pode parar.',
+                'post-title-2': '《De Entrada ao Luxo: A Lógica da "Transição de Classe" no Imobiliário》',
+                'post-date-2': 'Postado em 5 de setembro de 2020',
+                'post-content-2-1': 'Mudei oficialmente de mercados puramente de entrada para focar em residências de alto padrão. Compartilhando duas decisões-chave:',
+                'post-content-2-2': 'Upgrade de Cliente: Com a nova classe média, "qualidade de vida" substituiu "sensibilidade a preço" como demanda central. Projetos de luxo rendem o dobro do lucro bruto com maior retenção;',
+                'post-content-2-3': 'Integração de Recursos: Parceria com equipes de design internacionais, introdução de sistemas inteligentes e amenities exclusivas—transformando "casas" em "símbolos de status". Os ricos pagam premiums por exclusividade;',
+                'post-content-2-4': 'Hedge de Risco: Desenvolvendo apartamentos comerciais simultaneamente para compensar riscos do ciclo construtivo com renda locativa estável.',
+                'post-content-2-5': 'Na semana passada, visitando o showroom com janelas floor-to-ceiling sobre o CBD, lembrei-me de comer instantâneos em barracos há três anos. "Sucesso" é transformar o que se admirava em padrão.',
+                'post-title-3': '《Relógios Luxuosos, Carros e Vazio: A Ilusão da Segurança Material》',
+                'post-date-3': 'Postado em 28 de março de 2022',
+                'post-content-3-1': 'No meu aniversário, comprei um Patek Philippe. Os diamantes no mostrador brilhavam cegamente ao sol. Dirigindo para casa no novo Maybach, passando pelos pontos de ônibus lotados que usei, nenhuma nostalgia—apenas alívio por ter "escapado do fundo".',
+                'post-content-3-2': 'Meu closet não cabe mais roupas. O armário de vinhos transborda Moutai e Lafite, mas em jantares luxuosos com amigos, ainda lembro dos espetinhos de rua perto de obras.',
+                'post-content-3-3': 'Ultimamente, insônia ataca. Sentado na sala às 3h, encarando paredes cobertas de certificados. Meu saldo bancário cresce, mas o vazio interior se expande. Tentei academias, viagens, até equitação—mas essa "insatisfação" me assombra implacavelmente.',
+                'post-content-3-4': 'Ontem, organizando itens antigos, encontrei uma foto de faculdade com um jovem sorridente cujo nome não lembro. Só lembro que brainstormamos ideias de startup, depois... algo ruim aconteceu? A memória me escapa.',
+                'post-title-4': '《A Essência de Fusões e Aquisições: Absorvendo Concorrentes no Seu Ecossistema》',
+                'post-date-4': 'Postado em 18 de julho de 2023',
+                'post-content-4-1': 'Após seis meses, finalmente completei a aquisição da Chengdong Building Materials. Esta negociação foi textbook: identifiquei sua fraqueza de fluxo de caixa, estendi sinais de "cooperação", então cortei canais de financiamento, adquirindo a empresa inteira por preço baixo.',
+                'post-content-4-2': 'Alguns chamaram de "cruel", mas negócios não têm espaço para sentimentalismo. Competição real significa desabilitar a resistência de oponentes, então absorver seus recursos, canais e times no seu sistema.',
+                'post-content-4-3': 'Nosso território corporativo expandiu novamente, mas a ansiedade cresce—onde está o próximo alvo? Que recursos permanecem fora do meu controle? Cada vez que fico pela janela do escritório olhando o skyline denso, sinto "não é o suficiente".',
+                'post-content-4-4': 'Aquela voz retorna—em madrugadas, em mesas de negociação, na solidão—"More". Um chicote invisível me levando adiante, incapaz de parar, com medo de parar.',
+                'post-title-5': '《Regeneração Urbana: O Código da Riqueza para a Próxima Década》',
+                'post-date-5': 'Postado em 15 de janeiro de 2024',
+                'post-content-5-1': 'Após um ano de pesquisa, confirmei nossa direção futura: renovação urbana em localizações premium de cidades tier-one. Três insights-chave:',
+                'post-content-5-2': 'Janela de Política: O Ministério da Habitação explicitamente "apoia renovação de estoque em áreas centrais", com padrões de compensação otimizados reduzindo custos de aquisição de terrenos em 15%-20%;',
+                'post-content-5-3': 'Evolução da Demanda: A nova classe abastada busca "localização premium + serviços customizados" sobre meras "unidades grandes". Renovação urbana atende perfeitamente demandas por "viver no centro + alta privacidade";',
+                'post-content-5-4': 'Modelo de Receita: Adote desenvolvimento misto "residencial + comercial + cultural"—residencial para retornos rápidos, comercial/cultural para renda locativa de longo prazo, criando ciclos duplos de fluxo de caixa.',
+                'post-content-5-5': 'Nosso projeto "Gulou One" em andamento, transformado de bairros antigos, mira acima de ¥150.000/metro quadrado pós-renovação. Lembre-se: a competição final do imobiliário é "controle absoluto de recursos centrais".',
+                'post-title-6': '《Pressões do Projeto e Escolhendo a "Calma"》',
+                'post-date-6': 'Postado em 22 de outubro de 2025',
+                'post-content-6-1': 'O progresso recente do projeto estagnou com problemas de fluxo de caixa (veteranos da indústria entendem). Parceiros pressionam, bancos exigem reembolsos, e algumas "questões complicadas" precisam de tratamento.',
+                'post-content-6-2': 'Um amigo recomendou o Hotel R∞M, descrevendo como "ambiente quieto ideal para contemplação". Pesquisa mostra localização remota, extrema privacidade—perfeito para evitar esses problemas.',
+                'post-content-6-3': 'Ultimamente, uma voz constante ecoa na minha mente, me urgindo a resolver problemas mais rápido, assegurar o próximo projeto mais rápido, adquirir mais. Estou preso num vórtice, movendo adiante por inércia sozinha.',
+                'post-content-6-4': 'Reservei uma estadia em meados de novembro, esperando encontrar "clareza" lá e planejar a próxima fase. Afinal, só resolvendo desafios atuais posso perseguir possibilidades maiores.',
+                'post-title-7': '《Avanço Após Retiro: Novos Projetos Lançados》',
+                'post-date-7': 'Postado em 26 de novembro de 2025',
+                'post-content-7-1': 'Uma semana no Hotel R∞M providenciou muito necessária "contemplação". Longe do ruído, reestruturei calmamente a lógica do projeto, então imediatamente reorganizei times e resolvi problemas de fluxo de caixa ao retornar.',
+                'post-content-7-2': '"Gulou One" começou a construção suavemente, mais asseguramos dois lotes premium a oeste da cidade—basicamente estabelecendo nosso roteiro de três anos. A indústria chama de "expansão contra-cíclica", mas eles perdem o ponto: "crise" significa "oportunidade"—caos torna a captura de recursos mais fácil.',
+                'post-content-7-3': 'Ainda... algo parece errado. Minha estadia no hotel pareceu um sonho estendido—mesas redondas pretas, cartas de baralho, vozes abafadas—mas específicos permanecem elusivos.',
+                'post-content-7-4': 'Desde o retorno, o vazio aprofundou. Comprei mais luxos, assinei mais projetos, ainda o vazio cresce. A voz mental intensifica, urgindo retorno a algum lugar... tanto familiar quanto alienígena.',
+                'private-title': 'Diário Privado',
+                'private-subtitle': 'Monólogos internos apenas para meus olhos',
+                'private-label': 'Privado',
+                'private-title-1': 'Ganhei Tudo, Mas Vazio Por Dentro',
+                'private-date-1': 'Postado em 19 de dezembro de 2025',
+                'private-content-1-1': 'Eu ganhei. Possuo toda a riqueza e poder que desejava.',
+                'private-content-1-2': 'Todos me invejam, me chamam de lenda dos negócios, mas só eu sei que algo parece faltar por dentro.',
+                'private-content-1-3': 'Esqueci tanto—por que trabalhei tão duro por dinheiro, o nome daquele amigo de infância que pulou, até quem é aquela figura vaga—rival? Amigo? Ou... algo mais?',
+                'private-title-2': '《Chamadas da Meia-Noite: O Número do Quarto Inesquecível》',
+                'private-date-2': 'Postado em 19 de dezembro de 2026',
+                'private-content-2-1': 'Ultimamente acordo assustado à meia-noite, repetidamente sonhando com o número do quarto: 302.',
+                'private-content-2-2': 'Não sei por que este número me assombra, só lembro que era meu quarto no Hotel R∞M. Passando pela entrada do hotel recentemente, a recepcionista sorridente perguntou, "Sr. Wang, ficará no quarto 302 novamente?" Quase disse "Sim".',
+                'private-content-2-3': 'Comecei a esquecer constantemente: reuniões de ontem, nomes de parceiros, até minhas próprias ações anteriores. Médicos aconselham descanso, mas não ouso parar. Uma vez que paro, essas memórias desfocadas surgem—figuras caindo, vozes discutindo, mesas redondas pretas... Temo estas, temo confrontá-las mais.',
+                'private-content-2-4': 'A voz "More" persiste, sussurrando "Vá para o quarto 302, respostas aguardam lá," então "Vá para o quarto 302, mais possibilidades existem." Não sei o que é verdade, mas sei que retornarei eventualmente.',
+                'private-content-2-5': 'Afinal, para alguém perpetuamente insatisfeito, qualquer "possibilidade" merece perseguição, mesmo que leve ao abismo.',
+                'about-title': 'Sobre Mim',
+                'about-content': 'Presidente do Tianyu Group. Explorando fronteiras de riqueza e poder. Documentando a jornada de acumulação de riqueza e autodescoberta.',
+                'projects-title': 'Projetos',
+                'project-1': '"Gulou One" Renovação Urbana - Em Andamento',
+                'project-2': 'Desenvolvimento de Lotes Centrais a Oeste - Planejando',
+                'project-3': 'Praça Comercial Tianyu - Concluído',
+                'categories-title': 'Categorias',
+                'category-1': 'Desenvolvimento Imobiliário',
+                'category-2': 'Estratégia de Negócios',
+                'category-3': 'Investimento e Fusões e Aquisições',
+                'category-4': 'Reflexões de Vida',
+                'tag-realestate': 'Imobiliário',
+                'tag-strategy': 'Estratégia',
+                'tag-startup': 'Empreendedorismo',
+                'tag-upgrade': 'Upgrade',
+                'tag-business': 'Negócios',
+                'tag-reflection': 'Reflexão',
+                'tag-wealth': 'Riqueza',
+                'tag-life': 'Vida',
+                'tag-merger': 'Fusões e Aquisições',
+                'tag-urban': 'Renovação Urbana',
+                'tag-investment': 'Investimento',
+                'tag-pressure': 'Pressão',
+                'tag-retreat': 'Retiro',
+                'tag-breakthrough': 'Avanço',
+                'tag-project': 'Projeto',
+                'footer-text': '© 2025 Blog Pessoal do MO<span class="highlight-r">R</span>E. Todos os direitos reservados.'
+            }
+        };
+
+        // 当前语言
+        let currentLanguage = 'zh-CN';
+
+        // 语言切换功能
+        document.getElementById('language-select').addEventListener('change', function(e) {
+            currentLanguage = e.target.value;
+            translatePage(currentLanguage);
+        });
+
+        document.getElementById('private-language-select').addEventListener('change', function(e) {
+            currentLanguage = e.target.value;
+            translatePage(currentLanguage);
+        });
+
+        // 页面切换功能
+        document.getElementById('nav-private').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('blog-page').style.display = 'none';
+            document.getElementById('private-page').style.display = 'block';
+            setActiveNav('nav-private');
+        });
+
+        document.getElementById('nav-back-blog').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('private-page').style.display = 'none';
+            document.getElementById('blog-page').style.display = 'block';
+            setActiveNav('nav-blog');
+        });
+
+        // 设置活动导航
+        function setActiveNav(navId) {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(navId).classList.add('active');
+        }
+
+        // 翻译页面
+        function translatePage(language) {
+            const elements = document.querySelectorAll('[data-key]');
+            
+            elements.forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[language] && translations[language][key]) {
+                    if (element.tagName === 'INPUT' && element.type === 'text') {
+                        element.placeholder = translations[language][key];
+                    } else if (key === 'blog-title') {
+                        element.innerHTML = translations[language][key];
+                    } else {
+                        element.textContent = translations[language][key];
+                    }
+                }
+            });
+            
+            // 更新语言选择器
+            document.getElementById('language-select').value = language;
+            document.getElementById('private-language-select').value = language;
+        }
+    </script>
+</body>
+</html>
