@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱系统 - 王天宇</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #d6c2ff 0%, #b19cd9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .email-container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(177, 156, 217, 0.3);
+            overflow: hidden;
+            height: calc(100vh - 40px);
+        }
+        
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(135deg, #b19cd9 0%, #d6c2ff 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+        }
+        
+        .compose-btn {
+            background: white;
+            color: #8a6bc9;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .compose-btn i {
+            margin-right: 8px;
+        }
+        
+        .compose-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .folders {
+            list-style: none;
+            flex-grow: 1;
+        }
+        
+        .folders li {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .folders li i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .folders li.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+        
+        .folders li:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .folder-count {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 邮件列表区域 */
+        .mail-list {
+            flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .mail-list-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .mail-list-header h2 {
+            color: #8a6bc9;
+            font-size: 1.3rem;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f9f7ff;
+            border-radius: 20px;
+            padding: 8px 15px;
+            width: 250px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            margin-left: 8px;
+            outline: none;
+        }
+        
+        /* 语言切换按钮样式 - 移动到右上角 */
+        .language-switcher {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+        
+        .language-btn {
+            background: #8a6bc9;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .language-btn:hover {
+            background: #6a4fa3;
+        }
+        
+        .language-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+            min-width: 120px;
+        }
+        
+        .language-menu.active {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #8a6bc9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .language-option:hover {
+            background: #f9f7ff;
+        }
+        
+        .language-flag {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        .mail-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mail-item:hover {
+            background: #f9f7ff;
+        }
+        
+        .mail-item.active {
+            background: #f0ebff;
+            border-left: 3px solid #8a6bc9;
+        }
+        
+        .mail-item.unread .mail-subject {
+            font-weight: 600;
+        }
+        
+        .mail-checkbox {
+            margin-right: 15px;
+        }
+        
+        .mail-sender {
+            width: 180px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .mail-subject {
+            font-weight: 500;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-preview {
+            color: #777;
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-date {
+            color: #999;
+            font-size: 0.85rem;
+            margin-left: 15px;
+        }
+        
+        /* 邮件内容区域 */
+        .mail-view {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .mail-view.active {
+            display: block;
+        }
+        
+        .mail-view-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mail-view-subject {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .mail-view-info {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .mail-view-sender {
+            font-weight: 600;
+            color: #8a6bc9;
+        }
+        
+        .mail-view-body {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .mail-view-body p {
+            margin-bottom: 15px;
+        }
+        
+        .mail-view-body ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .mail-view-body li {
+            margin-bottom: 8px;
+        }
+        
+        .mail-attachments {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .attachments-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #8a6bc9;
+        }
+        
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .attachment-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .attachment-icon {
+            color: #8a6bc9;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .attachment-name {
+            flex: 1;
+        }
+        
+        .attachment-size {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        /* 云盘备份样式 */
+        .cloud-storage {
+            padding: 20px;
+            display: none;
+            overflow-y: auto;
+            height: 100%;
+        }
+        
+        .cloud-storage.active {
+            display: block;
+        }
+        
+        .folder-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .folder-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .folder-icon {
+            color: #8a6bc9;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .folder-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .file-list {
+            margin-left: 30px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .file-icon {
+            color: #8a6bc9;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .file-name {
+            flex: 1;
+        }
+        
+        .cloud-log {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f9f7ff;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* 模态窗口样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            color: #8a6bc9;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .room-animation {
+            width: 100%;
+            height: 300px;
+            background: #1a1a2e;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .room-wall {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+        }
+        
+        .room-door {
+            position: absolute;
+            width: 80px;
+            height: 160px;
+            background: #1a1a2e;
+            border: 3px solid #8a6bc9;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transform-origin: left;
+            animation: doorSwing 4s infinite;
+        }
+        
+        .room-door::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #8a6bc9;
+            border-radius: 50%;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+        }
+        
+        .room-window {
+            position: absolute;
+            width: 100px;
+            height: 80px;
+            background: #0f3460;
+            border: 2px solid #8a6bc9;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: windowGlow 8s infinite;
+        }
+        
+        .room-window::before, .room-window::after {
+            content: '';
+            position: absolute;
+            background: #8a6bc9;
+        }
+        
+        .room-window::before {
+            width: 2px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .room-window::after {
+            width: 100%;
+            height: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .clock {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #1a1a2e;
+            border: 3px solid #8a6bc9;
+            border-radius: 50%;
+            top: 50px;
+            right: 50px;
+        }
+        
+        .clock-center {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #8a6bc9;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        .hour-hand {
+            position: absolute;
+            width: 4px;
+            height: 25px;
+            background: #8a6bc9;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            animation: hourRotate 20s infinite linear;
+        }
+        
+        .minute-hand {
+            position: absolute;
+            width: 3px;
+            height: 35px;
+            background: #8a6bc9;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            animation: minuteRotate 5s infinite linear;
+        }
+        
+        .loop-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #8a6bc9;
+            font-size: 1.2rem;
+            font-weight: 600;
+            animation: counterChange 2s infinite;
+        }
+        
+        .looping-text {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #8a6bc9;
+            font-size: 1rem;
+            animation: textPulse 3s infinite;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .password-btn {
+            background: #8a6bc9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .password-btn:hover {
+            background: #6a4fa3;
+        }
+        
+        .text-content {
+            width: 100%;
+            height: 300px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            overflow-y: auto;
+        }
+        
+        /* 动画定义 */
+        @keyframes doorSwing {
+            0% { transform: translateX(-50%) rotateY(0deg); }
+            25% { transform: translateX(-50%) rotateY(-90deg); }
+            50% { transform: translateX(-50%) rotateY(-90deg); }
+            75% { transform: translateX(-50%) rotateY(0deg); }
+            100% { transform: translateX(-50%) rotateY(0deg); }
+        }
+        
+        @keyframes windowGlow {
+            0% { background-color: #0f3460; }
+            50% { background-color: #1a5a9c; }
+            100% { background-color: #0f3460; }
+        }
+        
+        @keyframes hourRotate {
+            0% { transform: translate(-50%, -100%) rotate(0deg); }
+            100% { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+        
+        @keyframes minuteRotate {
+            0% { transform: translate(-50%, -100%) rotate(0deg); }
+            100% { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+        
+        @keyframes counterChange {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        @keyframes textPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .email-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .mail-sender {
+                width: 120px;
+            }
+            
+            .language-switcher {
+                position: static;
+                margin-top: 10px;
+            }
+            
+            .mail-list-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+        
+        /* 链接样式 */
+        .news-link {
+            color: #8a6bc9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .news-link:hover {
+            color: #6a4fa3;
+            text-decoration: underline;
+        }
+        
+        .failed-mail {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+        
+        .disabled-link {
+            color: #666;
+            text-decoration: none;
+            pointer-events: none;
+        }
+        
+        .non-clickable {
+            color: #666;
+            text-decoration: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-envelope"></i>
+                <h1 data-i18n="mailbox_title">邮箱系统 - 王天宇</h1>
+            </div>
+            
+            <button class="compose-btn">
+                <i class="fas fa-edit"></i>
+                <span data-i18n="compose">写邮件</span>
+            </button>
+            
+            <ul class="folders">
+                <li class="active" data-folder="inbox">
+                    <i class="fas fa-inbox"></i>
+                    <span data-i18n="inbox">收件箱</span>
+                    <span class="folder-count">3</span>
+                </li>
+                <li data-folder="sent">
+                    <i class="fas fa-paper-plane"></i>
+                    <span data-i18n="sent">发件箱</span>
+                    <span class="folder-count">2</span>
+                </li>
+                <li data-folder="trash">
+                    <i class="fas fa-trash"></i>
+                    <span data-i18n="trash">回收站</span>
+                    <span class="folder-count">2</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 邮件列表 -->
+            <div class="mail-list">
+                <div class="mail-list-header">
+                    <h2 data-i18n="inbox">收件箱</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" data-i18n-placeholder="search_placeholder" placeholder="搜索邮件...">
+                    </div>
+                    
+                    <!-- 语言切换按钮 - 移动到右上角 -->
+                    <div class="language-switcher">
+                        <button class="language-btn" id="language-btn">
+                            <i class="fas fa-globe"></i>
+                            <span id="current-lang">中文</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="language-menu" id="language-menu">
+                            <div class="language-option" data-lang="zh-CN">
+                                <span>中文</span>
+                            </div>
+                            <div class="language-option" data-lang="en">
+                                <span>English</span>
+                            </div>
+                            <div class="language-option" data-lang="ja">
+                                <span>日本語</span>
+                            </div>
+                            <div class="language-option" data-lang="pt">
+                                <span>Português</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 收件箱邮件列表 -->
+                <div class="mail-list-content" id="inbox-list">
+                    <div class="mail-item unread active" data-mail="1">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">未知</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail1_subject">最后通牒</div>
+                            <div class="mail-preview" data-i18n="mail1_preview">"2000万的赌债，一周内必须还清。你在澳门赌场输掉的，不只是你自己的钱，还有公司账上那800万公款——这件事如果传出去，后果你应该清楚..."</div>
+                        </div>
+                        <div class="mail-date">2025/11/14</div>
+                    </div>
+                    
+                    <div class="mail-item unread" data-mail="2">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">R∞M 酒店</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail2_subject">专属入住确认函</div>
+                            <div class="mail-preview" data-i18n="mail2_preview">"尊敬的王先生，302 套房已预留。房间配备私人赌桌与定制服务，期待您的'胜利'。"</div>
+                        </div>
+                        <div class="mail-date">2025/11/14</div>
+                    </div>
+                    
+                    <div class="mail-item unread" data-mail="3">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">李婷</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail3_subject">你这个凶手</div>
+                            <div class="mail-preview" data-i18n="mail3_preview">"我哥的忌日快到了，你还记得吗？他当年把项目交给你，是信任你，你却把它卖了换钱！你现在过得风生水起，可我哥却死了！你会遭报应的！"</div>
+                        </div>
+                        <div class="mail-date">2025/11/16</div>
+                    </div>
+                </div>
+                
+                <!-- 发件箱邮件列表 -->
+                <div class="mail-list-content" id="sent-list" style="display: none;">
+                    <div class="mail-item" data-mail="4">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">王天宇</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail4_subject">并购林氏</div>
+                            <div class="mail-preview" data-i18n="mail4_preview">"通知各部门，即刻启动对林氏集团的全面并购。我已'赢得'全部授权按计划执行，我要成为最大的赢家！"</div>
+                        </div>
+                        <div class="mail-date">2025/11/25</div>
+                    </div>
+                    
+                    <div class="mail-item" data-mail="5">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">王天宇</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail5_subject">MORE</div>
+                            <div class="mail-preview" data-i18n="mail5_preview">"我拥有了赢得的一切，但它们都索然无味。只有在那张桌子上，我才感觉自己是活着的。请再为我打开302的门"</div>
+                        </div>
+                        <div class="mail-date">2025/12/25</div>
+                    </div>
+                </div>
+                
+                <!-- 回收站邮件列表 -->
+                <div class="mail-list-content" id="trash-list" style="display: none;">
+                    <div class="mail-item" data-mail="6">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">李明</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail6_subject">无主题</div>
+                            <div class="mail-preview" data-i18n="mail6_preview">"天宇，我知道是你泄露了我的项目……现在公司破产，债主都在门口……看在我们多年交情的份上，能不能借我点钱？不然我真的活不下去了。"</div>
+                        </div>
+                        <div class="mail-date">2015/7/15</div>
+                    </div>
+                    
+                    <div class="mail-item" data-mail="7">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">林致远</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail7_subject">无主题</div>
+                            <div class="mail-preview" data-i18n="mail7_preview">"王天宇，你的手段太狠了！公司破产后我妻离子散，你真要逼死我吗？"</div>
+                        </div>
+                        <div class="mail-date">2025/8/27</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 邮件内容区域 -->
+            <div class="mail-view" id="mail-view">
+                <!-- 邮件1内容 - 最后通牒 -->
+                <div class="mail-view-content" id="mail1-content">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail1_subject">最后通牒</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">未知</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/11/14 14:32</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail1_content">
+                        <p>"2000万的赌债，一周内必须还清。你在澳门赌场输掉的，不只是你自己的钱，还有公司账上那800万公款——这件事如果传出去，后果你应该清楚。不过，我们还可以给你一个选择。明晚十一点前，去R∞M酒店。那里会有人帮你"解决问题"。记住，只能一个人来，不要告诉任何人，也别问为什么。去了，你就有机会赢回一切——包括抹掉这笔债，还有你那点不为人知的小秘密。别让我们失望。"</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件2内容 - 专属入住确认函 -->
+                <div class="mail-view-content" id="mail2-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail2_subject">专属入住确认函</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">R∞M 酒店</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/11/14 18:00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail2_content">
+                        <p>"尊敬的王先生，302 套房已预留。房间配备私人赌桌与定制服务，期待您的'胜利'。"</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件3内容 - 你这个凶手 -->
+                <div class="mail-view-content" id="mail3-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail3_subject">你这个凶手</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">李婷</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/11/16</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail3_content">
+                        <p>"我哥的忌日快到了，你还记得吗？他当年把项目交给你，是信任你，你却把它卖了换钱！你现在过得风生水起，可我哥却死了！你会遭报应的！"</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件4内容 - 并购林氏 -->
+                <div class="mail-view-content" id="mail4-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail4_subject">并购林氏</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="to">收件人：</span>
+                                <span class="mail-view-sender">秘书</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/11/25 09:00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail4_content">
+                        <p>"通知各部门，即刻启动对林氏集团的全面并购。我已'赢得'全部授权按计划执行，我要成为最大的赢家！"</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件5内容 - MORE -->
+                <div class="mail-view-content" id="mail5-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail5_subject">MORE</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="to">收件人：</span>
+                                <span class="mail-view-sender">RIKIMARU</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/12/25 3:46</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail5_content">
+                        <p>"我拥有了赢得的一切，但它们都索然无味。只有在那张桌子上，我才感觉自己是活着的。请再为我打开302的门"</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件6内容 - 李明 -->
+                <div class="mail-view-content" id="mail6-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail6_subject">无主题</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">李明</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2015/7/15</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail6_content">
+                        <p>"天宇，我知道是你泄露了我的项目……现在公司破产，债主都在门口……看在我们多年交情的份上，能不能借我点钱？不然我真的活不下去了。"</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件7内容 - 林致远 -->
+                <div class="mail-view-content" id="mail7-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail7_subject">无主题</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">林致远</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/8/27</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail7_content">
+                        <p>"王天宇，你的手段太狠了！公司破产后我妻离子散，你真要逼死我吗？"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态窗口 -->
+    <div class="modal" id="room-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="room_title">302号房</h3>
+                <button class="modal-close" id="room-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="room-animation">
+                    <div class="room-wall"></div>
+                    <div class="room-door"></div>
+                    <div class="room-window"></div>
+                    <div class="clock">
+                        <div class="clock-center"></div>
+                        <div class="hour-hand"></div>
+                        <div class="minute-hand"></div>
+                    </div>
+                    <div class="loop-counter">302</div>
+                    <div class="looping-text">命运转折点</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言翻译数据
+        const translations = {
+            'zh-CN': {
+                'mailbox_title': '邮箱系统 - 王天宇',
+                'compose': '写邮件',
+                'inbox': '收件箱',
+                'sent': '发件箱',
+                'trash': '回收站',
+                'search_placeholder': '搜索邮件...',
+                'from': '发件人：',
+                'to': '收件人：',
+                'date': '日期：',
+                'attachments': '附件',
+                'mail1_subject': '最后通牒',
+                'mail1_preview': '"2000万的赌债，一周内必须还清。你在澳门赌场输掉的，不只是你自己的钱，还有公司账上那800万公款——这件事如果传出去，后果你应该清楚..."',
+                'mail1_content': '<p>"2000万的赌债，一周内必须还清。你在澳门赌场输掉的，不只是你自己的钱，还有公司账上那800万公款——这件事如果传出去，后果你应该清楚。不过，我们还可以给你一个选择。明晚十一点前，去R∞M酒店。那里会有人帮你"解决问题"。记住，只能一个人来，不要告诉任何人，也别问为什么。去了，你就有机会赢回一切——包括抹掉这笔债，还有你那点不为人知的小秘密。别让我们失望。"</p>',
+                'mail2_subject': '专属入住确认函',
+                'mail2_preview': '"尊敬的王先生，302 套房已预留。房间配备私人赌桌与定制服务，期待您的\'胜利\'。"',
+                'mail2_content': '<p>"尊敬的王先生，302 套房已预留。房间配备私人赌桌与定制服务，期待您的\'胜利\'。"</p>',
+                'mail3_subject': '你这个凶手',
+                'mail3_preview': '"我哥的忌日快到了，你还记得吗？他当年把项目交给你，是信任你，你却把它卖了换钱！你现在过得风生水起，可我哥却死了！你会遭报应的！"',
+                'mail3_content': '<p>"我哥的忌日快到了，你还记得吗？他当年把项目交给你，是信任你，你却把它卖了换钱！你现在过得风生水起，可我哥却死了！你会遭报应的！"</p>',
+                'mail4_subject': '并购林氏',
+                'mail4_preview': '"通知各部门，即刻启动对林氏集团的全面并购。我已\'赢得\'全部授权按计划执行，我要成为最大的赢家！"',
+                'mail4_content': '<p>"通知各部门，即刻启动对林氏集团的全面并购。我已\'赢得\'全部授权按计划执行，我要成为最大的赢家！"</p>',
+                'mail5_subject': 'MORE',
+                'mail5_preview': '"我拥有了赢得的一切，但它们都索然无味。只有在那张桌子上，我才感觉自己是活着的。请再为我打开302的门"',
+                'mail5_content': '<p>"我拥有了赢得的一切，但它们都索然无味。只有在那张桌子上，我才感觉自己是活着的。请再为我打开302的门"</p>',
+                'mail6_subject': '无主题',
+                'mail6_preview': '"天宇，我知道是你泄露了我的项目……现在公司破产，债主都在门口……看在我们多年交情的份上，能不能借我点钱？不然我真的活不下去了。"',
+                'mail6_content': '<p>"天宇，我知道是你泄露了我的项目……现在公司破产，债主都在门口……看在我们多年交情的份上，能不能借我点钱？不然我真的活不下去了。"</p>',
+                'mail7_subject': '无主题',
+                'mail7_preview': '"王天宇，你的手段太狠了！公司破产后我妻离子散，你真要逼死我吗？"',
+                'mail7_content': '<p>"王天宇，你的手段太狠了！公司破产后我妻离子散，你真要逼死我吗？"</p>',
+                'room_title': '302号房'
+            },
+            'en': {
+                'mailbox_title': 'Email System - Wang Tianyu',
+                'compose': 'Compose',
+                'inbox': 'Inbox',
+                'sent': 'Sent',
+                'trash': 'Trash',
+                'search_placeholder': 'Search emails...',
+                'from': 'From:',
+                'to': 'To:',
+                'date': 'Date:',
+                'attachments': 'Attachments',
+                'mail1_subject': 'Ultimatum',
+                'mail1_preview': '"The 20 million gambling debt must be repaid within a week. What you lost at the Macau casino wasn\'t just your own money, but also the 8 million public funds from the company account..."',
+                'mail1_content': '<p>"The 20 million gambling debt must be repaid within a week. What you lost at the Macau casino wasn\'t just your own money, but also the 8 million public funds from the company account - you know the consequences if this gets out. However, we can give you another option. Go to the R∞M Hotel before 11 PM tomorrow night. Someone there will help you "solve the problem". Remember, come alone, don\'t tell anyone, and don\'t ask why. If you go, you\'ll have a chance to win everything back - including wiping out this debt and your little secret. Don\'t let us down."</p>',
+                'mail2_subject': 'Exclusive Reservation Confirmation',
+                'mail2_preview': '"Dear Mr. Wang, Suite 302 has been reserved. The room is equipped with a private gambling table and customized services, looking forward to your \'victory\'."',
+                'mail2_content': '<p>"Dear Mr. Wang, Suite 302 has been reserved. The room is equipped with a private gambling table and customized services, looking forward to your \'victory\'."</p>',
+                'mail3_subject': 'You Murderer',
+                'mail3_preview': '"My brother\'s death anniversary is coming, do you remember? He trusted you with the project back then, but you sold it for money! You\'re living the high life now, but my brother is dead! You will pay for this!"',
+                'mail3_content': '<p>"My brother\'s death anniversary is coming, do you remember? He trusted you with the project back then, but you sold it for money! You\'re living the high life now, but my brother is dead! You will pay for this!"</p>',
+                'mail4_subject': 'Acquisition of Lin Group',
+                'mail4_preview': '"Notify all departments to immediately launch a comprehensive acquisition of the Lin Group. I have \'won\' full authorization to execute according to plan, I want to become the biggest winner!"',
+                'mail4_content': '<p>"Notify all departments to immediately launch a comprehensive acquisition of the Lin Group. I have \'won\' full authorization to execute according to plan, I want to become the biggest winner!"</p>',
+                'mail5_subject': 'MORE',
+                'mail5_preview': '"I have everything I\'ve won, but it\'s all tasteless. Only at that table do I feel alive. Please open the door to 302 for me again"',
+                'mail5_content': '<p>"I have everything I\'ve won, but it\'s all tasteless. Only at that table do I feel alive. Please open the door to 302 for me again"</p>',
+                'mail6_subject': 'No Subject',
+                'mail6_preview': '"Tianyu, I know it was you who leaked my project... Now the company is bankrupt, creditors are at the door... For the sake of our years of friendship, could you lend me some money? Otherwise I really can\'t survive."',
+                'mail6_content': '<p>"Tianyu, I know it was you who leaked my project... Now the company is bankrupt, creditors are at the door... For the sake of our years of friendship, could you lend me some money? Otherwise I really can\'t survive."</p>',
+                'mail7_subject': 'No Subject',
+                'mail7_preview': '"Wang Tianyu, your methods are too ruthless! After the company went bankrupt, my wife left me and my children are gone, are you really trying to kill me?"',
+                'mail7_content': '<p>"Wang Tianyu, your methods are too ruthless! After the company went bankrupt, my wife left me and my children are gone, are you really trying to kill me?"</p>',
+                'room_title': 'Room 302'
+            },
+            'ja': {
+                'mailbox_title': 'メールシステム - 王天宇',
+                'compose': '作成',
+                'inbox': '受信トレイ',
+                'sent': '送信済み',
+                'trash': 'ゴミ箱',
+                'search_placeholder': 'メールを検索...',
+                'from': '差出人：',
+                'to': '宛先：',
+                'date': '日付：',
+                'attachments': '添付ファイル',
+                'mail1_subject': '最後通告',
+                'mail1_preview': '"2000万の賭博債務は、1週間以内に返済しなければならない。あなたがマカオのカジノで失ったのは、あなた自身のお金だけでなく、会社の口座にある800万の公金も含まれている..."',
+                'mail1_content': '<p>"2000万の賭博債務は、1週間以内に返済しなければならない。あなたがマカオのカジノで失ったのは、あなた自身のお金だけでなく、会社の口座にある800万の公金も含まれている——これが公になれば、結果は分かっているだろう。ただし、私たちはあなたに別の選択肢を与えることができる。明日の夜11時前に、R∞Mホテルに行け。そこにはあなたを「問題解決」してくれる者がいる。覚えておけ、一人で来ること、誰にも言わないこと、なぜかと尋ねないこと。行けば、すべてを取り戻すチャンスがある——この借金と、あなたのささやかな秘密も含めて。私たちを失望させるな。"</p>',
+                'mail2_subject': '専用宿泊確認書',
+                'mail2_preview': '"尊敬する王様、302スイートは予約済みです。客室にはプライベート賭博テーブルとカスタマイズサービスが備わっており、あなたの「勝利」を楽しみにしています。"',
+                'mail2_content': '<p>"尊敬する王様、302スイートは予約済みです。客室にはプライベート賭博テーブルとカスタマイズサービスが備わっており、あなたの「勝利」を楽しみにしています。"</p>',
+                'mail3_subject': 'この殺人者',
+                'mail3_preview': '"兄の命日が近づいています、覚えていますか？彼は当時あなたを信じてプロジェクトを任せたのに、あなたはそれを売って金に換えた！あなたは今優雅に暮らしているが、兄は死んだ！あなたは報いを受ける！"',
+                'mail3_content': '<p>"兄の命日が近づいています、覚えていますか？彼は当時あなたを信じてプロジェクトを任せたのに、あなたはそれを売って金に換えた！あなたは今優雅に暮らしているが、兄は死んだ！あなたは報いを受ける！"</p>',
+                'mail4_subject': '林氏グループ買収',
+                'mail4_preview': '"全部門に通知、直ちに林氏グループの全面買収を開始する。私は計画通りに実行する全権を「勝ち取った」、最大の勝者になりたい！"',
+                'mail4_content': '<p>"全部門に通知、直ちに林氏グループの全面買収を開始する。私は計画通りに実行する全権を「勝ち取った」、最大の勝者になりたい！"</p>',
+                'mail5_subject': 'MORE',
+                'mail5_preview': '"私は勝ち取ったすべてを持っているが、それらはすべて味気ない。あのテーブルにいるときだけ、私は生きていると感じる。もう一度302のドアを開けてください"',
+                'mail5_content': '<p>"私は勝ち取ったすべてを持っているが、それらはすべて味気ない。あのテーブルにいるときだけ、私は生きていると感じる。もう一度302のドアを開けてください"</p>',
+                'mail6_subject': '件名なし',
+                'mail6_preview': '"天宇、私のプロジェクトを漏らしたのは君だと知っている…今、会社は破産し、債権者は玄関先にいる…長年の友情のために、少しお金を貸してくれないか？そうでなければ、私は本当に生きていけない。"',
+                'mail6_content': '<p>"天宇、私のプロジェクトを漏らしたのは君だと知っている…今、会社は破産し、債権者は玄関先にいる…長年の友情のために、少しお金を貸してくれないか？そうでなければ、私は本当に生きていけない。"</p>',
+                'mail7_subject': '件名なし',
+                'mail7_preview': '"王天宇、君の手口はあまりにも残忍だ！会社が破産した後、私は妻に去られ、子供もいなくなり、本当に私を死なせたいのか？"',
+                'mail7_content': '<p>"王天宇、君の手口はあまりにも残忍だ！会社が破産した後、私は妻に去られ、子供もいなくなり、本当に私を死なせたいのか？"</p>',
+                'room_title': '302号室'
+            },
+            'pt': {
+                'mailbox_title': 'Sistema de Email - Wang Tianyu',
+                'compose': 'Escrever',
+                'inbox': 'Caixa de Entrada',
+                'sent': 'Enviados',
+                'trash': 'Lixeira',
+                'search_placeholder': 'Pesquisar emails...',
+                'from': 'De:',
+                'to': 'Para:',
+                'date': 'Data:',
+                'attachments': 'Anexos',
+                'mail1_subject': 'Ultimato',
+                'mail1_preview': '"A dívida de 20 milhões de jogatina deve ser paga dentro de uma semana. O que você perdeu no cassino de Macau não foi apenas seu próprio dinheiro, mas também os 8 milhões de fundos públicos da conta da empresa..."',
+                'mail1_content': '<p>"A dívida de 20 milhões de jogatina deve ser paga dentro de uma semana. O que você perdeu no cassino de Macau não foi apenas seu próprio dinheiro, mas também os 8 milhões de fundos públicos da conta da empresa - você conhece as consequências se isso vier a público. No entanto, podemos dar-lhe outra opção. Vá para o Hotel R∞M antes das 23h de amanhã à noite. Alguém lá o ajudará a "resolver o problema". Lembre-se, venha sozinho, não conte a ninguém e não pergunte por quê. Se você for, terá a chance de ganhar tudo de volta - incluindo apagar essa dívida e seu pequeno segredo. Não nos decepcione."</p>',
+                'mail2_subject': 'Confirmação de Reserva Exclusiva',
+                'mail2_preview': '"Prezado Sr. Wang, o Suíte 302 foi reservado. O quarto está equipado com uma mesa de jogo privativa e serviços personalizados, aguardando sua \'vitória\'."',
+                'mail2_content': '<p>"Prezado Sr. Wang, o Suíte 302 foi reservado. O quarto está equipado com uma mesa de jogo privativa e serviços personalizados, aguardando sua \'vitória\'."</p>',
+                'mail3_subject': 'Seu Assassino',
+                'mail3_preview': '"O aniversário de morte do meu irmão está chegando, você se lembra? Ele confiou o projeto a você naquela época, mas você o vendeu por dinheiro! Você está vivendo bem agora, mas meu irmão está morto! Você vai pagar por isso!"',
+                'mail3_content': '<p>"O aniversário de morte do meu irmão está chegando, você se lembra? Ele confiou o projeto a você naquela época, mas você o vendeu por dinheiro! Você está vivendo bem agora, mas meu irmão está morto! Você vai pagar por isso!"</p>',
+                'mail4_subject': 'Aquisição do Grupo Lin',
+                'mail4_preview': '"Notifique todos os departamentos para iniciar imediatamente uma aquisição abrangente do Grupo Lin. Eu \'ganhei\' autorização total para executar de acordo com o plano, quero me tornar o maior vencedor!"',
+                'mail4_content': '<p>"Notifique todos os departamentos para iniciar imediatamente uma aquisição abrangente do Grupo Lin. Eu \'ganhei\' autorização total para executar de acordo com o plano, quero me tornar o maior vencedor!"</p>',
+                'mail5_subject': 'MAIS',
+                'mail5_preview': '"Eu tenho tudo que ganhei, mas é tudo sem graça. Só naquela mesa me sinto vivo. Por favor, abra a porta do 302 para mim novamente"',
+                'mail5_content': '<p>"Eu tenho tudo que ganhei, mas é tudo sem graça. Só naquela mesa me sinto vivo. Por favor, abra a porta do 302 para mim novamente"</p>',
+                'mail6_subject': 'Sem Assunto',
+                'mail6_preview': '"Tianyu, sei que foi você quem vazou meu projeto... Agora a empresa faliu, credores estão na porta... Pela nossa amizade de anos, você poderia me emprestar algum dinheiro? Caso contrário, eu realmente não consigo sobreviver."',
+                'mail6_content': '<p>"Tianyu, sei que foi você quem vazou meu projeto... Agora a empresa faliu, credores estão na porta... Pela nossa amizade de anos, você poderia me emprestar algum dinheiro? Caso contrário, eu realmente não consigo sobreviver."</p>',
+                'mail7_subject': 'Sem Assunto',
+                'mail7_preview': '"Wang Tianyu, seus métodos são muito cruéis! Depois que a empresa faliu, minha esposa me deixou e meus filhos se foram, você realmente quer me matar?"',
+                'mail7_content': '<p>"Wang Tianyu, seus métodos são muito cruéis! Depois que a empresa faliu, minha esposa me deixou e meus filhos se foram, você realmente quer me matar?"</p>',
+                'room_title': 'Quarto 302'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 语言切换功能
+            const languageBtn = document.getElementById('language-btn');
+            const languageMenu = document.getElementById('language-menu');
+            const currentLang = document.getElementById('current-lang');
+            
+            // 切换语言菜单显示/隐藏
+            languageBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                languageMenu.classList.toggle('active');
+            });
+            
+            // 点击页面其他区域关闭语言菜单
+            document.addEventListener('click', function() {
+                languageMenu.classList.remove('active');
+            });
+            
+            // 阻止语言菜单内的点击事件冒泡
+            languageMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 语言选择处理
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    languageMenu.classList.remove('active');
+                    
+                    // 更新当前语言显示
+                    currentLang.textContent = this.querySelector('span').textContent;
+                    
+                    // 保存语言选择到本地存储
+                    localStorage.setItem('preferred-language', lang);
+                });
+            });
+            
+            // 设置语言函数
+            function setLanguage(lang) {
+                // 更新html的lang属性
+                document.documentElement.setAttribute('lang', lang);
+                
+                // 更新所有带有data-i18n属性的元素
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.innerHTML = translations[lang][key];
+                    }
+                });
+                
+                // 更新所有带有data-i18n-placeholder属性的元素
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                    const key = element.getAttribute('data-i18n-placeholder');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.setAttribute('placeholder', translations[lang][key]);
+                    }
+                });
+            }
+            
+            // 从本地存储加载用户偏好的语言
+            const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+            setLanguage(savedLang);
+            
+            // 更新当前语言显示
+            const savedLangOption = document.querySelector(`.language-option[data-lang="${savedLang}"]`);
+            if (savedLangOption) {
+                currentLang.textContent = savedLangOption.querySelector('span').textContent;
+            }
+            
+            // 文件夹切换功能
+            const folderItems = document.querySelectorAll('.folders li');
+            const mailLists = document.querySelectorAll('.mail-list-content');
+            const mailView = document.getElementById('mail-view');
+            
+            folderItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    folderItems.forEach(i => i.classList.remove('active'));
+                    mailLists.forEach(list => list.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件列表
+                    const folder = this.getAttribute('data-folder');
+                    document.getElementById(`${folder}-list`).style.display = 'block';
+                    
+                    // 更新邮件列表标题
+                    document.querySelector('.mail-list-header h2').textContent = this.querySelector('span').textContent;
+                    
+                    // 隐藏邮件内容区域
+                    mailView.classList.remove('active');
+                });
+            });
+            
+            // 邮件选择功能
+            const mailItems = document.querySelectorAll('.mail-item');
+            const mailContents = document.querySelectorAll('.mail-view-content');
+            
+            mailItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    mailItems.forEach(i => i.classList.remove('active'));
+                    mailContents.forEach(content => content.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件内容
+                    const mailId = this.getAttribute('data-mail');
+                    document.getElementById(`mail${mailId}-content`).style.display = 'block';
+                    
+                    // 显示邮件内容区域
+                    mailView.classList.add('active');
+                });
+            });
+            
+            // 模态窗口关闭功能
+            document.getElementById('room-close').addEventListener('click', function() {
+                document.getElementById('room-modal').classList.remove('active');
+            });
+            
+            // 点击模态窗口外部关闭
+            window.addEventListener('click', function(e) {
+                if (e.target === document.getElementById('room-modal')) {
+                    document.getElementById('room-modal').classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

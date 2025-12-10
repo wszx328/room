@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOM酒店 - 三百年的安眠</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0510 0%, #1a0a1e 50%, #2a0f2a 100%);
+            color: #e8d4f0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.7;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(90, 10, 120, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 85% 75%, rgba(120, 20, 150, 0.15) 0%, transparent 25%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: rgba(18, 8, 26, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(140, 60, 180, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #5a0a78, #8a2be2, #5a0a78);
+        }
+        
+        .language-switcher {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+        
+        .lang-btn {
+            background: rgba(40, 15, 60, 0.8);
+            color: #e8d4f0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(160, 80, 200, 0.3);
+        }
+        
+        .lang-btn:hover {
+            background: rgba(60, 25, 90, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .lang-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: rgba(18, 8, 26, 0.95);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(160, 80, 200, 0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            min-width: 150px;
+        }
+        
+        .lang-option {
+            padding: 12px 20px;
+            color: #e8d4f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .lang-option:hover {
+            background: rgba(60, 25, 90, 0.7);
+        }
+        
+        .lang-option.active {
+            background: rgba(100, 40, 140, 0.5);
+            font-weight: bold;
+        }
+        
+        .content {
+            margin: 30px 0;
+            font-size: 1.15rem;
+        }
+        
+        .riki-dialogue {
+            background: rgba(35, 15, 45, 0.7);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 4px solid #8a2be2;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        li:before {
+            content: "◆";
+            color: #8a2be2;
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
+        }
+        
+        .quote {
+            font-style: italic;
+            color: #d8b3ff;
+            border-left: 3px solid #8a2be2;
+            padding-left: 20px;
+            margin: 25px 0;
+            font-size: 1.2rem;
+        }
+        
+        .vision-section {
+            background: rgba(30, 15, 40, 0.6);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 1px solid rgba(140, 60, 180, 0.2);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .achievement {
+            background: linear-gradient(135deg, rgba(100, 20, 140, 0.2), rgba(70, 10, 100, 0.2));
+            border-radius: 15px;
+            padding: 20px;
+            margin: 40px 0;
+            text-align: center;
+            border: 1px solid rgba(140, 60, 180, 0.3);
+            box-shadow: 0 0 25px rgba(140, 60, 180, 0.2);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(140, 60, 180, 0.2); }
+            50% { box-shadow: 0 0 35px rgba(140, 60, 180, 0.3); }
+        }
+        
+        .achievement h3 {
+            color: #e8c050;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .final-message {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(140, 60, 180, 0.2);
+        }
+        
+        .hidden-ending {
+            display: inline-block;
+            background: linear-gradient(135deg, #6a1b9a, #8a2be2);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(140, 60, 180, 0.3);
+        }
+        
+        .hidden-ending:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(140, 60, 180, 0.5);
+            background: linear-gradient(135deg, #7a2baa, #9a3bf2);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #a080c0;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(140, 60, 180, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .language-switcher {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: center;
+            }
+            
+            .lang-options {
+                left: 0;
+                right: auto;
+                width: 100%;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .top-margin {
+            margin-top: 60px;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 40px 0;
+            color: #b090d0;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+        }
+        
+        .emphasis {
+            color: #d8b3ff;
+            font-weight: 600;
+        }
+        
+        .translatable {
+            /* 用于标识可翻译元素的类 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-switcher">
+            <button class="lang-btn" id="langBtn">
+                <span id="currentLang">中文</span>
+                <span style="font-size: 0.9rem;">▼</span>
+            </button>
+            <div class="lang-options" id="langOptions">
+                <div class="lang-option active" data-lang="zh">中文</div>
+                <div class="lang-option" data-lang="en">English</div>
+                <div class="lang-option" data-lang="ja">日本語</div>
+                <div class="lang-option" data-lang="pt">Português</div>
+            </div>
+        </div>
+        
+        <main class="content top-margin">
+            <section class="fade-in">
+                <p id="text1">你拿起那把手术刀。刀刃很轻，但刻在上面的符文让它看起来沉重如山。</p>
+            </section>
+            
+            <section class="riki-dialogue fade-in">
+                <p id="text2">RIKI的表情突然变了——不是愤怒，而是一种复杂的悲伤：</p>
+                <p class="quote" id="quote1">"你选了这个……"</p>
+                <p id="text3">他站起身，缓缓说道：</p>
+                <p class="quote" id="quote2">"这把刀是我祖先留下的。它能切断契约，但需要一个足够'完整'的灵魂作为替代品。"</p>
+                <p class="quote" id="quote3">"'完整'的意思是——你必须理解这一切的残酷，却依然保持着人性。你必须有能力成为饲主，却选择不成为。"</p>
+                <p class="quote" id="quote4">"你的牺牲会让它沉睡三百年。三百年后……它会再次醒来，需要新的饲主，新的循环。"</p>
+                <p class="quote" id="quote5">"但至少，这三百年里，不会有人被献祭。"</p>
+            </section>
+            
+            <section class="fade-in">
+                <p id="text4">你握紧了刀。</p>
+            </section>
+            
+            <section class="riki-dialogue fade-in">
+                <p class="quote" id="quote6">"我早就想这么做了，" RIKI苦笑，"但我做不到。因为我已经献祭了太多人，我的灵魂不再'完整'。它不接受我的交换。"</p>
+                <p class="quote" id="quote7">"所以我只能等一个像你这样的人——足够纯粹，足够勇敢，又足够愚蠢。"</p>
+            </section>
+            
+            <section class="fade-in">
+                <p id="text5">你将刀刃刺入自己的胸口。</p>
+            </section>
+            
+            <div class="divider fade-in" id="divider">---</div>
+            
+            <section class="fade-in">
+                <p id="text6">没有痛苦。</p>
+            </section>
+            
+            <section class="fade-in">
+                <p id="text7">你感觉自己的意识在向外扩散，变成了某种更宏大的存在。你"看到"了整座酒店的每个房间、每段历史、每个被献祭的灵魂。</p>
+            </section>
+            
+            <section class="vision-section fade-in">
+                <p id="text8">你看到了RIKI的祖先第一次唤醒它的那个雨夜。</p>
+                <p id="text9">你看到了三百年来，每一代饲主的挣扎与绝望。</p>
+                <p id="text10">你看到了酒店的那些房间，那些人最后的时刻——他们的痛苦、狂喜、释然。</p>
+            </section>
+            
+            <section class="fade-in" id="section-critical">
+                <p id="text11">然后你"看到"了它——那个被称为<span class="emphasis" id="emphasis1">情饕</span>的存在。</p>
+                <p id="text12">它不是怪物，不是恶魔，甚至不是神明。它只是一种……<span class="emphasis" id="emphasis2">饥饿</span>。一种对情感、对故事、对生命强度的永恒渴望。</p>
+                <p id="text13">它没有善恶，就像风没有善恶，就像海没有善恶。</p>
+                <p id="text14">而你正在成为它的一部分。</p>
+                <p id="text15">你听到一个声音，那是你自己的声音：</p>
+            </section>
+            
+            <section class="fade-in">
+                <p class="quote" id="quote8">"睡吧。"</p>
+                <p class="quote" id="quote9">"三百年后，如果还有人记得这个故事，如果还有人愿意重复这个选择……"</p>
+                <p class="quote" id="quote10">"那就再醒来吧。"</p>
+            </section>
+            
+            <div class="achievement fade-in">
+                <h3 id="achievement-title">【达成结局：三百年的安眠】</h3>
+                <p id="achievement-desc">你以自身为祭品，换取了三百年的安眠</p>
+            </div>
+            
+            <div class="final-message fade-in">
+                <button class="hidden-ending" id="hiddenEnding">
+                    下一个循环已经开始
+                </button>
+            </div>
+        </main>
+        
+        <footer>
+            <p id="footer-text">© ROOM酒店契约故事 | 本故事纯属虚构</p>
+        </footer>
+    </div>
+
+    <script>
+        // 多语言文本对象
+        const translations = {
+            zh: {
+                text1: "你拿起那把手术刀。刀刃很轻，但刻在上面的符文让它看起来沉重如山。",
+                text2: "RIKI的表情突然变了——不是愤怒，而是一种复杂的悲伤：",
+                quote1: "\"你选了这个……\"",
+                text3: "他站起身，缓缓说道：",
+                quote2: "\"这把刀是我祖先留下的。它能切断契约，但需要一个足够'完整'的灵魂作为替代品。\"",
+                quote3: "\"'完整'的意思是——你必须理解这一切的残酷，却依然保持着人性。你必须有能力成为饲主，却选择不成为。\"",
+                quote4: "\"你的牺牲会让它沉睡三百年。三百年后……它会再次醒来，需要新的饲主，新的循环。\"",
+                quote5: "\"但至少，这三百年里，不会有人被献祭。\"",
+                text4: "你握紧了刀。",
+                quote6: "\"我早就想这么做了，\" RIKI苦笑，\"但我做不到。因为我已经献祭了太多人，我的灵魂不再'完整'。它不接受我的交换。\"",
+                quote7: "\"所以我只能等一个像你这样的人——足够纯粹，足够勇敢，又足够愚蠢。\"",
+                text5: "你将刀刃刺入自己的胸口。",
+                divider: "---",
+                text6: "没有痛苦。",
+                text7: "你感觉自己的意识在向外扩散，变成了某种更宏大的存在。你\"看到\"了整座酒店的每个房间、每段历史、每个被献祭的灵魂。",
+                text8: "你看到了RIKI的祖先第一次唤醒它的那个雨夜。",
+                text9: "你看到了三百年来，每一代饲主的挣扎与绝望。",
+                text10: "你看到了酒店的那些房间，那些人最后的时刻——他们的痛苦、狂喜、释然。",
+                text11: "然后你\"看到\"了它——那个被称为情饕的存在。",
+                text12: "它不是怪物，不是恶魔，甚至不是神明。它只是一种……饥饿。一种对情感、对故事、对生命强度的永恒渴望。",
+                text13: "它没有善恶，就像风没有善恶，就像海没有善恶。",
+                text14: "而你正在成为它的一部分。",
+                text15: "你听到一个声音，那是你自己的声音：",
+                quote8: "\"睡吧。\"",
+                quote9: "\"三百年后，如果还有人记得这个故事，如果还有人愿意重复这个选择……\"",
+                quote10: "\"那就再醒来吧。\"",
+                achievementTitle: "【达成结局：三百年的安眠】",
+                achievementDesc: "你以自身为祭品，换取了三百年的安眠",
+                buttonText: "下一个循环已经开始",
+                footer: "© ROOM酒店契约故事 | 本故事纯属虚构",
+                emphasis1: "情饕",
+                emphasis2: "饥饿"
+            },
+            en: {
+                text1: "You pick up the scalpel. The blade is light, but the runes engraved on it make it seem as heavy as a mountain.",
+                text2: "RIKI's expression suddenly changes—not anger, but a complex sorrow:",
+                quote1: "\"You chose this...\"",
+                text3: "He stands up and says slowly:",
+                quote2: "\"This knife was left by my ancestors. It can sever the contract, but it requires a sufficiently 'complete' soul as a substitute.\"",
+                quote3: "\"'Complete' means—you must understand the cruelty of it all, yet still maintain your humanity. You must have the ability to become a keeper, yet choose not to.\"",
+                quote4: "\"Your sacrifice will put it to sleep for three hundred years. Three hundred years later... it will awaken again, needing a new keeper, a new cycle.\"",
+                quote5: "\"But at least, during these three hundred years, no one will be sacrificed.\"",
+                text4: "You grip the knife tightly.",
+                quote6: "\"I've wanted to do this for a long time,\" RIKI says with a bitter smile, \"but I couldn't. Because I've already sacrificed too many people, my soul is no longer 'complete.' It won't accept my exchange.\"",
+                quote7: "\"So I could only wait for someone like you—pure enough, brave enough, and foolish enough.\"",
+                text5: "You plunge the blade into your own chest.",
+                divider: "---",
+                text6: "There is no pain.",
+                text7: "You feel your consciousness expanding outward, becoming something grander. You \"see\" every room of the hotel, every history, every sacrificed soul.",
+                text8: "You see the rainy night when RIKI's ancestors first awakened it.",
+                text9: "You see the struggles and despair of every keeper over the past three hundred years.",
+                text10: "You see those hotel rooms, the final moments of those people—their pain, ecstasy, release.",
+                text11: "Then you \"see\" it—the being known as the Emotion Devourer.",
+                text12: "It is not a monster, not a demon, not even a deity. It is just... hunger. An eternal craving for emotions, for stories, for the intensity of life.",
+                text13: "It has no good or evil, just as the wind has no good or evil, just as the sea has no good or evil.",
+                text14: "And you are becoming part of it.",
+                text15: "You hear a voice, your own voice:",
+                quote8: "\"Sleep.\"",
+                quote9: "\"Three hundred years later, if anyone still remembers this story, if anyone is willing to repeat this choice...\"",
+                quote10: "\"Then awaken again.\"",
+                achievementTitle: "【Achievement Unlocked: Three Hundred Years of Slumber】",
+                achievementDesc: "You used yourself as a sacrifice to purchase three hundred years of slumber",
+                buttonText: "The Next Cycle Has Begun",
+                footer: "© ROOM Hotel Contract Story | This story is fictional",
+                emphasis1: "Emotion Devourer",
+                emphasis2: "hunger"
+            },
+            ja: {
+                text1: "あなたはその手術刀を手に取る。刃は軽いが、刻まれたルーンによって山のように重く見える。",
+                text2: "RIKIの表情が突然変わる——怒りではなく、複雑な悲しみだ：",
+                quote1: "「あなたはこれを選んだのか……」",
+                text3: "彼は立ち上がり、ゆっくりと言う：",
+                quote2: "「このナイフは私の祖先が残したものだ。契約を断ち切ることができるが、十分に『完全』な魂が必要だ。」",
+                quote3: "「『完全』とは——この残酷さを理解しながらも、まだ人間性を保っていること。飼い主になる能力がありながら、なることを選ばないこと。」",
+                quote4: "「あなたの犠牲はそれを三百年眠らせる。三百年後……それは再び目を覚まし、新しい飼い主、新しい循環を必要とする。」",
+                quote5: "「だが少なくとも、この三百年間、誰も生贄にされない。」",
+                text4: "あなたはナイフをしっかりと握る。",
+                quote6: "「私はずっとこれをやりたかった」とRIKIは苦笑いする。「でもできなかった。私はすでに多くの人を犠牲にしたから、私の魂はもう『完全』ではない。私の交換を受け入れない。」",
+                quote7: "「だから私はあなたのような人を待つしかなかった——十分に純粋で、十分に勇敢で、十分に愚かな人を。」",
+                text5: "あなたは刃を自分の胸に突き刺す。",
+                divider: "---",
+                text6: "痛みはない。",
+                text7: "あなたは自分の意識が外に広がり、より壮大な存在になるのを感じる。あなたはホテルのすべての部屋、すべての歴史、すべての犠牲になった魂を「見る」。",
+                text8: "あなたはRIKIの祖先が初めてそれを目覚めさせた雨の夜を見る。",
+                text9: "あなたは三百年にわたる、各飼い主の苦闘と絶望を見る。",
+                text10: "あなたはホテルのあの部屋、あの人々の最後の瞬間——彼らの苦痛、狂喜、解放を見る。",
+                text11: "そしてあなたはそれ——情饕と呼ばれる存在を「見る」。",
+                text12: "それは怪物でも、悪魔でも、神でもない。それはただ……飢えだ。感情、物語、生命の強さに対する永遠の渇望。",
+                text13: "それは善悪を持たない。風が善悪を持たないように、海が善悪を持たないように。",
+                text14: "そしてあなたはその一部になりつつある。",
+                text15: "あなたは声を聞く、あなた自身の声だ：",
+                quote8: "「眠れ。」",
+                quote9: "「三百年後、もし誰かがまだこの物語を覚えていて、もし誰かがこの選択を繰り返すことを望むなら……」",
+                quote10: "「ならば、もう一度目を覚ませ。」",
+                achievementTitle: "【実績解除：三百年の眠り】",
+                achievementDesc: "あなたは自身を生贄として、三百年の眠りを購入した",
+                buttonText: "次の循環はすでに始まった",
+                footer: "© ROOMホテル契約物語 | この物語はフィクションです",
+                emphasis1: "情饕",
+                emphasis2: "飢え"
+            },
+            pt: {
+                text1: "Você pega o bisturi. A lâmina é leve, mas as runas gravadas nela a fazem parecer pesada como uma montanha.",
+                text2: "A expressão de RIKI muda de repente—não raiva, mas uma tristeza complexa:",
+                quote1: "\"Você escolheu isso...\"",
+                text3: "Ele se levanta e diz lentamente:",
+                quote2: "\"Esta faca foi deixada pelos meus ancestrais. Ela pode cortar o contrato, mas precisa de uma alma suficientemente 'completa' como substituto.\"",
+                quote3: "\"'Completa' significa—você deve entender toda a crueldade, mas ainda manter sua humanidade. Você deve ter a capacidade de se tornar um guardião, mas escolher não se tornar.\"",
+                quote4: "\"Seu sacrifício fará com que ele durma por trezentos anos. Trezentos anos depois... ele acordará novamente, precisando de um novo guardião, um novo ciclo.\"",
+                quote5: "\"Mas pelo menos, durante esses trezentos anos, ninguém será sacrificado.\"",
+                text4: "Você segura a faca com força.",
+                quote6: "\"Eu queria fazer isso há muito tempo,\" RIKI diz com um sorriso amargo, \"mas não pude. Porque já sacrifiquei muitas pessoas, minha alma não está mais 'completa.' Ele não aceita minha troca.\"",
+                quote7: "\"Então eu só podia esperar por alguém como você—puro o suficiente, corajoso o suficiente e tolo o suficiente.\"",
+                text5: "Você mergulha a lâmina em seu próprio peito.",
+                divider: "---",
+                text6: "Não há dor.",
+                text7: "Você sente sua consciência se expandindo para fora, tornando-se algo maior. Você \"vê\" cada quarto do hotel, cada história, cada alma sacrificada.",
+                text8: "Você vê a noite chuvosa em que os ancestrais de RIKI o despertaram pela primeira vez.",
+                text9: "Você vê as lutas e o desespero de cada guardião ao longo dos trezentos anos.",
+                text10: "Você vê aqueles quartos de hotel, os momentos finais daquelas pessoas—suas dores, êxtase, libertação.",
+                text11: "Então você \"vê\" ele—a entidade conhecida como Devorador de Emoções.",
+                text12: "Não é um monstro, não é um demônio, nem mesmo uma divindade. É apenas... fome. Um desejo eterno por emoções, por histórias, pela intensidade da vida.",
+                text13: "Não tem bem ou mal, assim como o vento não tem bem ou mal, assim como o mar não tem bem ou mal.",
+                text14: "E você está se tornando parte dele.",
+                text15: "Você ouve uma voz, sua própria voz:",
+                quote8: "\"Durma.\"",
+                quote9: "\"Trezentos anos depois, se alguém ainda se lembrar desta história, se alguém estiver disposto a repetir esta escolha...\"",
+                quote10: "\"Então acorde novamente.\"",
+                achievementTitle: "【Conquista Desbloqueada: Trezentos Anos de Sono】",
+                achievementDesc: "Você usou a si mesmo como sacrifício para comprar trezentos anos de sono",
+                buttonText: "O Próximo Ciclo Já Começou",
+                footer: "© História do Contrato do Hotel ROOM | Esta história é fictícia",
+                emphasis1: "Devorador de Emoções",
+                emphasis2: "fome"
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'zh';
+
+        // DOM 元素
+        const langBtn = document.getElementById('langBtn');
+        const langOptions = document.getElementById('langOptions');
+        const currentLangText = document.getElementById('currentLang');
+        const hiddenEndingBtn = document.getElementById('hiddenEnding');
+        
+        // 语言切换功能
+        langBtn.addEventListener('click', () => {
+            langOptions.style.display = langOptions.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        // 选择语言
+        document.querySelectorAll('.lang-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.getAttribute('data-lang');
+                changeLanguage(lang);
+                
+                // 更新激活状态
+                document.querySelectorAll('.lang-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                option.classList.add('active');
+                
+                // 关闭选项
+                langOptions.style.display = 'none';
+            });
+        });
+        
+        // 点击外部关闭语言选项
+        document.addEventListener('click', (e) => {
+            if (!langBtn.contains(e.target) && !langOptions.contains(e.target)) {
+                langOptions.style.display = 'none';
+            }
+        });
+        
+        // 更改语言函数
+        function changeLanguage(lang) {
+            currentLang = lang;
+            currentLangText.textContent = getLangName(lang);
+            
+            const t = translations[lang];
+            
+            // 更新所有文本元素
+            // 普通段落
+            for (let i = 1; i <= 15; i++) {
+                const element = document.getElementById('text' + i);
+                if (element && t['text' + i]) {
+                    element.textContent = t['text' + i];
+                }
+            }
+            
+            // 引用段落
+            for (let i = 1; i <= 10; i++) {
+                const element = document.getElementById('quote' + i);
+                if (element && t['quote' + i]) {
+                    element.textContent = t['quote' + i];
+                }
+            }
+            
+            // 分隔符
+            document.getElementById('divider').textContent = t.divider;
+            
+            // 成就部分
+            document.getElementById('achievement-title').textContent = t.achievementTitle;
+            document.getElementById('achievement-desc').textContent = t.achievementDesc;
+            
+            // 按钮文本
+            hiddenEndingBtn.textContent = t.buttonText;
+            
+            // 页脚
+            document.getElementById('footer-text').textContent = t.footer;
+            
+            // 强调文本
+            document.getElementById('emphasis1').textContent = t.emphasis1;
+            document.getElementById('emphasis2').textContent = t.emphasis2;
+        }
+        
+        // 获取语言名称
+        function getLangName(langCode) {
+            const langNames = {
+                'zh': '中文',
+                'en': 'English',
+                'ja': '日本語',
+                'pt': 'Português'
+            };
+            return langNames[langCode] || '中文';
+        }
+        
+        // 隐藏结局按钮点击事件 - 跳转到结局2隐藏内容
+        hiddenEndingBtn.addEventListener('click', () => {
+            window.location.href = "结局2隐藏内容.html";
+        });
+        
+        // 添加淡入动画效果
+        document.addEventListener('DOMContentLoaded', () => {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // 初始设置所有淡入元素为透明
+            document.querySelectorAll('.fade-in').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            });
+        });
+    </script>
+</body>
+</html>

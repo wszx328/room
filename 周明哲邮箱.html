@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱系统 - 周明哲</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #d6c2ff 0%, #b19cd9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .email-container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(177, 156, 217, 0.3);
+            overflow: hidden;
+            height: calc(100vh - 40px);
+        }
+        
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(135deg, #b19cd9 0%, #d6c2ff 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+        }
+        
+        .compose-btn {
+            background: white;
+            color: #8a6bc9;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .compose-btn i {
+            margin-right: 8px;
+        }
+        
+        .compose-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .folders {
+            list-style: none;
+            flex-grow: 1;
+        }
+        
+        .folders li {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .folders li i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .folders li.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+        
+        .folders li:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .folder-count {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+        }
+        
+        /* 语言切换按钮样式 */
+        .language-switcher {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .language-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .language-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .language-menu {
+            position: absolute;
+            bottom: 70px;
+            left: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+            min-width: 120px;
+        }
+        
+        .language-menu.active {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #8a6bc9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .language-option:hover {
+            background: #f9f7ff;
+        }
+        
+        .language-flag {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+        
+        /* 邮件列表区域 */
+        .mail-list {
+            flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .mail-list-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .mail-list-header h2 {
+            color: #8a6bc9;
+            font-size: 1.3rem;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f9f7ff;
+            border-radius: 20px;
+            padding: 8px 15px;
+            width: 250px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            margin-left: 8px;
+            outline: none;
+        }
+        
+        .mail-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mail-item:hover {
+            background: #f9f7ff;
+        }
+        
+        .mail-item.active {
+            background: #f0ebff;
+            border-left: 3px solid #8a6bc9;
+        }
+        
+        .mail-item.unread .mail-subject {
+            font-weight: 600;
+        }
+        
+        .mail-checkbox {
+            margin-right: 15px;
+        }
+        
+        .mail-sender {
+            width: 180px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .mail-subject {
+            font-weight: 500;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-preview {
+            color: #777;
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-date {
+            color: #999;
+            font-size: 0.85rem;
+            margin-left: 15px;
+        }
+        
+        /* 邮件内容区域 */
+        .mail-view {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .mail-view.active {
+            display: block;
+        }
+        
+        .mail-view-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mail-view-subject {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .mail-view-info {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .mail-view-sender {
+            font-weight: 600;
+            color: #8a6bc9;
+        }
+        
+        .mail-view-body {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .mail-attachments {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .attachments-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #8a6bc9;
+        }
+        
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .attachment-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .attachment-icon {
+            color: #8a6bc9;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .attachment-name {
+            flex: 1;
+        }
+        
+        .attachment-size {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .email-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .mail-sender {
+                width: 120px;
+            }
+        }
+        
+        /* 链接样式 */
+        .news-link {
+            color: #8a6bc9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .news-link:hover {
+            color: #6a4fa3;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-envelope"></i>
+                <h1 data-i18n="mailbox_title">邮箱系统</h1>
+            </div>
+            
+            <button class="compose-btn">
+                <i class="fas fa-edit"></i>
+                <span data-i18n="compose">写邮件</span>
+            </button>
+            
+            <ul class="folders">
+                <li class="active" data-folder="inbox">
+                    <i class="fas fa-inbox"></i>
+                    <span data-i18n="inbox">收件箱</span>
+                    <span class="folder-count">3</span>
+                </li>
+                <li data-folder="draft">
+                    <i class="fas fa-file-alt"></i>
+                    <span data-i18n="drafts">草稿箱</span>
+                    <span class="folder-count">1</span>
+                </li>
+                <li data-folder="sent">
+                    <i class="fas fa-paper-plane"></i>
+                    <span data-i18n="sent">已发送</span>
+                </li>
+                <li data-folder="trash">
+                    <i class="fas fa-trash"></i>
+                    <span data-i18n="trash">回收站</span>
+                    <span class="folder-count">2</span>
+                </li>
+            </ul>
+            
+            <div class="language-switcher">
+                <button class="language-btn" id="language-btn">
+                    <i class="fas fa-globe"></i>
+                    <span id="current-lang">中文</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="language-menu" id="language-menu">
+                    <div class="language-option" data-lang="zh-CN">
+                        <span>中文</span>
+                    </div>
+                    <div class="language-option" data-lang="en">
+                        <span>English</span>
+                    </div>
+                    <div class="language-option" data-lang="ja">
+                        <span>日本語</span>
+                    </div>
+                    <div class="language-option" data-lang="pt">
+                        <span>Português</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 邮件列表 -->
+            <div class="mail-list">
+                <div class="mail-list-header">
+                    <h2 data-i18n="inbox">收件箱</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" data-i18n-placeholder="search_placeholder" placeholder="搜索邮件...">
+                    </div>
+                </div>
+                
+                <!-- 收件箱邮件列表 -->
+                <div class="mail-list-content" id="inbox-list">
+                    <div class="mail-item unread active" data-mail="1">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">R∞M酒店</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail1_subject">「ROOM酒店诚邀您的光临」</div>
+                            <div class="mail-preview" data-i18n="mail1_preview">我们注意到您曾在网络上搜索过'生命的意义'、'如何重新开始'等关键词。R∞M酒店'新生计划'...</div>
+                        </div>
+                        <div class="mail-date">2025-11-10</div>
+                    </div>
+                    
+                    <div class="mail-item unread" data-mail="2">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">市第一医院</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail2_subject">抑郁治疗复诊通知</div>
+                            <div class="mail-preview" data-i18n="mail2_preview">周明哲先生，您的抑郁治疗复诊时间已安排，请于2025年11月20日到院复诊...</div>
+                        </div>
+                        <div class="mail-date">2025-11-08</div>
+                    </div>
+                    
+                    <div class="mail-item unread" data-mail="3">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">房东王先生</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail3_subject">催租通知</div>
+                            <div class="mail-preview" data-i18n="mail3_preview">周先生您好，您本月房租已逾期3天，请尽快缴纳，谢谢...</div>
+                        </div>
+                        <div class="mail-date">2025-11-05</div>
+                    </div>
+                </div>
+                
+                <!-- 草稿箱邮件列表 -->
+                <div class="mail-list-content" id="draft-list" style="display: none;">
+                    <div class="mail-item" data-mail="4">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">周明哲</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="draft_subject">回复：对不起</div>
+                            <div class="mail-preview" data-i18n="draft_preview">我原谅你了，但我再也回不去了...</div>
+                        </div>
+                        <div class="mail-date">2025-11-19</div>
+                    </div>
+                </div>
+                
+                <!-- 回收站邮件列表 -->
+                <div class="mail-list-content" id="trash-list" style="display: none;">
+                    <div class="mail-item" data-mail="5">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">系统</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="trash_subject">聊天记录备份</div>
+                            <div class="mail-preview" data-i18n="trash_preview">聊天记录截图备份...</div>
+                        </div>
+                        <div class="mail-date">2025-11-19</div>
+                    </div>
+                    <!-- 新增的邮件 -->
+                    <div class="mail-item" data-mail="6">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">瑞奇新闻</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail6_subject"></div>
+                            <div class="mail-preview" data-i18n="mail6_preview">新闻报道链接：https://ruiqixinwen.com</div>
+                        </div>
+                        <div class="mail-date">2022-11-20</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 邮件内容区域 -->
+            <div class="mail-view" id="mail-view">
+                <!-- 邮件1内容 -->
+                <div class="mail-view-content" id="mail1-content">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail1_subject">「ROOM酒店诚邀您的光临」</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">R∞M酒店</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-10 03:14</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail1_content">
+                        <p>我们注意到您曾在网络上搜索过'生命的意义'、'如何重新开始'等关键词。R∞M酒店'新生计划'，旨在为经历重大人生创伤的卓越人士，提供一个绝对私密、安全、支持性的环境，通过尖端的身心干预技术，帮助您走出阴霾，重拾生命的主动权。我们已为您预留了143号'希望之屋'，期待您的光临。</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件2内容 -->
+                <div class="mail-view-content" id="mail2-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail2_subject">抑郁治疗复诊通知</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">市第一医院</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-08 09:36</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail2_content">
+                        <p>周明哲先生，您的抑郁治疗复诊时间已安排，请于2025年11月20日到院复诊。</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件3内容 -->
+                <div class="mail-view-content" id="mail3-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail3_subject">催租通知</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">房东王先生</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-05 14:22</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail3_content">
+                        <p>周先生您好，您本月房租已逾期3天，请尽快缴纳，谢谢。</p>
+                    </div>
+                </div>
+                
+                <!-- 草稿内容 -->
+                <div class="mail-view-content" id="mail4-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="draft_subject">回复：对不起</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">周明哲</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-19</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="draft_content">
+                        <p>我原谅你了，但我再也回不去了。</p>
+                    </div>
+                </div>
+                
+                <!-- 回收站内容1 -->
+                <div class="mail-view-content" id="mail5-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="trash_subject">聊天记录备份</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">系统</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-19 23:36</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="trash_content">
+                        <p>聊天记录备份</p>
+                    </div>
+                    <div class="mail-attachments">
+                        <div class="attachments-title" data-i18n="attachments">附件</div>
+                        <div class="attachment-item" data-file="chat1">
+                            <i class="fas fa-image attachment-icon"></i>
+                            <div class="attachment-name" data-i18n="attachment1">聊天记录截图1.jpg</div>
+                            <div class="attachment-size">2.3 MB</div>
+                        </div>
+                        <div class="attachment-item" data-file="chat2">
+                            <i class="fas fa-image attachment-icon"></i>
+                            <div class="attachment-name" data-i18n="attachment2">聊天记录截图2.jpg</div>
+                            <div class="attachment-size">1.8 MB</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 回收站内容2 - 新增邮件内容 -->
+                <div class="mail-view-content" id="mail6-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail6_subject"></h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">瑞奇新闻</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2022-11-20 10:00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail6_content">
+                        <p>新闻报道链接：<a href="https://ruiqixinwen.com" class="news-link" id="news-link">https://ruiqixinwen.com</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言翻译数据
+        const translations = {
+            'zh-CN': {
+                'mailbox_title': '邮箱系统',
+                'compose': '写邮件',
+                'inbox': '收件箱',
+                'drafts': '草稿箱',
+                'sent': '已发送',
+                'trash': '回收站',
+                'search_placeholder': '搜索邮件...',
+                'from': '发件人：',
+                'date': '日期：',
+                'attachments': '附件',
+                'mail1_subject': '「ROOM酒店诚邀您的光临」',
+                'mail1_preview': '我们注意到您曾在网络上搜索过\'生命的意义\'、\'如何重新开始\'等关键词。R∞M酒店\'新生计划\'...',
+                'mail1_content': '<p>我们注意到您曾在网络上搜索过\'生命的意义\'、\'如何重新开始\'等关键词。R∞M酒店\'新生计划\'，旨在为经历重大人生创伤的卓越人士，提供一个绝对私密、安全、支持性的环境，通过尖端的身心干预技术，帮助您走出阴霾，重拾生命的主动权。我们已为您预留了143号\'希望之屋\'，期待您的光临。</p>',
+                'mail2_subject': '抑郁治疗复诊通知',
+                'mail2_preview': '周明哲先生，您的抑郁治疗复诊时间已安排，请于2025年11月20日到院复诊...',
+                'mail2_content': '<p>周明哲先生，您的抑郁治疗复诊时间已安排，请于2025年11月20日到院复诊。</p>',
+                'mail3_subject': '催租通知',
+                'mail3_preview': '周先生您好，您本月房租已逾期3天，请尽快缴纳，谢谢...',
+                'mail3_content': '<p>周先生您好，您本月房租已逾期3天，请尽快缴纳，谢谢。</p>',
+                'draft_subject': '回复：对不起',
+                'draft_preview': '我原谅你了，但我再也回不去了...',
+                'draft_content': '<p>我原谅你了，但我再也回不去了。</p>',
+                'trash_subject': '聊天记录备份',
+                'trash_preview': '聊天记录截图备份...',
+                'trash_content': '<p>聊天记录备份</p>',
+                'attachment1': '聊天记录截图1.jpg',
+                'attachment2': '聊天记录截图2.jpg',
+                'mail6_subject': '',
+                'mail6_preview': '新闻报道链接：https://ruiqixinwen.com',
+                'mail6_content': '<p>新闻报道链接：<a href="https://ruiqixinwen.com" class="news-link" id="news-link">https://ruiqixinwen.com</a></p>'
+            },
+            'en': {
+                'mailbox_title': 'Email System',
+                'compose': 'Compose',
+                'inbox': 'Inbox',
+                'drafts': 'Drafts',
+                'sent': 'Sent',
+                'trash': 'Trash',
+                'search_placeholder': 'Search emails...',
+                'from': 'From:',
+                'date': 'Date:',
+                'attachments': 'Attachments',
+                'mail1_subject': '「ROOM Hotel Invitation」',
+                'mail1_preview': 'We noticed that you have searched for keywords such as \'meaning of life\', \'how to start over\'...',
+                'mail1_content': '<p>We noticed that you have searched for keywords such as \'meaning of life\', \'how to start over\' online. R∞M Hotel\'s \'Rebirth Program\' aims to provide an absolutely private, safe, and supportive environment for outstanding individuals who have experienced major life trauma, helping you overcome the shadows and regain control of your life through cutting-edge physical and mental intervention techniques. We have reserved Room 143, the \'House of Hope\', for you and look forward to your visit.</p>',
+                'mail2_subject': 'Depression Treatment Follow-up Notice',
+                'mail2_preview': 'Mr. Zhou Mingzhe, your depression treatment follow-up appointment has been scheduled...',
+                'mail2_content': '<p>Mr. Zhou Mingzhe, your depression treatment follow-up appointment has been scheduled for November 20, 2025.</p>',
+                'mail3_subject': 'Rent Reminder',
+                'mail3_preview': 'Dear Mr. Zhou, your rent for this month is 3 days overdue...',
+                'mail3_content': '<p>Dear Mr. Zhou, your rent for this month is 3 days overdue, please pay as soon as possible. Thank you.</p>',
+                'draft_subject': 'Re: Sorry',
+                'draft_preview': 'I forgive you, but I can never go back...',
+                'draft_content': '<p>I forgive you, but I can never go back.</p>',
+                'trash_subject': 'Chat Log Backup',
+                'trash_preview': 'Chat log screenshot backup...',
+                'trash_content': '<p>Chat log backup</p>',
+                'attachment1': 'Chat log screenshot 1.jpg',
+                'attachment2': 'Chat log screenshot 2.jpg',
+                'mail6_subject': '',
+                'mail6_preview': 'News report link: https://ruiqixinwen.com',
+                'mail6_content': '<p>News report link: <a href="https://ruiqixinwen.com" class="news-link" id="news-link">https://ruiqixinwen.com</a></p>'
+            },
+            'ja': {
+                'mailbox_title': 'メールシステム',
+                'compose': '作成',
+                'inbox': '受信トレイ',
+                'drafts': '下書き',
+                'sent': '送信済み',
+                'trash': 'ゴミ箱',
+                'search_placeholder': 'メールを検索...',
+                'from': '差出人：',
+                'date': '日付：',
+                'attachments': '添付ファイル',
+                'mail1_subject': '「ROOMホテルご招待」',
+                'mail1_preview': 'あなたが「人生の意味」「やり直し方」などのキーワードを検索したことに気づきました...',
+                'mail1_content': '<p>あなたが「人生の意味」「やり直し方」などのキーワードを検索したことに気づきました。R∞Mホテルの「新生プログラム」は、重大な人生のトラウマを経験した卓越した個人に、絶対にプライベートで安全かつ支援的な環境を提供し、最先端の心身介入技術を通じて影から抜け出し、人生の主導権を取り戻すお手伝いをします。私たちはあなたのために143号室「希望の家」を予約しました。ご来訪をお待ちしております。</p>',
+                'mail2_subject': 'うつ病治療再診通知',
+                'mail2_preview': '周明哲様、あなたのうつ病治療の再診予約が決まりました...',
+                'mail2_content': '<p>周明哲様、あなたのうつ病治療の再診予約が2025年11月20日に決まりました。</p>',
+                'mail3_subject': '家賃支払い督促',
+                'mail3_preview': '周様、今月の家賃は3日間延滞しています...',
+                'mail3_content': '<p>周様、今月の家賃は3日間延滞しています。至急お支払いください。よろしくお願いします。</p>',
+                'draft_subject': 'Re: ごめんなさい',
+                'draft_preview': 'あなたを許しますが、もう戻れません...',
+                'draft_content': '<p>あなたを許しますが、もう戻れません。</p>',
+                'trash_subject': 'チャット記録バックアップ',
+                'trash_preview': 'チャット記録スクリーンショットのバックアップ...',
+                'trash_content': '<p>チャット記録バックアップ</p>',
+                'attachment1': 'チャット記録スクリーンショット1.jpg',
+                'attachment2': 'チャット記録スクリーンショット2.jpg',
+                'mail6_subject': '',
+                'mail6_preview': 'ニュースレポートリンク：https://ruiqixinwen.com',
+                'mail6_content': '<p>ニュースレポートリンク：<a href="https://ruiqixinwen.com" class="news-link" id="news-link">https://ruiqixinwen.com</a></p>'
+            },
+            'pt': {
+                'mailbox_title': 'Sistema de Email',
+                'compose': 'Escrever',
+                'inbox': 'Caixa de Entrada',
+                'drafts': 'Rascunhos',
+                'sent': 'Enviados',
+                'trash': 'Lixeira',
+                'search_placeholder': 'Pesquisar emails...',
+                'from': 'De:',
+                'date': 'Data:',
+                'attachments': 'Anexos',
+                'mail1_subject': '「Convite do Hotel ROOM」',
+                'mail1_preview': 'Percebemos que você pesquisou por palavras-chave como \'significado da vida\', \'como recomeçar\'...',
+                'mail1_content': '<p>Percebemos que você pesquisou por palavras-chave como \'significado da vida\', \'como recomeçar\' online. O \'Programa de Renascimento\' do Hotel R∞M visa fornecer um ambiente absolutamente privado, seguro e de apoio para indivíduos excepcionais que passaram por grandes traumas de vida, ajudando você a superar as sombras e recuperar o controle de sua vida por meio de técnicas de intervenção física e mental de ponta. Reservamos o Quarto 143, a \'Casa da Esperança\', para você e esperamos sua visita.</p>',
+                'mail2_subject': 'Aviso de Retorno do Tratamento de Depressão',
+                'mail2_preview': 'Sr. Zhou Mingzhe, seu retorno do tratamento de depressão foi agendado...',
+                'mail2_content': '<p>Sr. Zhou Mingzhe, seu retorno do tratamento de depressão foi agendado para 20 de novembro de 2025.</p>',
+                'mail3_subject': 'Lembrete de Aluguel',
+                'mail3_preview': 'Prezado Sr. Zhou, seu aluguel deste mês está atrasado há 3 dias...',
+                'mail3_content': '<p>Prezado Sr. Zhou, seu aluguel deste mês está atrasado há 3 dias, por favor, pague o mais rápido possível. Obrigado.</p>',
+                'draft_subject': 'Re: Desculpe',
+                'draft_preview': 'Eu te perdôo, mas não posso mais voltar...',
+                'draft_content': '<p>Eu te perdôo, mas não posso mais voltar.</p>',
+                'trash_subject': 'Backup de Registro de Chat',
+                'trash_preview': 'Backup de capturas de tela do registro de chat...',
+                'trash_content': '<p>Backup de registro de chat</p>',
+                'attachment1': 'Captura de tela do chat 1.jpg',
+                'attachment2': 'Captura de tela do chat 2.jpg',
+                'mail6_subject': '',
+                'mail6_preview': 'Link de notícias: https://ruiqixinwen.com',
+                'mail6_content': '<p>Link de notícias: <a href="https://ruiqixinwen.com" class="news-link" id="news-link">https://ruiqixinwen.com</a></p>'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 语言切换功能
+            const languageBtn = document.getElementById('language-btn');
+            const languageMenu = document.getElementById('language-menu');
+            const currentLang = document.getElementById('current-lang');
+            
+            // 切换语言菜单显示/隐藏
+            languageBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                languageMenu.classList.toggle('active');
+            });
+            
+            // 点击页面其他区域关闭语言菜单
+            document.addEventListener('click', function() {
+                languageMenu.classList.remove('active');
+            });
+            
+            // 阻止语言菜单内的点击事件冒泡
+            languageMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 语言选择处理
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    languageMenu.classList.remove('active');
+                    
+                    // 更新当前语言显示
+                    currentLang.textContent = this.querySelector('span').textContent;
+                    
+                    // 保存语言选择到本地存储
+                    localStorage.setItem('preferred-language', lang);
+                });
+            });
+            
+            // 设置语言函数
+            function setLanguage(lang) {
+                // 更新html的lang属性
+                document.documentElement.setAttribute('lang', lang);
+                
+                // 更新所有带有data-i18n属性的元素
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.innerHTML = translations[lang][key];
+                    }
+                });
+                
+                // 更新所有带有data-i18n-placeholder属性的元素
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                    const key = element.getAttribute('data-i18n-placeholder');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.setAttribute('placeholder', translations[lang][key]);
+                    }
+                });
+            }
+            
+            // 从本地存储加载用户偏好的语言
+            const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+            setLanguage(savedLang);
+            
+            // 更新当前语言显示
+            const savedLangOption = document.querySelector(`.language-option[data-lang="${savedLang}"]`);
+            if (savedLangOption) {
+                currentLang.textContent = savedLangOption.querySelector('span').textContent;
+            }
+            
+            // 文件夹切换功能
+            const folderItems = document.querySelectorAll('.folders li');
+            const mailLists = document.querySelectorAll('.mail-list-content');
+            
+            folderItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    folderItems.forEach(i => i.classList.remove('active'));
+                    mailLists.forEach(list => list.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件列表
+                    const folder = this.getAttribute('data-folder');
+                    document.getElementById(`${folder}-list`).style.display = 'block';
+                    
+                    // 更新邮件列表标题
+                    document.querySelector('.mail-list-header h2').textContent = this.querySelector('span').textContent;
+                    
+                    // 隐藏邮件内容区域
+                    document.getElementById('mail-view').classList.remove('active');
+                });
+            });
+            
+            // 邮件选择功能
+            const mailItems = document.querySelectorAll('.mail-item');
+            const mailContents = document.querySelectorAll('.mail-view-content');
+            
+            mailItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    mailItems.forEach(i => i.classList.remove('active'));
+                    mailContents.forEach(content => content.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件内容
+                    const mailId = this.getAttribute('data-mail');
+                    document.getElementById(`mail${mailId}-content`).style.display = 'block';
+                    
+                    // 显示邮件内容区域
+                    document.getElementById('mail-view').classList.add('active');
+                });
+            });
+            
+            // 附件点击功能 - 修改为打开本地网页
+            const attachmentItems = document.querySelectorAll('.attachment-item');
+            
+            attachmentItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const file = this.getAttribute('data-file');
+                    // 根据附件类型打开对应的本地网页
+                    if (file === 'chat1') {
+                        window.open('聊天截图1.jpg', '_blank');
+                    } else if (file === 'chat2') {
+                        window.open('聊天截图2.jpg', '_blank');
+                    }
+                });
+            });
+            
+            // 新闻链接点击功能
+            document.getElementById('mail-view').addEventListener('click', function(e) {
+                if (e.target && e.target.id === 'news-link') {
+                    e.preventDefault();
+                    window.open('新闻报道.html', '_blank');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

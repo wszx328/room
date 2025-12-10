@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱登录 - 香芋紫风格</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #d6c2ff 0%, #b19cd9 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(177, 156, 217, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #b19cd9 0%, #d6c2ff 100%);
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .left-panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+        
+        .left-panel h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .left-panel p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .right-panel {
+            flex: 1;
+            padding: 50px;
+            background: white;
+            position: relative;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h2 {
+            color: #8a6bc9;
+            font-size: 2rem;
+        }
+        
+        .logo p {
+            color: #8a6bc9;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #8a6bc9;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e0d6f5;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f9f7ff;
+        }
+        
+        .form-group input:focus {
+            border-color: #b19cd9;
+            box-shadow: 0 0 0 2px rgba(177, 156, 217, 0.2);
+            outline: none;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+        
+        .remember {
+            display: flex;
+            align-items: center;
+            color: #8a6bc9;
+        }
+        
+        .remember input {
+            margin-right: 8px;
+            accent-color: #b19cd9;
+        }
+        
+        .forgot {
+            color: #b19cd9;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .forgot:hover {
+            text-decoration: underline;
+            color: #8a6bc9;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #b19cd9 0%, #d6c2ff 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(177, 156, 217, 0.3);
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(177, 156, 217, 0.4);
+        }
+        
+        .register {
+            text-align: center;
+            margin-top: 25px;
+            color: #8a6bc9;
+        }
+        
+        .register a {
+            color: #b19cd9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .register a:hover {
+            text-decoration: underline;
+            color: #8a6bc9;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .decoration {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+        
+        .decoration:nth-child(1) {
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+        }
+        
+        .decoration:nth-child(2) {
+            bottom: -30px;
+            left: -30px;
+            width: 120px;
+            height: 120px;
+        }
+        
+        /* 语言切换按钮样式 */
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        
+        .language-btn {
+            background: linear-gradient(135deg, #b19cd9 0%, #d6c2ff 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(177, 156, 217, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .language-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(177, 156, 217, 0.4);
+        }
+        
+        .language-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+            min-width: 120px;
+        }
+        
+        .language-menu.active {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #8a6bc9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .language-option:hover {
+            background: #f9f7ff;
+        }
+        
+        .language-flag {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                padding: 30px;
+            }
+            
+            .right-panel {
+                padding: 30px;
+            }
+            
+            .language-switcher {
+                top: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 语言切换按钮 -->
+        <div class="language-switcher">
+            <button class="language-btn" id="language-btn">
+                <i class="fas fa-globe"></i>
+                <span id="current-lang">中文</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="language-menu" id="language-menu">
+                <div class="language-option" data-lang="zh-CN">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjZGUyOTE0Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE2IDcuODZsMS4wNSAzLjI0SDIwLjNsLTIuNzIgMS45OCAxLjA0IDMuMjRMMTYgMTQuMzRsLTIuNjcgMS45OCAxLjA0LTMuMjRMMTEuNyAxMS4xaDMuMjV6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE2IDI0LjE0bC0xLjA1LTMuMjRIMTEuN2wyLjcyLTEuOTgtMS4wNC0zLjI0TDE2IDE3LjY2bDIuNjctMS45OC0xLjA0IDMuMjQgMi43MiAxLjk4aC0zLjI1eiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMi4wNCAxMi4xN2wtMy4yNCAxLjA1djMuMjVsLTEuOTgtMi43Mi0zLjI0IDEuMDQgMS45OC0yLjY3LTEuOTgtMi42NyAzLjI0IDEuMDRWOC43MmwzLjI0IDEuMDVMMTkuMzcgMTZsMi42Ny0xLjk4eiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik05Ljk2IDE5LjgzbDMuMjQtMS4wNXYtMy4yNWwxLjk4IDIuNzIgMy4yNC0xLjA0LTEuOTggMi42NyAxLjk4IDIuNjctMy4yNC0xLjA0djMuMjVsLTMuMjQtMS4wNUwxMi42MyAxNmwtMi42NyAxLjk4eiIvPjwvc3ZnPg==" alt="中文" class="language-flag">
+                    <span>中文</span>
+                </div>
+                <div class="language-option" data-lang="en">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDAyNDdkIi8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6TTAgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6TTAgOGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6bTQgNGg0djRoLTR6TTAgMTJoNHY0aC00em00IDRoNHY0aC00em00IDRoNHY0aC00em00IDRoNHY0aC00em00IDRoNHY0aC00em00IDRoNHY0aC00em00IDRoNHY0aC00ek0wIDE2aDR2NGgtNHptNCA0aDR2NGgtNHptNCA0aDR2NGgtNHptNCA0aDR2NGgtNHptNCA0aDR2NGgtNHptNCA0aDR2NGgtNHptNCA0aDR2NGgtNHoiLz48L3N2Zz4=" alt="English" class="language-flag">
+                    <span>English</span>
+                </div>
+                <div class="language-option" data-lang="ja">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iNyIgZmlsbD0iI2JjMDAyMyIvPjwvc3ZnPg==" alt="日本語" class="language-flag">
+                    <span>日本語</span>
+                </div>
+                <div class="language-option" data-lang="pt">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjZmZmIi8+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjMyIiBmaWxsPSIjZGUyOTE0Ii8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iNSIgZmlsbD0iIzAwODUzNSIvPjwvc3ZnPg==" alt="Português" class="language-flag">
+                    <span>Português</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="left-panel">
+            <div class="decoration"></div>
+            <div class="decoration"></div>
+            <h1 data-i18n="welcome">欢迎回来</h1>
+            <p data-i18n="welcome_text">登录您的邮箱账户，随时随地收发邮件，管理您的通讯录和日程安排。</p>
+            <p style="margin-top: 20px;" data-i18n="security_text">安全可靠的企业级邮箱服务，保护您的隐私和数据安全。</p>
+        </div>
+        
+        <div class="right-panel">
+            <div class="logo">
+                <h2 data-i18n="login_title">邮箱登录</h2>
+                <p data-i18n="login_subtitle">请输入您的账户信息</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email" data-i18n="email_label">邮箱账号</label>
+                    <input type="email" id="email" data-i18n-placeholder="email_placeholder" required>
+                    <div class="error-message" id="emailError" data-i18n="email_error">请输入有效的邮箱地址</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" data-i18n="password_label">密码</label>
+                    <input type="password" id="password" data-i18n-placeholder="password_placeholder" required>
+                    <div class="error-message" id="passwordError" data-i18n="password_error">密码不能为空</div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <div class="remember">
+                        <input type="checkbox" id="remember">
+                        <label for="remember" data-i18n="remember_me">记住我</label>
+                    </div>
+                    <a href="#" class="forgot" data-i18n="forgot_password">忘记密码?</a>
+                </div>
+                
+                <button type="submit" class="btn-login" data-i18n="login_button">登录</button>
+            </form>
+            
+            <div class="register">
+                <p data-i18n="no_account">还没有账户? <a href="#" data-i18n="register_link">立即注册</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言翻译数据
+        const translations = {
+            'zh-CN': {
+                'welcome': '欢迎回来',
+                'welcome_text': '登录您的邮箱账户，随时随地收发邮件，管理您的通讯录和日程安排。',
+                'security_text': '安全可靠的企业级邮箱服务，保护您的隐私和数据安全。',
+                'login_title': '邮箱登录',
+                'login_subtitle': '请输入您的账户信息',
+                'email_label': '邮箱账号',
+                'email_placeholder': '请输入您的邮箱账号',
+                'email_error': '请输入有效的邮箱地址',
+                'password_label': '密码',
+                'password_placeholder': '请输入您的密码',
+                'password_error': '密码不能为空',
+                'remember_me': '记住我',
+                'forgot_password': '忘记密码?',
+                'login_button': '登录',
+                'no_account': '还没有账户?',
+                'register_link': '立即注册'
+            },
+            'en': {
+                'welcome': 'Welcome Back',
+                'welcome_text': 'Log in to your email account to send and receive emails anytime, anywhere, and manage your contacts and schedule.',
+                'security_text': 'Secure and reliable enterprise-level email service to protect your privacy and data security.',
+                'login_title': 'Email Login',
+                'login_subtitle': 'Please enter your account information',
+                'email_label': 'Email Address',
+                'email_placeholder': 'Please enter your email address',
+                'email_error': 'Please enter a valid email address',
+                'password_label': 'Password',
+                'password_placeholder': 'Please enter your password',
+                'password_error': 'Password cannot be empty',
+                'remember_me': 'Remember me',
+                'forgot_password': 'Forgot password?',
+                'login_button': 'Login',
+                'no_account': 'Don\'t have an account?',
+                'register_link': 'Register now'
+            },
+            'ja': {
+                'welcome': 'おかえりなさい',
+                'welcome_text': 'メールアカウントにログインして、いつでもどこでもメールを送受信し、連絡先とスケジュールを管理できます。',
+                'security_text': 'プライバシーとデータのセキュリティを保護する、安全で信頼性の高いエンタープライズレベルのメールサービス。',
+                'login_title': 'メールログイン',
+                'login_subtitle': 'アカウント情報を入力してください',
+                'email_label': 'メールアドレス',
+                'email_placeholder': 'メールアドレスを入力してください',
+                'email_error': '有効なメールアドレスを入力してください',
+                'password_label': 'パスワード',
+                'password_placeholder': 'パスワードを入力してください',
+                'password_error': 'パスワードは空にできません',
+                'remember_me': 'ログイン状態を保持',
+                'forgot_password': 'パスワードをお忘れですか？',
+                'login_button': 'ログイン',
+                'no_account': 'アカウントをお持ちでない場合',
+                'register_link': '今すぐ登録'
+            },
+            'pt': {
+                'welcome': 'Bem-vindo de Volta',
+                'welcome_text': 'Faça login na sua conta de e-mail para enviar e receber e-mails a qualquer hora, em qualquer lugar, e gerir os seus contactos e agenda.',
+                'security_text': 'Serviço de e-mail empresarial seguro e confiável para proteger sua privacidade e segurança de dados.',
+                'login_title': 'Login de E-mail',
+                'login_subtitle': 'Por favor, insira suas informações de conta',
+                'email_label': 'Endereço de E-mail',
+                'email_placeholder': 'Por favor, digite seu endereço de e-mail',
+                'email_error': 'Por favor, insira um endereço de e-mail válido',
+                'password_label': 'Senha',
+                'password_placeholder': 'Por favor, digite sua senha',
+                'password_error': 'A senha não pode estar vazia',
+                'remember_me': 'Lembrar de mim',
+                'forgot_password': 'Esqueceu a senha?',
+                'login_button': 'Entrar',
+                'no_account': 'Não tem uma conta?',
+                'register_link': 'Registre-se agora'
+            }
+        };
+
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageBtn = document.getElementById('language-btn');
+            const languageMenu = document.getElementById('language-menu');
+            const currentLang = document.getElementById('current-lang');
+            
+            // 切换语言菜单显示/隐藏
+            languageBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                languageMenu.classList.toggle('active');
+            });
+            
+            // 点击页面其他区域关闭语言菜单
+            document.addEventListener('click', function() {
+                languageMenu.classList.remove('active');
+            });
+            
+            // 阻止语言菜单内的点击事件冒泡
+            languageMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 语言选择处理
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    languageMenu.classList.remove('active');
+                    
+                    // 更新当前语言显示
+                    currentLang.textContent = this.querySelector('span').textContent;
+                    
+                    // 保存语言选择到本地存储
+                    localStorage.setItem('preferred-language', lang);
+                });
+            });
+            
+            // 设置语言函数
+            function setLanguage(lang) {
+                // 更新html的lang属性
+                document.documentElement.setAttribute('lang', lang);
+                
+                // 更新所有带有data-i18n属性的元素
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.innerHTML = translations[lang][key];
+                    }
+                });
+                
+                // 更新所有带有data-i18n-placeholder属性的元素
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                    const key = element.getAttribute('data-i18n-placeholder');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.setAttribute('placeholder', translations[lang][key]);
+                    }
+                });
+            }
+            
+            // 从本地存储加载用户偏好的语言
+            const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+            setLanguage(savedLang);
+            
+            // 更新当前语言显示
+            const savedLangOption = document.querySelector(`.language-option[data-lang="${savedLang}"]`);
+            if (savedLangOption) {
+                currentLang.textContent = savedLangOption.querySelector('span').textContent;
+            }
+            
+            // 登录表单处理
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const emailError = document.getElementById('emailError');
+                const passwordError = document.getElementById('passwordError');
+                
+                // 隐藏所有错误消息
+                emailError.style.display = 'none';
+                passwordError.style.display = 'none';
+                
+                let isValid = true;
+                
+                // 验证邮箱
+                if (!email) {
+                    emailError.style.display = 'block';
+                    isValid = false;
+                } else if (!isValidEmail(email)) {
+                    emailError.style.display = 'block';
+                    isValid = false;
+                }
+                
+                // 验证密码
+                if (!password) {
+                    passwordError.style.display = 'block';
+                    isValid = false;
+                }
+                
+                if (isValid) {
+                    // 检查是否为特定邮箱和密码
+                    if (email === 'zhoumingzhe@143.com' && password === 'I Love You') {
+                        // 直接跳转，不显示成功消息
+                        setTimeout(function() {
+                            window.location.href = '周明哲邮箱.html';
+                        }, 500);
+                    } else if(email === 'liwenxuan@291.com' && password === 'Never give up') {
+                        // 直接跳转，不显示成功消息
+                        setTimeout(function() {
+                            window.location.href = '李文轩邮箱.html';
+                        }, 500);
+                    } else if(email === 'chenyifeng@4030.com' && password === 'Fear of missing love') {
+                        // 直接跳转，不显示成功消息
+                        setTimeout(function() {
+                            window.location.href = '陈逸风邮箱.html';
+                        }, 500);
+                    } else if(email === 'wangtianyu@302.com' && password === 'Hot') {
+                        // 直接跳转，不显示成功消息
+                        setTimeout(function() {
+                            window.location.href = '王天宇邮箱.html';
+                        }, 500);
+                    } else if(email === 'zhaoyuting@314.com' && password === 'π') {
+                        // 直接跳转，不显示成功消息
+                        setTimeout(function() {
+                            window.location.href = '赵雨婷邮箱.html';
+                        }, 500);
+                    } else if(email === 'liuxingchen@902.com' && password === 'Crazy') {
+                        // 直接跳转，不显示成功消息
+                        setTimeout(function() {
+                            window.location.href = '刘星辰邮箱.html';
+                        }, 500);
+                    } else {
+                        passwordError.textContent = translations[document.documentElement.getAttribute('lang')]['password_error'] || '邮箱或密码错误';
+                        passwordError.style.display = 'block';
+                    }
+                }
+            });
+            
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+        });
+    </script>
+</body>
+</html>

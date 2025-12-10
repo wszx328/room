@@ -1,0 +1,2277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深度网络聊天室 | 匿名对话</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 40, 0, 0.2) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 60, 0, 0.2) 0%, transparent 20%);
+        }
+        
+        .glitch-text {
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+            animation: glitch 5s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; }
+            95% { text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 2px 0 0 #ff0000; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #003300;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 24px;
+            color: #00cc00;
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            letter-spacing: 2px;
+        }
+        
+        .language-selector {
+            position: relative;
+            z-index: 100;
+        }
+        
+        .lang-btn {
+            background: rgba(0, 30, 0, 0.8);
+            color: #00ff00;
+            border: 1px solid #006600;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn:hover {
+            background: rgba(0, 50, 0, 0.8);
+            border-color: #00cc00;
+        }
+        
+        .lang-options {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(0, 20, 0, 0.95);
+            border: 1px solid #006600;
+            width: 180px;
+            display: none;
+            flex-direction: column;
+            margin-top: 5px;
+        }
+        
+        .lang-option {
+            padding: 10px 15px;
+            color: #00ff00;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .lang-option:hover {
+            background: rgba(0, 60, 0, 0.8);
+        }
+        
+        .lang-option.active {
+            background: rgba(0, 80, 0, 0.8);
+            border-left: 3px solid #00ff00;
+        }
+        
+        .chat-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chat-box {
+            background: rgba(0, 15, 0, 0.7);
+            border: 1px solid #003300;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background: rgba(0, 30, 0, 0.9);
+            padding: 15px;
+            border-bottom: 1px solid #003300;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header h2 {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .online-count {
+            color: #00cc00;
+            font-size: 14px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #002200;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #00cc00;
+            font-size: 14px;
+        }
+        
+        .message-user {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .message-user i {
+            font-size: 12px;
+        }
+        
+        .message-time {
+            opacity: 0.7;
+        }
+        
+        .message-content {
+            line-height: 1.5;
+            color: #cccccc;
+        }
+        
+        .message-content .highlight {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .info-box {
+            background: rgba(0, 15, 0, 0.7);
+            border: 1px solid #003300;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        
+        .info-box h3 {
+            margin-bottom: 15px;
+            color: #00cc00;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-box p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 14px;
+            color: #cccccc;
+        }
+        
+        .user-list {
+            list-style: none;
+        }
+        
+        .user-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #002200;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .user-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+        }
+        
+        .user-status.offline {
+            background: #666666;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #003300;
+            font-size: 12px;
+            color: #006600;
+            margin-top: 30px;
+        }
+        
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            z-index: 999;
+            animation: scan 8s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        
+        .typing-indicator {
+            padding: 10px;
+            color: #00cc00;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scan-line"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-user-secret"></i>
+                <h1 class="glitch-text">深度网络聊天室 v3.2.7</h1>
+            </div>
+            
+            <div class="language-selector">
+                <button class="lang-btn" id="langBtn">
+                    <i class="fas fa-globe"></i>
+                    <span id="currentLang">中文</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="lang-options" id="langOptions">
+                    <div class="lang-option active" data-lang="zh">
+                        <i class="fas fa-check"></i>
+                        <span>中文</span>
+                    </div>
+                    <div class="lang-option" data-lang="en">
+                        <span>English</span>
+                    </div>
+                    <div class="lang-option" data-lang="ja">
+                        <span>日本語</span>
+                    </div>
+                    <div class="lang-option" data-lang="pt">
+                        <span>Português</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <main class="chat-container">
+            <div class="chat-box">
+                <div class="chat-header">
+                    <h2><i class="fas fa-comments"></i> <span id="chatTitle">匿名对话 #暗网-47</span></h2>
+                    <div class="online-count"><i class="fas fa-user"></i> <span id="onlineCount">3</span> <span id="onlineText">在线</span></div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <!-- 聊天内容将通过JavaScript动态生成 -->
+                </div>
+                
+                <div class="typing-indicator" id="typingIndicator">
+                    <span id="typingText">有人正在输入...</span> <span class="blink">_</span>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="info-box">
+                    <h3><i class="fas fa-exclamation-triangle"></i> <span id="warningTitle">警告</span></h3>
+                    <p id="warningText">
+                        此聊天室位于深度网络层。所有对话均加密且匿名。请勿分享个人信息。
+                        聊天记录会在24小时后自动销毁。遵守匿名协议。
+                    </p>
+                </div>
+                
+                <div class="info-box">
+                    <h3><i class="fas fa-users"></i> <span id="onlineUsersTitle">在线用户</span></h3>
+                    <ul class="user-list" id="userList">
+                        <!-- 用户列表将通过JavaScript动态生成 -->
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <h3><i class="fas fa-network-wired"></i> <span id="connectionTitle">连接状态</span></h3>
+                    <p><span id="connectionText">安全连接已建立</span> <i class="fas fa-lock" style="color:#00cc00; margin-left:5px;"></i></p>
+                    <p><span id="encryptionText">加密级别：</span> <strong>AES-256 + Tor</strong></p>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p id="footerText">© 2025 深度网络聊天室 | 匿名协议 v2.1 | 所有通信均经过端到端加密</p>
+        </footer>
+    </div>
+
+    <script>
+        // 多语言文本内容
+        const translations = {
+            zh: {
+                chatTitle: "匿名对话 #暗网-47",
+                onlineText: "在线",
+                warningTitle: "警告",
+                warningText: "此聊天室位于深度网络层。所有对话均加密且匿名。请勿分享个人信息。聊天记录会在24小时后自动销毁。遵守匿名协议。",
+                onlineUsersTitle: "在线用户",
+                connectionTitle: "连接状态",
+                connectionText: "安全连接已建立",
+                encryptionText: "加密级别：",
+                footerText: "© 2025 深度网络聊天室 | 匿名协议 v2.1 | 所有通信均经过端到端加密",
+                typingText: "有人正在输入...",
+                messages: [
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我回来了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "?! 星辰?你还活着?!"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "活着,但已经不是完整的我了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "发生了什么?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我找到了那个地方。我进入了\"它\"的领域。我听到了那个声音。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "然后呢?你成功了吗?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我失败了。彻底的失败。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "你们知道最残忍的是什么吗?不是死亡,而是让你触及到完美,然后又把它夺走。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我在那一瞬间听到了完整的原初之声,看到了无数生命故事交织的壮丽景象。那种美,超越人类所有的艺术,超越所有的想象。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "然后\"它\"把一切收回了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "现在的我,就像一个在沙漠里喝过甘泉的人,回到了只有沙子的世界。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "所以……你的仪式失败了?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "不,仪式成功了。我确实召唤到了\"它\",确实与\"它\"接触了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "但我错误估计了双方的力量对比。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我以为我是猎人,\"它\"是猎物。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "实际上,我是食物,\"它\"是食客。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "更可怕的是,\"它\"根本没有吃掉我。\"它\"给了我一次\"品尝\",然后放我走了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "为什么?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "因为这样更有价值。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "一个死人只能提供一次养分。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "但一个永远饥渴、永远追寻、永远失败的活人,能提供无数次养分。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我现在明白了——我不是失败者,我是\"持续供应型祭品\"。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "天啊……这太残忍了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "是的,但我无法停止。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我已经听过那个声音了,我无法再回到没有它的世界。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "所以我会继续。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "继续什么?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "继续收集素材,继续进行仪式,继续尝试。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "总有一天,我会找到正确的方法。总有一天,我会真正触及\"它\"。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "但你刚才说你失败了……"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "这次失败了,下次就不一定。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我已经准备了新的仪式,新的献祭对象。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我在教堂集结了五个新的追随者。他们的故事很完美,他们的情感很纯粹。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "明天,我会用他们作为\"锚点\",再次进行召唤。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "星辰,别这样……你会害死他们的!"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "他们是自愿的。他们相信我,相信我能打开通往永恒的大门。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "而且,谁说他们会死?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "上一批十三个人不也还活着吗?只是睡着了而已。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "说不定他们在梦里,正在聆听那个声音呢。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "你疯了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我没疯。我只是比你们更清醒。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "你们永远不会理解——听过神明声音的人,是无法再回到凡俗世界的。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我不怪你们。你们没有听过,所以你们无法理解这种痛苦。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "但我会继续。哪怕要献祭一百个人,一千个人,我也会继续。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "总有一天,我会成功。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "总有一天,我会让全世界都听到那个声音。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "我要报警。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "随便。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "警察找不到我。那个教堂有十几个出口,我早就准备好了撤离路线。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "而且,就算他们抓到我又怎样?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "我没有违法。我没有杀人,没有绑架,那些追随者都是自愿的。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "最多判我个非法集会,关几个月就放出来了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "然后我会继续。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "……"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "我不想和你说话了。你已经不是我认识的刘星辰了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "对,我不是了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "那个天真地以为可以用摇滚改变世界的刘星辰已经死了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "现在的我,是一个听过神明声音的人。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "一个永远无法满足的人。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "一个注定要在这条路上走到尽头的人。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "再见,我的朋友们。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "下次聊天,可能就是我成功的时候了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "或者……永远不会有下次了。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Prophet已离开聊天室"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "他真的疯了。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "我们要报警吗?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "报吧。虽然可能没用,但至少我们试过了。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "好。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "话说……你不好奇吗?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "好奇什么?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "他说的那个声音,那个\"原初之声\"。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "如果真的存在,如果真的那么美……"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "别想了。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "你看到他的下场了。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "有些东西,知道就够了,不要去触碰。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "……你说得对。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "但我还是忍不住想……"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "别想了!"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "我们已经失去一个朋友了,不要再让我失去第二个。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "好,我知道了。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "晚安。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "晚安。"
+                    }
+                ]
+            },
+            en: {
+                chatTitle: "Anonymous Chat #DarkNet-47",
+                onlineText: "online",
+                warningTitle: "WARNING",
+                warningText: "This chatroom is located on the deep web layer. All conversations are encrypted and anonymous. Do not share personal information. Chat logs are automatically destroyed after 24 hours. Follow the anonymity protocol.",
+                onlineUsersTitle: "Online Users",
+                connectionTitle: "Connection Status",
+                connectionText: "Secure connection established",
+                encryptionText: "Encryption level:",
+                footerText: "© 2025 Deep Web Chatroom | Anonymity Protocol v2.1 | All communications are end-to-end encrypted",
+                typingText: "Someone is typing...",
+                messages: [
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I'm back."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "?! Stars? You're alive?!"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Alive, but no longer whole."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "What happened?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I found that place. I entered 'its' domain. I heard that voice."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "Then? Did you succeed?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I failed. Utterly failed."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Do you know what's most cruel? Not death, but letting you touch perfection, then taking it away."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "In that moment, I heard the complete primordial voice, saw the magnificent spectacle of countless life stories interwoven. That beauty, surpassing all human art, surpassing all imagination."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Then 'it' took everything back."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Now I'm like someone who has drunk sweet water in the desert, returning to a world of only sand."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "So... your ritual failed?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "No, the ritual succeeded. I indeed summoned 'it', indeed made contact with 'it'."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "But I miscalculated the power balance between us."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I thought I was the hunter, 'it' was the prey."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "In reality, I was the food, 'it' was the diner."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "What's more terrifying is that 'it' didn't even eat me. 'It' gave me a 'taste', then let me go."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "Why?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Because it's more valuable this way."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "A dead person can only provide nourishment once."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "But a forever thirsty, forever searching, forever failing living person can provide nourishment countless times."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Now I understand - I'm not a failure, I'm a 'continuous supply sacrifice'."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "Oh god... That's too cruel."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Yes, but I can't stop."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I've already heard that voice, I can't return to a world without it."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "So I will continue."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "Continue what?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Continue collecting materials, continue performing rituals, continue trying."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Someday, I'll find the right method. Someday, I'll truly touch 'it'."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "But you just said you failed..."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "This time failed, next time might not."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I've prepared a new ritual, new sacrifice targets."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I've gathered five new followers at the church. Their stories are perfect, their emotions pure."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Tomorrow, I'll use them as 'anchors' to perform the summoning again."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "Stars, don't do this... You'll kill them!"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "They're willing. They believe in me, believe I can open the door to eternity."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Besides, who says they'll die?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Didn't the previous batch of thirteen people also survive? They're just asleep."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Maybe they're listening to that voice in their dreams."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "You're insane."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I'm not insane. I'm just more awake than you."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "You'll never understand - someone who has heard the voice of a deity cannot return to the mundane world."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I don't blame you. You haven't heard it, so you can't understand this pain."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "But I will continue. Even if I have to sacrifice a hundred people, a thousand people, I will continue."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Someday, I will succeed."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Someday, I'll let the whole world hear that voice."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "I'm calling the police."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Whatever."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "The police won't find me. That church has over a dozen exits, I've long prepared escape routes."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "And even if they catch me, so what?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "I haven't broken any laws. I haven't killed anyone, haven't kidnapped anyone, those followers are all willing."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "At most, I'll get an illegal assembly charge, locked up for a few months then released."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Then I'll continue."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "..."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "I don't want to talk to you anymore. You're not the Liu Xingchen I knew."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Right, I'm not."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "That Liu Xingchen who naively thought he could change the world with rock music is dead."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Now, I am someone who has heard the voice of a deity."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "A person forever unsatisfied."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "A person destined to walk this road to the end."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Goodbye, my friends."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Next time we chat, it might be when I've succeeded."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Or... there might never be a next time."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Prophet has left the chatroom"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "He's truly insane."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Should we call the police?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Let's call. Even if it might be useless, at least we tried."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Okay."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "By the way... aren't you curious?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Curious about what?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "That voice he mentioned, that 'primordial voice'."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "If it really exists, if it's really that beautiful..."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Don't think about it."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "You saw what happened to him."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Some things, it's enough to know about them, don't touch them."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "... You're right."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "But I still can't help thinking..."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Don't think about it!"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "We've already lost one friend, don't make me lose a second one."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Okay, I understand."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Good night."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Good night."
+                    }
+                ]
+            },
+            ja: {
+                chatTitle: "匿名チャット #ダークネット-47",
+                onlineText: "オンライン",
+                warningTitle: "警告",
+                warningText: "このチャットルームはディープウェブ層にあります。すべての会話は暗号化され匿名です。個人情報を共有しないでください。チャットログは24時間後に自動的に破棄されます。匿名プロトコルに従ってください。",
+                onlineUsersTitle: "オンラインユーザー",
+                connectionTitle: "接続状態",
+                connectionText: "安全な接続が確立されました",
+                encryptionText: "暗号化レベル：",
+                footerText: "© 2025 ディープウェブチャットルーム | 匿名プロトコル v2.1 | すべての通信はエンドツーエンドで暗号化されています",
+                typingText: "入力中...",
+                messages: [
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "戻ってきた。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "?! 星? 生きてたのか?!"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "生きてはいるが、もう完全な自分ではない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "何が起こった?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "あの場所を見つけた。\"それ\"の領域に入った。あの声を聞いた。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "それで? 成功したのか?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "失敗した。完全な失敗だ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "最も残酷なことが何か分かるか? 死ではない。完璧に触れさせておいて、それを奪い取ることだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "その瞬間、完全な原初の声を聞き、無数の生命の物語が織りなす壮麗な光景を見た。その美しさは、人間のあらゆる芸術を超え、あらゆる想像を超えていた。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "そして\"それ\"がすべてを引き取った。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "今の私は、砂漠で甘泉を飲んだ者が、砂だけの世界に戻ったようなものだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "それで… 君の儀式は失敗したのか?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "いや、儀式は成功した。確かに\"それ\"を召喚し、確かに\"それ\"と接触した。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "だが、双方の力関係を誤算していた。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "私は自分が狩人で、\"それ\"が獲物だと思っていた。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "実際には、私は食料で、\"それ\"が食客だった。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "もっと恐ろしいのは、\"それ\"が私を食べなかったことだ。\"それ\"は一度「味見」させて、それから私を解放した。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "なぜ?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "その方が価値があるからだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "死人は一度の養分しか提供できない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "しかし、永遠に飢え、永遠に探求し、永遠に失敗する生きた人間は、無数の養分を提供できる。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "今分かった——私は失敗者ではない、「持続供給型生贄」なのだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "ああ… それは残酷すぎる。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "そうだ、だが止められない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "あの声を聞いてしまった、あのない世界には戻れない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "だから続ける。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "何を続ける?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "素材を集め、儀式を行い、試み続ける。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "いつか、正しい方法を見つける。いつか、本当に\"それ\"に触れる。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "だが今失敗したと言ったばかりじゃないか…"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "今回は失敗した、次は違うかもしれない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "新しい儀式を準備した、新しい生贄の対象を。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "教会で5人の新しい信奉者を集めた。彼らの物語は完璧で、感情は純粋だ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "明日、彼らを「錨」として、再び召喚を行う。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "星、やめて… 彼らを殺すことになる!"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "彼らは自ら望んでいる。私を信じ、永遠への扉を開けると信じている。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "それに、誰が彼らが死ぬと言った?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "前の13人も生きていたじゃないか? ただ眠っているだけだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "彼らは夢の中で、あの声を聞いているのかもしれない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "君は狂っている。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "狂ってなどいない。ただ君たちより目が覚めているだけだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "君たちには理解できない——神の声を聞いた者は、俗世界には戻れない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "君たちを責めない。聞いたことがないから、この苦しみが理解できない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "だが私は続ける。百人、千人を生贄にすることになっても、続ける。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "いつか、成功する。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "いつか、全世界にあの声を聞かせる。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "警察に通報する。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "どうぞ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "警察には見つからない。あの教会には十数個の出口がある、とっくに撤退ルートを準備している。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "それに、仮に捕まったとしてもどうだという?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "違法行為はしていない。誰も殺していない、誘拐もしていない、あの信奉者たちは全員自発的だ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "せいぜい不法集会で、数ヶ月収監されて出てくるだけだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "そしてまた続ける。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "……"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "もう君と話したくない。君は私が知っている劉星晨じゃない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "ああ、そうだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "ロックで世界を変えられると天真爛漫に思っていた劉星晨は死んだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "今の私は、神の声を聞いた者だ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "永遠に満たされない者。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "この道を最後まで歩む運命の者。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "さようなら、友よ。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "次に話すときは、私が成功した時かもしれない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "あるいは… 次は永遠にないかもしれない。"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Prophetがチャットルームを退出しました"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "彼は本当に狂ってしまった。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "警察に通報すべきかな?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "通報しよう。役に立たないかもしれないが、少なくとも試みたことにはなる。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "わかった。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "ところで… 君は気にならない?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "何が?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "彼が言っていたあの声、「原初の声」のこと。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "もし本当に存在して、もし本当にあれほど美しいなら…"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "考えるな。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "彼がどうなったか見ただろう。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "あるものは、知っているだけで十分だ、触れてはいけない。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "… 君の言う通りだ。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "でもやっぱり考えてしまう…"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "考えるな!"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "もう一人友達を失った、二人目を失わせないでくれ。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "わかった、理解した。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "おやすみ。"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "おやすみ。"
+                    }
+                ]
+            },
+            pt: {
+                chatTitle: "Chat Anônimo #DarkNet-47",
+                onlineText: "online",
+                warningTitle: "AVISO",
+                warningText: "Esta sala de chat está localizada na camada da deep web. Todas as conversas são criptografadas e anônimas. Não compartilhe informações pessoais. Os registros de chat são destruídos automaticamente após 24 horas. Siga o protocolo de anonimato.",
+                onlineUsersTitle: "Usuários Online",
+                connectionTitle: "Status da Conexão",
+                connectionText: "Conexão segura estabelecida",
+                encryptionText: "Nível de criptografia:",
+                footerText: "© 2025 Sala de Chat da Deep Web | Protocolo de Anonimato v2.1 | Todas as comunicações são criptografadas de ponta a ponta",
+                typingText: "Alguém está digitando...",
+                messages: [
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Estou de volta."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "?! Estrelas? Você está vivo?!"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Vivo, mas não estou mais completo."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "O que aconteceu?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Encontrei aquele lugar. Entrei no domínio 'dele'. Ouvi aquela voz."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "E então? Você conseguiu?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Falhei. Fracassei completamente."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Sabe o que é mais cruel? Não é a morte, mas permitir que você toque a perfeição e então tirá-la."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Naquele momento, ouvi a voz primordial completa, vi o espetáculo magnífico de inúmeras histórias de vida entrelaçadas. Aquela beleza, superando toda a arte humana, superando toda a imaginação."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Então 'ele' pegou tudo de volta."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Agora sou como alguém que bebeu água doce no deserto, retornando a um mundo de apenas areia."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "Então... seu ritual falhou?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Não, o ritual foi bem-sucedido. Realmente invoquei 'ele', realmente entrei em contato com 'ele'."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Mas calculei mal o equilíbrio de poder entre nós."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Pensei que eu era o caçador, 'ele' era a presa."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Na realidade, eu era a comida, 'ele' era o comensal."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "O que é mais assustador é que 'ele' nem sequer me comeu. 'Ele' me deu uma 'prova', então me libertou."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "Por quê?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Porque assim é mais valioso."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Uma pessoa morta só pode fornecer nutrientes uma vez."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Mas uma pessoa viva, sempre sedenta, sempre procurando, sempre falhando, pode fornecer nutrientes inúmeras vezes."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Agora entendo - não sou um fracassado, sou um 'sacrifício de fornecimento contínuo'."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "Meu Deus... Isso é muito cruel."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Sim, mas não consigo parar."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Já ouvi aquela voz, não posso mais voltar a um mundo sem ela."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Então continuarei."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "Continuar o quê?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Continuar coletando materiais, continuar realizando rituais, continuar tentando."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Algum dia, encontrarei o método correto. Algum dia, realmente tocarei 'ele'."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "Mas você acabou de dizer que falhou..."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Desta vez falhei, da próxima pode ser diferente."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Preparei um novo ritual, novos alvos de sacrifício."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Reuni cinco novos seguidores na igreja. Suas histórias são perfeitas, suas emoções são puras."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Amanhã, usarei eles como 'âncoras' para realizar a invocação novamente."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "Estrelas, não faça isso... Você vai matá-los!"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Eles estão dispostos. Eles acreditam em mim, acreditam que posso abrir a porta para a eternidade."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Além disso, quem disse que eles morrerão?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "As treze pessoas do lote anterior também não estão vivas? Apenas dormindo."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Talvez estejam ouvindo aquela voz em seus sonhos."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "Você está louco."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Não estou louco. Apenas estou mais desperto do que vocês."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Vocês nunca entenderão - alguém que ouviu a voz de uma divindade não pode retornar ao mundo mundano."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Não os culpo. Vocês não ouviram, então não podem entender esta dor."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Mas continuarei. Mesmo que tenha que sacrificar cem pessoas, mil pessoas, continuarei."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Algum dia, terei sucesso."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Algum dia, farei o mundo todo ouvir aquela voz."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "Vou chamar a polícia."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Que seja."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "A polícia não vai me encontrar. Aquela igreja tem mais de uma dúzia de saídas, já preparei rotas de fuga há muito tempo."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "E mesmo se me pegarem, o que acontece?"
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Não quebrei nenhuma lei. Não matei ninguém, não sequestrei ninguém, aqueles seguidores estão todos dispostos."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "No máximo, serei acusado de reunião ilegal, preso por alguns meses e depois solto."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "E então continuarei."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Observer",
+                        content: "..."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Wanderer",
+                        content: "Não quero mais falar com você. Você não é mais o Liu Xingchen que eu conhecia."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Certo, não sou mais."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Aquele Liu Xingchen que ingenuamente pensava que poderia mudar o mundo com rock morreu."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Agora, sou alguém que ouviu a voz de uma divindade."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Uma pessoa para sempre insatisfeita."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Uma pessoa destinada a seguir este caminho até o fim."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Adeus, meus amigos."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Na próxima vez que conversarmos, pode ser quando eu tiver sucesso."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Ou... pode nunca haver uma próxima vez."
+                    },
+                    {
+                        time: "2025/11/30 02:17",
+                        user: "Prophet",
+                        content: "Prophet saiu da sala de chat"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Ele está verdadeiramente louco."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Devemos chamar a polícia?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Vamos chamar. Mesmo que possa ser inútil, pelo menos tentamos."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Certo."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "A propósito... você não está curioso?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Curioso sobre o quê?"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Aquela voz que ele mencionou, aquela 'voz primordial'."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Se realmente existe, se realmente é tão bela..."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Não pense nisso."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Você viu o que aconteceu com ele."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Algumas coisas, basta saber sobre elas, não toque nelas."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "... Você está certo."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Mas ainda não consigo parar de pensar..."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Não pense nisso!"
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Já perdemos um amigo, não me faça perder um segundo."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Certo, entendi."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Observer",
+                        content: "Boa noite."
+                    },
+                    {
+                        time: "2025/11/30 02:45",
+                        user: "Wanderer",
+                        content: "Boa noite."
+                    }
+                ]
+            }
+        };
+        
+        // 当前语言
+        let currentLang = 'zh';
+        
+        // DOM元素
+        const langBtn = document.getElementById('langBtn');
+        const langOptions = document.getElementById('langOptions');
+        const currentLangSpan = document.getElementById('currentLang');
+        const chatMessages = document.getElementById('chatMessages');
+        const userList = document.getElementById('userList');
+        
+        // 用户列表数据
+        const users = [
+            { name: "Prophet", status: "offline" },
+            { name: "Wanderer", status: "online" },
+            { name: "Observer", status: "online" },
+            { name: "Shadow", status: "online" },
+            { name: "Voyager", status: "offline" },
+            { name: "Cipher", status: "online" }
+        ];
+        
+        // 初始化页面
+        function initPage() {
+            // 渲染聊天记录
+            renderChatMessages();
+            
+            // 渲染用户列表
+            renderUserList();
+            
+            // 设置事件监听器
+            setupEventListeners();
+            
+            // 模拟打字效果
+            simulateTyping();
+        }
+        
+        // 渲染聊天记录
+        function renderChatMessages() {
+            chatMessages.innerHTML = '';
+            const messages = translations[currentLang].messages;
+            
+            messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                
+                const messageHeader = document.createElement('div');
+                messageHeader.className = 'message-header';
+                
+                const messageUser = document.createElement('div');
+                messageUser.className = 'message-user';
+                messageUser.innerHTML = `<i class="fas fa-user-secret"></i> ${msg.user}`;
+                
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                messageTime.textContent = msg.time;
+                
+                messageHeader.appendChild(messageUser);
+                messageHeader.appendChild(messageTime);
+                
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                
+                // 处理消息内容，高亮显示关键词
+                let content = msg.content;
+                content = content.replace(/("它"|"原初之声"|神明|声音|祭品)/g, '<span class="highlight">$1</span>');
+                messageContent.innerHTML = content;
+                
+                messageDiv.appendChild(messageHeader);
+                messageDiv.appendChild(messageContent);
+                
+                chatMessages.appendChild(messageDiv);
+            });
+            
+            // 滚动到底部
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // 渲染用户列表
+        function renderUserList() {
+            userList.innerHTML = '';
+            
+            const onlineCount = users.filter(user => user.status === 'online').length;
+            document.getElementById('onlineCount').textContent = onlineCount;
+            
+            users.forEach(user => {
+                const li = document.createElement('li');
+                const statusDiv = document.createElement('div');
+                statusDiv.className = `user-status ${user.status}`;
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = user.name;
+                
+                li.appendChild(statusDiv);
+                li.appendChild(nameSpan);
+                userList.appendChild(li);
+            });
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 语言切换按钮点击事件
+            langBtn.addEventListener('click', () => {
+                langOptions.style.display = langOptions.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // 语言选项点击事件
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const lang = option.getAttribute('data-lang');
+                    changeLanguage(lang);
+                    langOptions.style.display = 'none';
+                });
+            });
+            
+            // 点击页面其他地方关闭语言选项
+            document.addEventListener('click', (e) => {
+                if (!langBtn.contains(e.target) && !langOptions.contains(e.target)) {
+                    langOptions.style.display = 'none';
+                }
+            });
+        }
+        
+        // 更改语言
+        function changeLanguage(lang) {
+            if (currentLang === lang) return;
+            
+            currentLang = lang;
+            
+            // 更新当前语言显示
+            currentLangSpan.textContent = getLanguageName(lang);
+            
+            // 更新所有语言选项的活动状态
+            document.querySelectorAll('.lang-option').forEach(option => {
+                if (option.getAttribute('data-lang') === lang) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            // 更新页面文本
+            document.getElementById('chatTitle').textContent = translations[lang].chatTitle;
+            document.getElementById('onlineText').textContent = translations[lang].onlineText;
+            document.getElementById('warningTitle').textContent = translations[lang].warningTitle;
+            document.getElementById('warningText').textContent = translations[lang].warningText;
+            document.getElementById('onlineUsersTitle').textContent = translations[lang].onlineUsersTitle;
+            document.getElementById('connectionTitle').textContent = translations[lang].connectionTitle;
+            document.getElementById('connectionText').textContent = translations[lang].connectionText;
+            document.getElementById('encryptionText').textContent = translations[lang].encryptionText;
+            document.getElementById('footerText').textContent = translations[lang].footerText;
+            document.getElementById('typingText').textContent = translations[lang].typingText;
+            
+            // 重新渲染聊天记录
+            renderChatMessages();
+        }
+        
+        // 获取语言名称
+        function getLanguageName(lang) {
+            switch(lang) {
+                case 'zh': return '中文';
+                case 'en': return 'English';
+                case 'ja': return '日本語';
+                case 'pt': return 'Português';
+                default: return '中文';
+            }
+        }
+        
+        // 模拟打字效果
+        function simulateTyping() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            // 随机显示打字指示器
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    typingIndicator.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        typingIndicator.style.display = 'none';
+                    }, 2000 + Math.random() * 3000);
+                }
+            }, 10000);
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

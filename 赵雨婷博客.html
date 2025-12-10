@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雨中的芭蕾 - 个人微博主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f6f7f9;
+            color: #333;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff8200;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 8px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-left: 20px;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-menu a:hover, .nav-menu a.active {
+            background-color: #f0f0f0;
+        }
+        
+        .language-switcher {
+            position: relative;
+        }
+        
+        .language-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .language-btn i {
+            margin-right: 5px;
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            width: 150px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .language-dropdown.active {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .language-option:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* 主要内容区域 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        /* 左侧个人资料 */
+        .profile-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .profile-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 20px;
+            border: 3px solid #ff8200;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-info h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .profile-info p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ff8200;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .profile-bio {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #444;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+            margin: 25px 0;
+        }
+        
+        /* 右侧动态区域 */
+        .timeline-section {
+            flex: 2;
+            min-width: 500px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff8200;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+        }
+        
+        .post {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        
+        .post:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .post.deleted {
+            background-color: #fff9f9;
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .post-date {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .post-content {
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .post-comments {
+            color: #ff8200;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .comments-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .comments-section.active {
+            display: block;
+        }
+        
+        .comment {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comment:last-child {
+            border-bottom: none;
+        }
+        
+        .comment-user {
+            font-weight: bold;
+            color: #ff8200;
+            margin-right: 8px;
+        }
+        
+        /* 相册模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            max-width: 1200px;
+            margin: 30px auto;
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .album-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .album-item {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            height: 250px;
+        }
+        
+        .album-item:hover {
+            transform: scale(1.03);
+        }
+        
+        .album-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .timeline-section, .profile-section {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-menu li {
+                margin: 5px 10px;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .avatar {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .album-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .album-item {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fab fa-weibo"></i>
+                <span data-lang-key="weibo">微博</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" class="active" data-lang-key="home">主页</a></li>
+                <li><a href="#" id="album-link" data-lang-key="album">相册</a></li>
+                <li><a href="#" data-lang-key="video">视频</a></li>
+                <li><a href="#" data-lang-key="about">关于</a></li>
+            </ul>
+            <div class="language-switcher">
+                <button class="language-btn">
+                    <i class="fas fa-globe"></i>
+                    <span id="current-language">中文</span>
+                    <i class="fas fa-chevron-down" style="margin-left: 5px;"></i>
+                </button>
+                <div class="language-dropdown">
+                    <div class="language-option" data-lang="zh">中文</div>
+                    <div class="language-option" data-lang="en">English</div>
+                    <div class="language-option" data-lang="ja">日本語</div>
+                    <div class="language-option" data-lang="pt">Português</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <div class="container">
+        <!-- 左侧个人资料 -->
+        <div class="profile-section">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar">
+                        <img src="头像图片.jpg" alt="雨中的芭蕾">
+                    </div>
+                    <div class="profile-info">
+                        <h1 data-lang-key="username">雨中的芭蕾</h1>
+                        <p data-lang-key="nickname">@dancer_in_rain</p>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat">
+                        <div class="stat-value">2.3万</div>
+                        <div class="stat-label" data-lang-key="followers">粉丝</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label" data-lang-key="following">关注</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">15.6万</div>
+                        <div class="stat-label" data-lang-key="likes">获赞</div>
+                    </div>
+                </div>
+                
+                <div class="profile-bio">
+                    <p data-lang-key="bio">前芭蕾舞演员 | 现在只是一个普通人 | 热爱舞蹈的心永远不变</p>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="profile-bio">
+                    <p data-lang-key="bio-detail">曾经在舞台上翩翩起舞，现在在平凡生活中寻找美好。舞蹈是我生命的语言，即使离开了舞台，我依然用心灵起舞。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧动态区域 -->
+        <div class="timeline-section">
+            <h2 class="section-title">
+                <i class="far fa-newspaper"></i>
+                <span data-lang-key="posts">动态</span>
+            </h2>
+            
+            <!-- 最后一条动态（已删除） -->
+            <div class="post deleted">
+                <div class="post-header">
+                    <h3 data-lang-key="last-post">【最后一条动态】（发布后被系统自动删除）</h3>
+                    <div class="post-date">2025/11/29 23:58</div>
+                </div>
+                <div class="post-content">
+                    <p data-lang-key="post1-content">"我想回去。我想回到那个房间。我想再见到他。现实世界太苦了。只有那里才是甜的。明天，我会去找他。这次，我不会再离开了。"</p>
+                </div>
+                <img src="天台夜景.jpg" alt="天台夜景" class="post-image">
+                <div class="post-stats">
+                    <div class="post-date" data-lang-key="post1-note">（此条动态在发布3分钟后被系统删除，理由：包含危险内容）</div>
+                </div>
+            </div>
+            
+            <!-- 动态2 -->
+            <div class="post">
+                <div class="post-header">
+                    <h3 data-lang-key="post2-title">旅行的意义</h3>
+                    <div class="post-date">2025/11/23 12:00</div>
+                </div>
+                <div class="post-content">
+                    <p data-lang-key="post2-content">"刚结束了一周的旅行。这是我人生中最特别的一周。感谢R∞M酒店，让我重新找到了自己。"</p>
+                </div>
+                <img src="酒店落日.jpg" alt="酒店外景照，落日余晖" class="post-image">
+                <div class="post-stats">
+                    <span class="post-comments" data-lang-key="comment-count" data-count="120">💬 120条评论</span>
+                    <i class="far fa-heart" style="color: #999;"></i>
+                </div>
+                <div class="comments-section">
+                    <div class="comment">
+                        <span class="comment-user">飞翔的荷兰人：</span>
+                        <span data-lang-key="comment1">哪个酒店？看起来好美！</span>
+                    </div>
+                    <div class="comment">
+                        <span class="comment-user">阳光下的向日葵：</span>
+                        <span data-lang-key="comment2">博主最近状态好像好多了！</span>
+                    </div>
+                    <div class="comment">
+                        <span class="comment-user">舞动的精灵：</span>
+                        <span data-lang-key="comment3">你的脚好了吗？</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 动态3 -->
+            <div class="post">
+                <div class="post-header">
+                    <h3 data-lang-key="post3-title">寻找答案</h3>
+                    <div class="post-date">2025/11/15 20:30</div>
+                </div>
+                <div class="post-content">
+                    <p data-lang-key="post3-content">"明天要去一个地方。希望能在那里找到答案。"</p>
+                </div>
+                <img src="宣传册.jpg" alt="R∞M酒店的宣传册" class="post-image">
+                <div class="post-stats">
+                    <span class="post-comments" data-lang-key="comment-count" data-count="89">💬 89条评论</span>
+                    <i class="far fa-heart" style="color: #999;"></i>
+                </div>
+            </div>
+            
+            <!-- 动态4 -->
+            <div class="post">
+                <div class="post-header">
+                    <h3 data-lang-key="post4-title">特别的邮件</h3>
+                    <div class="post-date">2025/10/30 23:45</div>
+                </div>
+                <div class="post-content">
+                    <p data-lang-key="post4-content">"收到了一封很特别的邮件。或许，这是命运的安排？"</p>
+                </div>
+                <div class="post-stats">
+                    <span class="post-comments" data-lang-key="comment-count" data-count="45">💬 45条评论</span>
+                    <i class="far fa-heart" style="color: #999;"></i>
+                </div>
+            </div>
+            
+            <!-- 动态5 -->
+            <div class="post">
+                <div class="post-header">
+                    <h3 data-lang-key="post5-title">人生的意义</h3>
+                    <div class="post-date">2025/09/20 02:30</div>
+                </div>
+                <div class="post-content">
+                    <p data-lang-key="post5-content">"没有舞蹈的人生，还算人生吗？"</p>
+                </div>
+                <div class="post-stats">
+                    <span class="post-comments" data-lang-key="comment-count" data-count="567">💬 567条评论</span>
+                    <i class="far fa-heart" style="color: #999;"></i>
+                </div>
+                <div class="comments-section">
+                    <div class="comment">
+                        <span class="comment-user">星空下的旅人：</span>
+                        <span data-lang-key="comment4">博主加油！人生还有很多可能性！</span>
+                    </div>
+                    <div class="comment">
+                        <span class="comment-user">追风少年：</span>
+                        <span data-lang-key="comment5">我也是退役运动员，理解你的感受……</span>
+                    </div>
+                    <div class="comment">
+                        <span class="comment-user">静听花开：</span>
+                        <span data-lang-key="comment6">抱抱博主，一切都会好起来的！</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 动态6 -->
+            <div class="post">
+                <div class="post-header">
+                    <h3 data-lang-key="post6-title">出院日</h3>
+                    <div class="post-date">2025/08/16 18:00</div>
+                </div>
+                <div class="post-content">
+                    <p data-lang-key="post6-content">"今天出院了。医生说恢复得很好。但我知道，我再也回不到舞台了。"</p>
+                </div>
+                <img src="X光片.jpg" alt="医院诊断书，右脚踝的X光片" class="post-image">
+                <div class="post-stats">
+                    <span class="post-comments" data-lang-key="comment-count" data-count="1203">💬 1203条评论</span>
+                    <i class="far fa-heart" style="color: #999;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 相册模态框 -->
+    <div id="album-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="album-title" data-lang-key="album-title">相册</h2>
+            <div class="album-grid">
+                <!-- 酒店故事相关照片 -->
+                <div class="album-item">
+                    <img src="314房门.jpg" alt="314号房的房门" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="落地窗外的海景.jpg" alt="落地窗外的海景" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="镜子.jpg" alt="舞蹈室的镜子" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="巧克力.jpg" alt="一盒精致的巧克力" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="巧克力盒.jpg" alt="礼盒" class="album-img">
+                </div>
+                <!-- 个人生活和工作照片 -->
+                <div class="album-item">
+                    <img src="生活1.jpg" alt="生活照1" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="生活2.jpg" alt="生活照2" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="美食.jpg" alt="美食" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="办公室.jpg" alt="工作照" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="公园.jpg" alt="旅行照1" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="天鹅.jpg" alt="旅行照2" class="album-img">
+                </div>
+                <div class="album-item">
+                    <img src="舞者.jpg" alt="舞蹈练习" class="album-img">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言系统
+        const translations = {
+            zh: {
+                "weibo": "微博",
+                "home": "主页",
+                "album": "相册",
+                "video": "视频",
+                "about": "关于",
+                "username": "雨中的芭蕾",
+                "nickname": "@dancer_in_rain",
+                "followers": "粉丝",
+                "following": "关注",
+                "likes": "获赞",
+                "bio": "前芭蕾舞演员 | 现在只是一个普通人 | 热爱舞蹈的心永远不变",
+                "bio-detail": "曾经在舞台上翩翩起舞，现在在平凡生活中寻找美好。舞蹈是我生命的语言，即使离开了舞台，我依然用心灵起舞。",
+                "posts": "动态",
+                "last-post": "【最后一条动态】（发布后被系统自动删除）",
+                "post1-content": "\"我想回去。我想回到那个房间。我想再见到他。现实世界太苦了。只有那里才是甜的。明天，我会去找他。这次，我不会再离开了。\"",
+                "post1-note": "（此条动态在发布3分钟后被系统删除，理由：包含危险内容）",
+                "post2-title": "旅行的意义",
+                "post2-content": "\"刚结束了一周的旅行。这是我人生中最特别的一周。感谢R∞M酒店，让我重新找到了自己。\"",
+                "post3-title": "寻找答案",
+                "post3-content": "\"明天要去一个地方。希望能在那里找到答案。\"",
+                "post4-title": "特别的邮件",
+                "post4-content": "\"收到了一封很特别的邮件。或许，这是命运的安排？\"",
+                "post5-title": "人生的意义",
+                "post5-content": "\"没有舞蹈的人生，还算人生吗？\"",
+                "post6-title": "出院日",
+                "post6-content": "\"今天出院了。医生说恢复得很好。但我知道，我再也回不到舞台了。\"",
+                "comment-count": "💬 {count}条评论",
+                "comment1": "哪个酒店？看起来好美！",
+                "comment2": "博主最近状态好像好多了！",
+                "comment3": "你的脚好了吗？",
+                "comment4": "博主加油！人生还有很多可能性！",
+                "comment5": "我也是退役运动员，理解你的感受……",
+                "comment6": "抱抱博主，一切都会好起来的！",
+                "album-title": "相册"
+            },
+            en: {
+                "weibo": "Weibo",
+                "home": "Home",
+                "album": "Album",
+                "video": "Video",
+                "about": "About",
+                "username": "Ballet in the Rain",
+                "nickname": "@dancer_in_rain",
+                "followers": "Followers",
+                "following": "Following",
+                "likes": "Likes",
+                "bio": "Former ballet dancer | Now just an ordinary person | The love for dance never changes",
+                "bio-detail": "Once danced gracefully on stage, now seeking beauty in ordinary life. Dance is the language of my life; even off stage, I still dance with my heart.",
+                "posts": "Posts",
+                "last-post": "[Last Post] (Automatically deleted after publishing)",
+                "post1-content": "\"I want to go back. I want to return to that room. I want to see him again. The real world is too bitter. Only there is sweet. Tomorrow, I will go find him. This time, I won't leave again.\"",
+                "post1-note": "(This post was deleted 3 minutes after publishing, reason: contains dangerous content)",
+                "post2-title": "The Meaning of Travel",
+                "post2-content": "\"Just finished a week of travel. This is the most special week of my life. Thank you R∞M Hotel, for helping me rediscover myself.\"",
+                "post3-title": "Looking for Answers",
+                "post3-content": "\"Going to a place tomorrow. Hope to find answers there.\"",
+                "post4-title": "Special Email",
+                "post4-content": "\"Received a very special email. Perhaps this is fate's arrangement?\"",
+                "post5-title": "The Meaning of Life",
+                "post5-content": "\"Is life without dance still life?\"",
+                "post6-title": "Discharge Day",
+                "post6-content": "\"Discharged from hospital today. The doctor said recovery is good. But I know, I can never return to the stage.\"",
+                "comment-count": "💬 {count} comments",
+                "comment1": "Which hotel? Looks beautiful!",
+                "comment2": "You seem to be in better spirits lately!",
+                "comment3": "Is your foot better?",
+                "comment4": "Keep going! There are many possibilities in life!",
+                "comment5": "I'm also a retired athlete, I understand how you feel...",
+                "comment6": "Hugs, everything will get better!",
+                "album-title": "Album"
+            },
+            ja: {
+                "weibo": "ウェイボー",
+                "home": "ホーム",
+                "album": "アルバム",
+                "video": "ビデオ",
+                "about": "概要",
+                "username": "雨の中のバレエ",
+                "nickname": "@dancer_in_rain",
+                "followers": "フォロワー",
+                "following": "フォロー中",
+                "likes": "いいね",
+                "bio": "元バレエダンサー | 今はただの普通人 | ダンスへの情熱は永遠に変わらない",
+                "bio-detail": "かつて舞台で優雅に踊り、今は平凡な生活の中で美を探しています。ダンスは私の人生の言葉であり、舞台を離れても、私はまだ心で踊っています。",
+                "posts": "投稿",
+                "last-post": "【最後の投稿】（投稿後に自動削除されました）",
+                "post1-content": "\"帰りたい。あの部屋に戻りたい。彼にまた会いたい。現実世界は苦しすぎる。あそこだけが甘い。明日、彼を探しに行く。今度はもう離れない。\"",
+                "post1-note": "（この投稿は投稿3分後に削除されました、理由：危険な内容を含む）",
+                "post2-title": "旅の意味",
+                "post2-content": "\"一週間の旅が終わった。これは私の人生で最も特別な一週間だった。R∞Mホテルに感謝、私が自分自身を見つけ直すのを手伝ってくれた。\"",
+                "post3-title": "答えを探して",
+                "post3-content": "\"明日、ある場所に行く。そこで答えを見つけられることを願っている。\"",
+                "post4-title": "特別なメール",
+                "post4-content": "\"とても特別なメールを受け取った。もしかしたら、これは運命の仕組み？\"",
+                "post5-title": "人生の意味",
+                "post5-content": "\"ダンスのない人生は、まだ人生と言えるのか？\"",
+                "post6-title": "退院日",
+                "post6-content": "\"今日退院した。医者は回復が良いと言った。しかし、私は知っている、もう舞台には戻れない。\"",
+                "comment-count": "💬 {count}コメント",
+                "comment1": "どのホテル？とても美しいですね！",
+                "comment2": "最近、調子が良さそうですね！",
+                "comment3": "足の具合は良くなりましたか？",
+                "comment4": "頑張って！人生にはたくさんの可能性があります！",
+                "comment5": "私も引退したアスリートです、あなたの気持ちが分かります…",
+                "comment6": "抱きしめて、すべては良くなるよ！",
+                "album-title": "アルバム"
+            },
+            pt: {
+                "weibo": "Weibo",
+                "home": "Início",
+                "album": "Álbum",
+                "video": "Vídeo",
+                "about": "Sobre",
+                "username": "Balé na Chuva",
+                "nickname": "@dancer_in_rain",
+                "followers": "Seguidores",
+                "following": "Seguindo",
+                "likes": "Curtidas",
+                "bio": "Ex-bailarina de balé | Agora apenas uma pessoa comum | O amor pela dança nunca muda",
+                "bio-detail": "Antes dançava graciosamente no palco, agora procuro beleza na vida comum. A dança é a linguagem da minha vida; mesmo fora do palco, ainda danço com meu coração.",
+                "posts": "Postagens",
+                "last-post": "[Última Postagem] (Excluída automaticamente após publicação)",
+                "post1-content": "\"Eu quero voltar. Eu quero voltar para aquele quarto. Eu quero vê-lo novamente. O mundo real é muito amargo. Só lá é doce. Amanhã, eu vou encontrá-lo. Desta vez, não vou mais embora.\"",
+                "post1-note": "(Esta postagem foi excluída 3 minutos após a publicação, motivo: contém conteúdo perigoso)",
+                "post2-title": "O Significado da Viagem",
+                "post2-content": "\"Acabei de terminar uma semana de viagem. Esta é a semana mais especial da minha vida. Obrigada Hotel R∞M, por me ajudar a me redescobrir.\"",
+                "post3-title": "Procurando Respostas",
+                "post3-content": "\"Indo para um lugar amanhã. Espero encontrar respostas lá.\"",
+                "post4-title": "E-mail Especial",
+                "post4-content": "\"Recebi um e-mail muito especial. Talvez isso seja um arranjo do destino?\"",
+                "post5-title": "O Significado da Vida",
+                "post5-content": "\"A vida sem dança ainda é vida?\"",
+                "post6-title": "Dia da Alta",
+                "post6-content": "\"Alta do hospital hoje. O médico disse que a recuperação está boa. Mas eu sei, nunca poderei voltar ao palco.\"",
+                "comment-count": "💬 {count} comentários",
+                "comment1": "Qual hotel? Parece lindo!",
+                "comment2": "Você parece estar de melhor humor ultimamente!",
+                "comment3": "Seu pé está melhor?",
+                "comment4": "Continue! Há muitas possibilidades na vida!",
+                "comment5": "Também sou atleta aposentada, entendo como você se sente...",
+                "comment6": "Abraços, tudo vai melhorar!",
+                "album-title": "Álbum"
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'zh';
+        
+        // 初始化语言
+        function initLanguage() {
+            // 从localStorage获取保存的语言，默认为中文
+            const savedLang = localStorage.getItem('user-language');
+            if (savedLang && translations[savedLang]) {
+                currentLang = savedLang;
+            }
+            
+            // 更新语言按钮文本
+            updateLanguageButton();
+            
+            // 翻译页面
+            translatePage();
+        }
+        
+        // 翻译页面
+        function translatePage() {
+            // 获取所有带data-lang-key属性的元素
+            const elements = document.querySelectorAll('[data-lang-key]');
+            
+            elements.forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                const translation = translations[currentLang][key];
+                
+                if (translation) {
+                    // 处理带占位符的翻译
+                    if (element.hasAttribute('data-count')) {
+                        const count = element.getAttribute('data-count');
+                        element.textContent = translation.replace('{count}', count);
+                    } else {
+                        element.textContent = translation;
+                    }
+                }
+            });
+            
+            // 更新页面语言属性
+            document.documentElement.lang = currentLang;
+            
+            // 保存语言选择
+            localStorage.setItem('user-language', currentLang);
+        }
+        
+        // 更新语言按钮文本
+        function updateLanguageButton() {
+            const languageNames = {
+                'zh': '中文',
+                'en': 'English',
+                'ja': '日本語',
+                'pt': 'Português'
+            };
+            
+            document.getElementById('current-language').textContent = languageNames[currentLang];
+        }
+        
+        // 相册功能
+        const albumModal = document.getElementById('album-modal');
+        const albumLink = document.getElementById('album-link');
+        const closeModal = document.querySelector('.close-modal');
+        
+        // 打开相册
+        albumLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            albumModal.style.display = 'block';
+        });
+        
+        // 关闭相册
+        closeModal.addEventListener('click', function() {
+            albumModal.style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            if (e.target === albumModal) {
+                albumModal.style.display = 'none';
+            }
+        });
+        
+        // 评论显示/隐藏
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('post-comments')) {
+                const commentsSection = e.target.parentNode.nextElementSibling;
+                commentsSection.classList.toggle('active');
+            }
+        });
+        
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            initLanguage();
+            
+            // 语言切换按钮点击
+            document.querySelector('.language-btn').addEventListener('click', function() {
+                document.querySelector('.language-dropdown').classList.toggle('active');
+            });
+            
+            // 语言选项点击
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    if (selectedLang && translations[selectedLang]) {
+                        currentLang = selectedLang;
+                        translatePage();
+                        updateLanguageButton();
+                        document.querySelector('.language-dropdown').classList.remove('active');
+                    }
+                });
+            });
+            
+            // 点击页面其他部分关闭语言下拉菜单
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.language-switcher')) {
+                    document.querySelector('.language-dropdown').classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

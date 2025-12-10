@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星辰的微博 - 个人主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* 顶部导航栏 */
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e7e7e7;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            color: #e6162d;
+            font-size: 28px;
+            margin-right: 5px;
+        }
+        
+        .logo span {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e6162d;
+        }
+        
+        .search-box {
+            flex-grow: 1;
+            max-width: 500px;
+            margin: 0 30px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 8px 15px;
+            border: 1px solid #e7e7e7;
+            border-radius: 20px;
+            background-color: #f5f5f5;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .search-box input:focus {
+            background-color: white;
+            border-color: #e6162d;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            margin-left: 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .nav-links a:hover {
+            color: #e6162d;
+        }
+        
+        .nav-links .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+        
+        /* 语言切换按钮 */
+        .language-switcher {
+            position: relative;
+            margin-left: 20px;
+        }
+        
+        .language-btn {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .language-btn i {
+            margin-right: 5px;
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+            min-width: 120px;
+        }
+        
+        .language-dropdown a {
+            display: block;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .language-dropdown a:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .language-dropdown a:last-child {
+            border-bottom: none;
+        }
+        
+        .language-switcher:hover .language-dropdown {
+            display: block;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            display: flex;
+            margin-top: 15px;
+            gap: 15px;
+        }
+        
+        /* 左侧菜单栏 */
+        .sidebar {
+            width: 220px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        
+        .profile-card {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #8e44ad);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .username {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .user-bio {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-weight: bold;
+            font-size: 16px;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .menu-items {
+            padding: 10px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f5f5;
+            color: #e6162d;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .menu-item.active {
+            color: #e6162d;
+            border-right: 3px solid #e6162d;
+            background-color: #fef2f2;
+        }
+        
+        /* 微博内容区 */
+        .weibo-feed {
+            flex-grow: 1;
+            max-width: 700px;
+        }
+        
+        .post-write {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .post-write textarea {
+            width: 100%;
+            border: 1px solid #e7e7e7;
+            border-radius: 8px;
+            padding: 12px;
+            resize: none;
+            height: 80px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        
+        .post-write textarea:focus {
+            border-color: #e6162d;
+        }
+        
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .post-btn {
+            background-color: #e6162d;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .post-btn:hover {
+            background-color: #d50f26;
+        }
+        
+        /* 微博帖子 */
+        .weibo-post {
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .pinned-post {
+            border-top: 3px solid #ffd700;
+        }
+        
+        .pinned-label {
+            background-color: #fff9e6;
+            padding: 5px 15px;
+            font-size: 12px;
+            color: #b8860b;
+            border-bottom: 1px solid #ffefc6;
+        }
+        
+        .post-header {
+            padding: 15px 15px 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #8e44ad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .post-user-info {
+            flex-grow: 1;
+        }
+        
+        .post-username {
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        .post-time {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+        
+        .post-content {
+            padding: 0 15px 15px;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+        
+        .post-content p {
+            margin-bottom: 10px;
+        }
+        
+        .post-stats {
+            padding: 10px 15px;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .post-stat {
+            margin-right: 20px;
+            cursor: pointer;
+        }
+        
+        .post-stat:hover {
+            color: #e6162d;
+        }
+        
+        .post-stat i {
+            margin-right: 5px;
+        }
+        
+        /* 评论区 */
+        .comments-section {
+            padding: 15px;
+        }
+        
+        .comment {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .comment:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .comment-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .comment-content {
+            flex-grow: 1;
+        }
+        
+        .comment-user {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+        
+        .comment-text {
+            font-size: 14px;
+        }
+        
+        .comment-time {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 3px;
+        }
+        
+        /* 右侧栏 */
+        .right-sidebar {
+            width: 280px;
+        }
+        
+        .right-card {
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .right-card h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .trend-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .trend-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .trend-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        
+        .trend-stats {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .user-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .user-item-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .user-item-info {
+            flex-grow: 1;
+        }
+        
+        .user-item-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .user-item-name a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .user-item-name a:hover {
+            color: #e6162d;
+        }
+        
+        .follow-btn {
+            background-color: #e6162d;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 4px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .right-sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .search-box {
+                display: none;
+            }
+        }
+        
+        /* 语言切换样式 */
+        .lang-zh { display: block; }
+        .lang-en { display: none; }
+        .lang-ja { display: none; }
+        .lang-pt { display: none; }
+        
+        /* 高亮更新的微博 */
+        .updated-post {
+            border-left: 4px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fab fa-weibo"></i>
+                <span>微博</span>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" placeholder="搜索微博、找人..." id="searchInput">
+            </div>
+            
+            <div class="nav-links">
+                <a href="#"><i class="fas fa-home"></i> 首页</a>
+                <a href="#"><i class="far fa-bell"></i> 通知</a>
+                <!-- 修改了私信链接，点击后在新标签页打开匿名聊天室 -->
+                <a href="匿名聊天室.html" target="_blank"><i class="far fa-envelope"></i> 私信</a>
+                
+                <!-- 语言切换按钮 -->
+                <div class="language-switcher">
+                    <button class="language-btn" id="languageBtn">
+                        <i class="fas fa-globe"></i> 中文
+                    </button>
+                    <div class="language-dropdown">
+                        <a href="#" data-lang="zh">中文</a>
+                        <a href="#" data-lang="en">English</a>
+                        <a href="#" data-lang="ja">日本語</a>
+                        <a href="#" data-lang="pt">Português</a>
+                    </div>
+                </div>
+                
+                <div class="user-avatar">星</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- 左侧菜单栏 -->
+            <aside class="sidebar">
+                <div class="profile-card">
+                    <div class="avatar">星</div>
+                    <div class="username">星辰</div>
+                    <div class="user-bio">音乐人 | 探索声音的边界</div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number">127</span>
+                            <span class="stat-label">关注</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">89万</span>
+                            <span class="stat-label">粉丝</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">348</span>
+                            <span class="stat-label">微博</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="menu-items">
+                    <a href="#" class="menu-item active">
+                        <i class="fas fa-user"></i> 我的主页
+                    </a>
+                    <a href="902手册.html" target="_blank" class="menu-item">
+                        <i class="fas fa-bookmark"></i> 收藏
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-photo-video"></i> 相册
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-heart"></i> 赞过
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-comments"></i> 评论
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-cog"></i> 设置
+                    </a>
+                </div>
+            </aside>
+
+            <!-- 微博内容区 -->
+            <main class="weibo-feed">
+                <!-- 发微博框 -->
+                <div class="post-write">
+                    <textarea placeholder="有什么新鲜事想告诉大家？"></textarea>
+                    <div class="post-actions">
+                        <div>
+                            <i class="fas fa-image" style="color: #45bb6a; margin-right: 15px; cursor: pointer;"></i>
+                            <i class="fas fa-video" style="color: #e74c3c; margin-right: 15px; cursor: pointer;"></i>
+                            <i class="fas fa-smile" style="color: #f1c40f; cursor: pointer;"></i>
+                        </div>
+                        <button class="post-btn">发布</button>
+                    </div>
+                </div>
+
+                <!-- 置顶微博 -->
+                <article class="weibo-post pinned-post">
+                    <div class="pinned-label">置顶</div>
+                    <div class="post-header">
+                        <div class="post-avatar">星</div>
+                        <div class="post-user-info">
+                            <div class="post-username">星辰</div>
+                            <div class="post-time">
+                                <span class="lang-zh">2020年11月1日 03:47</span>
+                                <span class="lang-en">2020/11/01 03:47</span>
+                                <span class="lang-ja">2020年11月1日 03:47</span>
+                                <span class="lang-pt">01/11/2020 03:47</span>
+                                <span> · 来自iPhone客户端</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <h3 class="lang-zh">《午夜弥撒》巡演结束了</h3>
+                        <h3 class="lang-en">"Midnight Mass" Tour Has Ended</h3>
+                        <h3 class="lang-ja">『ミッドナイト・マス』ツアーが終了しました</h3>
+                        <h3 class="lang-pt">A turnê "Missa da Meia-Noite" terminou</h3>
+                        
+                        <div class="lang-zh">
+                            <p>各位，</p>
+                            <p>《午夜弥撒》的最后一场演出，刚刚在R市结束了。</p>
+                            <p>站在台上谢幕的时候，我看着台下黑压压的人群，听着他们的欢呼和掌声，突然感到一种巨大的空虚。</p>
+                            <p>这些掌声……是给我的吗？</p>
+                            <p>还是说，他们鼓掌只是因为这是"应该做的事"？一场演出结束了，观众鼓掌，歌手谢幕，然后大家各回各家——这只是一套标准流程而已。</p>
+                            <p>我想听到真正的掌声。</p>
+                            <p>不是礼貌性的、不是程式化的，而是发自灵魂深处的、对某种"真实"的认可。</p>
+                            <p>昨晚，在后台化妆间，我听到了那个声音。</p>
+                            <p>我不知道该怎么形容它。它不属于这个世界，但又比这个世界的任何声音都要真实。它像是从镜子深处传来的，又像是从我自己的灵魂里传来的。</p>
+                            <p>那是一种……音乐的原型。所有旋律的源头。</p>
+                            <p>我必须找到它。</p>
+                            <p>我必须弄清楚它是什么。</p>
+                            <p>所以，我决定暂时离开乐坛。接下来的一段时间，我会去寻找一些答案。关于音乐的、关于声音的、关于……那个我听到的东西。</p>
+                            <p>谢谢大家这些年的支持。</p>
+                            <p>等我回来的时候，我会带着一张真正意义上的"专辑"回来。</p>
+                            <p>那将不是音乐，而是"神迹"。</p>
+                            <p>——刘星辰<br>2020.11.01</p>
+                        </div>
+                        
+                        <div class="lang-en">
+                            <p>Everyone,</p>
+                            <p>The final performance of "Midnight Mass" just ended in City R.</p>
+                            <p>Standing on stage taking my bow, looking at the dark sea of people below, listening to their cheers and applause, I suddenly felt a great emptiness.</p>
+                            <p>This applause... is it for me?</p>
+                            <p>Or are they clapping just because it's the "thing to do"? A performance ends, the audience applauds, the singer bows, then everyone goes home—it's just a standard procedure.</p>
+                            <p>I want to hear real applause.</p>
+                            <p>Not polite, not procedural, but from the depths of the soul, an acknowledgment of something "real."</p>
+                            <p>Last night, in the backstage dressing room, I heard that voice.</p>
+                            <p>I don't know how to describe it. It doesn't belong to this world, yet it's more real than any sound in this world. It seemed to come from deep within the mirror, or from deep within my own soul.</p>
+                            <p>It was... the prototype of music. The source of all melodies.</p>
+                            <p>I must find it.</p>
+                            <p>I must understand what it is.</p>
+                            <p>So, I've decided to temporarily leave the music industry. For a period of time, I will search for some answers. About music, about sound, about... that thing I heard.</p>
+                            <p>Thank you all for your support over the years.</p>
+                            <p>When I return, I'll bring back a truly meaningful "album."</p>
+                            <p>It will not be music, but a "miracle."</p>
+                            <p>— Liu Xingchen<br>2020.11.01</p>
+                        </div>
+                        
+                        <div class="lang-ja">
+                            <p>皆さん、</p>
+                            <p>『ミッドナイト・マス』の最後の公演が、たった今R市で終わりました。</p>
+                            <p>舞台の上でカーテンコールを受けているとき、暗闇に沈む観客を見つめ、彼らの歓声と拍手を聞きながら、突然大きな虚無感を感じました。</p>
+                            <p>この拍手…私に向けられているものですか？</p>
+                            <p>それとも、彼らはただ「すべきこと」だから拍手をしているのでしょうか？公演が終わり、観客は拍手をし、歌手はお辞儀をし、そして皆家に帰る——それは単なる標準的な手順に過ぎません。</p>
+                            <p>私は本当の拍手を聞きたい。</p>
+                            <p>礼儀的なものではなく、形式的なものではなく、魂の奥底から湧き上がる、何か「真実」に対する認証です。</p>
+                            <p>昨夜、楽屋で、私はあの声を聞きました。</p>
+                            <p>どう表現していいか分かりません。それはこの世界のものではないが、この世界のどの音よりもリアルでした。それは鏡の奥から伝わってくるようでもあり、自分の魂の奥から伝わってくるようでもありました。</p>
+                            <p>それは…音楽の原型でした。すべてのメロディの源。</p>
+                            <p>私はそれを見つけなければなりません。</p>
+                            <p>私はそれが何であるかを理解しなければなりません。</p>
+                            <p>だから、私は一時的に音楽界から離れることにしました。これからしばらくの間、いくつかの答えを探しに行きます。音楽について、音について、…私が聞いたあのものについて。</p>
+                            <p>これまでの皆さんのサポートに感謝します。</p>
+                            <p>私が戻ってくるとき、本当の意味での「アルバム」を持って帰ります。</p>
+                            <p>それは音楽ではなく、「神跡」となるでしょう。</p>
+                            <p>――劉星辰<br>2020.11.01</p>
+                        </div>
+                        
+                        <div class="lang-pt">
+                            <p>Caros,</p>
+                            <p>A última apresentação da "Missa da Meia-Noite" acabou de terminar na Cidade R.</p>
+                            <p>De pé no palco agradecendo, olhando para o mar escuro de pessoas abaixo, ouvindo seus aplausos e vivas, de repente senti um grande vazio.</p>
+                            <p>Esse aplauso... é para mim?</p>
+                            <p>Ou estão aplaudindo apenas porque é a "coisa certa a fazer"? Uma apresentação termina, o público aplaude, o cantor se curva, então todos vão para casa - é apenas um procedimento padrão.</p>
+                            <p>Quero ouvir aplausos reais.</p>
+                            <p>Não educados, não processuais, mas das profundezas da alma, um reconhecimento de algo "real".</p>
+                            <p>Ontem à noite, no camarim, ouvi aquela voz.</p>
+                            <p>Não sei como descrevê-la. Ela não pertence a este mundo, mas é mais real do que qualquer som neste mundo. Parecia vir do fundo do espelho, ou do fundo da minha própria alma.</p>
+                            <p>Era... o protótipo da música. A fonte de todas as melodias.</p>
+                            <p>Preciso encontrá-la.</p>
+                            <p>Preciso entender o que é.</p>
+                            <p>Então, decidi deixar temporariamente a indústria musical. Por um período, procurarei algumas respostas. Sobre música, sobre som, sobre... aquela coisa que ouvi.</p>
+                            <p>Obrigado a todos pelo apoio ao longo dos anos.</p>
+                            <p>Quando voltar, trarei um "álbum" verdadeiramente significativo.</p>
+                            <p>Não será música, mas um "milagre".</p>
+                            <p>— Liu Xingchen<br>01/11/2020</p>
+                        </div>
+                    </div>
+                    
+                    <div class="post-stats">
+                        <div class="post-stat">
+                            <i class="far fa-comment"></i>
+                            <span class="lang-zh">234 评论</span>
+                            <span class="lang-en">234 comments</span>
+                            <span class="lang-ja">234 コメント</span>
+                            <span class="lang-pt">234 comentários</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="fas fa-retweet"></i>
+                            <span class="lang-zh">567 转发</span>
+                            <span class="lang-en">567 reposts</span>
+                            <span class="lang-ja">567 リポスト</span>
+                            <span class="lang-pt">567 reposts</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="far fa-heart"></i>
+                            <span class="lang-zh">1.2万 赞</span>
+                            <span class="lang-en">12k likes</span>
+                            <span class="lang-ja">1.2万 いいね</span>
+                            <span class="lang-pt">12k curtidas</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 评论区 -->
+                    <div class="comments-section">
+                        <div class="comment">
+                            <div class="comment-avatar">风</div>
+                            <div class="comment-content">
+                                <div class="comment-user">风轻云淡</div>
+                                <div class="comment-text lang-zh">星辰哥这是又要闭关了吗？期待新专辑！</div>
+                                <div class="comment-text lang-en">Brother Xingchen going into seclusion again? Looking forward to the new album!</div>
+                                <div class="comment-text lang-ja">星辰兄はまた閉門するんですか？新アルバムを楽しみにしています！</div>
+                                <div class="comment-text lang-pt">Irmão Xingchen vai se isolar novamente? Estou ansioso pelo novo álbum!</div>
+                                <div class="comment-time">2020-11-01 09:23</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">梦</div>
+                            <div class="comment-content">
+                                <div class="comment-user">梦里花落知多少</div>
+                                <div class="comment-text lang-zh">感觉你最近状态不太对，要不要休息一下？</div>
+                                <div class="comment-text lang-en">Feel like you haven't been in a good state lately, want to take a break?</div>
+                                <div class="comment-text lang-ja">最近調子が良くないように感じます、少し休んだほうがいいですか？</div>
+                                <div class="comment-text lang-pt">Sinto que você não está em um bom estado ultimamente, quer fazer uma pausa?</div>
+                                <div class="comment-time">2020-11-01 10:45</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">夜</div>
+                            <div class="comment-content">
+                                <div class="comment-user">夜雨声烦</div>
+                                <div class="comment-text lang-zh">什么声音？你在后台听到什么了？</div>
+                                <div class="comment-text lang-en">What sound? What did you hear backstage?</div>
+                                <div class="comment-text lang-ja">どんな声？楽屋で何を聞いたの？</div>
+                                <div class="comment-text lang-pt">Que som? O que você ouviu nos bastidores?</div>
+                                <div class="comment-time">2020-11-01 12:17</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">墨</div>
+                            <div class="comment-content">
+                                <div class="comment-user">墨染青衣</div>
+                                <div class="comment-text lang-zh">别学那些艺术家搞神神叨叨的啊，好好做音乐不行吗？</div>
+                                <div class="comment-text lang-en">Don't learn from those artists who get all mystical, can't you just make music properly?</div>
+                                <div class="comment-text lang-ja">あの神秘的な芸術家たちの真似をしないで、ちゃんと音楽を作ればいいんじゃない？</div>
+                                <div class="comment-text lang-pt">Não imite esses artistas místicos, você não pode simplesmente fazer música direito?</div>
+                                <div class="comment-time">2020-11-01 15:32</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 最近的微博 -->
+                <article class="weibo-post updated-post">
+                    <div class="post-header">
+                        <div class="post-avatar">星</div>
+                        <div class="post-user-info">
+                            <div class="post-username">星辰</div>
+                            <div class="post-time">
+                                <span class="lang-zh">2025年10月15日</span>
+                                <span class="lang-en">2025/10/15</span>
+                                <span class="lang-ja">2025年10月15日</span>
+                                <span class="lang-pt">15/10/2025</span>
+                                <span> · 来自网页</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <h3 class="lang-zh">《R∞M》</h3>
+                        <h3 class="lang-en">《R∞M》</h3>
+                        <h3 class="lang-ja">『R∞M』</h3>
+                        <h3 class="lang-pt">《R∞M》</h3>
+                        
+                        <div class="lang-zh">
+                            <p>我找到了。</p>
+                            <p>一家神秘的酒店，藏在城市的深处。我花了两年时间调查它，收集了大量失踪案件的资料，所有线索都指向这家酒店。</p>
+                            <p>更重要的是，我找到了一些幸存者。他们都说过同样的话："那家酒店里有东西，它会吃掉你的故事。"</p>
+                            <p>吃掉故事？</p>
+                            <p>这正是我要找的——一个与"彼岸"直接连通的节点。</p>
+                            <p>我会去那里。我会用它的力量，完成我的仪式。</p>
+                            <p>这次，我不会再失败。</p>
+                        </div>
+                        
+                        <div class="lang-en">
+                            <p>I found it.</p>
+                            <p>A mysterious hotel, hidden deep in the city. I spent two years investigating it, collecting a large amount of missing persons case materials, all clues pointing to this hotel.</p>
+                            <p>More importantly, I found some survivors. They all said the same thing: "There's something in that hotel, it eats your stories."</p>
+                            <p>Eats stories?</p>
+                            <p>This is exactly what I'm looking for—a node directly connected to the "other side."</p>
+                            <p>I'll go there. I'll use its power to complete my ritual.</p>
+                            <p>This time, I won't fail again.</p>
+                        </div>
+                        
+                        <div class="lang-ja">
+                            <p>見つけました。</p>
+                            <p>都市の奥深くに隠された神秘的なホテル。2年間かけて調査し、大量の失踪事件の資料を集めましたが、すべての手がかりがこのホテルを指しています。</p>
+                            <p>さらに重要なことに、私は何人かの生存者を見つけました。彼らは皆同じことを言いました：「あのホテルには何かがあり、それはあなたの物語を食べる」</p>
+                            <p>物語を食べる？</p>
+                            <p>これはまさに私が探していたものです——「彼岸」と直接つながるノードです。</p>
+                            <p>私はそこに行きます。その力を使って、私の儀式を完成させます。</p>
+                            <p>今回は、もう失敗しません。</p>
+                        </div>
+                        
+                        <div class="lang-pt">
+                            <p>Encontrei.</p>
+                            <p>Um hotel misterioso, escondido no fundo da cidade. Passei dois anos investigando-o, coletando uma grande quantidade de materiais de casos de pessoas desaparecidas, todas as pistas apontando para este hotel.</p>
+                            <p>Mais importante, encontrei alguns sobreviventes. Todos disseram a mesma coisa: "Há algo naquele hotel, ele come suas histórias."</p>
+                            <p>Come histórias?</p>
+                            <p>Isso é exatamente o que estou procurando—um nó diretamente conectado ao "outro lado".</p>
+                            <p>Vou lá. Vou usar seu poder para completar meu ritual.</p>
+                            <p>Desta vez, não vou falhar novamente.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="post-stats">
+                        <div class="post-stat">
+                            <i class="far fa-comment"></i>
+                            <span class="lang-zh">89 评论</span>
+                            <span class="lang-en">89 comments</span>
+                            <span class="lang-ja">89 コメント</span>
+                            <span class="lang-pt">89 comentários</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="fas fa-retweet"></i>
+                            <span class="lang-zh">142 转发</span>
+                            <span class="lang-en">142 reposts</span>
+                            <span class="lang-ja">142 リポスト</span>
+                            <span class="lang-pt">142 reposts</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="far fa-heart"></i>
+                            <span class="lang-zh">3.4k 赞</span>
+                            <span class="lang-en">3.4k likes</span>
+                            <span class="lang-ja">3.4千 いいね</span>
+                            <span class="lang-pt">3.4k curtidas</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 评论区 -->
+                    <div class="comments-section">
+                        <div class="comment">
+                            <div class="comment-avatar">幻</div>
+                            <div class="comment-content">
+                                <div class="comment-user">幻影旅团</div>
+                                <div class="comment-text lang-zh">兄弟，你是不是魔怔了？什么神秘酒店、献祭仪式，这都是什么鬼东西？</div>
+                                <div class="comment-text lang-en">Bro, are you obsessed? What mysterious hotel, sacrificial ritual, what the hell is all this?</div>
+                                <div class="comment-text lang-ja">兄弟、あなたは憑りつかれたの？なんの神秘的なホテル、生贄の儀式、これらは一体何なの？</div>
+                                <div class="comment-text lang-pt">Cara, você está obcecado? Que hotel misterioso, ritual de sacrifício, que diabos é tudo isso?</div>
+                                <div class="comment-time">2025-10-15 22:05</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">青</div>
+                            <div class="comment-content">
+                                <div class="comment-user">青空下的约定</div>
+                                <div class="comment-text lang-zh">刘星辰，我是你以前的乐队成员。我们都很担心你。能不能联系一下，好好聊聊？</div>
+                                <div class="comment-text lang-en">Liu Xingchen, I'm your former band member. We're all worried about you. Can you contact us, have a proper talk?</div>
+                                <div class="comment-text lang-ja">劉星辰、私はあなたの元バンドメンバーです。私たちは皆あなたのことを心配しています。連絡して、ちゃんと話しませんか？</div>
+                                <div class="comment-text lang-pt">Liu Xingchen, sou seu ex-membro da banda. Estamos todos preocupados com você. Pode entrar em contato, conversar direito?</div>
+                                <div class="comment-time">2025-10-16 08:14</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">幽</div>
+                            <div class="comment-content">
+                                <div class="comment-user">幽冥之语</div>
+                                <div class="comment-text lang-zh">R∞M酒店……我知道那个地方。楼主如果真的要去，千万小心。我表哥五年前去过，回来后就疯了，一直说"它在镜子里，它在看我"。</div>
+                                <div class="comment-text lang-en">R∞M Hotel... I know that place. If you really are going, be extremely careful. My cousin went there five years ago, came back insane, keeps saying "It's in the mirror, it's watching me."</div>
+                                <div class="comment-text lang-ja">R∞Mホテル…あの場所を知っています。もし本当に行くなら、絶対に気をつけてください。私の従兄弟が5年前に行きましたが、戻ってきたら狂ってしまい、ずっと「それは鏡の中にいる、それが私を見ている」と言っています。</div>
+                                <div class="comment-text lang-pt">Hotel R∞M... Conheço aquele lugar. Se você realmente for, tenha extremo cuidado. Meu primo foi lá há cinco anos, voltou insano, fica dizendo "Está no espelho, está me observando."</div>
+                                <div class="comment-time">2025-10-16 15:42</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">星</div>
+                            <div class="comment-content">
+                                <div class="comment-user">星海漫游者</div>
+                                <div class="comment-text lang-zh">更新呢？楼主还活着吗？</div>
+                                <div class="comment-text lang-en">Update? Is the OP still alive?</div>
+                                <div class="comment-text lang-ja">更新は？楼主はまだ生きていますか？</div>
+                                <div class="comment-text lang-pt">Atualização? O OP ainda está vivo?</div>
+                                <div class="comment-time">2025-11-30 19:23</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 《第一次失败》微博 -->
+                <article class="weibo-post">
+                    <div class="post-header">
+                        <div class="post-avatar">星</div>
+                        <div class="post-user-info">
+                            <div class="post-username">星辰</div>
+                            <div class="post-time">
+                                <span class="lang-zh">2022年6月20日</span>
+                                <span class="lang-en">2022/06/20</span>
+                                <span class="lang-ja">2022年6月20日</span>
+                                <span class="lang-pt">20/06/2022</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <h3 class="lang-zh">《第一次失败》</h3>
+                        <h3 class="lang-en">"The First Failure"</h3>
+                        <h3 class="lang-ja">『最初の失敗』</h3>
+                        <h3 class="lang-pt">"O Primeiro Fracasso"</h3>
+                        
+                        <div class="lang-zh">
+                            <p>我们失败了。</p>
+                            <p>十三个追随者，全部陷入昏迷。我以为他们死了，但他们只是……空了。就像灵魂被抽走，只剩下躯壳。</p>
+                            <p>我确实听到了回应，确实听到了那个声音，但只有一瞬间。</p>
+                            <p>不够，远远不够。</p>
+                            <p>我需要更强的"容器"，需要一个与"彼岸"本来就有联系的空间。</p>
+                        </div>
+                        
+                        <div class="lang-en">
+                            <p>We failed.</p>
+                            <p>Thirteen followers, all fell into a coma. I thought they were dead, but they're just... empty. As if their souls were sucked out, leaving only shells.</p>
+                            <p>I did hear a response, I did hear that voice, but only for a moment.</p>
+                            <p>Not enough, far from enough.</p>
+                            <p>I need a stronger "container," a space that already has a connection to the "other side."</p>
+                        </div>
+                        
+                        <div class="lang-ja">
+                            <p>私たちは失敗しました。</p>
+                            <p>13人の信奉者全員が昏睡状態に陥りました。彼らは死んだと思いましたが、彼らはただ…空っぽでした。まるで魂が吸い出され、殻だけが残っているようでした。</p>
+                            <p>確かに応答を聞きました、確かにあの声を聞きましたが、ほんの一瞬だけでした。</p>
+                            <p>足りません、全然足りません。</p>
+                            <p>私はより強い「容器」が必要です、「彼岸」と元々つながっている空間が必要です。</p>
+                        </div>
+                        
+                        <div class="lang-pt">
+                            <p>Falhamos.</p>
+                            <p>Treze seguidores, todos caíram em coma. Pensei que estivessem mortos, mas estão apenas... vazios. Como se suas almas tivessem sido sugadas, deixando apenas cascas.</p>
+                            <p>Realmente ouvi uma resposta, realmente ouvi aquela voz, mas apenas por um momento.</p>
+                            <p>Não é suficiente, está longe de ser suficiente.</p>
+                            <p>Preciso de um "recipiente" mais forte, de um espaço que já tenha uma conexão com o "outro lado".</p>
+                        </div>
+                    </div>
+                    
+                    <div class="post-stats">
+                        <div class="post-stat">
+                            <i class="far fa-comment"></i>
+                            <span class="lang-zh">67 评论</span>
+                            <span class="lang-en">67 comments</span>
+                            <span class="lang-ja">67 コメント</span>
+                            <span class="lang-pt">67 comentários</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="fas fa-retweet"></i>
+                            <span class="lang-zh">89 转发</span>
+                            <span class="lang-en">89 reposts</span>
+                            <span class="lang-ja">89 リポスト</span>
+                            <span class="lang-pt">89 reposts</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="far fa-heart"></i>
+                            <span class="lang-zh">2.1k 赞</span>
+                            <span class="lang-en">2.1k likes</span>
+                            <span class="lang-ja">2.1千 いいね</span>
+                            <span class="lang-pt">2.1k curtidas</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 评论区 -->
+                    <div class="comments-section">
+                        <div class="comment">
+                            <div class="comment-avatar">秘</div>
+                            <div class="comment-content">
+                                <div class="comment-user">秘境探尋者</div>
+                                <div class="comment-text lang-zh">星辰，收手吧。这已经不是艺术探索了，这是在玩火自焚！</div>
+                                <div class="comment-text lang-en">Xingchen, stop. This is no longer artistic exploration, this is playing with fire!</div>
+                                <div class="comment-text lang-ja">星辰、やめてください。これはもはや芸術的な探求ではなく、火遊びです！</div>
+                                <div class="comment-text lang-pt">Xingchen, pare. Isso não é mais exploração artística, é brincar com fogo!</div>
+                                <div class="comment-time">2022-06-21 10:15</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">沉</div>
+                            <div class="comment-content">
+                                <div class="comment-user">沉默的观察者</div>
+                                <div class="comment-text lang-zh">那十三个人现在怎么样了？他们还有恢复的可能吗？</div>
+                                <div class="comment-text lang-en">What about those thirteen people now? Is there any chance they'll recover?</div>
+                                <div class="comment-text lang-ja">あの13人は今どうなっていますか？回復する可能性はありますか？</div>
+                                <div class="comment-text lang-pt">E essas treze pessoas agora? Há alguma chance de se recuperarem?</div>
+                                <div class="comment-time">2022-06-21 14:32</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">暗</div>
+                            <div class="comment-content">
+                                <div class="comment-user">暗夜低语</div>
+                                <div class="comment-text lang-zh">你需要的是阈限空间。那种既不属于这里也不属于那里的地方。</div>
+                                <div class="comment-text lang-en">What you need is a liminal space. A place that belongs neither here nor there.</div>
+                                <div class="comment-text lang-ja">あなたが必要としているのはリミナル空間です。ここにもそこにも属さない場所です。</div>
+                                <div class="comment-text lang-pt">O que você precisa é de um espaço liminar. Um lugar que não pertence nem aqui nem lá.</div>
+                                <div class="comment-time">2022-06-22 03:18</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 《共鸣》微博 -->
+                <article class="weibo-post">
+                    <div class="post-header">
+                        <div class="post-avatar">星</div>
+                        <div class="post-user-info">
+                            <div class="post-username">星辰</div>
+                            <div class="post-time">
+                                <span class="lang-zh">2021年12月7日</span>
+                                <span class="lang-en">2021/12/07</span>
+                                <span class="lang-ja">2021年12月7日</span>
+                                <span class="lang-pt">07/12/2021</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <h3 class="lang-zh">《共鸣》</h3>
+                        <h3 class="lang-en">"Resonance"</h3>
+                        <h3 class="lang-ja">『共鳴』</h3>
+                        <h3 class="lang-pt">"Ressonância"</h3>
+                        
+                        <div class="lang-zh">
+                            <p>我找到了一本17世纪的手抄本，里面记载了一个叫"共鸣仪式"的程序。</p>
+                            <p>仪式的核心是：用特定频率的声音在现实中制造"裂缝"，让"彼岸"的存在能够短暂降临。但仪式需要"锚点"——人类的生命能量。</p>
+                            <p>我知道这听起来很疯狂，但我已经决定了。</p>
+                            <p>我要组建一个团队，进行这个仪式。我要再次听到那个声音，这次要录下来，要让全世界都听到。</p>
+                        </div>
+                        
+                        <div class="lang-en">
+                            <p>I found a 17th-century handwritten manuscript that records a procedure called the "Resonance Ritual."</p>
+                            <p>The core of the ritual is: using sound of specific frequencies to create "cracks" in reality, allowing beings from the "other side" to briefly manifest. But the ritual requires "anchors"—human life energy.</p>
+                            <p>I know this sounds crazy, but I've made up my mind.</p>
+                            <p>I'm going to assemble a team to perform this ritual. I want to hear that voice again, this time I'll record it, I want the whole world to hear it.</p>
+                        </div>
+                        
+                        <div class="lang-ja">
+                            <p>17世紀の手写本を見つけました。そこには「共鳴儀式」と呼ばれる手順が記録されています。</p>
+                            <p>儀式の核心は：特定の周波数の音を使って現実に「亀裂」を作り、「彼岸」の存在が一時的に顕現できるようにすることです。しかし、儀式には「錨」が必要です——人間の生命エネルギーです。</p>
+                            <p>これは狂っているように聞こえることは知っていますが、私は決心しました。</p>
+                            <p>私はチームを結成してこの儀式を行います。あの声をもう一度聞きたい、今度は録音して、世界中に聞かせたい。</p>
+                        </div>
+                        
+                        <div class="lang-pt">
+                            <p>Encontrei um manuscrito do século 17 que registra um procedimento chamado "Ritual de Ressonância".</p>
+                            <p>O cerne do ritual é: usar sons de frequências específicas para criar "rachaduras" na realidade, permitindo que seres do "outro lado" se manifestem brevemente. Mas o ritual requer "âncoras"—energia vital humana.</p>
+                            <p>Sei que isso parece loucura, mas tomei minha decisão.</p>
+                            <p>Vou montar uma equipe para realizar este ritual. Quero ouvir aquela voz novamente, desta vez vou gravá-la, quero que o mundo inteiro a ouça.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="post-stats">
+                        <div class="post-stat">
+                            <i class="far fa-comment"></i>
+                            <span class="lang-zh">123 评论</span>
+                            <span class="lang-en">123 comments</span>
+                            <span class="lang-ja">123 コメント</span>
+                            <span class="lang-pt">123 comentários</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="fas fa-retweet"></i>
+                            <span class="lang-zh">215 转发</span>
+                            <span class="lang-en">215 reposts</span>
+                            <span class="lang-ja">215 リポスト</span>
+                            <span class="lang-pt">215 reposts</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="far fa-heart"></i>
+                            <span class="lang-zh">3.8k 赞</span>
+                            <span class="lang-en">3.8k likes</span>
+                            <span class="lang-ja">3.8千 いいね</span>
+                            <span class="lang-pt">3.8k curtidas</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 评论区 -->
+                    <div class="comments-section">
+                        <div class="comment">
+                            <div class="comment-avatar">古</div>
+                            <div class="comment-content">
+                                <div class="comment-user">古籍研究员</div>
+                                <div class="comment-text lang-zh">17世纪的手抄本？能透露一下是在哪里找到的吗？我对这类古籍很感兴趣。</div>
+                                <div class="comment-text lang-en">17th-century manuscript? Can you reveal where you found it? I'm very interested in such ancient texts.</div>
+                                <div class="comment-text lang-ja">17世紀の手写本？どこで見つけたか教えてもらえますか？このような古籍に非常に興味があります。</div>
+                                <div class="comment-text lang-pt">Manuscrito do século 17? Pode revelar onde o encontrou? Estou muito interessado em textos antigos assim.</div>
+                                <div class="comment-time">2021-12-08 09:45</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">音</div>
+                            <div class="comment-content">
+                                <div class="comment-user">音律学者</div>
+                                <div class="comment-text lang-zh">特定频率的声音……你说的是次声波还是超声波？不同的频率确实会对人产生不同的生理影响。</div>
+                                <div class="comment-text lang-en">Sound of specific frequencies... Are you talking about infrasound or ultrasound? Different frequencies do have different physiological effects on people.</div>
+                                <div class="comment-text lang-ja">特定の周波数の音…あなたが言っているのは超低周波音か超音波ですか？異なる周波数は確かに人に異なる生理的影響を与えます。</div>
+                                <div class="comment-text lang-pt">Sons de frequências específicas... Você está falando de infra-som ou ultra-som? Diferentes frequências realmente têm diferentes efeitos fisiológicos nas pessoas.</div>
+                                <div class="comment-time">2021-12-08 14:22</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">警</div>
+                            <div class="comment-content">
+                                <div class="comment-user">警告者</div>
+                                <div class="comment-text lang-zh">星辰，我劝你不要碰这些东西。有些知识不是人类应该掌握的。</div>
+                                <div class="comment-text lang-en">Xingchen, I advise you not to touch these things. Some knowledge is not meant for humans to possess.</div>
+                                <div class="comment-text lang-ja">星辰、これらのものに手を出さないように忠告します。ある種の知識は人類が掌握すべきものではありません。</div>
+                                <div class="comment-text lang-pt">Xingchen, aconselho você a não tocar nessas coisas. Algum conhecimento não é para os humanos possuírem.</div>
+                                <div class="comment-time">2021-12-09 19:03</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 《镜子》微博 -->
+                <article class="weibo-post">
+                    <div class="post-header">
+                        <div class="post-avatar">星</div>
+                        <div class="post-user-info">
+                            <div class="post-username">星辰</div>
+                            <div class="post-time">
+                                <span class="lang-zh">2020年10月25日</span>
+                                <span class="lang-en">2020/10/25</span>
+                                <span class="lang-ja">2020年10月25日</span>
+                                <span class="lang-pt">25/10/2020</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <h3 class="lang-zh">《镜子》</h3>
+                        <h3 class="lang-en">"The Mirror"</h3>
+                        <h3 class="lang-ja">『鏡』</h3>
+                        <h3 class="lang-pt">"O Espelho"</h3>
+                        
+                        <div class="lang-zh">
+                            <p>为什么人类会害怕镜子？</p>
+                            <p>尤其是在黑暗中，尤其是在独处时。</p>
+                            <p>有人说是因为镜子里的"另一个自己"会给人带来不安感。但我觉得不止如此。</p>
+                            <p>镜子是一个"界面"。它是现实与虚像的交界，是"这一边"与"那一边"的分割线。</p>
+                            <p>当你盯着镜子看的时候，你看到的不只是你自己的倒影，还有……某种"回响"。</p>
+                            <p>就像声音的回声一样，镜子里也存在着"视觉的回声"。</p>
+                            <p>而如果某些东西，顺着这个"回声"爬过来呢？</p>
+                            <p>如果镜子不只是反射光线，而是反射"存在"本身呢？</p>
+                            <p>最近我总是做梦。梦里我站在一面巨大的镜子前，镜子里的我在对我说话。但我听不清他在说什么，只能看到他的嘴唇在动。</p>
+                            <p>然后我醒来，发现自己的嘴唇也在动。</p>
+                            <p>好像我在睡梦中，复述着镜子里那个"我"说的话。</p>
+                        </div>
+                        
+                        <div class="lang-en">
+                            <p>Why are humans afraid of mirrors?</p>
+                            <p>Especially in the dark, especially when alone.</p>
+                            <p>Some say it's because the "other self" in the mirror brings unease. But I think it's more than that.</p>
+                            <p>A mirror is an "interface." It's the boundary between reality and virtual image, the dividing line between "this side" and "that side."</p>
+                            <p>When you stare into a mirror, you don't just see your own reflection, but also... some kind of "echo."</p>
+                            <p>Just like the echo of sound, there exists a "visual echo" in mirrors.</p>
+                            <p>And what if something climbs over through this "echo"?</p>
+                            <p>What if mirrors don't just reflect light, but reflect "existence" itself?</p>
+                            <p>Lately I've been dreaming a lot. In my dreams, I stand before a huge mirror, and the me in the mirror is talking to me. But I can't hear what he's saying, I can only see his lips moving.</p>
+                            <p>Then I wake up, and find my own lips moving too.</p>
+                            <p>As if in my sleep, I'm repeating what the "me" in the mirror said.</p>
+                        </div>
+                        
+                        <div class="lang-ja">
+                            <p>なぜ人間は鏡を恐れるのでしょうか？</p>
+                            <p>特に暗闇で、特に一人でいるとき。</p>
+                            <p>鏡の中の「もう一人の自分」が不安を引き起こすからだと言う人もいます。しかし、私はそれ以上のものだと思います。</p>
+                            <p>鏡は「インターフェース」です。それは現実と虚像の境界であり、「こちら側」と「あちら側」の分割線です。</p>
+                            <p>鏡をじっと見つめるとき、あなたが見ているのは単なる自分の反射像だけではなく、…ある種の「反響」でもあります。</p>
+                            <p>音の反響のように、鏡の中には「視覚的反響」が存在します。</p>
+                            <p>そしてもし、何かがこの「反響」を伝って這い上がってきたら？</p>
+                            <p>もし鏡が単に光を反射するだけでなく、「存在」そのものを反射するものだとしたら？</p>
+                            <p>最近、私はよく夢を見ます。夢の中で、私は巨大な鏡の前に立ち、鏡の中の私が私に話しかけています。しかし彼が何を言っているのか聞き取れず、ただ彼の唇が動いているのを見るだけです。</p>
+                            <p>そして目が覚めると、自分の唇も動いていることに気づきます。</p>
+                            <p>まるで眠っている間に、鏡の中の「私」が言ったことを復唱しているかのようです。</p>
+                        </div>
+                        
+                        <div class="lang-pt">
+                            <p>Por que os humanos têm medo de espelhos?</p>
+                            <p>Especialmente no escuro, especialmente quando sozinhos.</p>
+                            <p>Alguns dizem que é porque o "outro eu" no espelho traz inquietação. Mas acho que é mais do que isso.</p>
+                            <p>Um espelho é uma "interface". É o limite entre a realidade e a imagem virtual, a linha divisória entre "este lado" e "aquele lado".</p>
+                            <p>Quando você olha para um espelho, não vê apenas seu próprio reflexo, mas também... algum tipo de "eco".</p>
+                            <p>Assim como o eco do som, existe um "eco visual" nos espelhos.</p>
+                            <p>E se algo subir através desse "eco"?</p>
+                            <p>E se os espelhos não refletirem apenas luz, mas refletirem a "existência" em si?</p>
+                            <p>Ultimamente tenho sonhado muito. Em meus sonhos, fico diante de um enorme espelho, e o eu no espelho está falando comigo. Mas não consigo ouvir o que ele está dizendo, só vejo seus lábios se movendo.</p>
+                            <p>Então acordo e descubro que meus próprios lábios também estão se movendo.</p>
+                            <p>Como se, durante o sono, estivesse repetindo o que o "eu" no espelho disse.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="post-stats">
+                        <div class="post-stat">
+                            <i class="far fa-comment"></i>
+                            <span class="lang-zh">187 评论</span>
+                            <span class="lang-en">187 comments</span>
+                            <span class="lang-ja">187 コメント</span>
+                            <span class="lang-pt">187 comentários</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="fas fa-retweet"></i>
+                            <span class="lang-zh">342 转发</span>
+                            <span class="lang-en">342 reposts</span>
+                            <span class="lang-ja">342 リポスト</span>
+                            <span class="lang-pt">342 reposts</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="far fa-heart"></i>
+                            <span class="lang-zh">4.5k 赞</span>
+                            <span class="lang-en">4.5k likes</span>
+                            <span class="lang-ja">4.5千 いいね</span>
+                            <span class="lang-pt">4.5k curtidas</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 评论区 -->
+                    <div class="comments-section">
+                        <div class="comment">
+                            <div class="comment-avatar">寂</div>
+                            <div class="comment-content">
+                                <div class="comment-user">寂静岭旅人</div>
+                                <div class="comment-text lang-zh">星辰哥你最近是不是压力太大了？这梦听起来挺吓人的</div>
+                                <div class="comment-text lang-en">Brother Xingchen, are you under too much pressure lately? This dream sounds quite scary.</div>
+                                <div class="comment-text lang-ja">星辰兄、最近ストレスが大きすぎませんか？この夢はかなり怖く聞こえます</div>
+                                <div class="comment-text lang-pt">Irmão Xingchen, você está sob muita pressão ultimamente? Esse sonho parece bem assustador.</div>
+                                <div class="comment-time">2020-10-25 22:15</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">心</div>
+                            <div class="comment-content">
+                                <div class="comment-user">心理分析师</div>
+                                <div class="comment-text lang-zh">建议看看心理医生，真的。你描述的这些现象可能和精神压力有关。</div>
+                                <div class="comment-text lang-en">I suggest seeing a psychologist, really. The phenomena you describe may be related to mental stress.</div>
+                                <div class="comment-text lang-ja">心理医者に診てもらうことをお勧めします、本当に。あなたが説明するこれらの現象は精神的ストレスに関連しているかもしれません。</div>
+                                <div class="comment-text lang-pt">Sugiro consultar um psicólogo, realmente. Os fenômenos que você descreve podem estar relacionados ao estresse mental.</div>
+                                <div class="comment-time">2020-10-26 09:41</div>
+                            </div>
+                        </div>
+                        
+                        <div class="comment">
+                            <div class="comment-avatar">镜</div>
+                            <div class="comment-content">
+                                <div class="comment-user">镜面行者</div>
+                                <div class="comment-text lang-zh">我也做过类似的梦！感觉超真实，醒来之后还能记得镜子里那个"我"的眼神</div>
+                                <div class="comment-text lang-en">I've had similar dreams too! It feels super real, and I can still remember the gaze of the "me" in the mirror after waking up.</div>
+                                <div class="comment-text lang-ja">私も似たような夢を見たことがあります！超リアルに感じて、目が覚めた後も鏡の中の「私」の視線を覚えています</div>
+                                <div class="comment-text lang-pt">Eu também tive sonhos semelhantes! Parece super real, e ainda consigo me lembrar do olhar do "eu" no espelho depois de acordar.</div>
+                                <div class="comment-time">2020-10-26 18:23</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 《关于声音的思考》微博 -->
+                <article class="weibo-post">
+                    <div class="post-header">
+                        <div class="post-avatar">星</div>
+                        <div class="post-user-info">
+                            <div class="post-username">星辰</div>
+                            <div class="post-time">
+                                <span class="lang-zh">2020年3月15日</span>
+                                <span class="lang-en">2020/03/15</span>
+                                <span class="lang-ja">2020年3月15日</span>
+                                <span class="lang-pt">15/03/2020</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <h3 class="lang-zh">《关于声音的思考》</h3>
+                        <h3 class="lang-en">"Thoughts on Sound"</h3>
+                        <h3 class="lang-ja">『音についての思考』</h3>
+                        <h3 class="lang-pt">"Reflexões sobre o Som"</h3>
+                        
+                        <div class="lang-zh">
+                            <p>我最近在研究一些古老的音乐理论。</p>
+                            <p>你们知道吗，在很多古代文明里，音乐不只是娱乐，而是一种"技术"——沟通神灵的技术。</p>
+                            <p>比如古希腊的Pythagoras学派，他们相信宇宙本身是按照数学比例构建的，而音乐是这些比例的具象化。某些特定的和声能够与宇宙共振，从而打开通往"彼岸"的门。</p>
+                            <p>再比如西藏的颂钵、印度的Nada Yoga、甚至基督教的额我略圣咏，这些都不是简单的音乐，而是某种"仪式"。</p>
+                            <p>我在想，如果这些古人说的是真的呢？</p>
+                            <p>如果真的存在某种"原初的声音"，某种能够撼动现实根基的频率呢？</p>
+                            <p>那会是什么样的？</p>
+                            <p>那会听起来像什么？</p>
+                            <p>我想知道。</p>
+                        </div>
+                        
+                        <div class="lang-en">
+                            <p>I've been studying some ancient music theories lately.</p>
+                            <p>Did you know, in many ancient civilizations, music wasn't just entertainment, but a "technology"—a technology for communicating with the gods.</p>
+                            <p>Like the Pythagorean school in ancient Greece, they believed the universe itself was constructed according to mathematical proportions, and music was the embodiment of these proportions. Certain specific harmonies could resonate with the universe, thus opening doors to the "other side."</p>
+                            <p>Also like Tibetan singing bowls, Indian Nada Yoga, even Gregorian chants in Christianity, these aren't just simple music, but some kind of "ritual."</p>
+                            <p>I wonder, what if these ancient people were right?</p>
+                            <p>What if there really exists some "primordial sound," some frequency that can shake the foundations of reality?</p>
+                            <p>What would that be like?</p>
+                            <p>What would that sound like?</p>
+                            <p>I want to know.</p>
+                        </div>
+                        
+                        <div class="lang-ja">
+                            <p>最近、古代の音楽理論を研究しています。</p>
+                            <p>ご存知ですか、多くの古代文明では、音楽は単なる娯楽ではなく、「技術」でした——神々とコミュニケーションする技術です。</p>
+                            <p>例えば古代ギリシャのピタゴラス学派は、宇宙そのものが数学的比例に従って構築されており、音楽はこれらの比例の具現化であると信じていました。特定の和声は宇宙と共鳴し、「彼岸」への扉を開くことができました。</p>
+                            <p>また、チベットのシンギングボウル、インドのナーダヨガ、キリスト教のグレゴリオ聖歌など、これらは単純な音楽ではなく、ある種の「儀式」です。</p>
+                            <p>もしこれらの古代の人々が正しかったらどうでしょうか？</p>
+                            <p>もし本当に「原初の音」、現実の基盤を揺るがす周波数が存在するなら？</p>
+                            <p>それはどんなものになるでしょうか？</p>
+                            <p>それはどんな音になるでしょうか？</p>
+                            <p>知りたいです。</p>
+                        </div>
+                        
+                        <div class="lang-pt">
+                            <p>Tenho estudado algumas teorias musicais antigas ultimamente.</p>
+                            <p>Sabia que, em muitas civilizações antigas, a música não era apenas entretenimento, mas uma "tecnologia"—uma tecnologia para comunicação com os deuses?</p>
+                            <p>Como a escola pitagórica na Grécia antiga, eles acreditavam que o próprio universo era construído de acordo com proporções matemáticas, e a música era a personificação dessas proporções. Certas harmonias específicas poderiam ressoar com o universo, abrindo assim portas para o "outro lado".</p>
+                            <p>Também como as tigelas tibetanas, o Nada Yoga indiano, até os cantos gregorianos no cristianismo, estes não são apenas música simples, mas algum tipo de "ritual".</p>
+                            <p>Penso, e se essas pessoas antigas estiverem certas?</p>
+                            <p>E se realmente existir algum "som primordial", alguma frequência que possa abalar os fundamentos da realidade?</p>
+                            <p>Como seria?</p>
+                            <p>Como soaria?</p>
+                            <p>Quero saber.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="post-stats">
+                        <div class="post-stat">
+                            <i class="far fa-comment"></i>
+                            <span class="lang-zh">156 评论</span>
+                            <span class="lang-en">156 comments</span>
+                            <span class="lang-ja">156 コメント</span>
+                            <span class="lang-pt">156 comentários</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="fas fa-retweet"></i>
+                            <span class="lang-zh">324 转发</span>
+                            <span class="lang-en">324 reposts</span>
+                            <span class="lang-ja">324 リポスト</span>
+                            <span class="lang-pt">324 reposts</span>
+                        </div>
+                        <div class="post-stat">
+                            <i class="far fa-heart"></i>
+                            <span class="lang-zh">5.7k 赞</span>
+                            <span class="lang-en">5.7k likes</span>
+                            <span class="lang-ja">5.7千 いいね</span>
+                            <span class="lang-pt">5.7k curtidas</span>
+                        </div>
+                    </div>
+                </article>
+            </main>
+
+            <!-- 右侧边栏 -->
+            <aside class="right-sidebar">
+                <div class="right-card">
+                    <h3 class="lang-zh">热门话题</h3>
+                    <h3 class="lang-en">Trending Topics</h3>
+                    <h3 class="lang-ja">トレンドトピック</h3>
+                    <h3 class="lang-pt">Tópicos em Alta</h3>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸全球顶级编舞大师#</div>
+                        <div class="trend-stats lang-zh">245.6万讨论</div>
+                        <div class="trend-stats lang-en">2.45M discussions</div>
+                        <div class="trend-stats lang-ja">245.6万 議論</div>
+                        <div class="trend-stats lang-pt">2.45M discussões</div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸二专《ROOM》#</div>
+                        <div class="trend-stats lang-zh">189.3万讨论</div>
+                        <div class="trend-stats lang-en">1.89M discussions</div>
+                        <div class="trend-stats lang-ja">189.3万 議論</div>
+                        <div class="trend-stats lang-pt">1.89M discussões</div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#一起初来丸#</div>
+                        <div class="trend-stats lang-zh">156.7万讨论</div>
+                        <div class="trend-stats lang-en">1.56M discussions</div>
+                        <div class="trend-stats lang-ja">156.7万 議論</div>
+                        <div class="trend-stats lang-pt">1.56M discussões</div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸舞蹈教室#</div>
+                        <div class="trend-stats lang-zh">98.4万讨论</div>
+                        <div class="trend-stats lang-en">984k discussions</div>
+                        <div class="trend-stats lang-ja">98.4万 議論</div>
+                        <div class="trend-stats lang-pt">984k discussões</div>
+                    </div>
+                    
+                    <div class="trend-item">
+                        <div class="trend-title">#力丸回归舞台#</div>
+                        <div class="trend-stats lang-zh">76.2万讨论</div>
+                        <div class="trend-stats lang-en">762k discussions</div>
+                        <div class="trend-stats lang-ja">76.2万 議論</div>
+                        <div class="trend-stats lang-pt">762k discussões</div>
+                    </div>
+                </div>
+                
+                <div class="right-card">
+                    <h3 class="lang-zh">可能认识的人</h3>
+                    <h3 class="lang-en">People You May Know</h3>
+                    <h3 class="lang-ja">知り合いかも</h3>
+                    <h3 class="lang-pt">Pessoas que você pode conhecer</h3>
+                    
+                    <div class="user-item">
+                        <div class="user-item-avatar"></div>
+                        <div class="user-item-info">
+                            <div class="user-item-name">月光奏鸣曲</div>
+                            <div class="lang-zh">音乐制作人</div>
+                            <div class="lang-en">Music Producer</div>
+                            <div class="lang-ja">音楽プロデューサー</div>
+                            <div class="lang-pt">Produtor Musical</div>
+                        </div>
+                        <button class="follow-btn lang-zh">关注</button>
+                        <button class="follow-btn lang-en">Follow</button>
+                        <button class="follow-btn lang-ja">フォロー</button>
+                        <button class="follow-btn lang-pt">Seguir</button>
+                    </div>
+                    
+                    <div class="user-item">
+                        <div class="user-item-avatar"></div>
+                        <div class="user-item-info">
+                            <div class="user-item-name"><a href="RIKI个人博客.html" target="_blank">RIKIMARU</a></div>
+                            <div class="lang-zh">ROOM酒店管理员</div>
+                            <div class="lang-en">ROOM Hotel Administrator</div>
+                            <div class="lang-ja">ROOMホテル管理者</div>
+                            <div class="lang-pt">Administrador do Hotel ROOM</div>
+                        </div>
+                        <button class="follow-btn lang-zh">关注</button>
+                        <button class="follow-btn lang-en">Follow</button>
+                        <button class="follow-btn lang-ja">フォロー</button>
+                        <button class="follow-btn lang-pt">Seguir</button>
+                    </div>
+                    
+                    <div class="user-item">
+                        <div class="user-item-avatar"></div>
+                        <div class="user-item-info">
+                            <div class="user-item-name">镜中谜影</div>
+                            <div class="lang-zh">都市传说研究者</div>
+                            <div class="lang-en">Urban Legend Researcher</div>
+                            <div class="lang-ja">都市伝説研究者</div>
+                            <div class="lang-pt">Pesquisador de Lendas Urbanas</div>
+                        </div>
+                        <button class="follow-btn lang-zh">关注</button>
+                        <button class="follow-btn lang-en">Follow</button>
+                        <button class="follow-btn lang-ja">フォロー</button>
+                        <button class="follow-btn lang-pt">Seguir</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const languageBtn = document.getElementById('languageBtn');
+            const languageLinks = document.querySelectorAll('.language-dropdown a');
+            
+            // 设置当前语言
+            let currentLang = 'zh';
+            
+            // 语言映射
+            const languageNames = {
+                'zh': '中文',
+                'en': 'English',
+                'ja': '日本語',
+                'pt': 'Português'
+            };
+            
+            // 为每个语言链接添加点击事件
+            languageLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const lang = this.getAttribute('data-lang');
+                    switchLanguage(lang);
+                    
+                    // 更新按钮文本
+                    languageBtn.innerHTML = `<i class="fas fa-globe"></i> ${languageNames[lang]}`;
+                });
+            });
+            
+            // 切换语言函数
+            function switchLanguage(lang) {
+                // 隐藏所有语言内容
+                document.querySelectorAll('.lang-zh, .lang-en, .lang-ja, .lang-pt').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // 显示选定语言的内容
+                document.querySelectorAll(`.lang-${lang}`).forEach(el => {
+                    el.style.display = 'block';
+                });
+                
+                // 更新当前语言
+                currentLang = lang;
+                
+                // 对于内联文本，需要特殊处理（这里处理按钮文本）
+                updateInlineTexts(lang);
+            }
+            
+            // 更新内联文本（如按钮等）
+            function updateInlineTexts(lang) {
+                // 这里可以添加更多需要更新的内联文本
+                // 例如：更新关注按钮的文本已经在HTML中通过多个span实现了
+            }
+            
+            // 初始化页面为中文
+            switchLanguage('zh');
+            
+            // 搜索功能
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    alert(`搜索关键词: ${this.value}`);
+                    this.value = '';
+                }
+            });
+            
+            // 发布微博功能
+            const postBtn = document.querySelector('.post-btn');
+            const postTextarea = document.querySelector('.post-write textarea');
+            
+            postBtn.addEventListener('click', function() {
+                if (postTextarea.value.trim() === '') {
+                    alert(currentLang === 'zh' ? '请输入微博内容！' : 
+                          currentLang === 'en' ? 'Please enter Weibo content!' :
+                          currentLang === 'ja' ? '微博の内容を入力してください！' :
+                          'Por favor, digite o conteúdo do Weibo!');
+                    return;
+                }
+                
+                alert(currentLang === 'zh' ? '微博发布成功！' : 
+                      currentLang === 'en' ? 'Weibo posted successfully!' :
+                      currentLang === 'ja' ? '微博が正常に投稿されました！' :
+                      'Weibo postado com sucesso!');
+                
+                postTextarea.value = '';
+            });
+        });
+    </script>
+</body>
+</html>

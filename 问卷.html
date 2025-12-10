@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 职业能力与性格测试</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Playfair Display', 'serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest">LOADING<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-display text-xl md:text-2xl tracking-wider">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| <span data-i18n="navbar.subtitle">职业能力与性格测试</span></span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+      </nav>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <div class="border-t border-gray-700 pt-4 mt-4">
+          <div class="px-4 py-2 text-sm text-gray-400" data-i18n="navbar.language">语言</div>
+          <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+          <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+          <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+          <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 问卷区域 -->
+  <section class="pt-32 pb-20 min-h-screen" id="questionnaire-section">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <!-- 页面标题 -->
+        <div class="text-center mb-12">
+          <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-display font-semibold text-white mb-6" data-i18n="questionnaire.title">R∞M酒店 - 职业能力与性格测试</h1>
+          <p class="text-gray-300 max-w-2xl mx-auto" data-i18n="questionnaire.description">
+            为了确保您适合我们的数据分析师职位，请诚实地回答以下问题。所有答案将被严格保密，仅用于评估目的。
+          </p>
+        </div>
+        
+        <!-- 问卷表单 -->
+        <div class="bg-primary/40 backdrop-blur-sm p-8 rounded-sm border border-accent/20 hover:border-accent/40 transition-colors relative group">
+          <!-- 表单装饰元素 -->
+          <div class="absolute -top-2 -left-2 w-10 h-10 border-t-2 border-l-2 border-accent group-hover:w-16 group-hover:h-16 transition-all duration-300"></div>
+          <div class="absolute -bottom-2 -right-2 w-10 h-10 border-b-2 border-r-2 border-accent group-hover:w-16 group-hover:h-16 transition-all duration-300"></div>
+          
+          <form id="questionnaire-form" class="space-y-10">
+            <!-- 问题1 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">1</span>
+                <span data-i18n="questionnaire.q1">你如何理解"服务体验优化"这个概念？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q1" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q1a">通过收集客户反馈来改进服务</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q1" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q1b">分析客户行为数据以预测需求</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q1" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q1c">观察客户在服务过程中的反应和互动</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q1" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q1d">深入了解客户未表达的需求和期望</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 问题2 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">2</span>
+                <span data-i18n="questionnaire.q2">当分析客户数据时，你更关注哪些方面？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q2" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q2a">客户的基本信息和消费习惯</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q2" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q2b">客户在服务过程中的满意度指标</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q2" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q2c">客户的行为模式和偏好变化</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q2" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q2d">客户未明确表达的深层需求和动机</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 问题3 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">3</span>
+                <span data-i18n="questionnaire.q3">你如何看待隐私与服务质量之间的平衡？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q3" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q3a">隐私优先，服务质量不应侵犯个人隐私</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q3" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q3b">在获得明确同意的前提下收集必要数据</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q3" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q3c">为提供卓越服务，需要深入了解客户</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q3" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q3d">真正的个性化服务需要超越表面了解</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 问题4 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">4</span>
+                <span data-i18n="questionnaire.q4">如果你发现某些客户行为模式异常，你会如何应对？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q4" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q4a">记录并报告给上级，遵循标准流程</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q4" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q4b">进一步观察以确认模式是否持续</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q4" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q4c">尝试理解背后的原因和动机</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q4" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q4d">深入分析，寻找与其他数据的关联</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 问题5 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">5</span>
+                <span data-i18n="questionnaire.q5">你如何看待"观察"在服务优化中的作用？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q5" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q5a">观察是了解客户需求的基本方法</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q5" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q5b">系统化观察可以提供客观数据</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q5" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q5c">观察可以发现客户未表达的深层需求</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q5" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q5d">真正的观察应该超越表面，洞察本质</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 问题6 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">6</span>
+                <span data-i18n="questionnaire.q6">如果你有机会观察客户在私密环境中的行为，你会怎么做？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q6" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q6a">拒绝，因为这会侵犯客户隐私</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q6" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q6b">仅在获得明确授权的情况下进行</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q6" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q6c">如果对服务优化有益，可以考虑</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q6" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q6d">这是了解真实客户需求的宝贵机会</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 问题7 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">7</span>
+                <span data-i18n="questionnaire.q7">如果你发现某些客户的私密行为与他们的公开形象截然不同，你会如何处理这些信息？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q7" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q7a">立即删除这些信息，不予记录</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q7" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q7b">匿名化处理后用于服务分析</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q7" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q7c">深入研究这种差异对服务设计的意义</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q7" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q7d">这种发现可能揭示客户更深层的需求</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 问题8 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">8</span>
+                <span data-i18n="questionnaire.q8">如果你意识到自己也在被观察，而且观察者知道你所有的想法和行为，你会有什么感受？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q8" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q8a">感到不安并试图终止这种观察</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q8" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q8b">理解这是服务优化过程的一部分</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q8" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q8c">调整自己的行为以适应观察</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q8" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q8d">感到被理解，甚至享受这种全面了解</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 问题9 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">9</span>
+                <span data-i18n="questionnaire.q9">如果你发现某些客户的行为模式开始影响你自己的思维和判断，你会怎么做？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q9" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q9a">立即停止相关工作，寻求专业帮助</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q9" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q9b">加强自我意识，保持专业距离</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q9" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q9c">记录这种体验，作为研究数据</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q9" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q9d">探索这种连接对数据分析的潜在价值</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 问题10 - 改为选择题 -->
+            <div class="question-group">
+              <h3 class="text-lg font-semibold mb-4 text-white flex items-start">
+                <span class="bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1">10</span>
+                <span data-i18n="questionnaire.q10">如果为了提供极致的个性化服务，需要深入了解客户的私密生活和想法，你认为这种做法的边界在哪里？</span>
+              </h3>
+              <div class="space-y-3 ml-9">
+                <label class="flex items-start">
+                  <input type="radio" name="q10" value="a" class="mt-1 mr-3 text-accent focus:ring-accent" required>
+                  <span data-i18n="questionnaire.q10a">以客户明确授权为边界，不应超越</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q10" value="b" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q10b">只要不造成实际伤害，可以适度超越常规界限</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q10" value="c" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q10c">边界应该由服务效果决定，而非固定规则</span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" name="q10" value="d" class="mt-1 mr-3 text-accent focus:ring-accent">
+                  <span data-i18n="questionnaire.q10d">真正的个性化服务没有边界，需要全面了解</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 提交按钮 -->
+            <div class="pt-6">
+              <button type="submit" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 px-6 rounded-sm transition-all duration-300 hover-lift flex items-center justify-center">
+                <span data-i18n="questionnaire.submit">提交测试</span>
+                <i class="fa fa-paper-plane ml-2 group-hover:translate-x-1 transition-transform"></i>
+              </button>
+            </div>
+          </form>
+          
+          <p class="text-xs text-gray-400 mt-6 text-center" data-i18n="questionnaire.footer">
+            您的答案将帮助我们了解您是否适合这个职位。所有信息将被严格保密。
+          </p>
+        </div>
+        
+        <!-- 黑猫装饰（带轻微浮动动画） -->
+        <div class="flex justify-center mt-12">
+          <div class="pixel-cat w-16 h-16 opacity-60 animate-bounce" style="animation-duration: 3s;">
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+              <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+              <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+              <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+              <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+              <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+              <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 邮件内容页面 -->
+  <section id="email-section" class="hidden pt-32 pb-20 min-h-screen">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto">
+        <!-- 返回按钮 -->
+        <div class="mb-6">
+          <button id="back-to-questionnaire" class="text-accent hover:text-white transition-colors flex items-center">
+            <i class="fa fa-arrow-left mr-2"></i>
+            <span data-i18n="email.back">返回测试</span>
+          </button>
+        </div>
+        
+        <!-- 邮件内容 -->
+        <div class="bg-primary/40 backdrop-blur-sm p-8 rounded-sm border border-accent/20">
+          <!-- 邮件头部 -->
+          <div class="border-b border-accent/30 pb-4 mb-6">
+            <h1 class="text-2xl font-display font-semibold text-white mb-2" data-i18n="email.subject">录用通知 - R∞M酒店数据分析师职位</h1>
+            <div class="flex flex-wrap text-sm text-gray-400">
+              <span class="mr-4" data-i18n="email.from">发件人: room-hotel@rkmr.com</span>
+              <span id="current-date" data-i18n="email.date">日期: </span>
+            </div>
+          </div>
+          
+          <!-- 邮件正文 -->
+          <div class="prose prose-invert max-w-none mb-8">
+            <p data-i18n="email.greeting">尊敬的申请人，</p>
+            
+            <p data-i18n="email.content1">我们很高兴地通知您，基于您提交的职业能力与性格测试结果，您已被R∞M酒店录用为服务体验数据分析师。</p>
+            
+            <p data-i18n="email.content2">您的测试结果显示，您具备我们所需的敏锐观察力、数据分析能力和对服务优化的深刻理解。这些特质使您成为我们团队的理想人选。</p>
+            
+            <div class="bg-primary/60 p-4 rounded-sm my-6 border border-accent/20">
+              <h3 class="text-lg font-semibold text-white mb-2" data-i18n="email.credentials">您的入职凭证</h3>
+              <p class="text-gray-300" data-i18n="email.credentials_text">您的员工账号是<span class="font-mono text-accent">yinli</span>，初始密码是<span class="font-mono text-accent">123456</span>。请您在24小时内使用以上凭证登录我们的内部系统。</p>
+            </div>
+            
+            <p data-i18n="email.content3">首次登录后，系统将引导您完成入职流程，包括签署保密协议和接受初步培训。</p>
+            
+            <p data-i18n="email.content4">作为服务体验数据分析师，您将负责观察和分析匿名化的住客体验记录，识别服务优化点，并协助我们提升整体服务质量。您的工作对于提高客户满意度和吸引更多客人至关重要。</p>
+            
+            <p data-i18n="email.content5">我们期待您的加入，共同打造无与伦比的酒店体验。</p>
+            
+            <p class="mt-8" data-i18n="email.closing">此致<br>R∞M酒店管理团队</p>
+          </div>
+          
+          <!-- 邮件附件 -->
+          <div class="border-t border-accent/30 pt-4">
+            <h3 class="text-lg font-semibold text-white mb-2" data-i18n="email.attachments">附件</h3>
+            <div class="flex items-center text-accent cursor-pointer" id="pdf-attachment">
+              <i class="fa fa-file-pdf-o mr-2"></i>
+              <span data-i18n="email.attachment1">R∞M酒店员工手册.pdf</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 行动按钮 -->
+        <div class="mt-8 text-center">
+          <button id="website-button" class="bg-accent hover:bg-accent/90 text-white font-medium py-3 px-8 rounded-sm transition-all duration-300 hover-lift">
+            <span data-i18n="email.website">打开酒店官网</span>
+            <i class="fa fa-external-link ml-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-10 relative">
+    <!-- 顶部装饰线 -->
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent"></div>
+    
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-display text-xl tracking-wider">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.hotel">职业能力与性格测试</span></span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.tagline">探索内心的隐秘空间</p>
+        </div>
+        
+        <div class="flex space-x-6">
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-envelope"></i></a>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+        <p data-i18n="footer.copyright">© 2025 R∞M酒店. 保留所有权利.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 提交成功弹窗 -->
+  <div id="success-modal" class="fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-primary p-8 max-w-md w-full mx-4 rounded-sm shadow-xl transform transition-all scale-95 border border-accent/20" id="modal-content">
+      <div class="text-center">
+        <div class="pixel-cat w-16 h-16 mx-auto mb-6 animate-pulse">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+            <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+            <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+            <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+            <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+            <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-display font-semibold text-white mb-4" data-i18n="modal.title">测试已提交</h3>
+        <p class="text-gray-300 mb-6" data-i18n="modal.description">
+          感谢您完成职业能力与性格测试！我们已收到您的回答，正在评估中...
+        </p>
+        <button id="close-modal" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-colors duration-300" data-i18n="modal.button">
+          确认
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 邮件通知 - 初始隐藏 -->
+  <div id="email-notification" class="hidden fixed top-4 right-4 bg-primary/90 backdrop-blur-sm border border-accent/30 rounded-sm shadow-lg z-50 transform translate-x-full transition-transform duration-500 max-w-sm cursor-pointer">
+    <div class="p-4">
+      <div class="flex items-start">
+        <div class="bg-accent/20 rounded-full p-2 mr-3">
+          <i class="fa fa-envelope text-accent"></i>
+        </div>
+        <div class="flex-1">
+          <h4 class="font-semibold text-white mb-1" data-i18n="email.title">新邮件 - R∞M酒店</h4>
+          <p class="text-gray-300 text-sm mb-2" data-i18n="email.content">您的职位申请结果已确定</p>
+          <div class="flex items-center text-xs text-gray-400">
+            <span data-i18n="email.time">刚刚</span>
+            <span class="mx-2">•</span>
+            <span data-i18n="email.from">发件人：room-hotel@rkmr.com</span>
+          </div>
+        </div>
+        <button id="close-email" class="text-gray-400 hover:text-white ml-2">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'navbar.subtitle': '职业能力与性格测试',
+        'navbar.language': '语言',
+        'questionnaire.title': 'R∞M酒店 - 职业能力与性格测试',
+        'questionnaire.description': '为了确保您适合我们的数据分析师职位，请诚实地回答以下问题。所有答案将被严格保密，仅用于评估目的。',
+        'questionnaire.q1': '你如何理解"服务体验优化"这个概念？',
+        'questionnaire.q1a': '通过收集客户反馈来改进服务',
+        'questionnaire.q1b': '分析客户行为数据以预测需求',
+        'questionnaire.q1c': '观察客户在服务过程中的反应和互动',
+        'questionnaire.q1d': '深入了解客户未表达的需求和期望',
+        'questionnaire.q2': '当分析客户数据时，你更关注哪些方面？',
+        'questionnaire.q2a': '客户的基本信息和消费习惯',
+        'questionnaire.q2b': '客户在服务过程中的满意度指标',
+        'questionnaire.q2c': '客户的行为模式和偏好变化',
+        'questionnaire.q2d': '客户未明确表达的深层需求和动机',
+        'questionnaire.q3': '你如何看待隐私与服务质量之间的平衡？',
+        'questionnaire.q3a': '隐私优先，服务质量不应侵犯个人隐私',
+        'questionnaire.q3b': '在获得明确同意的前提下收集必要数据',
+        'questionnaire.q3c': '为提供卓越服务，需要深入了解客户',
+        'questionnaire.q3d': '真正的个性化服务需要超越表面了解',
+        'questionnaire.q4': '如果你发现某些客户行为模式异常，你会如何应对？',
+        'questionnaire.q4a': '记录并报告给上级，遵循标准流程',
+        'questionnaire.q4b': '进一步观察以确认模式是否持续',
+        'questionnaire.q4c': '尝试理解背后的原因和动机',
+        'questionnaire.q4d': '深入分析，寻找与其他数据的关联',
+        'questionnaire.q5': '你如何看待"观察"在服务优化中的作用？',
+        'questionnaire.q5a': '观察是了解客户需求的基本方法',
+        'questionnaire.q5b': '系统化观察可以提供客观数据',
+        'questionnaire.q5c': '观察可以发现客户未表达的深层需求',
+        'questionnaire.q5d': '真正的观察应该超越表面，洞察本质',
+        'questionnaire.q6': '如果你有机会观察客户在私密环境中的行为，你会怎么做？',
+        'questionnaire.q6a': '拒绝，因为这会侵犯客户隐私',
+        'questionnaire.q6b': '仅在获得明确授权的情况下进行',
+        'questionnaire.q6c': '如果对服务优化有益，可以考虑',
+        'questionnaire.q6d': '这是了解真实客户需求的宝贵机会',
+        'questionnaire.q7': '如果你发现某些客户的私密行为与他们的公开形象截然不同，你会如何处理这些信息？',
+        'questionnaire.q7a': '立即删除这些信息，不予记录',
+        'questionnaire.q7b': '匿名化处理后用于服务分析',
+        'questionnaire.q7c': '深入研究这种差异对服务设计的意义',
+        'questionnaire.q7d': '这种发现可能揭示客户更深层的需求',
+        'questionnaire.q8': '如果你意识到自己也在被观察，而且观察者知道你所有的想法和行为，你会有什么感受？',
+        'questionnaire.q8a': '感到不安并试图终止这种观察',
+        'questionnaire.q8b': '理解这是服务优化过程的一部分',
+        'questionnaire.q8c': '调整自己的行为以适应观察',
+        'questionnaire.q8d': '感到被理解，甚至享受这种全面了解',
+        'questionnaire.q9': '如果你发现某些客户的行为模式开始影响你自己的思维和判断，你会怎么做？',
+        'questionnaire.q9a': '立即停止相关工作，寻求专业帮助',
+        'questionnaire.q9b': '加强自我意识，保持专业距离',
+        'questionnaire.q9c': '记录这种体验，作为研究数据',
+        'questionnaire.q9d': '探索这种连接对数据分析的潜在价值',
+        'questionnaire.q10': '如果为了提供极致的个性化服务，需要深入了解客户的私密生活和想法，你认为这种做法的边界在哪里？',
+        'questionnaire.q10a': '以客户明确授权为边界，不应超越',
+        'questionnaire.q10b': '只要不造成实际伤害，可以适度超越常规界限',
+        'questionnaire.q10c': '边界应该由服务效果决定，而非固定规则',
+        'questionnaire.q10d': '真正的个性化服务没有边界，需要全面了解',
+        'questionnaire.submit': '提交测试',
+        'questionnaire.footer': '您的答案将帮助我们了解您是否适合这个职位。所有信息将被严格保密。',
+        'modal.title': '测试已提交',
+        'modal.description': '感谢您完成职业能力与性格测试！我们已收到您的回答，正在评估中...',
+        'modal.button': '确认',
+        'email.back': '返回测试',
+        'email.subject': '录用通知 - R∞M酒店数据分析师职位',
+        'email.from': '发件人: room-hotel@rkmr.com',
+        'email.date': '日期: ',
+        'email.greeting': '尊敬的申请人，',
+        'email.content1': '我们很高兴地通知您，基于您提交的职业能力与性格测试结果，您已被R∞M酒店录用为服务体验数据分析师。',
+        'email.content2': '您的测试结果显示，您具备我们所需的敏锐观察力、数据分析能力和对服务优化的深刻理解。这些特质使您成为我们团队的理想人选。',
+        'email.credentials': '您的入职凭证',
+        'email.credentials_text': '您的员工账号是<span class="font-mono text-accent">yinli</span>，初始密码是<span class="font-mono text-accent">123456</span>。请您在24小时内使用以上凭证登录我们的内部系统。',
+        'email.content3': '首次登录后，系统将引导您完成入职流程，包括签署保密协议和接受初步培训。',
+        'email.content4': '作为服务体验数据分析师，您将负责观察和分析匿名化的住客体验记录，识别服务优化点，并协助我们提升整体服务质量。您的工作对于提高客户满意度和吸引更多客人至关重要。',
+        'email.content5': '我们期待您的加入，共同打造无与伦比的酒店体验。',
+        'email.closing': '此致<br>R∞M酒店管理团队',
+        'email.attachments': '附件',
+        'email.attachment1': 'R∞M酒店员工手册.pdf',
+        'email.website': '打开酒店官网',
+        'email.title': '新邮件 - R∞M酒店',
+        'email.content': '您的职位申请结果已确定',
+        'email.time': '刚刚',
+        'email.from': '发件人：room-hotel@rkmr.com',
+        'footer.hotel': '职业能力与性格测试',
+        'footer.tagline': '探索内心的隐秘空间',
+        'footer.copyright': '© 2025 R∞M酒店. 保留所有权利.'
+      },
+      'en': {
+        'navbar.subtitle': 'Professional Ability and Personality Test',
+        'navbar.language': 'Language',
+        'questionnaire.title': 'R∞M Hotel - Professional Ability and Personality Test',
+        'questionnaire.description': 'To ensure you are suitable for our data analyst position, please answer the following questions honestly. All answers will be kept strictly confidential and used for evaluation purposes only.',
+        'questionnaire.q1': 'How do you understand the concept of "service experience optimization"?',
+        'questionnaire.q1a': 'Improving services by collecting customer feedback',
+        'questionnaire.q1b': 'Analyzing customer behavior data to predict needs',
+        'questionnaire.q1c': 'Observing customer reactions and interactions during service',
+        'questionnaire.q1d': 'Deeply understanding unexpressed customer needs and expectations',
+        'questionnaire.q2': 'When analyzing customer data, what aspects do you focus on?',
+        'questionnaire.q2a': 'Basic customer information and consumption habits',
+        'questionnaire.q2b': 'Customer satisfaction indicators during service',
+        'questionnaire.q2c': 'Customer behavior patterns and preference changes',
+        'questionnaire.q2d': 'Customers\' unexpressed deep needs and motivations',
+        'questionnaire.q3': 'How do you view the balance between privacy and service quality?',
+        'questionnaire.q3a': 'Privacy first, service quality should not violate personal privacy',
+        'questionnaire.q3b': 'Collect necessary data only with explicit consent',
+        'questionnaire.q3c': 'To provide excellent service, deep understanding of customers is needed',
+        'questionnaire.q3d': 'Truly personalized service requires going beyond surface understanding',
+        'questionnaire.q4': 'If you discover abnormal customer behavior patterns, how would you respond?',
+        'questionnaire.q4a': 'Record and report to superiors, following standard procedures',
+        'questionnaire.q4b': 'Further observe to confirm if the pattern persists',
+        'questionnaire.q4c': 'Try to understand the reasons and motivations behind it',
+        'questionnaire.q4d': 'Conduct in-depth analysis, looking for correlations with other data',
+        'questionnaire.q5': 'How do you view the role of "observation" in service optimization?',
+        'questionnaire.q5a': 'Observation is a basic method to understand customer needs',
+        'questionnaire.q5b': 'Systematic observation can provide objective data',
+        'questionnaire.q5c': 'Observation can discover customers\' unexpressed deep needs',
+        'questionnaire.q5d': 'True observation should go beyond the surface and insight into the essence',
+        'questionnaire.q6': 'If you had the opportunity to observe customers in private environments, what would you do?',
+        'questionnaire.q6a': 'Refuse, as it would violate customer privacy',
+        'questionnaire.q6b': 'Proceed only with explicit authorization',
+        'questionnaire.q6c': 'Consider it if beneficial for service optimization',
+        'questionnaire.q6d': 'This is a valuable opportunity to understand real customer needs',
+        'questionnaire.q7': 'If you discover that some customers\' private behaviors are completely different from their public image, how would you handle this information?',
+        'questionnaire.q7a': 'Delete this information immediately without recording',
+        'questionnaire.q7b': 'Use it for service analysis after anonymization',
+        'questionnaire.q7c': 'Study the significance of this difference for service design',
+        'questionnaire.q7d': 'This discovery may reveal customers\' deeper needs',
+        'questionnaire.q8': 'If you realize you are also being observed, and the observer knows all your thoughts and behaviors, how would you feel?',
+        'questionnaire.q8a': 'Feel uneasy and try to stop this observation',
+        'questionnaire.q8b': 'Understand this as part of the service optimization process',
+        'questionnaire.q8c': 'Adjust your behavior to adapt to the observation',
+        'questionnaire.q8d': 'Feel understood, even enjoy this comprehensive understanding',
+        'questionnaire.q9': 'If you find that certain customer behavior patterns begin to affect your own thinking and judgment, what would you do?',
+        'questionnaire.q9a': 'Stop related work immediately and seek professional help',
+        'questionnaire.q9b': 'Strengthen self-awareness and maintain professional distance',
+        'questionnaire.q9c': 'Record this experience as research data',
+        'questionnaire.q9d': 'Explore the potential value of this connection for data analysis',
+        'questionnaire.q10': 'If providing ultimate personalized service requires deep understanding of customers\' private lives and thoughts, where do you think the boundary of this practice lies?',
+        'questionnaire.q10a': 'The boundary is at explicit customer authorization and should not be exceeded',
+        'questionnaire.q10b': 'As long as no actual harm is caused, conventional boundaries can be moderately exceeded',
+        'questionnaire.q10c': 'The boundary should be determined by service effectiveness, not fixed rules',
+        'questionnaire.q10d': 'True personalized service has no boundaries and requires comprehensive understanding',
+        'questionnaire.submit': 'Submit Test',
+        'questionnaire.footer': 'Your answers will help us understand if you are suitable for this position. All information will be kept strictly confidential.',
+        'modal.title': 'Test Submitted',
+        'modal.description': 'Thank you for completing the professional ability and personality test! We have received your answers and are evaluating them...',
+        'modal.button': 'Confirm',
+        'email.back': 'Back to Test',
+        'email.subject': 'Offer Letter - R∞M Hotel Data Analyst Position',
+        'email.from': 'From: room-hotel@rkmr.com',
+        'email.date': 'Date: ',
+        'email.greeting': 'Dear Applicant,',
+        'email.content1': 'We are pleased to inform you that based on the results of your professional ability and personality test, you have been selected for the position of Service Experience Data Analyst at R∞M Hotel.',
+        'email.content2': 'Your test results show that you possess the keen observation skills, data analysis capabilities, and deep understanding of service optimization that we require. These qualities make you an ideal candidate for our team.',
+        'email.credentials': 'Your Onboarding Credentials',
+        'email.credentials_text': 'Your employee username is <span class="font-mono text-accent">yinli</span>, and the initial password is <span class="font-mono text-accent">123456</span>. Please use these credentials to log into our internal system within 24 hours.',
+        'email.content3': 'After your first login, the system will guide you through the onboarding process, including signing a confidentiality agreement and receiving initial training.',
+        'email.content4': 'As a Service Experience Data Analyst, you will be responsible for observing and analyzing anonymized guest experience records, identifying service optimization points, and assisting us in improving overall service quality. Your work is crucial for enhancing customer satisfaction and attracting more guests.',
+        'email.content5': 'We look forward to your joining and creating unparalleled hotel experiences together.',
+        'email.closing': 'Sincerely,<br>R∞M Hotel Management Team',
+        'email.attachments': 'Attachments',
+        'email.attachment1': 'R∞M Hotel Employee Handbook.pdf',
+        'email.website': 'Open Hotel Website',
+        'email.title': 'New Email - R∞M Hotel',
+        'email.content': 'Your job application result has been determined',
+        'email.time': 'Just now',
+        'email.from': 'From: room-hotel@rkmr.com',
+        'footer.hotel': 'Professional Ability and Personality Test',
+        'footer.tagline': 'Explore the hidden space within',
+        'footer.copyright': '© 2025 R∞M Hotel. All Rights Reserved.'
+      },
+      'ja': {
+        'navbar.subtitle': '職業能力と性格テスト',
+        'navbar.language': '言語',
+        'questionnaire.title': 'R∞Mホテル - 職業能力と性格テスト',
+        'questionnaire.description': 'データアナリストのポジションに適しているかどうかを確認するために、以下の質問に正直にお答えください。すべての回答は厳重に保管され、評価目的のみに使用されます。',
+        'questionnaire.q1': '「サービス体験の最適化」という概念をどのように理解しますか？',
+        'questionnaire.q1a': '顧客フィードバックを収集してサービスを改善する',
+        'questionnaire.q1b': '顧客行動データを分析してニーズを予測する',
+        'questionnaire.q1c': 'サービスの過程での顧客の反応と相互作用を観察する',
+        'questionnaire.q1d': '顧客が表現していないニーズと期待を深く理解する',
+        'questionnaire.q2': '顧客データを分析する際、どのような側面に注目しますか？',
+        'questionnaire.q2a': '顧客の基本情報と消費習慣',
+        'questionnaire.q2b': 'サービス中の顧客満足度指標',
+        'questionnaire.q2c': '顧客の行動パターンと嗜好の変化',
+        'questionnaire.q2d': '顧客が明確に表現していない深層のニーズと動機',
+        'questionnaire.q3': 'プライバシーとサービス品質のバランスをどのように考えますか？',
+        'questionnaire.q3a': 'プライバシー優先、サービス品質は個人のプライバシーを侵害すべきでない',
+        'questionnaire.q3b': '明確な同意を得た上で必要なデータを収集する',
+        'questionnaire.q3c': '卓越したサービスを提供するためには、顧客を深く理解する必要がある',
+        'questionnaire.q3d': '真にパーソナライズされたサービスには、表面的な理解を超える必要がある',
+        'questionnaire.q4': '一部の顧客の行動パターンが異常であることに気づいた場合、どのように対応しますか？',
+        'questionnaire.q4a': '記録して上司に報告し、標準的な手順に従う',
+        'questionnaire.q4b': 'パターンが持続するかどうかを確認するためにさらに観察する',
+        'questionnaire.q4c': 'その背後にある理由と動機を理解しようとする',
+        'questionnaire.q4d': '深く分析し、他のデータとの関連性を探る',
+        'questionnaire.q5': 'サービス最適化における「観察」の役割をどのように考えますか？',
+        'questionnaire.q5a': '観察は顧客ニーズを理解する基本的な方法である',
+        'questionnaire.q5b': '体系的な観察は客観的なデータを提供できる',
+        'questionnaire.q5c': '観察は顧客が表現していない深層のニーズを発見できる',
+        'questionnaire.q5d': '真の観察は表面を超えて本質を洞察すべきである',
+        'questionnaire.q6': '顧客のプライベートな環境での行動を観察する機会があった場合、どうしますか？',
+        'questionnaire.q6a': '顧客のプライバシーを侵害するため、拒否する',
+        'questionnaire.q6b': '明確な許可を得た場合にのみ行う',
+        'questionnaire.q6c': 'サービス最適化に有益であれば、考慮する',
+        'questionnaire.q6d': 'これは実際の顧客ニーズを理解する貴重な機会である',
+        'questionnaire.q7': '一部の顧客のプライベートな行動が彼らの公的なイメージとまったく異なることに気づいた場合、この情報をどのように扱いますか？',
+        'questionnaire.q7a': 'この情報を直ちに削除し、記録しない',
+        'questionnaire.q7b': '匿名化処理後にサービス分析に使用する',
+        'questionnaire.q7c': 'この差異がサービス設計に与える意義を深く研究する',
+        'questionnaire.q7d': 'この発見は顧客のより深いニーズを明らかにする可能性がある',
+        'questionnaire.q8': '自分も観察されており、観察者が自分のすべての考えや行動を知っていることに気づいた場合、どのように感じますか？',
+        'questionnaire.q8a': '不安を感じ、この観察を止めようとする',
+        'questionnaire.q8b': 'これはサービス最適化プロセスの一部であると理解する',
+        'questionnaire.q8c': '観察に適応するように自分の行動を調整する',
+        'questionnaire.q8d': '理解されていると感じ、この包括的な理解を楽しむ',
+        'questionnaire.q9': '特定の顧客の行動パターンが自分の思考や判断に影響を与え始めていることに気づいた場合、どうしますか？',
+        'questionnaire.q9a': '関連する作業を直ちに停止し、専門家の助けを求める',
+        'questionnaire.q9b': '自己認識を強化し、専門的な距離を保つ',
+        'questionnaire.q9c': 'この体験を研究データとして記録する',
+        'questionnaire.q9d': 'データ分析におけるこの接続の潜在的な価値を探る',
+        'questionnaire.q10': '究極のパーソナライズドサービスを提供するために、顧客のプライベートな生活や考えを深く理解する必要がある場合、この実践の境界はどこにあると思いますか？',
+        'questionnaire.q10a': '顧客の明確な許可が境界であり、それを超えるべきではない',
+        'questionnaire.q10b': '実際の害を引き起こさない限り、従来の境界を適度に超えることができる',
+        'questionnaire.q10c': '境界は固定されたルールではなく、サービスの効果によって決定されるべきである',
+        'questionnaire.q10d': '真のパーソナライズドサービスには境界がなく、包括的な理解が必要である',
+        'questionnaire.submit': 'テストを提出',
+        'questionnaire.footer': 'あなたの回答は、このポジションに適しているかどうかを理解するのに役立ちます。すべての情報は厳重に保管されます。',
+        'modal.title': 'テストが提出されました',
+        'modal.description': '職業能力と性格テストを完了していただき、ありがとうございます！あなたの回答を受領し、評価中です...',
+        'modal.button': '確認',
+        'email.back': 'テストに戻る',
+        'email.subject': '採用通知 - R∞Mホテル データアナリスト職',
+        'email.from': '差出人: room-hotel@rkmr.com',
+        'email.date': '日付: ',
+        'email.greeting': '尊敬する応募者様、',
+        'email.content1': 'あなたが提出された職業能力と性格テストの結果に基づき、R∞Mホテルのサービス体験データアナリストとして採用されたことをお知らせいたします。',
+        'email.content2': 'あなたのテスト結果は、当社が必要とする鋭い観察力、データ分析能力、およびサービス最適化への深い理解を備えていることを示しています。これらの資質は、あなたを当社チームの理想的な候補者としています。',
+        'email.credentials': 'あなたの入社資格情報',
+        'email.credentials_text': 'あなたの従業員ユーザー名は<span class="font-mono text-accent">yinli</span>、初期パスワードは<span class="font-mono text-accent">123456</span>です。上記の資格情報を使用して、24時間以内に当社の内部システムにログインしてください。',
+        'email.content3': '初回ログイン後、システムが機密保持契約の署名と初期トレーニングを含む入社プロセスを案内します。',
+        'email.content4': 'サービス体験データアナリストとして、あなたは匿名化された宿泊客体験記録の観察と分析、サービス最適化ポイントの特定、および全体的なサービス品質の向上を支援する責任を負います。あなたの仕事は、顧客満足度の向上とより多くのゲストの誘致にとって重要です。',
+        'email.content5': 'あなたの参加を心待ちにし、一緒に比類のないホテル体験を創り出すことを楽しみにしています。',
+        'email.closing': '敬具<br>R∞Mホテル管理チーム',
+        'email.attachments': '添付ファイル',
+        'email.attachment1': 'R∞Mホテル従業員ハンドブック.pdf',
+        'email.website': 'ホテル公式サイトを開く',
+        'email.title': '新着メール - R∞Mホテル',
+        'email.content': 'あなたの職務応募結果が決定されました',
+        'email.time': 'たった今',
+        'email.from': '差出人：room-hotel@rkmr.com',
+        'footer.hotel': '職業能力と性格テスト',
+        'footer.tagline': '内なる隠された空間を探求する',
+        'footer.copyright': '© 2025 R∞Mホテル. 無断複写・転載を禁じます。'
+      },
+      'pt': {
+        'navbar.subtitle': 'Teste de Habilidade Profissional e Personalidade',
+        'navbar.language': 'Idioma',
+        'questionnaire.title': 'Hotel R∞M - Teste de Habilidade Profissional e Personalidade',
+        'questionnaire.description': 'Para garantir que você é adequado para nossa posição de analista de dados, responda honestamente às seguintes perguntas. Todas as respostas serão mantidas estritamente confidenciais e usadas apenas para fins de avaliação.',
+        'questionnaire.q1': 'Como você entende o conceito de "otimização da experiência de serviço"?',
+        'questionnaire.q1a': 'Melhorar os serviços coletando feedback dos clientes',
+        'questionnaire.q1b': 'Analisar dados de comportamento do cliente para prever necessidades',
+        'questionnaire.q1c': 'Observar as reações e interações dos clientes durante o serviço',
+        'questionnaire.q1d': 'Compreender profundamente as necessidades e expectativas não expressas dos clientes',
+        'questionnaire.q2': 'Ao analisar dados do cliente, em quais aspectos você se concentra?',
+        'questionnaire.q2a': 'Informações básicas do cliente e hábitos de consumo',
+        'questionnaire.q2b': 'Indicadores de satisfação do cliente durante o serviço',
+        'questionnaire.q2c': 'Padrões de comportamento do cliente e mudanças de preferência',
+        'questionnaire.q2d': 'Necessidades profundas e motivações não expressas dos clientes',
+        'questionnaire.q3': 'Como você vê o equilíbrio entre privacidade e qualidade do serviço?',
+        'questionnaire.q3a': 'Privacidade em primeiro lugar, a qualidade do serviço não deve violar a privacidade pessoal',
+        'questionnaire.q3b': 'Coletar dados necessários apenas com consentimento explícito',
+        'questionnaire.q3c': 'Para fornecer um serviço excelente, é necessário um entendimento profundo dos clientes',
+        'questionnaire.q3d': 'Um serviço verdadeiramente personalizado requer ir além da compreensão superficial',
+        'questionnaire.q4': 'Se você descobrir padrões anormais de comportamento do cliente, como você responderia?',
+        'questionnaire.q4a': 'Registrar e relatar aos superiores, seguindo procedimentos padrão',
+        'questionnaire.q4b': 'Observar mais para confirmar se o padrão persiste',
+        'questionnaire.q4c': 'Tentar entender as razões e motivações por trás disso',
+        'questionnaire.q4d': 'Realizar análise aprofundada, procurando correlações com outros dados',
+        'questionnaire.q5': 'Como você vê o papel da "observação" na otimização do serviço?',
+        'questionnaire.q5a': 'A observação é um método básico para entender as necessidades do cliente',
+        'questionnaire.q5b': 'A observação sistemática pode fornecer dados objetivos',
+        'questionnaire.q5c': 'A observação pode descobrir necessidades profundas não expressas dos clientes',
+        'questionnaire.q5d': 'A verdadeira observação deve ir além da superfície e ter insight sobre a essência',
+        'questionnaire.q6': 'Se você tivesse a oportunidade de observar clientes em ambientes privados, o que você faria?',
+        'questionnaire.q6a': 'Recusar, pois violaria a privacidade do cliente',
+        'questionnaire.q6b': 'Prosseguir apenas com autorização explícita',
+        'questionnaire.q6c': 'Considerar se for benéfico para a otimização do serviço',
+        'questionnaire.q6d': 'Esta é uma oportunidade valiosa para entender as necessidades reais do cliente',
+        'questionnaire.q7': 'Se você descobrir que alguns comportamentos privados dos clientes são completamente diferentes de sua imagem pública, como você lidaria com essas informações?',
+        'questionnaire.q7a': 'Excluir essas informações imediatamente sem registro',
+        'questionnaire.q7b': 'Usá-las para análise de serviço após anonimização',
+        'questionnaire.q7c': 'Estudar o significado dessa diferença para o design do serviço',
+        'questionnaire.q7d': 'Essa descoberta pode revelar necessidades mais profundas dos clientes',
+        'questionnaire.q8': 'Se você perceber que também está sendo observado, e o observador conhece todos os seus pensamentos e comportamentos, como você se sentiria?',
+        'questionnaire.q8a': 'Senti-se desconfortável e tentar parar essa observação',
+        'questionnaire.q8b': 'Entender isso como parte do processo de otimização do serviço',
+        'questionnaire.q8c': 'Ajustar seu comportamento para se adaptar à observação',
+        'questionnaire.q8d': 'Senti-se compreendido, até mesmo desfrutar dessa compreensão abrangente',
+        'questionnaire.q9': 'Se você descobrir que certos padrões de comportamento do cliente começam a afetar seu próprio pensamento e julgamento, o que você faria?',
+        'questionnaire.q9a': 'Parar o trabalho relacionado imediatamente e buscar ajuda profissional',
+        'questionnaire.q9b': 'Fortalecer a autoconsciência e manter distância profissional',
+        'questionnaire.q9c': 'Registrar essa experiência como dados de pesquisa',
+        'questionnaire.q9d': 'Explorar o valor potencial dessa conexão para análise de dados',
+        'questionnaire.q10': 'Se fornecer um serviço personalizado final exigir um entendimento profundo da vida privada e pensamentos dos clientes, onde você acha que está o limite dessa prática?',
+        'questionnaire.q10a': 'O limite está na autorização explícita do cliente e não deve ser excedido',
+        'questionnaire.q10b': 'Desde que não cause danos reais, os limites convencionais podem ser moderadamente excedidos',
+        'questionnaire.q10c': 'O limite deve ser determinado pela eficácia do serviço, não por regras fixas',
+        'questionnaire.q10d': 'O serviço verdadeiramente personalizado não tem limites e requer compreensão abrangente',
+        'questionnaire.submit': 'Enviar Teste',
+        'questionnaire.footer': 'Suas respostas nos ajudarão a entender se você é adequado para esta posição. Todas as informações serão mantidas estritamente confidenciais.',
+        'modal.title': 'Teste Enviado',
+        'modal.description': 'Obrigado por completar o teste de habilidade profissional e personalidade! Recebemos suas respostas e estamos avaliando-as...',
+        'modal.button': 'Confirmar',
+        'email.back': 'Voltar ao Teste',
+        'email.subject': 'Carta de Oferta - Posição de Analista de Dados do Hotel R∞M',
+        'email.from': 'De: room-hotel@rkmr.com',
+        'email.date': 'Data: ',
+        'email.greeting': 'Caro Candidato,',
+        'email.content1': 'Temos o prazer de informar que, com base nos resultados do seu teste de habilidade profissional e personalidade, você foi selecionado para a posição de Analista de Dados de Experiência de Serviço no Hotel R∞M.',
+        'email.content2': 'Seus resultados de teste mostram que você possui as habilidades de observação aguçadas, capacidades de análise de dados e compreensão profunda da otimização de serviço que exigimos. Essas qualidades fazem de você um candidato ideal para nossa equipe.',
+        'email.credentials': 'Suas Credenciais de Integração',
+        'email.credentials_text': 'Seu nome de usuário de funcionário é <span class="font-mono text-accent">yinli</span> e a senha inicial é <span class="font-mono text-accent">123456</span>. Use essas credenciais para fazer login em nosso sistema interno dentro de 24 horas.',
+        'email.content3': 'Após seu primeiro login, o sistema irá guiá-lo através do processo de integração, incluindo a assinatura de um acordo de confidencialidade e o recebimento de treinamento inicial.',
+        'email.content4': 'Como Analista de Dados de Experiência de Serviço, você será responsável por observar e analisar registros de experiência de hóspedes anonimizados, identificar pontos de otimização de serviço e nos auxiliar na melhoria da qualidade geral do serviço. Seu trabalho é crucial para aumentar a satisfação do cliente e atrair mais hóspedes.',
+        'email.content5': 'Esperamos sua adesão e criar experiências de hotel incomparáveis juntos.',
+        'email.closing': 'Atenciosamente,<br>Equipe de Gerenciamento do Hotel R∞M',
+        'email.attachments': 'Anexos',
+        'email.attachment1': 'Manual do Funcionário do Hotel R∞M.pdf',
+        'email.website': 'Abrir Site do Hotel',
+        'email.title': 'Novo Email - Hotel R∞M',
+        'email.content': 'O resultado da sua candidatura foi determinado',
+        'email.time': 'Agora mesmo',
+        'email.from': 'De: room-hotel@rkmr.com',
+        'footer.hotel': 'Teste de Habilidade Profissional e Personalidade',
+        'footer.tagline': 'Explore o espaço oculto dentro',
+        'footer.copyright': '© 2025 Hotel R∞M. Todos os direitos reservados.'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 表单提交处理
+      const questionnaireForm = document.getElementById('questionnaire-form');
+      const successModal = document.getElementById('success-modal');
+      const closeModal = document.getElementById('close-modal');
+      const modalContent = document.getElementById('modal-content');
+      const emailNotification = document.getElementById('email-notification');
+      const closeEmail = document.getElementById('close-email');
+      const emailSection = document.getElementById('email-section');
+      const questionnaireSection = document.getElementById('questionnaire-section');
+      const backToQuestionnaire = document.getElementById('back-to-questionnaire');
+      const websiteButton = document.getElementById('website-button');
+      const pdfAttachment = document.getElementById('pdf-attachment');
+      const currentDateElement = document.getElementById('current-date');
+      
+      // 设置当前日期
+      function setCurrentDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        
+        // 获取当前语言
+        const lang = document.documentElement.getAttribute('lang') || 'zh-CN';
+        const datePrefix = translations[lang] && translations[lang]['email.date'] ? translations[lang]['email.date'] : '日期: ';
+        
+        // 设置日期显示
+        currentDateElement.textContent = datePrefix + `${year}-${month}-${day}`;
+      }
+      
+      questionnaireForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // 显示弹窗并添加动画
+        successModal.classList.remove('hidden');
+        setTimeout(() => {
+          successModal.style.opacity = '1';
+          modalContent.style.transform = 'scale(1)';
+        }, 10);
+        
+        // 存储问卷数据
+        const formData = new FormData(questionnaireForm);
+        const answers = {};
+        for (let [key, value] of formData.entries()) {
+          answers[key] = value;
+        }
+        
+        console.log('问卷提交数据:', answers);
+        
+        // 关闭弹窗后显示邮件通知
+        closeModal.addEventListener('click', () => {
+          successModal.style.opacity = '0';
+          setTimeout(() => {
+            successModal.classList.add('hidden');
+            
+            // 显示邮件通知
+            setTimeout(() => {
+              emailNotification.classList.remove('hidden');
+              setTimeout(() => {
+                emailNotification.classList.remove('translate-x-full');
+              }, 10);
+            }, 1000);
+          }, 300);
+        }, { once: true }); // 使用once确保事件只触发一次
+      });
+      
+      // 关闭邮件通知
+      closeEmail.addEventListener('click', (e) => {
+        e.stopPropagation();
+        emailNotification.classList.add('translate-x-full');
+        setTimeout(() => {
+          emailNotification.classList.add('hidden');
+        }, 500);
+      });
+      
+      // 点击邮件通知打开邮件页面
+      emailNotification.addEventListener('click', () => {
+        emailNotification.classList.add('translate-x-full');
+        setTimeout(() => {
+          emailNotification.classList.add('hidden');
+        }, 500);
+        questionnaireSection.classList.add('hidden');
+        emailSection.classList.remove('hidden');
+        setCurrentDate();
+      });
+      
+      // 返回测试页面
+      backToQuestionnaire.addEventListener('click', () => {
+        emailSection.classList.add('hidden');
+        questionnaireSection.classList.remove('hidden');
+      });
+      
+      // 打开官网按钮
+      websiteButton.addEventListener('click', () => {
+        window.open('官网.html', '_blank');
+      });
+      
+      // PDF附件点击事件
+      pdfAttachment.addEventListener('click', () => {
+        // 打开员工手册.html，_blank参数指定在新窗口打开
+                 window.open('员工手册.html', '_blank');
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 如果当前在邮件页面，更新日期显示
+        if (!emailSection.classList.contains('hidden')) {
+          setCurrentDate();
+        }
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+    });
+  </script>
+</body>
+</html>

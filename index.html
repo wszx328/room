@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 寻找特别的你</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Playfair Display', 'serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest">LOADING<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-display text-xl md:text-2xl tracking-wider">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 酒店</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <a href="#about" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.about">关于我们</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#position" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.position">职位详情</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#apply" class="text-gray-300 hover:text-white transition-colors duration-300 relative group">
+          <span data-i18n="nav.apply">立即申请</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+      </nav>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <a href="#about" class="text-gray-300 hover:text-white py-2 transition-colors"><span data-i18n="nav.about">关于我们</span></a>
+        <a href="#position" class="text-gray-300 hover:text-white py-2 transition-colors"><span data-i18n="nav.position">职位详情</span></a>
+        <a href="#apply" class="text-gray-300 hover:text-white py-2 transition-colors"><span data-i18n="nav.apply">立即申请</span></a>
+        <div class="border-t border-gray-700 pt-4 mt-4">
+          <div class="px-4 py-2 text-sm text-gray-400">语言</div>
+          <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+          <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+          <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+          <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 英雄区域 -->
+  <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <!-- 豪华酒店宣传图 -->
+        <div class="absolute inset-0 z-0">
+            <!-- 注意：这里假设"酒店.jpg"与HTML文件在同一目录下 -->
+            <img src="酒店.jpg" alt="R∞M酒店外观" class="w-full h-full object-cover filter brightness-40 contrast-110">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black"></div>
+    </div>
+    
+    <!-- 主标题 -->
+    <div class="container mx-auto px-4 z-10 text-center">
+      <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-display font-bold text-white leading-tight text-shadow mb-6">
+        <span data-i18n="hero.title">探索</span> <span class="text-accent text-glow text-glitch" data-text="R∞M">R∞M</span> <span data-i18n="hero.title2">的奥秘</span>
+      </h1>
+      <p class="text-[clamp(1rem,3vw,1.5rem)] max-w-2xl mx-auto mb-10 text-gray-200 leading-relaxed" data-i18n="hero.subtitle">
+        一座隐匿于城市角落的独特空间，<br class="md:hidden">等待着善于观察的你
+      </p>
+      <a href="#apply" class="inline-block bg-accent hover:bg-accent/90 text-white font-medium py-3 px-8 rounded-sm transition-all duration-300 hover-lift relative overflow-hidden group">
+        <span data-i18n="hero.apply">立即申请</span>
+        <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+        <span class="absolute inset-0 bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+      </a>
+    </div>
+    
+    <!-- 装饰元素：像素黑猫（添加呼吸动画） -->
+    <div class="absolute bottom-10 right-10 pixel-cat w-12 h-12 md:w-16 md:h-16 opacity-70 hover:opacity-100 transition-opacity breathing" id="hero-cat">
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+        <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+        <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+        <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+        <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+        <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+      </svg>
+    </div>
+    
+    <!-- 向下滚动提示（更隐晦） -->
+    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-white/70 hover:text-white transition-colors">
+      <i class="fa fa-angle-down text-2xl animate-bounce"></i>
+    </div>
+    
+    <!-- 左上角隐藏的歌词片段 -->
+    <div class="absolute top-10 left-4 text-white/30 text-xs font-mono rotate-[-10deg] flicker" data-i18n="hero.lyric">
+      "In the room where secrets live..."
+    </div>
+  </section>
+
+  <!-- 关于酒店 -->
+  <section id="about" class="py-20 bg-primary/30 relative">
+    <!-- 背景装饰线条 -->
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-primary"></div>
+    
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-display font-semibold text-white mb-6" data-i18n="about.title">关于R∞M酒店</h2>
+        <p class="text-gray-300 leading-relaxed" data-i18n="about.description">
+          坐落于城市隐秘街角，R∞M酒店是一处融合现代前卫与静谧疏离的独特空间。我们致力于为每一位客人创造难以忘怀的住宿体验，见证人生百态，收藏每一个独特故事。
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-primary/40 p-8 rounded-sm shadow-sm hover-lift border border-accent/20">
+          <div class="w-14 h-14 bg-accent/20 rounded-full flex items-center justify-center mb-6">
+            <i class="fa fa-building text-accent text-xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="about.feature1.title">独特空间</h3>
+          <p class="text-gray-300" data-i18n="about.feature1.desc">每一个房间都经过精心设计，成为情绪与故事的容器，等待被发现与解读。</p>
+        </div>
+        
+        <div class="bg-primary/40 p-8 rounded-sm shadow-sm hover-lift border border-accent/20">
+          <div class="w-14 h-14 bg-accent/20 rounded-full flex items-center justify-center mb-6">
+            <i class="fa fa-users text-accent text-xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="about.feature2.title">人文关怀</h3>
+          <p class="text-gray-300" data-i18n="about.feature2.desc">我们关注每一位客人的内心世界，通过细致观察与分析，提供定制化体验。</p>
+        </div>
+        
+        <div class="bg-primary/40 p-8 rounded-sm shadow-sm hover-lift border border-accent/20">
+          <div class="w-14 h-14 bg-accent/20 rounded-full flex items-center justify-center mb-6">
+            <i class="fa fa-star text-accent text-xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-white" data-i18n="about.feature3.title">极致体验</h3>
+          <p class="text-gray-300" data-i18n="about.feature3.desc">追求完美是我们的信条，通过数据分析与情感洞察，不断优化服务品质。</p>
+        </div>
+      </div>
+      
+      <!-- 黑猫装饰（右侧悬浮） -->
+      <div class="hidden lg:block absolute -right-8 top-1/2 transform -translate-y-1/2 pixel-cat w-20 h-20 opacity-20">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 职位详情 -->
+  <section id="position" class="py-20 bg-dark/50 relative">
+    <!-- 背景纹理 -->
+    <div class="absolute inset-0 opacity-5">
+      <div class="w-full h-full bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%238A6BBE\" fill-opacity=\"1\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-display font-semibold text-white mb-6" data-i18n="position.title">我们正在寻找</h2>
+          <p class="text-gray-300 max-w-2xl mx-auto" data-i18n="position.description">
+            一位敏锐的分析师，协助我们理解客人需求，优化服务体验。这不仅是一份工作，更是一次探索人性与情感的旅程。
+          </p>
+        </div>
+        
+        <div class="bg-primary/40 p-8 md:p-10 rounded-sm shadow-md mb-10 border border-accent/20 relative overflow-hidden group hover:shadow-lg transition-shadow">
+          <!-- 悬停时显示的装饰元素 -->
+          <div class="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full -mr-16 -mt-16 group-hover:bg-accent/20 transition-colors"></div>
+          
+          <h3 class="text-2xl font-display font-semibold text-white mb-6 relative z-10" data-i18n="position.job.title">服务体验分析师</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 relative z-10">
+            <div>
+              <h4 class="text-lg font-semibold mb-4 text-white flex items-center">
+                <i class="fa fa-list-ul text-accent mr-2"></i>
+                <span data-i18n="position.job.duties">工作内容</span>
+              </h4>
+              <ul class="space-y-3 text-gray-300">
+                <li class="flex items-start hover:text-accent transition-colors">
+                  <i class="fa fa-check text-accent mt-1 mr-3"></i>
+                  <span data-i18n="position.job.duty1">观察并分析"经授权"的客房服务记录</span>
+                </li>
+                <li class="flex items-start hover:text-accent transition-colors">
+                  <i class="fa fa-check text-accent mt-1 mr-3"></i>
+                  <span data-i18n="position.job.duty2">对客人的核心情绪与需求进行标签化分析</span>
+                </li>
+                <li class="flex items-start hover:text-accent transition-colors">
+                  <i class="fa fa-check text-accent mt-1 mr-3"></i>
+                  <span data-i18n="position.job.duty3">总结发现，提出服务优化建议</span>
+                </li>
+                <li class="flex items-start hover:text-accent transition-colors">
+                  <i class="fa fa-check text-accent mt-1 mr-3"></i>
+                  <span data-i18n="position.job.duty4">在舒适的环境中远程完成工作</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 class="text-lg font-semibold mb-4 text-white flex items-center">
+                <i class="fa fa-gift text-accent mr-2"></i>
+                <span data-i18n="position.job.offer">我们提供</span>
+              </h4>
+              <ul class="space-y-3 text-gray-300">
+                <li class="flex items-start hover:text-accent transition-colors">
+                  <i class="fa fa-star text-accent mt-1 mr-3"></i>
+                  <span data-i18n="position.job.offer1">行业领先的薪资待遇</span>
+                </li>
+                <li class="flex items-start hover:text-accent transition-colors">
+                  <i class="fa fa-star text-accent mt-1 mr-3"></i>
+                  <span data-i18n="position.job.offer2">豪华员工住宿与餐饮</span>
+                </li>
+                <li class="flex items-start hover:text-accent transition-colors">
+                  <i class="fa fa-star text-accent mt-1 mr-3"></i>
+                  <span data-i18n="position.job.offer3">专业的培训与发展机会</span>
+                </li>
+                <li class="flex items-start hover:text-accent transition-colors">
+                  <i class="fa fa-star text-accent mt-1 mr-3"></i>
+                  <span data-i18n="position.job.offer4">力丸《ROOM》专辑限量周边优先获取</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="border-t border-accent/30 pt-6 relative z-10">
+            <h4 class="text-lg font-semibold mb-4 text-white flex items-center">
+              <i class="fa fa-user text-accent mr-2"></i>
+              <span data-i18n="position.job.expect">我们希望你</span>
+            </h4>
+            <ul class="space-y-2 text-gray-300 mb-6">
+              <li class="flex items-start">
+                <i class="fa fa-angle-right text-accent mt-1 mr-2"></i>
+                <span data-i18n="position.job.expect1">对人类情感和行为有敏锐的洞察力</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-angle-right text-accent mt-1 mr-2"></i>
+                <span data-i18n="position.job.expect2">优秀的数据分析和模式识别能力</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-angle-right text-accent mt-1 mr-2"></i>
+                <span data-i18n="position.job.expect3">能够在高度匿名的环境中处理敏感信息</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-angle-right text-accent mt-1 mr-2"></i>
+                <span data-i18n="position.job.expect4">良好的书面沟通能力，能够撰写详细的分析报告</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-angle-right text-accent mt-1 mr-2"></i>
+                <span data-i18n="position.job.expect5">心理学、社会学或相关领域背景者优先</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-angle-right text-accent mt-1 mr-2"></i>
+                <span data-i18n="position.job.expect6">能够独立工作并按时完成任务</span>
+              </li>
+            </ul>
+            <p class="text-gray-400 text-sm italic border-l-2 border-accent pl-4 py-1" data-i18n="position.job.quote">
+              "每一个人都是一本值得细读的书，而我们正在寻找擅长解读的读者。"
+            </p>
+          </div>
+        </div>
+        
+        <!-- 黑猫装饰（带轻微浮动动画） -->
+        <div class="flex justify-center">
+          <div class="pixel-cat w-16 h-16 opacity-60 animate-bounce" style="animation-duration: 3s;">
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+              <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+              <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+              <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+              <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+              <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+              <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 申请区域 -->
+  <section id="apply" class="py-20 bg-primary/40 text-white relative overflow-hidden">
+    <!-- 背景装饰 -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute w-64 h-64 rounded-full bg-accent blur-3xl -top-32 -left-32 animate-pulse" style="animation-duration: 8s;"></div>
+      <div class="absolute w-96 h-96 rounded-full bg-accent blur-3xl bottom-0 right-0 transform translate-x-1/3 translate-y-1/3 animate-pulse" style="animation-duration: 10s;"></div>
+    </div>
+    
+    <!-- 网格装饰 -->
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"52\" height=\"26\" viewBox=\"0 0 52 26\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%238A6BBE\" fill-opacity=\"0.2\"%3E%3Cpath d=\"M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z\" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-display font-semibold mb-6" data-i18n="apply.title">加入我们</h2>
+        <p class="text-gray-300" data-i18n="apply.description">
+          填写下方表单，迈出成为R∞M酒店团队一员的第一步。我们将在收到申请后48小时内与你联系。
+        </p>
+      </div>
+      
+      <div class="max-w-xl mx-auto bg-primary/60 backdrop-blur-sm p-8 rounded-sm border border-accent/20 hover:border-accent/40 transition-colors relative group">
+        <!-- 表单装饰元素 -->
+        <div class="absolute -top-2 -left-2 w-10 h-10 border-t-2 border-l-2 border-accent group-hover:w-16 group-hover:h-16 transition-all duration-300"></div>
+        <div class="absolute -bottom-2 -right-2 w-10 h-10 border-b-2 borderr-2 border-accent group-hover:w-16 group-hover:h-16 transition-all duration-300"></div>
+        
+        <form id="application-form" class="space-y-6">
+          <div>
+            <label for="name" class="block text-sm font-medium mb-2" data-i18n="apply.form.name">姓名</label>
+            <input type="text" id="name" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white transition-all duration-300" placeholder="" data-i18n-placeholder="apply.form.namePlaceholder" required>
+          </div>
+          
+          <div>
+            <label for="email" class="block text-sm font-medium mb-2" data-i18n="apply.form.email">电子邮箱</label>
+            <input type="email" id="email" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white transition-all duration-300" placeholder="" data-i18n-placeholder="apply.form.emailPlaceholder" required>
+          </div>
+          
+          <div>
+            <label for="interest" class="block text-sm font-medium mb-2" data-i18n="apply.form.interest">是什么吸引你申请这份工作？</label>
+            <textarea id="interest" rows="3" class="w-full px-4 py-3 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white transition-all duration-300" placeholder="" data-i18n-placeholder="apply.form.interestPlaceholder"></textarea>
+          </div>
+          
+          <div class="pt-4">
+            <button type="submit" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 px-6 rounded-sm transition-all duration-300 hover-lift flex items-center justify-center">
+              <span data-i18n="apply.form.submit">提交申请</span>
+              <i class="fa fa-paper-plane ml-2 group-hover:translate-x-1 transition-transform"></i>
+            </button>
+          </div>
+        </form>
+        
+        <p class="text-xs text-gray-400 mt-6 text-center" data-i18n="apply.footer">
+          提交即表示你同意我们根据隐私政策处理你的个人信息。我们尊重每位申请者的隐私。
+        </p>
+      </div>
+      
+      <!-- 左下角隐藏的歌词 -->
+      <div class="absolute bottom-6 left-6 text-white/20 text-xs font-mono rotate-[-5deg] hidden md:block flicker" data-i18n="apply.lyric">
+        "Every room has a story to tell..."
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-10 relative">
+    <!-- 顶部装饰线 -->
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent"></div>
+    
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-display text-xl tracking-wider">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.hotel">酒店</span></span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.tagline">探索内心的隐秘空间</p>
+        </div>
+        
+        <div class="flex space-x-6">
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-twitter"></i></a>
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-instagram"></i></a>
+          <a href="#" class="hover:text-white transition-colors duration-300 hover:scale-110 transform"><i class="fa fa-envelope"></i></a>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+        <p data-i18n="footer.copyright">© 2025 R∞M酒店. 保留所有权利.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 申请成功弹窗 -->
+  <div id="success-modal" class="fixed inset-0 bg-dark/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-primary p-8 max-w-md w-full mx-4 rounded-sm shadow-xl transform transition-all scale-95 border border-accent/20" id="modal-content">
+      <div class="text-center">
+        <div class="pixel-cat w-16 h-16 mx-auto mb-6 animate-pulse">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+            <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+            <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+            <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+            <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+            <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-display font-semibold text-white mb-4" data-i18n="modal.title">申请已提交</h3>
+        <p class="text-gray-300 mb-6" data-i18n="modal.description">
+          感谢你的申请！我们已收到你的信息，所有申请者需完成一份职业能力与性格评估。R∞M酒店承诺对所有申请信息严格保密，并仅用于招聘目的。
+        </p>
+        <a href="问卷.html" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-colors duration-300 inline-block text-center no-underline" data-i18n="modal.button">
+          开始评估
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.about': '关于我们',
+        'nav.position': '职位详情',
+        'nav.apply': '立即申请',
+        'hero.title': '探索',
+        'hero.title2': '的奥秘',
+        'hero.subtitle': '一座隐匿于城市角落的独特空间，<br class="md:hidden">等待着善于观察的你',
+        'hero.apply': '立即申请',
+        'hero.lyric': '"In the room where secrets live..."',
+        'about.title': '关于R∞M酒店',
+        'about.description': '坐落于城市隐秘街角，R∞M酒店是一处融合现代前卫与静谧疏离的独特空间。我们致力于为每一位客人创造难以忘怀的住宿体验，见证人生百态，收藏每一个独特故事。',
+        'about.feature1.title': '独特空间',
+        'about.feature1.desc': '每一个房间都经过精心设计，成为情绪与故事的容器，等待被发现与解读。',
+        'about.feature2.title': '人文关怀',
+        'about.feature2.desc': '我们关注每一位客人的内心世界，通过细致观察与分析，提供定制化体验。',
+        'about.feature3.title': '极致体验',
+        'about.feature3.desc': '追求完美是我们的信条，通过数据分析与情感洞察，不断优化服务品质。',
+        'position.title': '我们正在寻找',
+        'position.description': '一位敏锐的分析师，协助我们理解客人需求，优化服务体验。这不仅是一份工作，更是一次探索人性与情感的旅程。',
+        'position.job.title': '服务体验分析师',
+        'position.job.duties': '工作内容',
+        'position.job.duty1': '观察并分析"经授权"的客房服务记录',
+        'position.job.duty2': '对客人的核心情绪与需求进行标签化分析',
+        'position.job.duty3': '总结发现，提出服务优化建议',
+        'position.job.duty4': '在舒适的环境中远程完成工作',
+        'position.job.offer': '我们提供',
+        'position.job.offer1': '行业领先的薪资待遇',
+        'position.job.offer2': '豪华员工住宿与餐饮',
+        'position.job.offer3': '专业的培训与发展机会',
+        'position.job.offer4': '力丸《ROOM》专辑限量周边优先获取',
+        'position.job.expect': '我们希望你',
+        'position.job.expect1': '对人类情感和行为有敏锐的洞察力',
+        'position.job.expect2': '优秀的数据分析和模式识别能力',
+        'position.job.expect3': '能够在高度匿名的环境中处理敏感信息',
+        'position.job.expect4': '良好的书面沟通能力，能够撰写详细的分析报告',
+        'position.job.expect5': '心理学、社会学或相关领域背景者优先',
+        'position.job.expect6': '能够独立工作并按时完成任务',
+        'position.job.quote': '"每一个人都是一本值得细读的书，而我们正在寻找擅长解读的读者。"',
+        'apply.title': '加入我们',
+        'apply.description': '填写下方表单，迈出成为R∞M酒店团队一员的第一步。我们将在收到申请后48小时内与你联系。',
+        'apply.form.name': '姓名',
+        'apply.form.namePlaceholder': '请输入你的姓名',
+        'apply.form.email': '电子邮箱',
+        'apply.form.emailPlaceholder': '请输入你的邮箱地址',
+        'apply.form.interest': '是什么吸引你申请这份工作？',
+        'apply.form.interestPlaceholder': '请分享你的想法',
+        'apply.form.submit': '提交申请',
+        'apply.footer': '提交即表示你同意我们根据隐私政策处理你的个人信息。我们尊重每位申请者的隐私。',
+        'apply.lyric': '"Every room has a story to tell..."',
+        'modal.title': '申请已提交',
+        'modal.description': '感谢你的申请！我们已收到你的信息，所有申请者需完成一份职业能力与性格评估。R∞M酒店承诺对所有申请信息严格保密，并仅用于招聘目的。',
+        'modal.button': '开始评估',
+        'footer.hotel': '酒店',
+        'footer.tagline': '探索内心的隐秘空间',
+        'footer.copyright': '© 2025 R∞M酒店. 保留所有权利.'
+      },
+      'en': {
+        'nav.about': 'About Us',
+        'nav.position': 'Positions',
+        'nav.apply': 'Apply Now',
+        'hero.title': 'Explore',
+        'hero.title2': 'the Mystery of',
+        'hero.subtitle': 'A unique space hidden in the city corner,<br class="md:hidden"> waiting for the observant you',
+        'hero.apply': 'Apply Now',
+        'hero.lyric': '"In the room where secrets live..."',
+        'about.title': 'About R∞M Hotel',
+        'about.description': 'Located in a hidden corner of the city, R∞M Hotel is a unique space that blends modern avant-garde with quiet detachment. We are committed to creating an unforgettable accommodation experience for every guest, witnessing the myriad of life and collecting every unique story.',
+        'about.feature1.title': 'Unique Space',
+        'about.feature1.desc': 'Every room is carefully designed to become a container of emotions and stories, waiting to be discovered and interpreted.',
+        'about.feature2.title': 'Humanistic Care',
+        'about.feature2.desc': 'We pay attention to the inner world of every guest, providing customized experiences through careful observation and analysis.',
+        'about.feature3.title': 'Ultimate Experience',
+        'about.feature3.desc': 'The pursuit of perfection is our creed, and we continuously optimize service quality through data analysis and emotional insight.',
+        'position.title': 'We Are Looking For',
+        'position.description': 'A keen analyst to help us understand guest needs and optimize service experience. This is not just a job, but a journey to explore human nature and emotions.',
+        'position.job.title': 'Service Experience Analyst',
+        'position.job.duties': 'Job Duties',
+        'position.job.duty1': 'Observe and analyze "authorized" room service records',
+        'position.job.duty2': 'Perform labeled analysis of guests\' core emotions and needs',
+        'position.job.duty3': 'Summarize findings and propose service optimization suggestions',
+        'position.job.duty4': 'Work remotely in a comfortable environment',
+        'position.job.offer': 'We Offer',
+        'position.job.offer1': 'Industry-leading salary',
+        'position.job.offer2': 'Luxurious staff accommodation and catering',
+        'position.job.offer3': 'Professional training and development opportunities',
+        'position.job.offer4': 'Priority access to limited Riki\'s "ROOM" album merchandise',
+        'position.job.expect': 'We Expect You To',
+        'position.job.expect1': 'Have keen insight into human emotions and behaviors',
+        'position.job.expect2': 'Excellent data analysis and pattern recognition skills',
+        'position.job.expect3': 'Ability to handle sensitive information in a highly anonymous environment',
+        'position.job.expect4': 'Good written communication skills, able to write detailed analysis reports',
+        'position.job.expect5': 'Background in psychology, sociology or related fields is preferred',
+        'position.job.expect6': 'Ability to work independently and complete tasks on time',
+        'position.job.quote': '"Everyone is a book worth reading carefully, and we are looking for readers who are good at interpreting."',
+        'apply.title': 'Join Us',
+        'apply.description': 'Fill out the form below to take the first step towards becoming a member of the R∞M Hotel team. We will contact you within 48 hours of receiving your application.',
+        'apply.form.name': 'Name',
+        'apply.form.namePlaceholder': 'Please enter your name',
+        'apply.form.email': 'Email',
+        'apply.form.emailPlaceholder': 'Please enter your email address',
+        'apply.form.interest': 'What attracts you to this job?',
+        'apply.form.interestPlaceholder': 'Please share your thoughts',
+        'apply.form.submit': 'Submit Application',
+        'apply.footer': 'By submitting, you agree to our processing of your personal information in accordance with our privacy policy. We respect the privacy of every applicant.',
+        'apply.lyric': '"Every room has a story to tell..."',
+        'modal.title': 'Application Submitted',
+        'modal.description': 'Thank you for your application! We have received your information. All applicants are required to complete a professional ability and personality assessment. R∞M Hotel promises to keep all application information strictly confidential and use it only for recruitment purposes.',
+        'modal.button': 'Start Assessment',
+        'footer.hotel': 'Hotel',
+        'footer.tagline': 'Explore the hidden space within',
+        'footer.copyright': '© 2025 R∞M Hotel. All Rights Reserved.'
+      },
+      'ja': {
+        'nav.about': '私たちについて',
+        'nav.position': '職位詳細',
+        'nav.apply': '今すぐ応募',
+        'hero.title': '探求する',
+        'hero.title2': 'の謎',
+        'hero.subtitle': '都市の片隅に隠されたユニークな空間、<br class="md:hidden">観察力のあるあなたを待っています',
+        'hero.apply': '今すぐ応募',
+        'hero.lyric': '"In the room where secrets live..."',
+        'about.title': 'R∞Mホテルについて',
+        'about.description': '都市の隠れた一角に位置するR∞Mホテルは、モダンな前衛と静かな距離感を融合させたユニークな空間です。私たちは、すべてのゲストに忘れられない宿泊体験を提供し、人生の多様さを目撃し、すべてのユニークな物語を収集することに尽力しています。',
+        'about.feature1.title': 'ユニークな空間',
+        'about.feature1.desc': 'すべての客室は感情と物語の容器となるよう慎重に設計され、発見と解釈を待っています。',
+        'about.feature2.title': '人間的配慮',
+        'about.feature2.desc': '私たちはすべてのゲストの内面世界に注意を払い、注意深い観察と分析を通じてカスタマイズされた体験を提供します。',
+        'about.feature3.title': '究極の体験',
+        'about.feature3.desc': '完璧を追求することが私たちの信条であり、データ分析と感情の洞察を通じてサービス品質を継続的に最適化します。',
+        'position.title': '私たちが探しているのは',
+        'position.description': 'ゲストのニーズを理解し、サービス体験を最適化するのに役立つ鋭いアナリストです。これは単なる仕事ではなく、人間性と感情を探求する旅です。',
+        'position.job.title': 'サービス体験アナリスト',
+        'position.job.duties': '仕事内容',
+        'position.job.duty1': '「承認された」客室サービス記録の観察と分析',
+        'position.job.duty2': 'ゲストの核心的な感情とニーズのラベル付け分析の実行',
+        'position.job.duty3': '発見の要約とサービス最適化提案の提示',
+        'position.job.duty4': '快適な環境でのリモートワーク',
+        'position.job.offer': '私たちが提供するもの',
+        'position.job.offer1': '業界をリードする給与',
+        'position.job.offer2': '豪華なスタッフ宿泊施設と食事',
+        'position.job.offer3': '専門的なトレーニングとキャリア開発の機会',
+        'position.job.offer4': 'RIKI「ROOM」アルバム限定グッズの優先アクセス',
+        'position.job.expect': 'あなたに期待すること',
+        'position.job.expect1': '人間の感情と行動に対する鋭い洞察力を持つこと',
+        'position.job.expect2': '優れたデータ分析とパターン認識能力',
+        'position.job.expect3': '高度に匿名化された環境での機密情報処理能力',
+        'position.job.expect4': '詳細な分析レポートを作成できる良好な文章コミュニケーション能力',
+        'position.job.expect5': '心理学、社会学または関連分野のバックグラウンドが望ましい',
+        'position.job.expect6': '自立して作業し、期限通りにタスクを完了する能力',
+        'position.job.quote': '"一人一人が注意深く読む価値のある本であり、私たちは解釈が得意な読者を探しています。"',
+        'apply.title': '私たちに参加しましょう',
+        'apply.description': '以下のフォームに記入して、R∞Mホテルチームの一員になるための第一歩を踏み出してください。申請を受け取ってから48時間以内にご連絡いたします。',
+        'apply.form.name': '名前',
+        'apply.form.namePlaceholder': 'お名前を入力してください',
+        'apply.form.email': 'メールアドレス',
+        'apply.form.emailPlaceholder': 'メールアドレスを入力してください',
+        'apply.form.interest': 'この仕事に惹かれた理由は何ですか？',
+        'apply.form.interestPlaceholder': 'あなたの考えを共有してください',
+        'apply.form.submit': '申請を送信',
+        'apply.footer': '送信することにより、プライバシーポリシーに従って個人情報を処理することに同意したものとみなされます。私たちはすべての申請者のプライバシーを尊重します。',
+        'apply.lyric': '"Every room has a story to tell..."',
+        'modal.title': '申請が送信されました',
+        'modal.description': 'ご応募ありがとうございます！お客様の情報を受信しました。すべての応募者は、職業能力と性格評価を完了する必要があります。R∞Mホテルは、すべての申請情報を厳重に機密保持し、採用目的のみに使用することを約束します。',
+        'modal.button': '評価を開始',
+        'footer.hotel': 'ホテル',
+        'footer.tagline': '内なる隠された空間を探求する',
+        'footer.copyright': '© 2025 R∞Mホテル. 全著作権所有.'
+      },
+      'pt': {
+        'nav.about': 'Sobre Nós',
+        'nav.position': 'Detalhes da Vaga',
+        'nav.apply': 'Candidatar-se Agora',
+        'hero.title': 'Explore',
+        'hero.title2': 'o Mistério de',
+        'hero.subtitle': 'Um espaço único escondido no canto da cidade,<br class="md:hidden"> esperando por você observador',
+        'hero.apply': 'Candidatar-se Agora',
+        'hero.lyric': '"In the room where secrets live..."',
+        'about.title': 'Sobre o Hotel R∞M',
+        'about.description': 'Localizado em um canto escondido da cidade, o Hotel R∞M é um espaço único que combina vanguarda moderna com desapego tranquilo. Estamos comprometidos em criar uma experiência de hospedagem inesquecível para cada hóspede, testemunhando a miríade da vida e colecionando cada história única.',
+        'about.feature1.title': 'Espaço Único',
+        'about.feature1.desc': 'Cada quarto é cuidadosamente projetado para se tornar um recipiente de emoções e histórias, esperando para ser descoberto e interpretado.',
+        'about.feature2.title': 'Cuidado Humanístico',
+        'about.feature2.desc': 'Prestamos atenção ao mundo interior de cada hóspede, proporcionando experiências personalizadas através de observação e análise cuidadosas.',
+        'about.feature3.title': 'Experiência Suprema',
+        'about.feature3.desc': 'A busca pela perfeição é nosso credo, e otimizamos continuamente a qualidade do serviço por meio de análise de dados e insight emocional.',
+        'position.title': 'Estamos Procurando',
+        'position.description': 'Um analista perspicaz para nos ajudar a entender as necessidades dos hóspedes e otimizar a experiência de serviço. Este não é apenas um trabalho, mas uma jornada para explorar a natureza humana e as emoções.',
+        'position.job.title': 'Analista de Experiência de Serviço',
+        'position.job.duties': 'Responsabilidades',
+        'position.job.duty1': 'Observar e analisar registros de serviço de quarto "autorizados"',
+        'position.job.duty2': 'Realizar análise rotulada das emoções e necessidades principais dos hóspedes',
+        'position.job.duty3': 'Resumir descobertas e propor sugestões de otimização de serviço',
+        'position.job.duty4': 'Trabalhar remotamente em um ambiente confortável',
+        'position.job.offer': 'Oferecemos',
+        'position.job.offer1': 'Salário líder do setor',
+        'position.job.offer2': 'Acomodação e refeições luxuosas para funcionários',
+        'position.job.offer3': 'Oportunidades de treinamento e desenvolvimento profissional',
+        'position.job.offer4': 'Acesso prioritário a merchandise limitado do álbum "ROOM" de Riki',
+        'position.job.expect': 'Esperamos que Você',
+        'position.job.expect1': 'Tenha percepção aguçada sobre emoções e comportamentos humanos',
+        'position.job.expect2': 'Excelentes habilidades de análise de dados e reconhecimento de padrões',
+        'position.job.expect3': 'Capacidade de lidar com informações sensíveis em um ambiente altamente anônimo',
+        'position.job.expect4': 'Boas habilidades de comunicação escrita, capaz de escrever relatórios de análise detalhados',
+        'position.job.expect5': 'Formação em psicologia, sociologia ou áreas relacionadas é preferível',
+        'position.job.expect6': 'Capacidade de trabalhar de forma independente e concluir tarefas no prazo',
+        'position.job.quote': '"Cada pessoa é um livro que vale a pena ler com cuidado, e estamos procurando leitores que sejam bons em interpretar."',
+        'apply.title': 'Junte-se a Nós',
+        'apply.description': 'Preencha o formulário abaixo para dar o primeiro passo para se tornar um membro da equipe do Hotel R∞M. Entraremos em contato com você dentro de 48 horas após receber sua inscrição.',
+        'apply.form.name': 'Nome',
+        'apply.form.namePlaceholder': 'Por favor, insira seu nome',
+        'apply.form.email': 'Email',
+        'apply.form.emailPlaceholder': 'Por favor, insira seu endereço de email',
+        'apply.form.interest': 'O que atrai você para este trabalho?',
+        'apply.form.interestPlaceholder': 'Por favor, compartilhe seus pensamentos',
+        'apply.form.submit': 'Enviar Candidatura',
+        'apply.footer': 'Ao enviar, você concorda com o processamento de suas informações pessoais de acordo com nossa política de privacidade. Respeitamos a privacidade de cada candidato.',
+        'apply.lyric': '"Every room has a story to tell..."',
+        'modal.title': 'Candidatura Enviada',
+        'modal.description': 'Obrigado por sua candidatura! Recebemos suas informações. Todos os candidatos devem concluir uma avaliação de capacidade profissional e personalidade. O Hotel R∞M promete manter todas as informações de candidatura estritamente confidenciais e usá-las apenas para fins de recrutamento.',
+        'modal.button': 'Iniciar Avaliação',
+        'footer.hotel': 'Hotel',
+        'footer.tagline': 'Explore o espaço escondido dentro',
+        'footer.copyright': '© 2025 Hotel R∞M. Todos os direitos reservados.'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      }, 2000);
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 平滑滚动
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 80,
+              behavior: 'smooth'
+            });
+            
+            // 关闭移动菜单
+            if (!mobileMenu.classList.contains('hidden')) {
+              mobileMenu.classList.add('hidden');
+              const icon = menuToggle.querySelector('i');
+              icon.classList.remove('fa-times');
+              icon.classList.add('fa-bars');
+            }
+          }
+        });
+      });
+      
+      // 表单提交处理（跳转评估页面）
+      const applicationForm = document.getElementById('application-form');
+      const successModal = document.getElementById('success-modal');
+      const modalContent = document.getElementById('modal-content');
+      
+      applicationForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // 显示弹窗并添加动画
+        successModal.classList.remove('hidden');
+        setTimeout(() => {
+          successModal.style.opacity = '1';
+          modalContent.style.transform = 'scale(1)';
+        }, 10);
+        
+        // 存储表单数据
+        const formData = {
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          interest: document.getElementById('interest').value
+        };
+        
+        console.log('表单提交数据:', formData);
+      });
+      
+      // 点击黑猫触发效果
+      const catElements = document.querySelectorAll('.pixel-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset-0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给所有黑猫添加点击事件
+      catElements.forEach(cat => {
+        cat.addEventListener('click', () => {
+          // 1. 黑猫眼睛变红（临时修改SVG）
+          const originalEyes = cat.innerHTML;
+          const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+          cat.innerHTML = redEyeCat;
+          
+          // 2. 显示全屏提示
+          alertOverlay.style.opacity = '1';
+          alertOverlay.style.pointerEvents = 'auto';
+          
+          setTimeout(() => {
+            alertText.style.filter = 'blur(0)';
+            alertText.style.transform = 'scale(1.2)';
+            alertSubtext.style.opacity = '1';
+            alertSystem.style.opacity = '0.7';
+            
+            // 3. 文字震动效果
+            let shakeInterval = setInterval(() => {
+              alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+            }, 60);
+            
+            // 4. 2.5秒后恢复原状
+            setTimeout(() => {
+              clearInterval(shakeInterval);
+              alertOverlay.style.opacity = '0';
+              alertText.style.filter = 'blur(10px)';
+              alertText.style.transform = 'scale(0.8)';
+              alertSubtext.style.opacity = '0';
+              alertSystem.style.opacity = '0';
+              
+              // 恢复黑猫眼睛颜色
+              setTimeout(() => {
+                cat.innerHTML = originalEyes;
+                alertOverlay.style.pointerEvents = 'none';
+              }, 300);
+            }, 2500);
+          }, 100);
+        });
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .text-gray-300');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', (e) => {
+        // 只有当点击的不是语言菜单或其内部元素时才关闭
+        if (!languageMenu.contains(e.target) && e.target !== languageToggle) {
+          languageMenu.classList.add('hidden');
+        }
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 关闭移动端菜单（如果打开）
+          if (!mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+          }
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+    });
+  </script>
+</body>
+</html>

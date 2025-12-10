@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R∞M酒店员工手册</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', serif;
+        }
+        
+        body {
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .pdf-container {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            margin: 0 auto;
+            padding: 20mm;
+            overflow: hidden;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+        
+        .hotel-name {
+            font-size: 28px;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+        
+        .document-title {
+            font-size: 22px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 20mm;
+            width: calc(100% - 40mm);
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 10mm;
+            right: 20mm;
+            font-size: 12px;
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+        
+        button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        button:hover {
+            background: #555;
+        }
+        
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .confidential {
+            color: #990000;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        .subtle-glitch {
+            animation: subtleGlitch 30s infinite;
+        }
+        
+        @keyframes subtleGlitch {
+            0%, 100% { opacity: 1; }
+            98% { opacity: 0.99; }
+            99% { opacity: 0.98; }
+        }
+        
+        .eye-symbol {
+            color: #6a0dad;
+            font-weight: bold;
+        }
+        
+        .logo {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #6a0dad;
+        }
+        
+        .large-logo {
+            font-size: 120px;
+            color: #6a0dad;
+            text-align: center;
+            margin: 80px 0;
+            line-height: 1;
+        }
+        
+        .hidden-message {
+            color: #6a0dad;
+            font-size: 0.8em;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
+        .special-note {
+            background-color: #f8f8f8;
+            border-left: 3px solid #6a0dad;
+            padding: 10px;
+            margin: 15px 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="pdf-container subtle-glitch">
+        <!-- 封面页 -->
+        <div class="page active" id="page1">
+            <div class="header">
+                <div class="logo">R∞M</div>
+                <h1 class="hotel-name">R∞M 酒店</h1>
+                <h2 class="document-title">员工手册</h2>
+                <p>内部文件 · 严禁外传</p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 100px;">
+                <div class="large-logo">R∞M</div>
+            </div>
+            
+            <div class="footer">
+                <p class="confidential">本文件包含R∞M酒店专有信息，未经授权复制或分发将承担法律责任</p>
+            </div>
+            <div class="page-number">1</div>
+        </div>
+        
+        <!-- 第二页 -->
+        <div class="page" id="page2">
+            <div class="header">
+                <h1 class="hotel-name">R∞M 酒店</h1>
+                <h2 class="document-title">员工手册</h2>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">欢迎加入R∞M酒店</h3>
+                <p>尊敬的员工：</p>
+                <p>欢迎加入R∞M酒店团队。我们致力于为每位客人提供卓越的服务体验，同时为员工创造积极的工作环境。</p>
+                <p>本手册旨在帮助您了解酒店的政策、程序和行为准则。请仔细阅读并始终遵守其中的规定。</p>
+                <p>如有任何疑问，请咨询您的主管或人力资源部门。</p>
+                
+                <div class="special-note">
+                    <p>在R∞M酒店，我们相信每一次相遇都承载着独特的意义。您的工作不仅仅是提供服务，更是见证生命交汇的瞬间。</p>
+                    <p class="hidden-message">观察但不干预，记录但不评价，服务但不涉入。</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">酒店使命与价值观</h3>
+                <p><strong>我们的使命：</strong>为客人提供卓越的住宿体验，创造难忘的入住回忆。</p>
+                <p><strong>我们的价值观：</strong></p>
+                <ul>
+                    <li><strong>卓越服务：</strong>始终超越客人期望</li>
+                    <li><strong>专业精神：</strong>保持最高标准的专业行为</li>
+                    <li><strong>团队合作：</strong>相互支持，共同成长</li>
+                    <li><strong>诚信经营：</strong>诚实、透明地开展所有业务</li>
+                    <li><strong>持续改进：</strong>不断寻求提升服务质量的方法</li>
+                    <li><strong>深度观察：</strong>关注客人未言明的需求，理解表象之下的真实</li>
+                </ul>
+                
+                <div class="special-note">
+                    <p>在R∞M酒店，我们相信最深刻的服务往往来自于对细节的敏锐洞察。学会观察那些被忽略的细微变化，它们往往比言语更能揭示本质。</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">基本行为准则</h3>
+                <ul>
+                    <li>始终保持专业仪表和礼貌态度</li>
+                    <li>尊重客人、同事和酒店财产</li>
+                    <li>遵守所有安全规程和操作程序</li>
+                    <li>保护客人隐私和酒店机密信息</li>
+                    <li>准时出勤，履行职责</li>
+                    <li>对客人的个人经历保持中立态度，不评判，不干预</li>
+                    <li>注意观察客人的行为模式，但不得主动询问或探究</li>
+                </ul>
+                
+                <div class="hidden-message">
+                    <p>记住：您看到的只是水面上的涟漪，而非水下的暗流。</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>本文件内容可能会在未经通知的情况下更新</p>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+        
+        <!-- 第三页 -->
+        <div class="page" id="page3">
+            <div class="header">
+                <h1 class="hotel-name">R∞M 酒店</h1>
+                <h2 class="document-title">员工手册</h2>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">考勤与休假政策</h3>
+                <p><strong>工作时间：</strong></p>
+                <ul>
+                    <li>员工应按照排班表准时上班</li>
+                    <li>如有迟到或早退，需提前获得主管批准</li>
+                    <li>换班需提前24小时申请并获批准</li>
+                </ul>
+                
+                <p><strong>休假政策：</strong></p>
+                <ul>
+                    <li>病假需在班次开始前2小时通知主管</li>
+                    <li>年假需提前2周提交书面申请</li>
+                    <li>特殊休假情况按酒店政策执行</li>
+                </ul>
+                
+                <div class="special-note">
+                    <p>请注意：所有员工在休假归来后需接受简短的适应性评估，以确保您已准备好重新投入工作。</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">仪表与着装要求</h3>
+                <p>所有员工必须保持整洁专业的形象：</p>
+                <ul>
+                    <li>穿着指定制服并保持整洁</li>
+                    <li>名牌应始终佩戴在显眼位置</li>
+                    <li>保持个人卫生和适度妆容</li>
+                    <li>限制使用浓烈香水或古龙水</li>
+                    <li>遵循部门特定的着装指南</li>
+                </ul>
+                
+                <div class="special-note">
+                    <p>在R∞M酒店，您的形象不仅是个人展示，更是酒店整体氛围的一部分。请确保您的存在不会干扰客人的私人体验。</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">客人服务标准</h3>
+                <ul>
+                    <li>接待客人时，应优先使用客人的姓氏配合尊称（如"先生""女士"）</li>
+                    <li>积极响应客人需求和请求</li>
+                    <li>保持眼神接触和友好微笑</li>
+                    <li>使用积极、专业的语言</li>
+                    <li>及时跟进客人反馈和投诉</li>
+                    <li>注意观察客人的非语言信号，这些往往比言语更能反映真实状态</li>
+                    <li>当客人表现出强烈的个人反应时，保持距离但保持关注</li>
+                </ul>
+                
+                <div class="hidden-message">
+                    <p>真正的服务不是满足表面需求，而是理解深层渴望。</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>如有疑问，请联系人力资源部门</p>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+        
+        <!-- 第四页 -->
+        <div class="page" id="page4">
+            <div class="header">
+                <h1 class="hotel-name">R∞M 酒店</h1>
+                <h2 class="document-title">员工手册</h2>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">安全与紧急程序</h3>
+                <p><strong>一般安全准则：</strong></p>
+                <ul>
+                    <li>熟悉所在区域的紧急出口和疏散路线</li>
+                    <li>立即报告任何安全隐患或设备故障</li>
+                    <li>遵守所有张贴的安全标志和说明</li>
+                    <li>参加定期的安全培训和演练</li>
+                </ul>
+                
+                <p><strong>紧急情况：</strong></p>
+                <ul>
+                    <li>在紧急情况下保持冷静</li>
+                    <li>遵循主管和应急响应人员的指示</li>
+                    <li>熟悉火灾、医疗急救等应急程序</li>
+                    <li>知道急救箱和灭火器的位置</li>
+                </ul>
+                
+                <div class="special-note">
+                    <p>注意：如果遇到无法解释的现象或感觉，不要恐慌，保持专业态度，记录下详细情况并向主管报告。</p>
+                    <p class="hidden-message">有些转变是必要的，有些消失是自然的。</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">保密政策</h3>
+                <p>作为R∞M酒店员工，您将接触到客人和酒店的敏感信息：</p>
+                <ul>
+                    <li>严禁讨论或泄露客人个人信息</li>
+                    <li>不得在公共场合讨论酒店业务</li>
+                    <li>所有内部文件必须妥善保管</li>
+                    <li>离职后仍需遵守保密义务</li>
+                    <li>不得记录或传播任何客人的私人经历或行为模式</li>
+                    <li>禁止对客人的个人故事进行推测或分析</li>
+                </ul>
+                <p class="confidential">违反保密政策，将根据具体行为受到警告、记过、降级、撤职或开除等处罚，严重者将承担法律责任。</p>
+                
+                <div class="special-note">
+                    <p>在R∞M酒店，我们相信每个故事都有其独特的价值，而我们的职责是守护这些故事，而非传播它们。</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">员工设施与特权</h3>
+                <ul>
+                    <li>员工休息室供休息和用餐使用</li>
+                    <li>符合条件者可享受酒店住宿折扣</li>
+                    <li>餐饮部门员工享有膳食特权</li>
+                    <li>定期员工活动和团队建设</li>
+                </ul>
+                
+                <div class="hidden-message">
+                    <p>注意：员工休息室内的监控仅用于安全目的，您的私人谈话不会被记录。</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>R∞M酒店 - 卓越服务，专业精神</p>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+        
+        <!-- 第五页 -->
+        <div class="page" id="page5">
+            <div class="header">
+                <h1 class="hotel-name">R∞M 酒店</h1>
+                <h2 class="document-title">员工手册</h2>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">技术系统使用政策</h3>
+                <p>员工使用酒店技术系统需遵守以下规定：</p>
+                <ul>
+                    <li>仅使用分配的账户和密码登录系统</li>
+                    <li>不得与他人共享账户信息</li>
+                    <li>定期更改密码以确保安全</li>
+                    <li>仅访问与工作职责相关的系统区域</li>
+                    <li>立即报告任何系统异常或安全问题</li>
+                    <li>工作结束后正确退出所有系统</li>
+                </ul>
+                
+                <div class="special-note">
+                    <p>注意：酒店系统偶尔会出现短暂的显示异常或数据波动，这是正常现象，无需报告。系统会在几分钟内自动恢复正常。</p>
+                    <p class="hidden-message">数据只是表象，真相需要洞察。</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">纪律程序</h3>
+                <p>酒店期望所有员工遵守既定政策和程序：</p>
+                <ul>
+                    <li>轻微违规：口头警告和指导</li>
+                    <li>持续违规：书面警告和纠正计划</li>
+                    <li>严重违规：停职或立即解雇</li>
+                </ul>
+                <p>严重违规包括但不限于：盗窃、骚扰、重大安全违规、故意破坏财产等。</p>
+                
+                <div class="special-note">
+                    <p>特别提醒：任何试图探究酒店运营核心机密或客人私人事务的行为，将导致立即解雇并可能承担法律责任。</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3 class="section-title">结语</h3>
+                <p>感谢您选择加入R∞M酒店团队。我们期待与您共同成长，为客人提供卓越的服务体验。</p>
+                <p>祝您在R∞M酒店工作愉快，事业成功！</p>
+            </div>
+            
+            <div class="footer">
+                <p>R∞M酒店人力资源部</p>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+    </div>
+    
+    <div class="navigation">
+        <button id="prev-btn">上一页</button>
+        <button id="next-btn">下一页</button>
+        <span id="page-indicator">第 <span id="current-page">1</span> 页，共 <span id="total-pages">5</span> 页</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pages = document.querySelectorAll('.page');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const currentPageSpan = document.getElementById('current-page');
+            const totalPagesSpan = document.getElementById('total-pages');
+            
+            let currentPage = 1;
+            const totalPages = pages.length;
+            
+            totalPagesSpan.textContent = totalPages;
+            
+            function showPage(pageNumber) {
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                pages[pageNumber - 1].classList.add('active');
+                currentPageSpan.textContent = pageNumber;
+                
+                // 更新按钮状态
+                prevBtn.disabled = pageNumber === 1;
+                nextBtn.disabled = pageNumber === totalPages;
+            }
+            
+            prevBtn.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    showPage(currentPage);
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    showPage(currentPage);
+                }
+            });
+            
+            // 初始显示第一页
+            showPage(1);
+            
+            // 添加微妙的异常效果
+            document.querySelectorAll('p, li').forEach(element => {
+                if (Math.random() < 0.03) {
+                    element.style.color = '#6a0dad';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

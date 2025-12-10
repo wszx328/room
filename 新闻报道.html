@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知名调查记者周明哲涉嫌敲诈勒索，创业梦与调查生涯双双崩塌 - 都市晚报</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0F3460', // 深蓝色主色调
+            secondary: '#E94560', // 强调色
+            neutral: '#F5F5F5', // 背景色
+            dark: '#1A1A2E', // 深色文本
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Georgia', 'serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      .article-para {
+        @apply mb-6 leading-relaxed text-gray-700;
+      }
+      .fade-in {
+        animation: fadeIn 0.8s ease-in forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-50 bg-white shadow-md transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <h1 class="text-primary font-bold text-2xl md:text-3xl" id="site-title">都市晚报</h1>
+        <div class="hidden md:block text-sm text-gray-500">
+          <span id="current-date">2022年8月15日</span>
+          <span class="mx-2">|</span>
+          <span id="current-day">星期一</span>
+        </div>
+      </div>
+      
+      <nav class="hidden md:flex space-x-6">
+        <a href="#" class="text-primary hover:text-secondary transition-colors font-medium" data-lang-key="home">首页</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="domestic">国内</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="international">国际</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="finance">财经</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="tech">科技</a>
+        <a href="#" class="text-gray-600 hover:text-secondary transition-colors" data-lang-key="entertainment">文娱</a>
+      </nav>
+      
+      <div class="flex items-center space-x-3">
+        <!-- 语言切换下拉菜单 -->
+        <div class="relative group">
+          <button class="flex items-center text-gray-600 hover:text-primary transition-colors px-2 py-1 border border-gray-300 rounded">
+            <i class="fa fa-globe mr-1"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div class="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="zh">中文</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="en">English</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="ja">日本語</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="pt">Português</a>
+          </div>
+        </div>
+        
+        <button class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-search text-lg"></i>
+        </button>
+        <button class="md:hidden text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 移动端日期栏 -->
+  <div class="md:hidden bg-primary text-white py-2 px-4 text-center text-sm">
+    <span id="mobile-date">2022年8月15日 星期一</span>
+  </div>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 文章分类标签 -->
+    <div class="mb-4 flex items-center">
+      <span class="inline-block px-3 py-1 bg-secondary text-white text-sm font-medium rounded-full" data-lang-key="focus-news">焦点新闻</span>
+      <span class="ml-3 text-gray-500 text-sm" data-lang-key="update-time">更新于 2022-08-15 09:30</span>
+    </div>
+    
+    <!-- 文章标题 -->
+    <div class="mb-8 fade-in" style="animation-delay: 0.1s">
+      <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark leading-tight" id="article-title">
+        知名调查记者周明哲涉嫌敲诈勒索，创业梦与调查生涯双双崩塌
+      </h2>
+    </div>
+    
+    <!-- 作者信息 -->
+    <div class="mb-8 flex items-center text-gray-600 fade-in" style="animation-delay: 0.2s">
+      <span class="font-medium" data-lang-key="reporter">本报记者 张磊</span>
+      <span class="mx-2">|</span>
+      <span data-lang-key="reading-time">阅读时间：约 4 分钟</span>
+    </div>
+    
+    <!-- 分享按钮 -->
+    <div class="flex space-x-4 mb-8 fade-in" style="animation-delay: 0.3s">
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-weibo text-red-500 mr-2"></i>
+        <span data-lang-key="weibo">微博</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-wechat text-green-500 mr-2"></i>
+        <span data-lang-key="wechat">微信</span>
+      </button>
+      <button class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors">
+        <i class="fa fa-share-alt text-gray-600 mr-2"></i>
+        <span data-lang-key="share">分享</span>
+      </button>
+    </div>
+    
+    <!-- 文章正文 -->
+    <article class="max-w-3xl mx-auto text-lg">
+      <p class="article-para fade-in" style="animation-delay: 0.5s" data-lang-key="paragraph1">
+        曾因揭露保健品虚假宣传、医疗回扣黑幕等系列深度报道获 "年度正义记者" 称号的周明哲，近日陷入 "敲诈勒索" 疑云 —— 他被曝以曝光某头部科技集团 "合规问题" 为由，索要 300 万元 "封口费"。更令人唏嘘的是，据知情人士透露，周明哲与合伙人吴建宏筹备近 2 年的 "调查 + 社交" 创业项目，也因此次事件戛然而止，15 年调查生涯与多年创业梦同时崩塌。
+      </p>
+      
+      <h3 class="text-xl font-bold mt-8 mb-4 fade-in" style="animation-delay: 0.6s" data-lang-key="subtitle1">事件曝光："封口费" 疑云背后，藏着未落地的创业项目</h3>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.7s" data-lang-key="paragraph2">
+        据接近涉事企业的知情人士透露，周明哲于今年 7 月多次通过邮件联系该集团公关部，声称 "已掌握其旗下子公司偷税漏税、数据滥用的核心证据"，并附带有疑似内部财务报表的截图。8 月 5 日，企业收到周明哲发送的最后通牒邮件，明确要求 "3 日内支付 300 万元，否则 9 月 1 日发布调查报道"。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.8s" data-lang-key="paragraph3">
+        该企业已于 8 月 8 日正式报案，向警方提交了邮件往来记录、通话录音及一份银行转账凭证。企业公关总监在接受本报采访时表示："邮件附件中的报表存在明显篡改痕迹，但收件地址确为周明哲本人工作邮箱；录音里他确实提到了'给钱删稿'，但语境疑似被剪辑。" 不过该总监强调："所有证据均已公证，足以证明敲诈事实。"
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 0.9s" data-lang-key="paragraph4">
+        值得注意的是，有业内人士向本报透露，周明哲与合伙人吴建宏近两年一直在筹备一个名为 "涅槃共契" 的创业项目 —— 核心是搭建一个 "调查 + 社交" 平台：一方面发布经核实的深度调查报道，为用户提供真实信息支撑；另一方面打造 "匿名信任圈"，让普通人能安全倾诉秘密、分享经历，平台通过算法匹配 "有相似经历" 的用户，实现情感共感与相互支撑。"这个项目去年就完成了种子轮融资洽谈，核心概念是'以真实换信任，以共感渡困境'，就差最终签约，没想到出了这事。" 该人士惋惜道。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.0s" data-lang-key="paragraph5">
+        目前警方已受理此案，案件处于证据核查阶段。
+      </p>
+      
+      <h3 class="text-xl font-bold mt-8 mb-4 fade-in" style="animation-delay: 1.1s" data-lang-key="subtitle2">合伙人证词："他为项目拼了命，怎么会自毁前程？"</h3>
+      
+      <div class="bg-gray-100 p-5 rounded-lg my-8 fade-in" style="animation-delay: 1.2s">
+        <p class="italic text-gray-700 border-l-4 border-primary pl-4" data-lang-key="quote">
+          "我到现在都不敢相信这是真的。我们一起为了核实医疗黑幕线索，在医院走廊蹲守 7 天 7 夜；他当年揭露保健品骗局时，被人威胁'断手断脚'都没退过半步。他是我见过最较真、最有正义感的人，更别说这个'涅槃共契'项目，是他熬了无数个通宵打磨出来的，他总说'这不是普通的创业，是给被辜负的信任一个重生的机会'，他比谁都想让项目落地，怎么可能自毁前程？"
+          <span class="block mt-2 text-right font-medium" data-lang-key="quote-author">—— 周明哲合伙人 吴建宏</span>
+        </p>
+      </div>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.3s" data-lang-key="paragraph6">
+        周明哲的长期合伙人、亦是 "涅槃共契" 项目的联合创始人吴建宏，成为此次事件的关键证人。他在接受本报独家采访时，全程红着眼眶，表现得 "痛心疾首"。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.4s" data-lang-key="paragraph7">
+        当被问及周明哲近期状态时，吴建宏迟疑片刻后表示："近半年他确实压力特别大，项目融资卡在最后一步，他总说'这个项目必须尽快落地，不能让信任我们的人失望'，但没提过具体在跟这家科技集团周旋。" 他透露，已向警方提交了工作室近一年的财务记录、项目商业计划书初稿及部分未公开的调查底稿，并强调 "全程配合调查，绝不包庇"。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.5s" data-lang-key="paragraph8">
+        吴建宏还提到："'涅槃共契'的核心就是'信任'—— 信任调查的真实性，信任分享的安全性。周明哲常说，'这个世界不缺冲突，缺的是让人敢放心交付信任的地方'。他要是真敲诈，就等于否定了自己坚持的一切。"
+      </p>
+      
+      <h3 class="text-xl font-bold mt-8 mb-4 fade-in" style="animation-delay: 1.6s" data-lang-key="subtitle3">业内震动：是 "偶像塌房"，还是 "项目之争" 的阴谋？</h3>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.7s" data-lang-key="paragraph9">
+        事件曝光后，周明哲的个人微博自 8 月 10 日起停止更新，最后一条动态停留在 "真相需要时间，但信任不会说谎"；其创办的 "明察工作室" 大门紧闭，玻璃门上贴着 "暂停运营" 的通知，门口堆积着未拆封的读者来信与项目合作方的资料袋。
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.8s" data-lang-key="paragraph10">
+        多位新闻界及创投圈人士在接受采访时表达了 "难以置信"：
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 1.9s" data-lang-key="paragraph11">
+        前《深度调查报》主编王建国："周明哲的稿子逻辑严密到能当教材，要真敲诈，不可能留下这么'粗糙'的证据链；而且他对'涅槃共契'的执念，比谁都深，没必要在融资关键期犯这种错。"
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 2.0s" data-lang-key="paragraph12">
+        某创投机构投资人陈宇："去年我们聊过'涅槃共契'的项目，周明哲拒绝了我们提出的'弱化调查、强化社交'的修改建议，说'没有真实调查做支撑，信任就是空谈'。他是个有原则的人，不是会为钱妥协的类型。"
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 2.1s" data-lang-key="paragraph13">
+        匿名创投圈人士："听说'涅槃共契'的融资方，正是涉事科技集团的竞品公司，不排除是'项目之争'引发的栽赃。而且吴建宏在项目中一直负责商务对接，对融资和合作方情况比周明哲更清楚。"
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 2.2s" data-lang-key="paragraph14">
+        但也有不同声音："近年调查记者生存空间收窄，工作室多次濒临倒闭，'涅槃共契'的融资又迟迟不能落地，不排除周明哲'走投无路'的可能。"
+      </p>
+      
+      <p class="article-para fade-in" style="animation-delay: 2.3s" data-lang-key="paragraph15">
+        截至发稿，周明哲本人仍未公开回应。有邻居向本报透露，近一个月常看到他深夜独自酗酒归来，"整个人瘦得脱形，怀里还抱着一叠写满字的纸，嘴里念叨着'信任''涅槃'之类的话"。这场 "正义记者的堕落" 疑云背后，是创业梦的破碎，还是另有隐情？或许只有时间能给出答案。
+      </p>
+    </article>
+    
+    <!-- 相关新闻推荐 -->
+    <section class="mt-16 max-w-5xl mx-auto">
+      <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-gray-200 pb-2" data-lang-key="related-news">相关新闻</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="4030新闻1.html" target="_blank" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="4030新闻.jpg" alt="城东望海崖发现无名女尸" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news1-title">城东望海崖发现无名女尸，警方初步判断为坠崖身亡</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news1-date">2025/10/10</p>
+          </div>
+        </a>
+        
+        <a href="302李明新闻.html" target="_blank" class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <img src="新闻李明.jpg" alt="相关新闻图片" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-4">
+            <h4 class="font-bold text-lg mb-2 group-hover:text-secondary transition-colors" data-lang-key="related-news2-title">创业新星陨落！李明项目遭泄后破产跳楼，业内震惊</h4>
+            <p class="text-gray-600 text-sm" data-lang-key="related-news2-date">2022-08-05</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-primary text-white mt-16">
+    <div class="container mx-auto px-4 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4" id="footer-title">都市晚报</h4>
+          <p class="text-gray-300 text-sm" data-lang-key="footer-desc">
+            创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。
+          </p>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="navigation">栏目导航</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="important-news">要闻</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="depth">深度</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="comments">评论</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="finance">财经</a></li>
+            <li><a href="#" class="hover:text-white transition-colors" data-lang-key="culture">文化</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="contact">联系我们</h5>
+          <ul class="space-y-2 text-gray-300 text-sm">
+            <li><i class="fa fa-envelope-o mr-2"></i>contact@citynews.com</li>
+            <li><i class="fa fa-phone mr-2"></i>010-12345678</li>
+            <li><i class="fa fa-map-marker mr-2"></i><span data-lang-key="address">北京市朝阳区新闻大厦</span></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h5 class="font-bold mb-4" data-lang-key="follow-us">关注我们</h5>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-wechat text-xl"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fa fa-twitter text-xl"></i>
+            </a>
+          </div>
+          <p class="mt-4 text-gray-300 text-sm" data-lang-key="download-app">扫描二维码下载客户端</p>
+          <div class="text-center mt-6">
+            <img src="二维码.jpg" alt="二维码" class="w-32 h-32 mx-auto object-contain" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-white/20 mt-8 pt-6 text-center text-gray-400 text-sm">
+        <p data-lang-key="copyright">© 2022 都市晚报 版权所有 | 京ICP备12345678号</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 返回顶部按钮 -->
+  <button id="backToTop" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-secondary">
+    <i class="fa fa-arrow-up"></i>
+  </button>
+
+  <script>
+    // 导航栏滚动效果
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('py-2', 'shadow-lg');
+        navbar.classList.remove('py-3', 'shadow-md');
+      } else {
+        navbar.classList.add('py-3', 'shadow-md');
+        navbar.classList.remove('py-2', 'shadow-lg');
+      }
+    });
+    
+    // 返回顶部按钮
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'invisible');
+        backToTopBtn.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopBtn.classList.add('opacity-0', 'invisible');
+        backToTopBtn.classList.remove('opacity-100', 'visible');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // 多语言支持
+    const translations = {
+      'zh': {
+        'site-title': '都市晚报',
+        'current-date': '2022年8月15日',
+        'current-day': '星期一',
+        'mobile-date': '2022年8月15日 星期一',
+        'home': '首页',
+        'domestic': '国内',
+        'international': '国际',
+        'finance': '财经',
+        'tech': '科技',
+        'entertainment': '文娱',
+        'focus-news': '焦点新闻',
+        'update-time': '更新于 2022-08-15 09:30',
+        'article-title': '知名调查记者周明哲涉嫌敲诈勒索，创业梦与调查生涯双双崩塌',
+        'reporter': '本报记者 张磊',
+        'reading-time': '阅读时间：约 4 分钟',
+        'weibo': '微博',
+        'wechat': '微信',
+        'share': '分享',
+        'paragraph1': '曾因揭露保健品虚假宣传、医疗回扣黑幕等系列深度报道获 "年度正义记者" 称号的周明哲，近日陷入 "敲诈勒索" 疑云 —— 他被曝以曝光某头部科技集团 "合规问题" 为由，索要 300 万元 "封口费"。更令人唏嘘的是，据知情人士透露，周明哲与合伙人吴建宏筹备近 2 年的 "调查 + 社交" 创业项目，也因此次事件戛然而止，15 年调查生涯与多年创业梦同时崩塌。',
+        'subtitle1': '事件曝光："封口费" 疑云背后，藏着未落地的创业项目',
+        'paragraph2': '据接近涉事企业的知情人士透露，周明哲于今年 7 月多次通过邮件联系该集团公关部，声称 "已掌握其旗下子公司偷税漏税、数据滥用的核心证据"，并附带有疑似内部财务报表的截图。8 月 5 日，企业收到周明哲发送的最后通牒邮件，明确要求 "3 日内支付 300 万元，否则 9 月 1 日发布调查报道"。',
+        'paragraph3': '该企业已于 8 月 8 日正式报案，向警方提交了邮件往来记录、通话录音及一份银行转账凭证。企业公关总监在接受本报采访时表示："邮件附件中的报表存在明显篡改痕迹，但收件地址确为周明哲本人工作邮箱；录音里他确实提到了\'给钱删稿\'，但语境疑似被剪辑。" 不过该总监强调："所有证据均已公证，足以证明敲诈事实。"',
+        'paragraph4': '值得注意的是，有业内人士向本报透露，周明哲与合伙人吴建宏近两年一直在筹备一个名为 "涅槃共契" 的创业项目 —— 核心是搭建一个 "调查 + 社交" 平台：一方面发布经核实的深度调查报道，为用户提供真实信息支撑；另一方面打造 "匿名信任圈"，让普通人能安全倾诉秘密、分享经历，平台通过算法匹配 "有相似经历" 的用户，实现情感共感与相互支撑。"这个项目去年就完成了种子轮融资洽谈，核心概念是\'以真实换信任，以共感渡困境\'，就差最终签约，没想到出了这事。" 该人士惋惜道。',
+        'paragraph5': '目前警方已受理此案，案件处于证据核查阶段。',
+        'subtitle2': '合伙人证词："他为项目拼了命，怎么会自毁前程？"',
+        'quote': '"我到现在都不敢相信这是真的。我们一起为了核实医疗黑幕线索，在医院走廊蹲守 7 天 7 夜；他当年揭露保健品骗局时，被人威胁\'断手断脚\'都没退过半步。他是我见过最较真、最有正义感的人，更别说这个\'涅槃共契\'项目，是他熬了无数个通宵打磨出来的，他总说\'这不是普通的创业，是给被辜负的信任一个重生的机会\'，他比谁都想让项目落地，怎么可能自毁前程？"',
+        'quote-author': '—— 周明哲合伙人 吴建宏',
+        'paragraph6': '周明哲的长期合伙人、亦是 "涅槃共契" 项目的联合创始人吴建宏，成为此次事件的关键证人。他在接受本报独家采访时，全程红着眼眶，表现得 "痛心疾首"。',
+        'paragraph7': '当被问及周明哲近期状态时，吴建宏迟疑片刻后表示："近半年他确实压力特别大，项目融资卡在最后一步，他总说\'这个项目必须尽快落地，不能让信任我们的人失望\'，但没提过具体在跟这家科技集团周旋。" 他透露，已向警方提交了工作室近一年的财务记录、项目商业计划书初稿及部分未公开的调查底稿，并强调 "全程配合调查，绝不包庇"。',
+        'paragraph8': '吴建宏还提到："\'涅槃共契\'的核心就是\'信任\'—— 信任调查的真实性，信任分享的安全性。周明哲常说，\'这个世界不缺冲突，缺的是让人敢放心交付信任的地方\'。他要是真敲诈，就等于否定了自己坚持的一切。"',
+        'subtitle3': '业内震动：是 "偶像塌房"，还是 "项目之争" 的阴谋？',
+        'paragraph9': '事件曝光后，周明哲的个人微博自 8 月 10 日起停止更新，最后一条动态停留在 "真相需要时间，但信任不会说谎"；其创办的 "明察工作室" 大门紧闭，玻璃门上贴着 "暂停运营" 的通知，门口堆积着未拆封的读者来信与项目合作方的资料袋。',
+        'paragraph10': '多位新闻界及创投圈人士在接受采访时表达了 "难以置信"：',
+        'paragraph11': '前《深度调查报》主编王建国："周明哲的稿子逻辑严密到能当教材，要真敲诈，不可能留下这么\'粗糙\'的证据链；而且他对\'涅槃共契\'的执念，比谁都深，没必要在融资关键期犯这种错。"',
+        'paragraph12': '某创投机构投资人陈宇："去年我们聊过\'涅槃共契\'的项目，周明哲拒绝了我们提出的\'弱化调查、强化社交\'的修改建议，说\'没有真实调查做支撑，信任就是空谈\'。他是个有原则的人，不是会为钱妥协的类型。"',
+        'paragraph13': '匿名创投圈人士："听说\'涅槃共契\'的融资方，正是涉事科技集团的竞品公司，不排除是\'项目之争\'引发的栽赃。而且吴建宏在项目中一直负责商务对接，对融资和合作方情况比周明哲更清楚。"',
+        'paragraph14': '但也有不同声音："近年调查记者生存空间收窄，工作室多次濒临倒闭，\'涅槃共契\'的融资又迟迟不能落地，不排除周明哲\'走投无路\'的可能。"',
+        'paragraph15': '截至发稿，周明哲本人仍未公开回应。有邻居向本报透露，近一个月常看到他深夜独自酗酒归来，"整个人瘦得脱形，怀里还抱着一叠写满字的纸，嘴里念叨着\'信任\'\'涅槃\'之类的话"。这场 "正义记者的堕落" 疑云背后，是创业梦的破碎，还是另有隐情？或许只有时间能给出答案。',
+        'related-news': '相关新闻',
+        'related-news1-title': '城东望海崖发现无名女尸，警方初步判断为坠崖身亡',
+        'related-news1-date': '2025/10/10',
+        'related-news2-title': '创业新星陨落！李明项目遭泄后破产跳楼，业内震惊',
+        'related-news2-date': '2022-08-05',
+        'footer-title': '都市晚报',
+        'footer-desc': '创办于1985年，是中国具有广泛影响力的综合性晚报，以深度报道和新闻评论著称。',
+        'navigation': '栏目导航',
+        'important-news': '要闻',
+        'depth': '深度',
+        'comments': '评论',
+        'culture': '文化',
+        'contact': '联系我们',
+        'address': '北京市朝阳区新闻大厦',
+        'follow-us': '关注我们',
+        'download-app': '扫描二维码下载客户端',
+        'copyright': '© 2022 都市晚报 版权所有 | 京ICP备12345678号'
+      },
+      'en': {
+        'site-title': 'City Evening News',
+        'current-date': 'August 15, 2022',
+        'current-day': 'Monday',
+        'mobile-date': 'August 15, 2022 Monday',
+        'home': 'Home',
+        'domestic': 'Domestic',
+        'international': 'International',
+        'finance': 'Finance',
+        'tech': 'Technology',
+        'entertainment': 'Entertainment',
+        'focus-news': 'Focus News',
+        'update-time': 'Updated 2022-08-15 09:30',
+        'article-title': 'Renowned Investigative Journalist Zhou Mingzhe Suspected of Extortion, Both Career and Entrepreneurial Dream Collapse',
+        'reporter': 'Reporter Zhang Lei',
+        'reading-time': 'Reading time: about 4 minutes',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Share',
+        'paragraph1': 'Zhou Mingzhe, who won the "Journalist of Justice of the Year" award for his series of in-depth reports exposing false advertising of health products and medical kickbacks, has recently been embroiled in an "extortion" scandal - he was exposed for allegedly demanding 3 million yuan in "hush money" by threatening to expose the "compliance issues" of a leading technology group. More lamentably, according to informed sources, Zhou Mingzhe and his partner Wu Jianhong\'s "investigation + social" startup project, which had been in preparation for nearly 2 years, came to an abrupt end due to this incident, collapsing both his 15-year investigative career and long-held entrepreneurial dream.',
+        'subtitle1': 'Incident Exposure: Behind the "Hush Money" Scandal Lies an Unrealized Startup Project',
+        'paragraph2': 'According to sources close to the involved company, Zhou Mingzhe repeatedly contacted the group\'s public relations department via email in July this year, claiming to "have obtained core evidence of tax evasion and data abuse by its subsidiaries," and attached screenshots of what appeared to be internal financial statements. On August 5, the company received a final ultimatum email from Zhou Mingzhe, explicitly demanding "payment of 3 million yuan within 3 days, otherwise the investigative report will be published on September 1."',
+        'paragraph3': 'The company officially reported the case to the police on August 8, submitting email correspondence records, call recordings, and a bank transfer certificate. The company\'s public relations director said in an interview with this newspaper: "The statements in the email attachments show obvious signs of tampering, but the recipient address was indeed Zhou Mingzhe\'s work email; in the recording, he did mention \'pay to delete the article,\' but the context seems to have been edited." However, the director emphasized: "All evidence has been notarized, sufficient to prove the extortion."',
+        'paragraph4': 'It is worth noting that industry insiders revealed to this newspaper that Zhou Mingzhe and his partner Wu Jianhong have been preparing a startup project called "Nirvana Covenant" for the past two years - the core is to build an "investigation + social" platform: on the one hand, publishing verified in-depth investigative reports to provide users with authentic information support; on the other hand, creating an "anonymous trust circle" that allows ordinary people to safely confide secrets and share experiences, with the platform matching users "with similar experiences" through algorithms to achieve emotional resonance and mutual support. "This project completed seed round financing negotiations last year, with the core concept being \'exchanging truth for trust, using resonance to overcome difficulties,\' and was just waiting for the final signing. Who would have thought this would happen," the source lamented.',
+        'paragraph5': 'The police have accepted the case, which is currently in the evidence verification stage.',
+        'subtitle2': 'Partner\'s Testimony: "He Worked Himself to Death for the Project, How Could He Destroy His Own Future?"',
+        'quote': '"I still can\'t believe this is true. We once camped out in hospital corridors for 7 days and 7 nights to verify leads about medical malpractice; when he exposed health product scams back then, he never backed down even when threatened with \'broken limbs.\' He\'s the most meticulous and righteous person I\'ve ever met, not to mention this \'Nirvana Covenant\' project that he spent countless sleepless nights refining. He always said, \'This isn\'t ordinary entrepreneurship, it\'s giving betrayed trust a chance to be reborn.\' He wanted this project to succeed more than anyone - how could he possibly destroy his own future?"',
+        'quote-author': '—— Zhou Mingzhe\'s Partner Wu Jianhong',
+        'paragraph6': 'Zhou Mingzhe\'s long-term partner and co-founder of the "Nirvana Covenant" project, Wu Jianhong, has become a key witness in this incident. During an exclusive interview with this newspaper, he appeared heartbroken with reddened eyes throughout.',
+        'paragraph7': 'When asked about Zhou Mingzhe\'s recent condition, Wu Jianhong hesitated before saying: "He has been under tremendous pressure over the past six months, with project financing stuck at the final step. He always said \'this project must be launched as soon as possible, we can\'t let down those who trust us,\' but he never mentioned specifically dealing with this tech group." He revealed that he had submitted to the police the studio\'s financial records from the past year, the initial draft of the project business plan, and some unpublished investigation materials, emphasizing "full cooperation with the investigation, no cover-up."',
+        'paragraph8': 'Wu Jianhong also mentioned: "The core of \'Nirvana Covenant\' is \'trust\' - trust in the authenticity of investigations, trust in the safety of sharing. Zhou Mingzhe often said, \'This world doesn\'t lack conflict, it lacks places where people dare to safely place their trust.\' If he really committed extortion, it would mean denying everything he stood for."',
+        'subtitle3': 'Industry Shock: Is This an "Idol Collapse" or a Conspiracy in "Project Competition"?',
+        'paragraph9': 'After the incident came to light, Zhou Mingzhe\'s personal Weibo stopped updating from August 10, with his last post remaining "Truth takes time, but trust doesn\'t lie"; his founded "Mingcha Studio" had its doors closed, with a "Suspended Operations" notice posted on the glass door, and piles of unopened reader letters and project partner materials stacked at the entrance.',
+        'paragraph10': 'Multiple journalism and venture capital professionals expressed "disbelief" in interviews:',
+        'paragraph11': 'Former editor-in-chief of "In-depth Investigation News" Wang Jianguo: "Zhou Mingzhe\'s articles are so logically rigorous they could be used as textbooks. If he really intended extortion, he wouldn\'t leave such \'crude\' evidence; moreover, his obsession with \'Nirvana Covenant\' runs deeper than anyone\'s - there\'s no need for him to make such a mistake during the critical financing period."',
+        'paragraph12': 'Venture capital investor Chen Yu: "We discussed the \'Nirvana Covenant\' project last year. Zhou Mingzhe rejected our suggestion to \'weaken investigation and strengthen social,\' saying \'without real investigation as support, trust is empty talk.\' He\'s a principled person, not the type to compromise for money."',
+        'paragraph13': 'Anonymous venture capital source: "I heard the financing party for \'Nirvana Covenant\' is actually a competitor of the involved tech group, so we can\'t rule out framing due to \'project competition.\' Moreover, Wu Jianhong has always been responsible for business对接 in the project, so he knows more about financing and partners than Zhou Mingzhe."',
+        'paragraph14': 'But there are also different voices: "In recent years, the living space for investigative journalists has narrowed, the studio has been on the verge of collapse multiple times, and \'Nirvana Covenant\' financing has been delayed repeatedly, so we can\'t rule out the possibility that Zhou Mingzhe was \'desperate.\'"',
+        'paragraph15': 'As of press time, Zhou Mingzhe himself has not responded publicly. A neighbor told this newspaper that he was often seen returning alone late at night drinking over the past month, "thinned beyond recognition, holding a stack of papers filled with writing, muttering words like \'trust\' and \'nirvana.\'" Behind this "fallen righteous journalist" mystery, is it the shattering of an entrepreneurial dream, or is there another hidden truth? Perhaps only time will tell.',
+        'related-news': 'Related News',
+        'related-news1-title': 'Unidentified Female Body Found at Wanghai Cliff in East City, Police Initially Determine Death by Falling from Cliff',
+        'related-news1-date': '2025/10/10',
+        'related-news2-title': 'Rising Star Entrepreneur Falls! Li Ming\'s Project Leaked, Goes Bankrupt and Jumps to His Death, Industry Shocked',
+        'related-news2-date': '2022-08-05',
+        'footer-title': 'City Evening News',
+        'footer-desc': 'Founded in 1985, it is an influential comprehensive evening newspaper in China, known for its in-depth reporting and news commentary.',
+        'navigation': 'Navigation',
+        'important-news': 'Important News',
+        'depth': 'In-depth',
+        'comments': 'Comments',
+        'culture': 'Culture',
+        'contact': 'Contact Us',
+        'address': 'News Building, Chaoyang District, Beijing',
+        'follow-us': 'Follow Us',
+        'download-app': 'Scan QR code to download the app',
+        'copyright': '© 2022 City Evening News All Rights Reserved | Jing ICP No. 12345678'
+      },
+      'ja': {
+        'site-title': '都市晩報',
+        'current-date': '2022年8月15日',
+        'current-day': '月曜日',
+        'mobile-date': '2022年8月15日 月曜日',
+        'home': 'ホーム',
+        'domestic': '国内',
+        'international': '国際',
+        'finance': '金融',
+        'tech': 'テクノロジー',
+        'entertainment': 'エンタメ',
+        'focus-news': '注目ニュース',
+        'update-time': '更新 2022-08-15 09:30',
+        'article-title': '著名調査ジャーナリスト周明哲、恐喝容疑で摘発、キャリアと起業の夢が同時に崩壊',
+        'reporter': '本紙記者 張磊',
+        'reading-time': '読了時間：約4分',
+        'weibo': '微博',
+        'wechat': 'WeChat',
+        'share': 'シェア',
+        'paragraph1': '健康食品の虚偽広告や医療リベートの闇などを暴露した一連の深度報道で「正義のジャーナリスト賞」を受賞した周明哲が最近、「恐喝」疑惑に巻き込まれた——ある大手テクノロジーグループの「コンプライアンス問題」を暴露すると称し、300万元の「口止め料」を要求したと報じられた。さらに嘆かわしいことに、関係者によると、周明哲とパートナーの呉建宏が約2年間準備してきた「調査＋ソーシャル」スタートアッププロジェクトもこの事件により突然中止となり、15年にわたる調査キャリアと長年の起業の夢が同時に崩壊した。',
+        'subtitle1': '事件発覚：「口止め料」疑惑の裏に、実現しなかった起業プロジェクト',
+        'paragraph2': '事件に関与した企業に近い情報筋によると、周明哲は今年7月、同グループの広報部に繰り返しメールで連絡し、「その子会社の脱税やデータ乱用の核心的証拠を掌握した」と主張し、内部財務諸表と思われるスクリーンショットを添付した。8月5日、企業は周明哲からの最後通告メールを受け取り、「3日以内に300万元を支払わなければ、9月1日に調査報道を公開する」と明確に要求した。',
+        'paragraph3': '同社は8月8日に正式に警察に通報し、メールのやり取り記録、通話録音、銀行振込証明書を提出した。同社の広報ディレクターは本紙のインタビューで、「メールの添付ファイルにある財務諸表には明らかな改ざんの痕跡があるが、受信アドレスは確かに周明哲本人の仕事用メールアドレスだった。録音では確かに『金を払って記事を削除』と言及しているが、文脈は編集された疑いがある」と述べた。ただし、同ディレクターは「すべての証拠は公証されており、恐喝の事実を証明するのに十分である」と強調した。',
+        'paragraph4': '注目すべきは、業界関係者が本紙に明かしたところによると、周明哲とパートナーの呉建宏はこの2年間、「涅槃共契」というスタートアッププロジェクトを準備してきた——核心は「調査＋ソーシャル」プラットフォームを構築すること：一方で検証済みの深度調査報道を公開し、ユーザーに真実の情報サポートを提供する。他方で「匿名信頼圏」を作り、普通の人々が安全に秘密を打ち明け、経験を共有できるようにし、プラットフォームがアルゴリズムで「似た経験を持つ」ユーザーをマッチングし、感情の共感と相互支援を実現する。「このプロジェクトは昨年シードラウンドの資金調達交渉を完了し、核心コンセプトは『真実で信頼を交換し、共感で困難を乗り越える』というものだったが、最終契約を待つだけだった。まさかこんなことになるとは」と、この関係者は惜しんだ。',
+        'paragraph5': '現在、警察はこの事件を受付けており、証拠検証段階にある。',
+        'subtitle2': 'パートナーの証言：「彼はプロジェクトのために必死に働いたのに、どうして自らの将来を台無しにするだろうか？」',
+        'quote': '"これが本当だとはまだ信じられない。私たちは医療の闇の手がかりを検証するため、病院の廊下に7日7晩張り込んだこともある。彼が健康食品の詐欺を暴露した時、『手足を切断する』と脅されても一歩も引かなかった。彼は私が会った中で最も几帳面で、最も正義感の強い人だ。ましてやこの『涅槃共契』プロジェクトは、彼が数えきれないほどの徹夜で磨き上げたものだ。彼はいつも『これは普通の起業ではなく、裏切られた信頼に再生の機会を与えるものだ』と言っていた。彼は誰よりもこのプロジェクトを実現させたかった——どうして自らの将来を台無しにするだろうか？」',
+        'quote-author': '—— 周明哲のパートナー 呉建宏',
+        'paragraph6': '周明哲の長年のパートナーであり、「涅槃共契」プロジェクトの共同創設者でもある呉建宏は、この事件の重要な証人となった。本紙の独占インタビューで、彼は終始目を赤くし、「胸が張り裂けるほど痛い」様子だった。',
+        'paragraph7': '周明哲の最近の状態について尋ねられると、呉建宏はしばらく躊躇してから、「この半年間、彼は確かに特に大きなプレッシャーにさらされていた。プロジェクトの資金調達が最終段階で行き詰まり、彼はいつも『このプロジェクトはできるだけ早く実現させなければならない、私たちを信じてくれる人々を失望させてはならない』と言っていたが、具体的にこのテクノロジーグループと交渉しているとは言わなかった」と述べた。彼は、スタジオの過去1年間の財務記録、プロジェクトのビジネスプラン草案、および未公開の調査資料の一部を警察に提出したことを明かし、「調査に全面的に協力し、絶対に庇わない」と強調した。',
+        'paragraph8': '呉建宏はまた、「『涅槃共契』の核心は『信頼』である——調査の真実性への信頼、共有の安全性への信頼である。周明哲はよく、『この世界には衝突は不足していない、人々が安心して信頼を託せる場所が不足している』と言っていた。もし彼が本当に恐喝したなら、彼が堅持してきたすべてを否定することになる」と付け加えた。',
+        'subtitle3': '業界震撼：「アイドルの転落」か、それとも「プロジェクト競争」の陰謀か？',
+        'paragraph9': '事件が明るみに出た後、周明哲の個人ウェイボーは8月10日から更新が止まり、最後の投稿は「真実には時間がかかるが、信頼は嘘をつかない」で止まった。彼が設立した「明察工作室」は扉が閉ざされ、ガラス戸には「運営休止」の通知が貼られ、入口には未開封の読者からの手紙やプロジェクトパートナーの資料袋が積み上げられていた。',
+        'paragraph10': '複数のジャーナリズム界およびベンチャーキャピタル界の関係者はインタビューで「信じられない」と表明した：',
+        'paragraph11': '元『深度調査報』編集主幹の王建国：「周明哲の原稿は教科書として使えるほど論理的で厳密だ。本当に恐喝するつもりなら、これほど『粗雑な』証拠連鎖を残すはずがない。しかも彼の『涅槃共契』への執着は誰よりも深く、資金調達の重要な時期にこのような過ちを犯す必要はない。」',
+        'paragraph12': 'あるベンチャーキャピタル機関の投資家、陳宇：「昨年私たちは『涅槃共契』のプロジェクトについて話し合った。周明哲は私たちが提案した『調査を弱め、ソーシャルを強化する』という修正提案を拒否し、『真実の調査による支えがなければ、信頼は空虚な議論だ』と言った。彼は原則を持った人間で、金のために妥協するタイプではない。」',
+        'paragraph13': '匿名のベンチャーキャピタル関係者：「『涅槃共契』の資金調達先は、まさに関与したテクノロジーグループの競合他社だと聞いている。『プロジェクト競争』による誣罔の可能性を排除できない。しかも呉建宏はプロジェクトで常にビジネス交渉を担当してきたので、資金調達とパートナーの状況を周明哲よりもよく知っている。」',
+        'paragraph14': 'しかし異なる意見もある：「近年、調査ジャーナリストの生存空間は狭まり、スタジオは何度も倒産の危機に瀕し、『涅槃共契』の資金調達も遅れに遅れていた。周明哲が『行き場を失った』可能性を排除できない。」',
+        'paragraph15': '締め切り時点で、周明哲本人はまだ公に応じていない。近所の住民が本紙に明かしたところによると、この1か月間、彼が深夜一人で酒に酔って帰ってくるのをよく見かけ、「整个人が痩せ衰えて形を失い、胸には書き込みでいっぱいの紙の束を抱え、『信頼』『涅槃』のような言葉をぶつぶつとつぶやいていた」という。この「正義のジャーナリストの転落」疑惑の裏には、起業の夢の崩壊があるのか、それとも別の隠された事情があるのか？おそらく時間だけが答えを出してくれるだろう。',
+        'related-news': '関連ニュース',
+        'related-news1-title': '城東望海崖で身元不明の女性遺体発見、警察は崖からの転落死と暫定判断',
+        'related-news1-date': '2025/10/10',
+        'related-news2-title': '創業の新星が墜落！李明氏のプロジェクトが漏洩後、破産して飛び降り自殺、業界に衝撃',
+        'related-news2-date': '2022-08-05',
+        'footer-title': '都市晩報',
+        'footer-desc': '1985年創刊。中国で広範な影響力を持つ総合夕刊紙で、深度報道とニュース評論で知られる。',
+        'navigation': 'ナビゲーション',
+        'important-news': '重要ニュース',
+        'depth': '深度',
+        'comments': '評論',
+        'culture': '文化',
+        'contact': 'お問い合わせ',
+        'address': '北京市朝陽区ニュースビル',
+        'follow-us': 'フォローする',
+        'download-app': 'QRコードをスキャンしてアプリをダウンロード',
+        'copyright': '© 2022 都市晩報 版権所有 | 京ICP備12345678号'
+      },
+      'pt': {
+        'site-title': 'Jornal da Cidade',
+        'current-date': '15 de Agosto de 2022',
+        'current-day': 'Segunda-feira',
+        'mobile-date': '15 de Agosto de 2022 Segunda-feira',
+        'home': 'Início',
+        'domestic': 'Nacional',
+        'international': 'Internacional',
+        'finance': 'Finanças',
+        'tech': 'Tecnologia',
+        'entertainment': 'Entretenimento',
+        'focus-news': 'Notícias em Destaque',
+        'update-time': 'Atualizado 2022-08-15 09:30',
+        'article-title': 'Renomado Jornalista Investigativo Zhou Mingzhe Suspeito de Extorsão, Carreira e Sonho Empreendedor Desmoronam',
+        'reporter': 'Repórter Zhang Lei',
+        'reading-time': 'Tempo de leitura: cerca de 4 minutos',
+        'weibo': 'Weibo',
+        'wechat': 'WeChat',
+        'share': 'Compartilhar',
+        'paragraph1': 'Zhou Mingzhe, que ganhou o prêmio "Jornalista da Justiça do Ano" por sua série de reportagens aprofundadas expondo propaganda falsa de produtos de saúde e esquemas de propinas médicas, recentemente se envolveu em um escândalo de "extorsão" - ele foi exposto por alegadamente exigir 3 milhões de yuans em "dinheiro de silêncio" ao ameaçar expor "questões de conformidade" de um grande grupo de tecnologia. Mais lamentavelmente, de acordo com fontes informadas, o projeto de startup "investigação + social" de Zhou Mingzhe e seu sócio Wu Jianhong, que estava em preparação por quase 2 anos, chegou a um fim abrupto devido a este incidente, desmoronando tanto sua carreira investigativa de 15 anos quanto seu sonho empreendedor de longa data.',
+        'subtitle1': 'Exposição do Incidente: Por Trás do Escândalo do "Dinheiro de Silêncio" Está um Projeto de Startup Não Realizado',
+        'paragraph2': 'De acordo com fontes próximas à empresa envolvida, Zhou Mingzhe repetidamente contatou o departamento de relações públicas do grupo por e-mail em julho deste ano, alegando "ter obtido evidências centrais de sonegação fiscal e abuso de dados por suas subsidiárias", e anexou capturas de tela do que pareciam ser demonstrações financeiras internas. Em 5 de agosto, a empresa recebeu um e-mail de ultimato final de Zhou Mingzhe, exigindo explicitamente "pagamento de 3 milhões de yuans dentro de 3 dias, caso contrário o relatório investigativo será publicado em 1º de setembro."',
+        'paragraph3': 'A empresa relatou oficialmente o caso à polícia em 8 de agosto, submetendo registros de correspondência por e-mail, gravações de chamadas e um comprovante de transferência bancária. O diretor de relações públicas da empresa disse em entrevista a este jornal: "As demonstrações nos anexos de e-mail mostram sinais óbvios de adulteração, mas o endereço do destinatário era de fato o e-mail de trabalho de Zhou Mingzhe; na gravação, ele realmente mencionou \'pagar para excluir o artigo\', mas o contexto parece ter sido editado." No entanto, o diretor enfatizou: "Todas as evidências foram notariadas, suficientes para provar a extorsão."',
+        'paragraph4': 'Vale notar que fontes da indústria revelaram a este jornal que Zhou Mingzhe e seu sócio Wu Jianhong vêm preparando um projeto de startup chamado "Pacto do Nirvana" nos últimos dois anos - o núcleo é construir uma plataforma "investigação + social": por um lado, publicando reportagens investigativas aprofundadas verificadas para fornecer suporte informacional autêntico aos usuários; por outro lado, criando um "círculo de confiança anônimo" que permite que pessoas comuns confidenciem segredos e compartilhem experiências com segurança, com a plataforma correspondendo usuários "com experiências semelhantes" através de algoritmos para alcançar ressonância emocional e suporte mútuo. "Este projeto completou negociações de financiamento de semente no ano passado, com o conceito central sendo \'trocar verdade por confiança, usar ressonância para superar dificuldades\', e estava apenas esperando a assinatura final. Quem imaginaria que isso aconteceria", lamentou a fonte.',
+        'paragraph5': 'A polícia aceitou o caso, que está atualmente na fase de verificação de evidências.',
+        'subtitle2': 'Depoimento do Sócio: "Ele Trabalhou até a Exaustão pelo Projeto, Como Poderia Destruir seu Próprio Futuro?"',
+        'quote': '"Eu ainda não consigo acreditar que isso seja verdade. Nós já ficamos acampados em corredores de hospital por 7 dias e 7 noites para verificar pistas sobre má conduta médica; quando ele expôs esquemas de produtos de saúde no passado, ele nunca recuou mesmo quando ameaçado com \'membros quebrados.\' Ele é a pessoa mais meticulosa e correta que já conheci, sem mencionar este projeto \'Pacto do Nirvana\' que ele passou incontáveis noites em claro refinando. Ele sempre disse, \'Isso não é empreendedorismo comum, é dar à confiança traída uma chance de renascer.\' Ele queria que este projeto fosse bem-sucedido mais do que qualquer um - como ele possivelmente destruiria seu próprio futuro?"',
+        'quote-author': '—— Sócio de Zhou Mingzhe Wu Jianhong',
+        'paragraph6': 'O sócio de longa data de Zhou Mingzhe e co-fundador do projeto "Pacto do Nirvana", Wu Jianhong, tornou-se uma testemunha chave neste incidente. Durante uma entrevista exclusiva com este jornal, ele apareceu com o coração partido, com os olhos vermelhos durante toda a conversa.',
+        'paragraph7': 'Quando perguntado sobre a condição recente de Zhou Mingzhe, Wu Jianhong hesitou antes de dizer: "Ele tem estado sob tremenda pressão nos últimos seis meses, com o financiamento do projeto preso na etapa final. Ele sempre dizia \'este projeto deve ser lançado o mais rápido possível, não podemos decepcionar aqueles que confiam em nós,\' mas ele nunca mencionou especificamente lidar com este grupo de tecnologia." Ele revelou que havia submetido à polícia os registros financeiros do estúdio do ano passado, o rascunho inicial do plano de negócios do projeto e alguns materiais de investigação não publicados, enfatizando "cooperação total com a investigação, sem encobrimento."',
+        'paragraph8': 'Wu Jianhong também mencionou: "O núcleo do \'Pacto do Nirvana\' é \'confiança\' - confiança na autenticidade das investigações, confiança na segurança do compartilhamento. Zhou Mingzhe costumava dizer, \'Este mundo não falta conflito, falta lugares onde as pessoas ousem colocar sua confiança com segurança.\' Se ele realmente cometeu extorsão, significaria negar tudo o que ele defendia."',
+        'subtitle3': 'Choque na Indústria: Isto é um "Colapso de Ídolo" ou uma Conspiração na "Competição de Projetos"?',
+        'paragraph9': 'Após o incidente vir à tona, o Weibo pessoal de Zhou Mingzhe parou de atualizar a partir de 10 de agosto, com sua última postagem permanecendo "A verdade leva tempo, mas a confiança não mente"; seu "Estúdio Mingcha" fundado teve suas portas fechadas, com um aviso de "Operações Suspensas" afixado na porta de vidro, e pilhas de cartas de leitores não abertas e materiais de parceiros de projeto empilhados na entrada.',
+        'paragraph10': 'Múltiplos profissionais de jornalismo e capital de risco expressaram "incredulidade" em entrevistas:',
+        'paragraph11': 'Ex-editor-chefe do "Notícias de Investigação Aprofundada" Wang Jianguo: "Os artigos de Zhou Mingzhe são tão rigorosos logicamente que poderiam ser usados como livros didáticos. Se ele realmente pretendia extorsão, não deixaria evidências tão \'crudas\'; além disso, sua obsessão com o \'Pacto do Nirvana\' é mais profunda do que a de qualquer um - não há necessidade de ele cometer tal erro durante o período crítico de financiamento."',
+        'paragraph12': 'Investidor de capital de risco Chen Yu: "Discutimos o projeto \'Pacto do Nirvana\' no ano passado. Zhou Mingzhe rejeitou nossa sugestão de \'enfraquecer a investigação e fortalecer o social\', dizendo \'sem investigação real como suporte, a confiança é conversa fiada.\' Ele é uma pessoa principista, não o tipo a comprometer por dinheiro."',
+        'paragraph13': 'Fonte anônima de capital de risco: "Ouvi dizer que a parte financiadora do \'Pacto do Nirvana\' é na verdade um concorrente do grupo de tecnologia envolvido, então não podemos descartar uma armação devido à \'competição de projetos.\' Além disso, Wu Jianhong sempre foi responsável pela对接 de negócios no projeto, então ele sabe mais sobre financiamento e parceiros do que Zhou Mingzhe."',
+        'paragraph14': 'Mas também há vozes diferentes: "Nos últimos anos, o espaço de sobrevivência para jornalistas investigativos diminuiu, o estúdio esteve à beira do colapso várias vezes, e o financiamento do \'Pacto do Nirvana\' foi repetidamente atrasado, então não podemos descartar a possibilidade de Zhou Mingzhe estar \'desesperado.\'"',
+        'paragraph15': 'Até o fechamento desta edição, o próprio Zhou Mingzhe não respondeu publicamente. Um vizinho contou a este jornal que ele era frequentemente visto retornando sozinho tarde da noite bebendo no último mês, "emaciado além do reconhecimento, segurando uma pilha de papéis cheios de escrita, murmurando palavras como \'confiança\' e \'nirvana\'." Por trás deste mistério do "jornalista justo caído", está o despedaçamento de um sonho empreendedor, ou há outra verdade oculta? Talvez apenas o tempo dirá.',
+        'related-news': 'Notícias Relacionadas',
+        'related-news1-title': 'Corpo Feminino Não Identificado Encontrado no Penhasco Wanghai na Cidade Leste, Polícia Determina Inicialmente Morte por Queda de Penhasco',
+        'related-news1-date': '2025/10/10',
+        'related-news2-title': 'Estrela Emergente do Empreendedorismo Cai! Projeto de Li Ming Vazou, Faliu e Ele Pulou do Prédio, Indústria Chocada',
+        'related-news2-date': '2022-08-05',
+        'footer-title': 'Jornal da Cidade',
+        'footer-desc': 'Fundado em 1985, é um jornal vespertino abrangente influente na China, conhecido por sua reportagem aprofundada e comentário de notícias.',
+        'navigation': 'Navegação',
+        'important-news': 'Notícias Importantes',
+        'depth': 'Em Profundidade',
+        'comments': 'Comentários',
+        'culture': 'Cultura',
+        'contact': 'Contate-Nos',
+        'address': 'Edifício de Notícias, Distrito de Chaoyang, Pequim',
+        'follow-us': 'Siga-Nos',
+        'download-app': 'Escaneie o código QR para baixar o aplicativo',
+        'copyright': '© 2022 Jornal da Cidade Todos os Direitos Reservados | Jing ICP No. 12345678'
+      }
+    };
+
+    // 语言切换功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 设置默认语言为中文
+      let currentLang = 'zh';
+      updateLanguage(currentLang);
+      
+      // 为语言切换按钮添加事件监听器
+      document.querySelectorAll('[data-lang]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const lang = this.getAttribute('data-lang');
+          currentLang = lang;
+          updateLanguage(lang);
+          
+          // 更新当前语言显示
+          document.getElementById('current-lang').textContent = 
+            lang === 'zh' ? '中文' : 
+            lang === 'en' ? 'English' : 
+            lang === 'ja' ? '日本語' : 
+            'Português';
+        });
+      });
+    });
+
+    function updateLanguage(lang) {
+      // 更新所有带有data-lang-key属性的元素
+      document.querySelectorAll('[data-lang-key]').forEach(element => {
+        const key = element.getAttribute('data-lang-key');
+        if (translations[lang] && translations[lang][key]) {
+          element.textContent = translations[lang][key];
+        }
+      });
+      
+      // 更新特殊元素
+      if (translations[lang] && translations[lang]['site-title']) {
+        document.getElementById('site-title').textContent = translations[lang]['site-title'];
+        document.getElementById('footer-title').textContent = translations[lang]['site-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['article-title']) {
+        document.getElementById('article-title').textContent = translations[lang]['article-title'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-date']) {
+        document.getElementById('current-date').textContent = translations[lang]['current-date'];
+      }
+      
+      if (translations[lang] && translations[lang]['current-day']) {
+        document.getElementById('current-day').textContent = translations[lang]['current-day'];
+      }
+      
+      if (translations[lang] && translations[lang]['mobile-date']) {
+        document.getElementById('mobile-date').textContent = translations[lang]['mobile-date'];
+      }
+    }
+  </script>
+</body>
+</html>

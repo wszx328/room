@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专访 R∞M 酒店分析部主管王芳 | R∞M Hotel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #fff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            background-color: #fff;
+        }
+        
+        /* 微信公众号顶部区域样式 */
+        .wechat-header {
+            position: relative;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e7e7e7;
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+        }
+        
+        .wechat-back-btn {
+            font-size: 18px;
+            color: #07c160;
+            margin-right: 10px;
+        }
+        
+        .wechat-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            flex-grow: 1;
+            text-align: center;
+            margin-right: 30px;
+        }
+        
+        .wechat-options {
+            color: #07c160;
+            font-size: 18px;
+        }
+        
+        /* 文章内容区域 */
+        .article-content {
+            padding: 20px 16px 0;
+        }
+        
+        .article-title {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 14px;
+            color: #222;
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #8c8c8c;
+        }
+        
+        .article-author {
+            margin-right: 15px;
+        }
+        
+        .article-date {
+            margin-right: 15px;
+        }
+        
+        .article-views {
+            display: flex;
+            align-items: center;
+        }
+        
+        .article-views i {
+            margin-right: 4px;
+            font-size: 12px;
+        }
+        
+        .article-image {
+            width: 100%;
+            margin: 20px 0 25px;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+        
+        .article-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .article-image-placeholder {
+            width: 100%;
+            height: 300px;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .article-body {
+            font-size: 17px;
+            line-height: 1.8;
+            color: #333;
+        }
+        
+        .article-body p {
+            margin-bottom: 20px;
+            text-align: justify;
+            word-break: break-word;
+        }
+        
+        .article-body h3 {
+            margin: 28px 0 16px;
+            color: #222;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .article-quote {
+            background-color: #f9f9f9;
+            border-left: 3px solid #07c160;
+            padding: 16px;
+            margin: 24px 0;
+            font-style: italic;
+            color: #555;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        
+        /* 语言切换按钮样式 */
+        .language-switcher {
+            position: fixed;
+            bottom: 100px;
+            right: 16px;
+            z-index: 100;
+        }
+        
+        .lang-btn {
+            width: 44px;
+            height: 44px;
+            background-color: #07c160;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+        }
+        
+        .lang-btn:hover {
+            background-color: #06ad56;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .lang-btn i {
+            font-size: 20px;
+        }
+        
+        .lang-options {
+            position: absolute;
+            bottom: 54px;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            display: none;
+            width: 140px;
+            z-index: 101;
+            overflow: hidden;
+        }
+        
+        .lang-options.show {
+            display: block;
+        }
+        
+        .lang-option {
+            padding: 14px 16px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+            font-size: 15px;
+        }
+        
+        .lang-option:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .lang-option.active {
+            color: #07c160;
+            font-weight: 500;
+        }
+        
+        .lang-option:last-child {
+            border-bottom: none;
+        }
+        
+        .lang-option i {
+            margin-right: 10px;
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+        }
+        
+        /* 文章底部信息 */
+        .article-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .author-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .author-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            margin-right: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            color: #999;
+        }
+        
+        .author-details h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #222;
+        }
+        
+        .author-details p {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 0;
+        }
+        
+        /* 微信公众号底部区域 */
+        .wechat-footer {
+            margin-top: 30px;
+            padding: 20px 0;
+            border-top: 1px solid #eaeaea;
+            text-align: center;
+        }
+        
+        .official-account {
+            margin-bottom: 20px;
+        }
+        
+        .official-account h4 {
+            font-size: 16px;
+            color: #222;
+            margin-bottom: 8px;
+        }
+        
+        .official-account p {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 16px;
+        }
+        
+        .wechat-qr {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 16px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ccc;
+            font-size: 13px;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .copyright {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 8px;
+        }
+        
+        .view-original {
+            margin-top: 20px;
+        }
+        
+        .view-original a {
+            color: #576b95;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        /* 互动按钮区域 */
+        .interaction-bar {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .interaction-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 20px;
+            color: #8c8c8c;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .interaction-btn:hover {
+            color: #07c160;
+        }
+        
+        .interaction-btn i {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+        
+        .interaction-btn span {
+            font-size: 14px;
+        }
+        
+        /* 微信公众号底部固定栏 */
+        .wechat-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid #e7e7e7;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 99;
+            backdrop-filter: blur(10px);
+        }
+        
+        .bottom-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8c8c8c;
+            cursor: pointer;
+        }
+        
+        .bottom-btn i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .bottom-btn span {
+            font-size: 11px;
+        }
+        
+        /* 适配移动端 */
+        @media (max-width: 768px) {
+            .container {
+                padding-bottom: 60px;
+            }
+            
+            .article-title {
+                font-size: 20px;
+            }
+            
+            .article-body {
+                font-size: 16px;
+            }
+            
+            .article-image-placeholder {
+                height: 220px;
+            }
+            
+            .language-switcher {
+                bottom: 80px;
+                right: 12px;
+            }
+            
+            .wechat-bottom-bar {
+                padding: 8px 0;
+            }
+        }
+        
+        /* 暗色模式支持 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+                color: #e6e6e6;
+            }
+            
+            .container {
+                background-color: #1a1a1a;
+            }
+            
+            .wechat-header {
+                background-color: #1a1a1a;
+                border-bottom-color: #2a2a2a;
+            }
+            
+            .wechat-title {
+                color: #e6e6e6;
+            }
+            
+            .article-title {
+                color: #e6e6e6;
+            }
+            
+            .article-body {
+                color: #e6e6e6;
+            }
+            
+            .article-body h3 {
+                color: #e6e6e6;
+            }
+            
+            .article-quote {
+                background-color: #2a2a2a;
+                color: #ccc;
+            }
+            
+            .author-details h4 {
+                color: #e6e6e6;
+            }
+            
+            .article-meta {
+                color: #999;
+            }
+            
+            .lang-options {
+                background-color: #2a2a2a;
+            }
+            
+            .lang-option {
+                color: #e6e6e6;
+                border-bottom-color: #3a3a3a;
+            }
+            
+            .lang-option:hover {
+                background-color: #3a3a3a;
+            }
+            
+            .wechat-bottom-bar {
+                background-color: rgba(26, 26, 26, 0.95);
+                border-top-color: #2a2a2a;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 微信公众号顶部栏 -->
+        <div class="wechat-header">
+            <div class="wechat-back-btn">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="wechat-title" id="wechatTitle">R∞M酒店</div>
+            <div class="wechat-options">
+                <i class="fas fa-ellipsis-h"></i>
+            </div>
+        </div>
+        
+        <!-- 文章内容 -->
+        <div class="article-content">
+            <h1 class="article-title" id="articleTitle">深耕二十载，以专业洞见构筑服务温度 —— 专访 R∞M 酒店分析部主管王芳</h1>
+            
+            <div class="article-meta">
+                <div class="article-author" id="articleAuthor">R∞M酒店</div>
+                <div class="article-date" id="articleDate">2025-01-15</div>
+                <div class="article-views">
+                    <i class="far fa-eye"></i>
+                    <span id="articleViews">2.5万阅读</span>
+                </div>
+            </div>
+            
+            <div class="article-image">
+                <div class="article-image-placeholder" id="articleImagePlaceholder">
+                    <div>专访配图：R∞M酒店分析部主管王芳</div>
+                </div>
+                <img src="" alt="专访配图" id="articleImage">
+            </div>
+            
+            <div class="article-body">
+                <p id="para1">在 R∞M 酒店，有这样一位 "幕后功臣"：她深耕数据分析领域二十年，用精准的洞察优化每一项服务细节，用专业的沉淀为酒店的服务升级保驾护航。她就是分析部主管王芳，一位始终以 "读懂客人需求" 为初心的服务践行者。</p>
+                
+                <h3 id="section1Title">二十载坚守，与酒店共成长</h3>
+                <p id="para2">谈及与 R∞M 酒店的渊源，王芳的眼神里满是笃定："2005 年 11 月 18 日，是我正式加入R∞M酒店的日子。至今仍记得第一次走进这座充满独特气质的建筑时，就被它'尊重每一份个体体验'的理念深深吸引。" 从最初的数据分析专员到如今的部门主管，二十年间，王芳见证了酒店的稳步发展，也将自己的职业成长与酒店的服务升级紧密绑定。</p>
+                <p id="para3">"刚入职时，分析部的工作还集中在基础的入住数据统计上。" 王芳回忆道，"但 RIKI 先生（酒店管理员）一直强调，'真正的优质服务，源于对客人隐性需求的洞察'。这句话也成为了我多年工作的核心准则。" 凭借着对数据的敏感和对服务的极致追求，王芳牵头搭建了酒店首个 "客人体验动态分析模型"，通过整合入住偏好、服务反馈、消费习惯等多维度数据，为客房服务、餐饮定制、活动策划等提供了精准的决策支撑。</p>
+                
+                <div class="article-quote" id="quote1">"真正的优质服务，源于对客人隐性需求的洞察。" —— RIKI先生，R∞M酒店管理员</div>
+                
+                <h3 id="section2Title">专业为基，成为团队的 "定海神针"</h3>
+                <p id="para4">作为分析部的核心，王芳的工作能力在团队中备受认可。"王主管总能从繁杂的数据中找到关键突破口。" 部门同事这样评价她，"去年酒店推出'定制化客房服务'，正是她通过分析近三年的客人反馈数据，发现了'个性化场景布置''情感化细节关怀'等未被满足的需求，为项目落地提供了核心依据。"</p>
+                <p id="para5">"分析部是酒店服务的'智囊团'，而王芳的专业判断和高效执行，让这份'智囊'价值得到了最大发挥。她总能精准把握服务优化的方向，既守住了酒店的服务底线，又能持续挖掘创新空间。" 面对认可，王芳始终保持谦逊："酒店给了我充分的信任和施展空间，而我能做的，就是用最扎实的专业能力，不辜负这份信任。"</p>
+                
+                <h3 id="section3Title">洞察人心，让服务不止于 "标准"</h3>
+                <p id="para6">多年的工作经验让王芳深刻理解，酒店服务的本质是 "人与人的连接"。"数据是冰冷的，但背后的人是有温度的。" 她分享道，"我们分析的不仅是数字，更是数字背后的情感需求 —— 可能是一位商务客人对安静办公环境的极致要求，可能是一对情侣对浪漫氛围的向往，也可能是一位独行客人对安全感的期待。"</p>
+                <p id="para7">基于这样的认知，王芳带领团队在数据分析中融入了更多 "人文视角"：通过分析客人的入住时段、特殊要求、反馈语气等细节，提炼出 "高敏感需求客人""仪式感需求客人" 等细分标签，为一线服务提供了更具针对性的指引。"比如我们发现，部分客人在入住时会反复确认房间的私密性，针对这一群体，我们会在预定时提前沟通隐私保障措施，入住时简化不必要的打扰流程。" 王芳举例道，"服务没有标准答案，但专业的分析能让我们更接近客人的真实需求。"</p>
+                
+                <h3 id="section4Title">坚守初心，续写服务新篇章</h3>
+                <p id="para8">谈及未来的规划，王芳表示："二十年的积累让我更加坚信，专注才能深耕，专业才能致远。未来我会继续带领分析部，聚焦客人体验的每一个细节，用更精准的数据分析、更高效的执行落地，为酒店的服务升级注入持续动力。"</p>
+                <p id="para9">从 2005 年 11 月 18 日的初遇，到如今的深耕不辍，王芳用二十年的坚守诠释了 "专业" 与 "责任" 的含义。在 R∞M 酒店这座承载着无数故事的空间里，她始终以幕后者的姿态，用数据为笔、以专业为墨，书写着属于服务者的温度与力量。</p>
+            </div>
+            
+            <div class="article-footer">
+                <div class="author-info">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-details">
+                        <h4 id="authorName">R∞M酒店编辑部</h4>
+                        <p id="authorDesc">深度专访，记录服务者的故事</p>
+                    </div>
+                </div>
+                
+                <div class="interaction-bar">
+                    <div class="interaction-btn" id="likeBtn">
+                        <i class="far fa-thumbs-up"></i>
+                        <span id="likeText">点赞</span>
+                    </div>
+                    <div class="interaction-btn" id="shareBtn">
+                        <i class="far fa-share-square"></i>
+                        <span id="shareText">分享</span>
+                    </div>
+                    <div class="interaction-btn" id="collectBtn">
+                        <i class="far fa-star"></i>
+                        <span id="collectText">收藏</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="wechat-footer">
+                <div class="official-account">
+                    <h4 id="footerTitle">R∞M酒店</h4>
+                    <p id="footerDesc">Beyond Hospitality, Into Experience</p>
+                    <div class="wechat-qr">
+                        <img src="公众号二维码.jpg" alt="R∞M Hotel 微信公众号二维码" 
+                                   style="width: 148px; height: 148px; ">
+                    </div>
+                    <p id="footerScanTip">长按识别二维码关注</p>
+                </div>
+                <div class="copyright" id="copyright">本文由 R∞M 酒店原创发布，转载请注明出处</div>
+                <div class="view-original">
+                    <a href="#" id="viewOriginal">阅读原文</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 语言切换按钮（固定在右下角） -->
+        <div class="language-switcher">
+            <div class="lang-btn" id="langBtn">
+                <i class="fas fa-language"></i>
+            </div>
+            <div class="lang-options" id="langOptions">
+                <div class="lang-option active" data-lang="zh">
+                    <i class="fas fa-check"></i>
+                    中文
+                </div>
+                <div class="lang-option" data-lang="en">
+                    <i class="fas fa-check"></i>
+                    English
+                </div>
+                <div class="lang-option" data-lang="ja">
+                    <i class="fas fa-check"></i>
+                    日本語
+                </div>
+                <div class="lang-option" data-lang="pt">
+                    <i class="fas fa-check"></i>
+                    Português
+                </div>
+            </div>
+        </div>
+        
+        <!-- 微信公众号底部固定栏 -->
+        <div class="wechat-bottom-bar">
+            <div class="bottom-btn" id="bottomLike">
+                <i class="far fa-thumbs-up"></i>
+                <span id="bottomLikeText">赞</span>
+            </div>
+            <div class="bottom-btn" id="bottomComment">
+                <i class="far fa-comment"></i>
+                <span id="bottomCommentText">在看</span>
+            </div>
+            <div class="bottom-btn" id="bottomFavorite">
+                <i class="far fa-star"></i>
+                <span id="bottomFavoriteText">收藏</span>
+            </div>
+            <div class="bottom-btn" id="bottomShare">
+                <i class="far fa-share-square"></i>
+                <span id="bottomShareText">分享</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言文本数据
+        const translations = {
+            zh: {
+                // 界面文本
+                wechatTitle: "R∞M酒店",
+                articleTitle: "深耕二十载，以专业洞见构筑服务温度 —— 专访 R∞M 酒店分析部主管王芳",
+                articleAuthor: "R∞M酒店",
+                articleDate: "2023-10-15",
+                articleViews: "2.5万阅读",
+                likeText: "点赞",
+                shareText: "分享",
+                collectText: "收藏",
+                authorName: "R∞M酒店编辑部",
+                authorDesc: "深度专访，记录服务者的故事",
+                footerTitle: "R∞M酒店",
+                footerDesc: "Beyond Hospitality, Into Experience",
+                footerScanTip: "长按识别二维码关注",
+                copyright: "本文由 R∞M 酒店原创发布，转载请注明出处",
+                viewOriginal: "阅读原文",
+                bottomLikeText: "赞",
+                bottomCommentText: "在看",
+                bottomFavoriteText: "收藏",
+                bottomShareText: "分享",
+                
+                // 文章内容
+                para1: "在 R∞M 酒店，有这样一位 \"幕后功臣\"：她深耕数据分析领域二十年，用精准的洞察优化每一项服务细节，用专业的沉淀为酒店的服务升级保驾护航。她就是分析部主管王芳，一位始终以 \"读懂客人需求\" 为初心的服务践行者。",
+                section1Title: "二十载坚守，与酒店共成长",
+                para2: "谈及与 R∞M 酒店的渊源，王芳的眼神里满是笃定：\"2005 年 11 月 18 日，是我正式加入R∞M酒店的日子。至今仍记得第一次走进这座充满独特气质的建筑时，就被它'尊重每一份个体体验'的理念深深吸引。\" 从最初的数据分析专员到如今的部门主管，二十年间，王芳见证了酒店的稳步发展，也将自己的职业成长与酒店的服务升级紧密绑定。",
+                para3: "\"刚入职时，分析部的工作还集中在基础的入住数据统计上。\" 王芳回忆道，\"但 RIKI 先生（酒店管理员）一直强调，'真正的优质服务，源于对客人隐性需求的洞察'。这句话也成为了我多年工作的核心准则。\" 凭借着对数据的敏感和对服务的极致追求，王芳牵头搭建了酒店首个 \"客人体验动态分析模型\"，通过整合入住偏好、服务反馈、消费习惯等多维度数据，为客房服务、餐饮定制、活动策划等提供了精准的决策支撑。",
+                quote1: "\"真正的优质服务，源于对客人隐性需求的洞察。\" —— RIKI先生，R∞M酒店管理员",
+                section2Title: "专业为基，成为团队的 \"定海神针\"",
+                para4: "作为分析部的核心，王芳的工作能力在团队中备受认可。\"王主管总能从繁杂的数据中找到关键突破口。\" 部门同事这样评价她，\"去年酒店推出'定制化客房服务'，正是她通过分析近三年的客人反馈数据，发现了'个性化场景布置''情感化细节关怀'等未被满足的需求，为项目落地提供了核心依据。\"",
+                para5: "\"分析部是酒店服务的'智囊团'，而王芳的专业判断和高效执行，让这份'智囊'价值得到了最大发挥。她总能精准把握服务优化的方向，既守住了酒店的服务底线，又能持续挖掘创新空间。\" 面对认可，王芳始终保持谦逊：\"酒店给了我充分的信任和施展空间，而我能做的，就是用最扎实的专业能力，不辜负这份信任。\"",
+                section3Title: "洞察人心，让服务不止于 \"标准\"",
+                para6: "多年的工作经验让王芳深刻理解，酒店服务的本质是 \"人与人的连接\"。\"数据是冰冷的，但背后的人是有温度的。\" 她分享道，\"我们分析的不仅是数字，更是数字背后的情感需求 —— 可能是一位商务客人对安静办公环境的极致要求，可能是一对情侣对浪漫氛围的向往，也可能是一位独行客人对安全感的期待。\"",
+                para7: "基于这样的认知，王芳带领团队在数据分析中融入了更多 \"人文视角\"：通过分析客人的入住时段、特殊要求、反馈语气等细节，提炼出 \"高敏感需求客人\"\"仪式感需求客人\" 等细分标签，为一线服务提供了更具针对性的指引。\"比如我们发现，部分客人在入住时会反复确认房间的私密性，针对这一群体，我们会在预定时提前沟通隐私保障措施，入住时简化不必要的打扰流程。\" 王芳举例道，\"服务没有标准答案，但专业的分析能让我们更接近客人的真实需求。\"",
+                section4Title: "坚守初心，续写服务新篇章",
+                para8: "谈及未来的规划，王芳表示：\"二十年的积累让我更加坚信，专注才能深耕，专业才能致远。未来我会继续带领分析部，聚焦客人体验的每一个细节，用更精准的数据分析、更高效的执行落地，为酒店的服务升级注入持续动力。\"",
+                para9: "从 2005 年 11 月 18 日的初遇，到如今的深耕不辍，王芳用二十年的坚守诠释了 \"专业\" 与 \"责任\" 的含义。在 R∞M 酒店这座承载着无数故事的空间里，她始终以幕后者的姿态，用数据为笔、以专业为墨，书写着属于服务者的温度与力量。"
+            },
+            en: {
+                wechatTitle: "R∞M Hotel",
+                articleTitle: "Two Decades of Dedication: Building Service Warmth with Professional Insight — Interview with Wang Fang, Head of Analytics Department at R∞M Hotel",
+                articleAuthor: "R∞M Hotel",
+                articleDate: "01 15, 2025",
+                articleViews: "25K views",
+                likeText: "Like",
+                shareText: "Share",
+                collectText: "Favorite",
+                authorName: "R∞M Hotel Editorial",
+                authorDesc: "In-depth interviews, recording stories of service professionals",
+                footerTitle: "R∞M Hotel",
+                footerDesc: "Beyond Hospitality, Into Experience",
+                footerScanTip: "Long press to identify QR code and follow",
+                copyright: "This article is originally published by R∞M Hotel, please indicate the source when reposting",
+                viewOriginal: "Read original",
+                bottomLikeText: "Like",
+                bottomCommentText: "Watch",
+                bottomFavoriteText: "Favorite",
+                bottomShareText: "Share",
+                
+                para1: "At R∞M Hotel, there is a \"behind-the-scenes hero\": she has been deeply engaged in the field of data analysis for two decades, optimizing every service detail with precise insights, and safeguarding the hotel's service upgrades with professional expertise. She is Wang Fang, Head of the Analytics Department, a service practitioner who always adheres to the principle of \"understanding guests' needs\" as her original intention.",
+                section1Title: "Two Decades of Perseverance, Growing with the Hotel",
+                para2: "Speaking of her connection with R∞M Hotel, Wang Fang's eyes are full of determination: \"November 18, 2005, was the day I officially joined R∞M Hotel. I still remember being deeply attracted by its philosophy of 'respecting every individual experience' when I first walked into this building with its unique character.\" From an initial data analysis specialist to the current department head, over twenty years, Wang Fang has witnessed the steady development of the hotel and closely linked her professional growth with the hotel's service upgrades.",
+                para3: "\"When I first joined, the work of the analytics department was still focused on basic check-in data statistics,\" Wang Fang recalled. \"But Mr. RIKI (Hotel Administrator) always emphasized, 'Truly excellent service stems from insight into guests' hidden needs.' This sentence has become the core principle of my work for many years.\" With her sensitivity to data and extreme pursuit of service excellence, Wang Fang led the establishment of the hotel's first \"Guest Experience Dynamic Analysis Model,\" integrating multi-dimensional data such as stay preferences, service feedback, and consumption habits to provide precise decision support for room service, dining customization, and event planning.",
+                quote1: "\"Truly excellent service stems from insight into guests' hidden needs.\" — Mr. RIKI, R∞M Hotel Administrator",
+                section2Title: "Professional Foundation, Becoming the Team's 'Anchor'",
+                para4: "As the core of the analytics department, Wang Fang's work ability is highly recognized by the team. \"Director Wang can always find the key breakthrough from complex data,\" a department colleague commented. \"Last year, when the hotel launched the 'Customized Room Service,' it was her analysis of guest feedback data from the past three years that discovered unmet needs such as 'personalized scene arrangement' and 'emotional detail care,' providing the core basis for the project's implementation.\"",
+                para5: "\"The analytics department is the 'think tank' of hotel service, and Wang Fang's professional judgment and efficient execution maximize the value of this 'think tank.' She can always accurately grasp the direction of service optimization, both maintaining the hotel's service baseline and continuously exploring innovation space.\" Faced with recognition, Wang Fang remains humble: \"The hotel has given me full trust and room to showcase my abilities, and what I can do is use the most solid professional capabilities to live up to this trust.\"",
+                section3Title: "Insight into People, Making Service More Than Just 'Standard'",
+                para6: "Years of work experience have made Wang Fang deeply understand that the essence of hotel service is \"human connection.\" \"Data is cold, but the people behind it are warm,\" she shared. \"We analyze not only numbers but also the emotional needs behind the numbers—perhaps a business guest's extreme requirement for a quiet working environment, a couple's longing for a romantic atmosphere, or a solo traveler's expectation of a sense of security.\"",
+                para7: "Based on this understanding, Wang Fang led the team to incorporate more \"humanistic perspectives\" into data analysis: by analyzing details such as guests' check-in times, special requests, and feedback tone, they refined细分标签 such as \"highly sensitive需求 guests\" and \"ritual-seeking guests,\" providing more targeted guidance for front-line service. \"For example, we found that some guests repeatedly confirm room privacy during check-in. For this group, we communicate privacy protection measures in advance during reservation and simplify unnecessary disturbance processes during check-in,\" Wang Fang exemplified. \"There is no standard answer to service, but professional analysis can bring us closer to guests' real needs.\"",
+                section4Title: "Staying True to the Original Intention, Continuing to Write a New Chapter of Service",
+                para8: "Speaking of future plans, Wang Fang stated: \"Twenty years of accumulation have made me more convinced that focus leads to depth and professionalism leads to distance. In the future, I will continue to lead the analytics department, focusing on every detail of the guest experience, using more precise data analysis and more efficient implementation to inject continuous momentum into the hotel's service upgrades.\"",
+                para9: "From the first encounter on November 18, 2005, to the current deep cultivation, Wang Fang has interpreted the meaning of \"professionalism\" and \"responsibility\" with twenty years of perseverance. In R∞M Hotel, a space carrying countless stories, she always maintains a behind-the-scenes posture, using data as a pen and professionalism as ink, writing the warmth and power belonging to service professionals."
+            },
+            ja: {
+                wechatTitle: "R∞Mホテル",
+                articleTitle: "20年の深耕、専門的洞察でサービス温度を構築 —— R∞Mホテル分析部門主管・王芳へのインタビュー",
+                articleAuthor: "R∞Mホテル",
+                articleDate: "2025-01-15",
+                articleViews: "2.5万回閲覧",
+                likeText: "いいね",
+                shareText: "シェア",
+                collectText: "お気に入り",
+                authorName: "R∞Mホテル編集部",
+                authorDesc: "サービスマンの物語を記録する深度インタビュー",
+                footerTitle: "R∞Mホテル",
+                footerDesc: "Beyond Hospitality, Into Experience",
+                footerScanTip: "QRコードを長押しして識別し、フォローしてください",
+                copyright: "本記事はR∞Mホテルがオリジナルで発表したもので、転載の際は出典を明記してください",
+                viewOriginal: "原文を読む",
+                bottomLikeText: "いいね",
+                bottomCommentText: "見てる",
+                bottomFavoriteText: "お気に入り",
+                bottomShareText: "シェア",
+                
+                para1: "R∞Mホテルには、こんな「裏方の功労者」がいます：データ分析分野に20年間深く関わり、正確な洞察でサービス詳細を最適化し、専門的な蓄積でホテルのサービスアップグレードを守っています。彼女は分析部門主管の王芳で、常に「ゲストのニーズを理解する」を初心とするサービス実践者です。",
+                section1Title: "20年の堅持、ホテルと共に成長",
+                para2: "R∞Mホテルとの縁について、王芳の目は確信に満ちています：「2005年11月18日、私が正式にR∞Mホテルに入社した日です。今でも、この独特な気質を持つ建物に初めて入った時、その『一人一人の体験を尊重する』理念に深く魅了されたことを覚えています。」最初のデータ分析担当から現在の部門主管まで、20年間、王芳はホテルの着実な発展を目撃し、自分のキャリア成長をホテルのサービスアップグレードと密接に結びつけました。",
+                para3: "「入社したばかりの頃、分析部門の仕事は基本的な宿泊データ統計に集中していました。」王芳は回想します。「しかし、RIKI氏（ホテル管理者）は常に『真に優れたサービスは、ゲストの隠れたニーズへの洞察に由来する』と強調していました。この言葉は私の長年の仕事の核心原則となりました。」データへの敏感さとサービスへの極致の追求により、王芳はホテル初の「ゲスト体験動的分析モデル」の構築を主導し、宿泊嗜好、サービスフィードバック、消費習慣などの多次元データを統合して、客室サービス、飲食カスタマイズ、イベント企画などに正確な意思決定サポートを提供しました。",
+                quote1: "「真に優れたサービスは、ゲストの隠れたニーズへの洞察に由来する。」 —— RIKI氏、R∞Mホテル管理者",
+                section2Title: "専門性を基盤に、チームの「定海神針」となる",
+                para4: "分析部門の中核として、王芳の仕事能力はチームで高く評価されています。「王主管はいつも複雑なデータから重要な突破口を見つけることができます。」部門の同僚はこう評価します。「昨年ホテルが『カスタマイズ客室サービス』を導入した時、彼女が過去3年間のゲストフィードバックデータを分析し、『個性的なシーン配置』『感情的なディテールケア』などの満たされていないニーズを発見し、プロジェクト実施の核心的根拠を提供したのです。」",
+                para5: "「分析部門はホテルサービスの『頭脳集団』であり、王芳の専門的判断と効率的な実行は、この『頭脳』の価値を最大限に発揮させています。彼女はサービス最適化の方向性を正確に把握し、ホテルのサービス基盤を守りながら、継続的に革新の余地を掘り下げることができます。」認められても、王芳は常に謙虚です：「ホテルは私に十分な信頼と活躍の場を与えてくれました。私ができることは、最も確かな専門能力で、この信頼に背かないことです。」",
+                section3Title: "人心を洞察し、サービスを「標準」以上にする",
+                para6: "長年の仕事経験から、王芳はホテルサービスの本質が「人と人のつながり」であることを深く理解しています。「データは冷たいですが、その背後にいる人は温かいです。」彼女は共有します。「私たちが分析するのは数字だけでなく、数字の背後にある感情的なニーズです——ビジネス客の静かなオフィス環境に対する極端な要求かもしれないし、カップルのロマンチックな雰囲気への憧れかもしれないし、一人旅のゲストの安全感への期待かもしれません。」",
+                para7: "このような認識に基づき、王芳はチームを率いてデータ分析により多くの「人文的視点」を取り入れました：ゲストの宿泊時間帯、特別な要求、フィードバックの口調などの詳細を分析し、「高敏感ニーズゲスト」「儀式感ニーズゲスト」などの細分ラベルを精錬し、現場サービスによりターゲットを絞ったガイダンスを提供しました。「例えば、一部のゲストがチェックイン時に部屋のプライバシーを繰り返し確認することがわかりました。このグループに対して、私たちは予約時に事前にプライバシー保護措置を伝え、チェックイン時に不要な干渉プロセスを簡素化します。」王芳は例を挙げて説明します。「サービスに標準的な答えはありませんが、専門的な分析は私たちをゲストの真のニーズに近づけることができます。」",
+                section4Title: "初心を守り、サービス新章を書き続ける",
+                para8: "将来の計画について、王芳は次のように述べています：「20年の蓄積により、私はより確信を持っています：集中すれば深耕でき、専門的であれば遠くまで行けます。今後も分析部門を率いて、ゲスト体験の細部に焦点を当て、より正確なデータ分析、より効率的な実施で、ホテルのサービスアップグレードに持続的な原動力を注入していきます。」",
+                para9: "2005年11月18日の初めての出会いから現在の深耕まで、王芳は20年の堅持で「専門性」と「責任」の意味を解釈しました。R∞Mホテルという無数の物語を担う空間で、彼女は常に裏方の姿勢で、データを筆に、専門性をインクにして、サービス提供者の温かみと力を書き記しています。"
+            },
+            pt: {
+                wechatTitle: "Hotel R∞M",
+                articleTitle: "Duas Décadas de Dedicacão: Construindo a Temperatura do Serviço com Insights Profissionais — Entrevista com Wang Fang, Chefe do Departamento de Análise do Hotel R∞M",
+                articleAuthor: "Hotel R∞M",
+                articleDate: "15 01 2025",
+                articleViews: "25K visualizações",
+                likeText: "Curtir",
+                shareText: "Compartilhar",
+                collectText: "Favoritar",
+                authorName: "Redação do Hotel R∞M",
+                authorDesc: "Entrevistas aprofundadas, registrando histórias de profissionais de serviço",
+                footerTitle: "Hotel R∞M",
+                footerDesc: "Beyond Hospitality, Into Experience",
+                footerScanTip: "Pressione longamente para identificar o código QR e seguir",
+                copyright: "Este artigo é publicado originalmente pelo Hotel R∞M, indique a fonte ao reproduzir",
+                viewOriginal: "Ler original",
+                bottomLikeText: "Curtir",
+                bottomCommentText: "Ver",
+                bottomFavoriteText: "Favoritar",
+                bottomShareText: "Compartilhar",
+                
+                para1: "No Hotel R∞M, há uma \"heroína nos bastidores\": ela está profundamente envolvida no campo de análise de dados há duas décadas, otimizando cada detalhe do serviço com insights precisos e protegendo as atualizações do serviço do hotel com expertise profissional. Ela é Wang Fang, Chefe do Departamento de Análise, uma praticante de serviço que sempre adere ao princípio de \"entender as necessidades dos hóspedes\" como sua intenção original.",
+                section1Title: "Duas Décadas de Perseverança, Crescendo com o Hotel",
+                para2: "Falando de sua conexão com o Hotel R∞M, os olhos de Wang Fang estão cheios de determinação: \"18 de novembro de 2005 foi o dia em que oficialmente entrei no Hotel R∞M. Ainda me lembro de ter sido profundamente atraída por sua filosofia de 'respeitar cada experiência individual' quando entrei pela primeira vez neste edifício com seu caráter único.\" De especialista inicial em análise de dados à atual chefe de departamento, ao longo de vinte anos, Wang Fang testemunhou o desenvolvimento constante do hotel e vinculou seu crescimento profissional às atualizações do serviço do hotel.",
+                para3: "\"Quando entrei, o trabalho do departamento de análise ainda estava focado em estatísticas básicas de dados de check-in,\" Wang Fang recordou. \"Mas o Sr. RIKI (Administrador do Hotel) sempre enfatizou: 'O serviço verdadeiramente excelente vem da percepção das necessidades ocultas dos hóspedes.' Esta frase tornou-se o princípio central do meu trabalho por muitos anos.\" Com sua sensibilidade para dados e busca extrema pela excelência do serviço, Wang Fang liderou a criação do primeiro \"Modelo de Análise Dinâmica da Experiência do Hóspede\" do hotel, integrando dados multidimensionais como preferências de estadia, feedback do serviço e hábitos de consumo para fornecer suporte preciso à tomada de decisões para serviço de quarto, personalização de refeições e planejamento de eventos.",
+                quote1: "\"O serviço verdadeiramente excelente vem da percepção das necessidades ocultas dos hóspedes.\" — Sr. RIKI, Administrador do Hotel R∞M",
+                section2Title: "Fundação Profissional, Tornando-se a 'Âncora' da Equipe",
+                para4: "Como núcleo do departamento de análise, a capacidade de trabalho de Wang Fang é altamente reconhecida pela equipe. \"A Diretora Wang sempre consegue encontrar o ponto de ruptura chave a partir de dados complexos,\" comentou um colega do departamento. \"No ano passado, quando o hotel lançou o 'Serviço de Quarto Personalizado', foi sua análise dos dados de feedback dos hóspedes dos últimos três anos que descobriu necessidades não atendidas como 'arranjo de cena personalizado' e 'cuidado emocional com detalhes', fornecendo a base central para a implementação do projeto.\"",
+                para5: "\"O departamento de análise é o 'think tank' do serviço do hotel, e o julgamento profissional e execução eficiente de Wang Fang maximizam o valor deste 'think tank'. Ela sempre consegue captar com precisão a direção da otimização do serviço, mantendo a linha de base do serviço do hotel e explorando continuamente espaço para inovação.\" Diante do reconhecimento, Wang Fang permanece humilde: \"O hotel me deu total confiança e espaço para mostrar minhas habilidades, e o que posso fazer é usar as capacidades profissionais mais sólidas para corresponder a essa confiança.\"",
+                section3Title: "Percepção das Pessoas, Fazendo o Serviço Mais do que Apenas 'Padrão'",
+                para6: "Anos de experiência de trabalho fizeram Wang Fang compreender profundamente que a essência do serviço hoteleiro é a \"conexão humana\". \"Os dados são frios, mas as pessoas por trás deles são quentes,\" ela compartilhou. \"Analisamos não apenas números, mas também as necessidades emocionais por trás dos números—talvez a exigência extrema de um hóspede de negócios por um ambiente de trabalho silencioso, o desejo de um casal por uma atmosfera romântica, ou a expectativa de um viajante solitário por uma sensação de segurança.\"",
+                para7: "Com base nesse entendimento, Wang Fang liderou a equipe para incorporar mais \"perspectivas humanísticas\" à análise de dados: analisando detalhes como horários de check-in dos hóspedes, solicitações especiais e tom de feedback, eles refinaram rótulos como \"hóspedes com necessidades altamente sensíveis\" e \"hóspedes que buscam ritual\", fornecendo orientação mais direcionada para o serviço de linha de frente. \"Por exemplo, descobrimos que alguns hóspedes confirmam repetidamente a privacidade do quarto durante o check-in. Para esse grupo, comunicamos medidas de proteção de privacidade antecipadamente durante a reserva e simplificamos processos de perturbação desnecessários durante o check-in,\" exemplificou Wang Fang. \"Não há resposta padrão para o serviço, mas a análise profissional pode nos aproximar das necessidades reais dos hóspedes.\"",
+                section4Title: "Mantendo a Intenção Original, Continuando a Escrever um Novo Capítulo de Serviço",
+                para8: "Falando de planos futuros, Wang Fang afirmou: \"Vinte anos de acumulação me convenceram ainda mais de que o foco leva à profundidade e o profissionalismo leva à distância. No futuro, continuarei liderando o departamento de análise, focando em cada detalhe da experiência do hóspede, usando análise de dados mais precisa e implementação mais eficiente para injetar impulso contínuo nas atualizações do serviço do hotel.\"",
+                para9: "Do primeiro encontro em 18 de novembro de 2005 até o cultivo profundo atual, Wang Fang interpretou o significado de \"profissionalismo\" e \"responsabilidade\" com vinte anos de perseverança. No Hotel R∞M, um espaço que carrega inúmeras histórias, ela sempre mantém uma postura nos bastidores, usando dados como caneta e profissionalismo como tinta, escrevendo o calor e o poder pertencentes aos profissionais de serviço."
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'zh';
+
+        // DOM元素
+        const langBtn = document.getElementById('langBtn');
+        const langOptions = document.getElementById('langOptions');
+        const langOptionElements = document.querySelectorAll('.lang-option');
+        
+        // 显示/隐藏语言选项
+        langBtn.addEventListener('click', function() {
+            langOptions.classList.toggle('show');
+        });
+
+        // 点击语言选项
+        langOptionElements.forEach(option => {
+            option.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                if (lang !== currentLang) {
+                    // 更新当前语言
+                    currentLang = lang;
+                    
+                    // 更新界面语言
+                    updateLanguage();
+                    
+                    // 更新语言选项的选中状态
+                    langOptionElements.forEach(opt => {
+                        if (opt.getAttribute('data-lang') === lang) {
+                            opt.classList.add('active');
+                        } else {
+                            opt.classList.remove('active');
+                        }
+                    });
+                }
+                
+                // 隐藏语言选项
+                langOptions.classList.remove('show');
+            });
+        });
+
+        // 更新页面语言
+        function updateLanguage() {
+            const t = translations[currentLang];
+            
+            // 更新界面元素
+            document.getElementById('wechatTitle').textContent = t.wechatTitle;
+            document.getElementById('articleTitle').textContent = t.articleTitle;
+            document.getElementById('articleAuthor').textContent = t.articleAuthor;
+            document.getElementById('articleDate').textContent = t.articleDate;
+            document.getElementById('articleViews').textContent = t.articleViews;
+            document.getElementById('likeText').textContent = t.likeText;
+            document.getElementById('shareText').textContent = t.shareText;
+            document.getElementById('collectText').textContent = t.collectText;
+            document.getElementById('authorName').textContent = t.authorName;
+            document.getElementById('authorDesc').textContent = t.authorDesc;
+            document.getElementById('footerTitle').textContent = t.footerTitle;
+            document.getElementById('footerDesc').textContent = t.footerDesc;
+            document.getElementById('footerScanTip').textContent = t.footerScanTip;
+            document.getElementById('copyright').textContent = t.copyright;
+            document.getElementById('viewOriginal').textContent = t.viewOriginal;
+            document.getElementById('bottomLikeText').textContent = t.bottomLikeText;
+            document.getElementById('bottomCommentText').textContent = t.bottomCommentText;
+            document.getElementById('bottomFavoriteText').textContent = t.bottomFavoriteText;
+            document.getElementById('bottomShareText').textContent = t.bottomShareText;
+            
+            // 更新文章内容
+            document.getElementById('para1').textContent = t.para1;
+            document.getElementById('section1Title').textContent = t.section1Title;
+            document.getElementById('para2').textContent = t.para2;
+            document.getElementById('para3').textContent = t.para3;
+            document.getElementById('quote1').textContent = t.quote1;
+            document.getElementById('section2Title').textContent = t.section2Title;
+            document.getElementById('para4').textContent = t.para4;
+            document.getElementById('para5').textContent = t.para5;
+            document.getElementById('section3Title').textContent = t.section3Title;
+            document.getElementById('para6').textContent = t.para6;
+            document.getElementById('para7').textContent = t.para7;
+            document.getElementById('section4Title').textContent = t.section4Title;
+            document.getElementById('para8').textContent = t.para8;
+            document.getElementById('para9').textContent = t.para9;
+        }
+
+        // 互动按钮功能
+        const likeBtn = document.getElementById('likeBtn');
+        const bottomLikeBtn = document.getElementById('bottomLike');
+        const shareBtn = document.getElementById('shareBtn');
+        const collectBtn = document.getElementById('collectBtn');
+        
+        let liked = false;
+        let collected = false;
+        
+        function toggleLike() {
+            liked = !liked;
+            const likeIcon = likeBtn.querySelector('i');
+            const bottomLikeIcon = bottomLikeBtn.querySelector('i');
+            const likeText = likeBtn.querySelector('span');
+            const bottomLikeText = bottomLikeBtn.querySelector('span');
+            
+            if (liked) {
+                likeIcon.className = 'fas fa-thumbs-up';
+                bottomLikeIcon.className = 'fas fa-thumbs-up';
+                likeIcon.style.color = '#07c160';
+                bottomLikeIcon.style.color = '#07c160';
+                likeText.textContent = translations[currentLang].likeText + ' ✓';
+                bottomLikeText.textContent = translations[currentLang].bottomLikeText + ' ✓';
+            } else {
+                likeIcon.className = 'far fa-thumbs-up';
+                bottomLikeIcon.className = 'far fa-thumbs-up';
+                likeIcon.style.color = '';
+                bottomLikeIcon.style.color = '';
+                likeText.textContent = translations[currentLang].likeText;
+                bottomLikeText.textContent = translations[currentLang].bottomLikeText;
+            }
+        }
+        
+        likeBtn.addEventListener('click', toggleLike);
+        bottomLikeBtn.addEventListener('click', toggleLike);
+        
+        collectBtn.addEventListener('click', function() {
+            collected = !collected;
+            const collectIcon = this.querySelector('i');
+            const collectText = this.querySelector('span');
+            const bottomFavoriteIcon = document.getElementById('bottomFavorite').querySelector('i');
+            const bottomFavoriteText = document.getElementById('bottomFavorite').querySelector('span');
+            
+            if (collected) {
+                collectIcon.className = 'fas fa-star';
+                bottomFavoriteIcon.className = 'fas fa-star';
+                collectIcon.style.color = '#07c160';
+                bottomFavoriteIcon.style.color = '#07c160';
+                collectText.textContent = translations[currentLang].collectText + ' ✓';
+                bottomFavoriteText.textContent = translations[currentLang].bottomFavoriteText + ' ✓';
+            } else {
+                collectIcon.className = 'far fa-star';
+                bottomFavoriteIcon.className = 'far fa-star';
+                collectIcon.style.color = '';
+                bottomFavoriteIcon.style.color = '';
+                collectText.textContent = translations[currentLang].collectText;
+                bottomFavoriteText.textContent = translations[currentLang].bottomFavoriteText;
+            }
+        });
+        
+        shareBtn.addEventListener('click', function() {
+            alert(translations[currentLang].shareText + " " + document.getElementById('articleTitle').textContent);
+        });
+        
+        document.getElementById('bottomShare').addEventListener('click', function() {
+            alert(translations[currentLang].bottomShareText + " " + document.getElementById('articleTitle').textContent);
+        });
+
+        // 点击页面其他地方关闭语言选项
+        document.addEventListener('click', function(event) {
+            if (!langBtn.contains(event.target) && !langOptions.contains(event.target)) {
+                langOptions.classList.remove('show');
+            }
+        });
+
+        // 页面加载时设置图片
+        window.addEventListener('load', function() {
+            const articleImage = document.getElementById('articleImage');
+            const articleImagePlaceholder = document.getElementById('articleImagePlaceholder');
+            
+            // 使用一个酒店相关的免费图片
+            articleImage.src = '酒店.jpg';
+            articleImage.onload = function() {
+                articleImagePlaceholder.style.display = 'none';
+                articleImage.style.display = 'block';
+            };
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 安保系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M安保系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 安保系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="personal-dashboard">
+          <span data-i18n="nav.dashboard">安保工作台</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="guest-records">
+          <span data-i18n="nav.records">客房记录</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="monitor-system">
+          <span data-i18n="nav.monitor">监控系统</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="patrol-records">
+          <span data-i18n="nav.patrol">巡逻记录</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="work-log">
+          <span data-i18n="nav.worklog">工作日志</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="staff-forum">
+          <span data-i18n="nav.forum">员工论坛</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 搜索框 -->
+        <div class="relative group">
+          <input type="text" placeholder="搜索..." class="bg-primary/40 border border-accent/30 rounded-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent w-40 transition-all duration-300 group-hover:w-52 terminal-font">
+          <i class="fa fa-search text-accent absolute right-3 top-1/2 transform -translate-y-1/2"></i>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">赵强</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20">安保部 - 赵强</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="personal-dashboard" data-i18n="nav.dashboard">安保工作台</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="guest-records" data-i18n="nav.records">客房记录</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="monitor-system" data-i18n="nav.monitor">监控系统</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="patrol-records" data-i18n="nav.patrol">巡逻记录</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="work-log" data-i18n="nav.worklog">工作日志</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="staff-forum" data-i18n="nav.forum">员工论坛</a>
+        
+        <!-- 移动端语言切换 -->
+        <div class="border-t border-gray-700 pt-4 mt-4">
+          <div class="px-4 py-2 text-sm text-gray-400" data-i18n="language">语言</div>
+          <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+          <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+          <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+          <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 安保工作台 -->
+    <section id="personal-dashboard" class="page-section active py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white" data-i18n="dashboard.title">安保工作台</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <!-- 快速访问卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="monitor-system">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.cameras">监控摄像头</h3>
+              <i class="fa fa-video-camera text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.camerasDesc">在线监控摄像头</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">42个在线</span>
+              <span class="text-success text-sm">3个离线</span>
+            </div>
+          </a>
+          
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="patrol-records">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.todayPatrols">今日巡逻</h3>
+              <i class="fa fa-shield text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.todayPatrolsDesc">今日已完成巡逻</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">8次巡逻</span>
+              <span class="text-warning text-sm">2次待完成</span>
+            </div>
+          </a>
+          
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="guest-records">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.suspicious">可疑行为</h3>
+              <i class="fa fa-user-secret text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.suspiciousDesc">今日可疑行为报告</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">3个报告</span>
+              <span class="text-warning text-sm">需要调查</span>
+            </div>
+          </a>
+          
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="work-log">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.workLog">工作日志</h3>
+              <i class="fa fa-file-text text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.workLogDesc">今日工作记录</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">5个日志</span>
+              <span class="text-success text-sm">全部完成</span>
+            </div>
+          </a>
+        </div>
+        
+        <!-- 今日重要提醒 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20 mb-6">
+          <h2 class="text-xl font-semibold mb-4 text-white" data-i18n="dashboard.importantReminders">今日重要提醒</h2>
+          <div class="space-y-4">
+            <div class="system-message">
+              <p class="text-success terminal-font">> <span data-i18n="dashboard.systemStatus">系统状态：正常运行</span></p>
+            </div>
+            <div class="system-message">
+              <p class="text-warning terminal-font">
+                > <span data-i18n="dashboard.alertReminder">警报：143号房间检测到异常声音模式，需要调查</span>
+              </p>
+            </div>
+            <div class="system-message">
+              <p class="text-warning terminal-font">> <span data-i18n="dashboard.cameraReminder">通知：东侧走廊3号摄像头离线，已安排维修</span></p>
+            </div>
+            <div class="system-message">
+              <p class="text-gray-300 terminal-font">
+                > <span data-i18n="dashboard.patrolReminder">重要：VIP区域需要额外巡逻，已安排加强安保</span>
+              </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-accent/20">
+              <p class="text-gray-400 text-sm terminal-font">> <span data-i18n="dashboard.schedule">今日排班：赵强 (08:00-16:00) | 王刚 (16:00-24:00)</span></p>
+              <p class="text-gray-400 text-sm terminal-font">> <span data-i18n="dashboard.performance">安保绩效：响应时间优秀 | 事件处理率 100%</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 客房记录部分 -->
+    <section id="guest-records" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="records.title">客房记录</h2>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-white" data-i18n="records.allRecords">所有客房记录</h3>
+            <div class="flex space-x-4">
+              <div class="relative">
+                <input type="text" id="record-search" placeholder="搜索记录..." class="bg-primary/60 border border-accent/30 rounded-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent w-64 terminal-font" data-i18n-placeholder="records.searchPlaceholder">
+                <i class="fa fa-search text-accent absolute right-3 top-1/2 transform -translate-y-1/2"></i>
+              </div>
+              <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-filter mr-2"></i>
+                <span data-i18n="records.filter">筛选</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 房间页签 -->
+          <div class="mb-6 border-b border-accent/20">
+            <div class="flex space-x-4">
+              <button class="room-tab py-2 px-4 text-white border-b-2 border-accent transition-colors" data-room-page="1">第1页</button>
+              <button class="room-tab py-2 px-4 text-gray-400 hover:text-white transition-colors" data-room-page="2">第2页</button>
+              <button class="room-tab py-2 px-4 text-gray-400 hover:text-white transition-colors" data-room-page="3">第3页</button>
+            </div>
+          </div>
+          
+          <div class="space-y-4" id="record-list">
+            <!-- 记录将通过JavaScript动态加载 -->
+          </div>
+          
+          <!-- 分页控件 -->
+          <div class="mt-6 flex justify-between items-center">
+            <div class="text-gray-400 text-sm" id="record-page-info">
+              <span data-i18n="records.showing">显示 1-8 条，共 24 条记录</span>
+            </div>
+            <div class="flex space-x-2">
+              <button id="record-prev" class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="records.previous">上一页</span>
+              </button>
+              <button id="record-next" class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="records.next">下一页</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 监控系统部分 -->
+    <section id="monitor-system" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="monitor.title">监控系统</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <!-- 实时监控 -->
+          <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="monitor.live">实时监控</h3>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="bg-dark p-4 rounded-sm border border-accent/20">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-white text-sm" data-i18n="monitor.camera">摄像头</span>
+                  <span class="text-success text-xs">在线</span>
+                </div>
+                <div class="bg-black h-32 rounded-sm flex items-center justify-center overflow-hidden">
+                <img src="大堂.jpg" alt="大堂 - CAM-01" class="w-full h-full object-cover" />                </div>
+              </div>
+              <div class="bg-dark p-4 rounded-sm border border-accent/20">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-white text-sm" data-i18n="monitor.camera">摄像头</span>
+                  <span class="text-success text-xs">在线</span>
+                </div>
+                <div class="bg-black h-32 rounded-sm flex items-center justify-center overflow-hidden">
+                <img src="电梯.jpg" alt="电梯厅 - CAM-07" class="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+            <div class="flex space-x-2">
+              <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex-1">
+                <span data-i18n="monitor.fullView">完整视图</span>
+              </button>
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors flex-1">
+                <span data-i18n="monitor.recordings">查看录像</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 摄像头状态 -->
+          <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="monitor.cameraStatus">摄像头状态</h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-white text-sm" data-i18n="monitor.online">在线摄像头</span>
+                  <span class="text-success text-sm">42/45</span>
+                </div>
+                <div class="w-full bg-dark rounded-full h-2">
+                  <div class="bg-success h-2 rounded-full" style="width: 93%"></div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-white text-sm" data-i18n="monitor.offline">离线摄像头</span>
+                  <span class="text-warning text-sm">3/45</span>
+                </div>
+                <div class="w-full bg-dark rounded-full h-2">
+                  <div class="bg-warning h-2 rounded-full" style="width: 7%"></div>
+                </div>
+              </div>
+              
+              <div class="pt-2">
+                <h4 class="text-white font-medium mb-2" data-i18n="monitor.offlineList">离线摄像头列表</h4>
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center p-2 hover:bg-accent/10 rounded-sm">
+                    <div>
+                      <span class="text-white">CAM-23 - <span data-i18n="monitor.eastCorridor">东侧走廊</span></span>
+                      <span class="text-gray-400 text-sm ml-2" data-i18n="monitor.offlineSince">离线3小时</span>
+                    </div>
+                    <span class="text-warning text-sm" data-i18n="monitor.maintenance">维修中</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 hover:bg-accent/10 rounded-sm">
+                    <div>
+                      <span class="text-white">CAM-31 - <span data-i18n="monitor.storage">储藏室</span></span>
+                      <span class="text-gray-400 text-sm ml-2" data-i18n="monitor.offlineSince">离线1小时</span>
+                    </div>
+                    <span class="text-warning text-sm" data-i18n="monitor.investigating">调查中</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 hover:bg-accent/10 rounded-sm">
+                    <div>
+                      <span class="text-white">CAM-42 - <span data-i18n="monitor.parking">停车场B区</span></span>
+                      <span class="text-gray-400 text-sm ml-2" data-i18n="monitor.offlineSince">离线15分钟</span>
+                    </div>
+                    <span class="text-warning text-sm" data-i18n="monitor.investigating">调查中</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 巡逻记录部分 -->
+    <section id="patrol-records" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="patrol.title">巡逻记录</h2>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="patrol.newRecord">新建巡逻记录</h3>
+          <form class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-2 text-white" data-i18n="patrol.route">巡逻路线</label>
+                <select class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font">
+                  <option value="" data-i18n="patrol.selectRoute">选择巡逻路线</option>
+                  <option value="A" data-i18n="patrol.routeA">路线A - 大堂及前台区域</option>
+                  <option value="B" data-i18n="patrol.routeB">路线B - 客房楼层1-10层</option>
+                  <option value="C" data-i18n="patrol.routeC">路线C - 客房楼层11-20层</option>
+                  <option value="D" data-i18n="patrol.routeD">路线D - 餐厅及娱乐设施</option>
+                  <option value="E" data-i18n="patrol.routeE">路线E - 停车场及外围</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2 text-white" data-i18n="patrol.time">巡逻时间</label>
+                <input type="time" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2 text-white" data-i18n="patrol.observations">观察记录</label>
+              <textarea rows="6" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="记录巡逻过程中的观察情况..." data-i18n-placeholder="patrol.observationsPlaceholder"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2 text-white" data-i18n="patrol.incidents">事件记录</label>
+              <textarea rows="4" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="记录巡逻过程中发生的事件..." data-i18n-placeholder="patrol.incidentsPlaceholder"></textarea>
+            </div>
+            <div class="pt-2">
+              <button type="submit" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300">
+                <span data-i18n="patrol.save">保存记录</span>
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- 历史巡逻记录 -->
+        <div class="mt-6 bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="patrol.history">历史巡逻记录</h3>
+          <div class="space-y-4">
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">2025-11-19 <span data-i18n="patrol.routeB">路线B - 客房楼层1-10层</span></h4>
+                <span class="text-gray-400 text-sm" data-i18n="patrol.yesterday">昨天 14:30</span>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="patrol.log1">正常巡逻，发现143号房间有异常声音，已记录并上报。其他区域无异常。</p>
+              <div class="text-xs text-gray-400" data-i18n="patrol.patrolBy">巡逻人：赵强</div>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">2025-11-18 <span data-i18n="patrol.routeA">路线A - 大堂及前台区域</span></h4>
+                <span class="text-gray-400 text-sm" data-i18n="patrol.twoDaysAgo">2天前 10:15</span>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="patrol.log2">发现一名可疑人员在酒店外徘徊，已上前询问并记录身份信息。内部区域一切正常。</p>
+              <div class="text-xs text-gray-400" data-i18n="patrol.patrolBy">巡逻人：赵强</div>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">2025-11-17 <span data-i18n="patrol.routeC">路线C - 客房楼层11-20层</span></h4>
+                <span class="text-gray-400 text-sm" data-i18n="patrol.threeDaysAgo">3天前 16:45</span>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="patrol.log3">发现902号房间有异常噪音，调查后发现是客人音响设备问题，已协助解决。</p>
+              <div class="text-xs text-gray-400" data-i18n="patrol.patrolBy">巡逻人：王刚</div>
+            </div>
+          </div>
+          
+          <!-- 分页控件 -->
+          <div class="mt-6 flex justify-between items-center">
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="patrol.showing">显示 1-3 条，共 24 条记录</span>
+            </div>
+            <div class="flex space-x-2">
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="patrol.previous">上一页</span>
+              </button>
+              <button class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="patrol.next">下一页</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 工作日志部分 -->
+    <section id="work-log" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="worklog.title">工作日志</h2>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="worklog.newLog">新建工作日志</h3>
+          <form class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2 text-white" data-i18n="worklog.title">标题</label>
+              <input type="text" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="输入日志标题" data-i18n-placeholder="worklog.titlePlaceholder">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2 text-white" data-i18n="worklog.content">内容</label>
+              <textarea rows="12" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="记录您的工作情况、安全事件和重要事项..." data-i18n-placeholder="worklog.contentPlaceholder"></textarea>
+            </div>
+            <div class="pt-2">
+              <button type="submit" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300">
+                <span data-i18n="worklog.save">保存日志</span>
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- 历史日志 -->
+        <div class="mt-6 bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="worklog.history">历史工作日志</h3>
+          <div class="space-y-4">
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">2025-11-19 <span data-i18n="worklog.workLog">工作日志</span></h4>
+                <span class="text-gray-400 text-sm" data-i18n="worklog.yesterday">昨天 18:30</span>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log1">今日处理安全警报5个，完成巡逻4次。143号房间声音异常持续，需要进一步调查。监控系统运行正常。</p>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">2025-11-18 <span data-i18n="worklog.workLog">工作日志</span></h4>
+                <span class="text-gray-400 text-sm" data-i18n="worklog.twoDaysAgo">2天前 18:45</span>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log2">今日工作正常，处理安保请求3个。发现一名可疑人员在酒店外徘徊，已记录并上报。监控摄像头维护完成。</p>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">2025-11-17 <span data-i18n="worklog.workLog">工作日志</span></h4>
+                <span class="text-gray-400 text-sm" data-i18n="worklog.threeDaysAgo">3天前 18:20</span>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log3">今日处理902号房间噪音投诉，协助客人调整音响设备。完成所有巡逻路线，无异常情况报告。</p>
+            </div>
+          </div>
+          
+          <!-- 分页控件 -->
+          <div class="mt-6 flex justify-between items-center">
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="worklog.showing">显示 1-3 条，共 24 条日志</span>
+            </div>
+            <div class="flex space-x-2">
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="worklog.previous">上一页</span>
+              </button>
+              <button class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="worklog.next">下一页</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 员工论坛部分 -->
+    <section id="staff-forum" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="forum.title">员工论坛</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2">
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-white" data-i18n="forum.latest">最新讨论</h3>
+                <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                  <i class="fa fa-plus mr-2"></i>
+                  <span data-i18n="forum.newTopic">发布新话题</span>
+                </button>
+              </div>
+              
+              <div class="space-y-4">
+                <!-- 论坛帖子 -->
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post1.title">最近监控系统频繁报错，大家有遇到吗？</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.hoursAgo">2小时前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post1.content">东侧走廊的摄像头最近经常离线，系统显示连接错误。已经检查过线路，看起来没问题。有人遇到类似情况吗？</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post1.info">发布者：安保部-赵强 · 分类：<span class="text-accent" data-i18n="forum.category.tech">技术问题</span></span>
+                    <span data-i18n="forum.post1.stats">回复：4 | 查看：28</span>
+                  </div>
+                </div>
+                
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post2.title">143号房间的异常声音持续好几天了</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.hoursAgo2">5小时前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post2.content">这几天143号房间一直有奇怪的声音警报，但每次巡逻检查都没发现异常。客人也说没事。有点诡异...</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post2.info">发布者：安保部-王刚 · 分类：<span class="text-accent" data-i18n="forum.category.work">工作交流</span></span>
+                    <span data-i18n="forum.post2.stats">回复：23 | 查看：156</span>
+                  </div>
+                </div>
+                
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post3.title">新安保协议更新通知</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.hoursAgo3">5小时前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post3.content">管理员RIKI更新了安保协议，增加了对特定房间的监控权限和异常报告流程...</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post3.info">发布者：分析部主管-王芳 · 分类：<span class="text-accent" data-i18n="forum.category.system">系统更新</span></span>
+                    <span data-i18n="forum.post3.stats">回复：7 | 查看：42</span>
+                  </div>
+                </div>
+                
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post4.title">夜间巡逻注意事项提醒</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.daysAgo">1天前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post4.content">最近夜间巡逻时发现一些区域照明不足，已报修。大家巡逻时请特别注意安全...</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post4.info">发布者：安保部-李强 · 分类：<span class="text-accent" data-i18n="forum.category.work">工作交流</span></span>
+                    <span data-i18n="forum.post4.stats">回复：5 | 查看：31</span>
+                  </div>
+                </div>
+                
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post5.title">关于291号房间的一些发现</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.daysAgo2">2天前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post5.content">监控显示291号房间客人几乎从不离开房间，运动传感器显示异常规律的活动模式...</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post5.info">发布者：安保部-赵强 · 分类：<span class="text-accent" data-i18n="forum.category.security">安全监控</span></span>
+                    <span data-i18n="forum.post5.stats">回复：3 | 查看：24</span>
+                  </div>
+                </div>
+                
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post6.title">酒店安保培训计划</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.daysAgo3">3天前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post6.content">下周三将举行新的安保培训，内容包括异常行为识别和紧急情况处理。请所有安保人员参加...</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post6.info">发布者：安保经理-陈伟 · 分类：<span class="text-accent" data-i18n="forum.category.work">工作交流</span></span>
+                    <span data-i18n="forum.post6.stats">回复：12 | 查看：87</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 分页控件（只显示一页内容但保留按钮） -->
+            <div class="flex justify-between items-center">
+              <div class="text-gray-400 text-sm">
+                <span data-i18n="forum.showing">显示 1-6 条，共 42 条话题</span>
+              </div>
+              <div class="flex space-x-2">
+                <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                  <span data-i18n="forum.previous">上一页</span>
+                </button>
+                <button class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                  <span data-i18n="forum.next">下一页</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="forum.categories">论坛分类</h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.work">工作交流</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">42</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.security">安全监控</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">28</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.tech">技术问题</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">15</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.system">系统更新</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">9</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.notice">部门通知</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">34</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.leisure">休闲娱乐</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">67</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="forum.hotTopics">热门话题</h3>
+              <div class="space-y-3">
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="forum.post2.title">143号房间的异常声音持续好几天了</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="forum.hotStats1">回复 23 · 查看 156</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="forum.post5.title">关于291号房间的一些发现</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="forum.hotStats2">回复 3 · 查看 24</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="forum.post3.title">新安保协议更新通知</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="forum.hotStats3">回复 7 · 查看 42</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="forum.post1.title">最近监控系统频繁报错，大家有遇到吗？</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="forum.hotStats4">回复 4 · 查看 28</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="forum.rules">论坛规则</h3>
+              <ul class="text-gray-300 text-sm space-y-2">
+                <li data-i18n="forum.rule1">• 禁止讨论敏感安保信息</li>
+                <li data-i18n="forum.rule2">• 所有工作交流必须专业</li>
+                <li data-i18n="forum.rule3">• 发现异常请立即报告管理员</li>
+                <li data-i18n="forum.rule4">• 保持专业态度，尊重同事</li>
+                <li data-i18n="forum.rule5">• 遵守公司保密协议</li>
+              </ul>
+              <div class="mt-4 pt-4 border-t border-accent/20">
+                <p class="text-gray-400 text-xs terminal-font">> <span data-i18n="forum.systemNote">系统提示：您的所有活动都会被记录</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">安保系统 v2.1.4</span></span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.usage">仅供内部使用 - 保密级别：高级</p>
+        </div>
+        
+        <div class="text-sm">
+          <p data-i18n="footer.lastUpdate">最后系统更新: 2025-11-12 11:02</p>
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.systemStatus">系统状态:</span> <span class="text-success" data-i18n="footer.runningNormal">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+<script>
+    // 数据存储 - 客房记录数据（从安保角度编写）
+    const roomRecords = {
+      page1: [
+        { 
+          id: 1, 
+          roomNumber: "101", 
+          title: "ROOM 101 - 标准客房 - 张三 - 2025-11-18", 
+          content: {
+            'zh-CN': "安保记录：无异常活动报告。房间使用正常，客人行为符合规定。",
+            'en': "Security Record: No abnormal activity reported. Room usage normal, guest behavior compliant.",
+            'ja': "セキュリティ記録：異常活動報告なし。部屋使用正常、客の行動は規定に準拠。",
+            'pt': "Registro de Segurança: Nenhuma atividade anormal relatada. Uso do quarto normal, comportamento do hóspede em conformidade."
+          },
+          access: "available" 
+        },
+        { 
+          id: 2, 
+          roomNumber: "143", 
+          title: "ROOM 143 - 标准客房 - 周明哲 - 2025-11-15", 
+          content: {
+            'zh-CN': "安保记录：检测到异常声音模式，高频声音持续2小时以上。客人行为异常，经常对着空气说话。已标记为需要重点关注。",
+            'en': "Security Record: Abnormal sound patterns detected, high-frequency sounds lasting over 2 hours. Guest behavior abnormal, often talking to empty space. Marked as requiring special attention.",
+            'ja': "セキュリティ記録：異常音パターンを検出、高周波音が2時間以上継続。客の行動異常、頻繁に空中に向かって話す。重点監視対象としてマーク済み。",
+            'pt': "Registro de Segurança: Padrões sonoros anormais detectados, sons de alta frequência durando mais de 2 horas. Comportamento do hóspede anormal, frequentemente falando para o espaço vazio. Marcado como requerendo atenção especial."
+          },
+          access: "available",
+          special: true
+        },
+        { 
+          id: 3, 
+          roomNumber: "205", 
+          title: "ROOM 205 - 豪华客房 - 李四 - 2025-11-16", 
+          content: {
+            'zh-CN': "安保记录：正常使用状态。客人按时退房，无异常报告。",
+            'en': "Security Record: Normal usage status. Guest checked out on time, no abnormal reports.",
+            'ja': "セキュリティ記録：正常使用状態。客は時間通りにチェックアウト、異常報告なし。",
+            'pt': "Registro de Segurança: Status de uso normal. Hóspede fez check-out no horário, nenhum relatório anormal."
+          },
+          access: "available" 
+        },
+        { 
+          id: 4, 
+          roomNumber: "291", 
+          title: "ROOM 291 - 主题套房 - 李文轩 - 2025-11-12", 
+          content: {
+            'zh-CN': "安保记录：运动传感器显示异常规律活动。客人几乎24小时未离开房间，行为模式重复性极高。温度传感器读数异常。",
+            'en': "Security Record: Motion sensors show abnormally regular activity. Guest has almost not left room for 24 hours, behavior patterns highly repetitive. Temperature sensor readings abnormal.",
+            'ja': "セキュリティ記録：モーションセンサーが異常に規則的な活動を表示。客が24時間ほとんど部屋を離れず、行動パターンが極めて反復的。温度センサー読取値異常。",
+            'pt': "Registro de Segurança: Sensores de movimento mostram atividade anormalmente regular. Hóspede quase não saiu do quarto por 24 horas, padrões de comportamento altamente repetitivos. Leituras do sensor de temperatura anormais."
+          },
+          access: "available",
+          special: true
+        },
+        { 
+          id: 5, 
+          roomNumber: "312", 
+          title: "ROOM 312 - 标准客房 - 王五 - 2025-11-17", 
+          content: {
+            'zh-CN': "安保记录：轻微噪音投诉，已处理。客人配合安保工作，无其他异常。",
+            'en': "Security Record: Minor noise complaint, handled. Guest cooperated with security work, no other abnormalities.",
+            'ja': "セキュリティ記録：軽微な騒音苦情、処理済み。客はセキュリティ作業に協力、その他異常なし。",
+            'pt': "Registro de Segurança: Reclamação de ruído menor, tratada. Hóspede cooperou com trabalho de segurança, nenhuma outra anormalidade."
+          },
+          access: "available" 
+        },
+        { 
+          id: 6, 
+          roomNumber: "409", 
+          title: "ROOM 409 - 商务套房 - 赵六 - 2025-11-14", 
+          content: {
+            'zh-CN': "安保记录：访客登记完整，无异常活动。房间使用符合规定。",
+            'en': "Security Record: Visitor registration complete, no abnormal activity. Room usage complies with regulations.",
+            'ja': "セキュリティ記録：訪問者登録完全、異常活動なし。部屋使用は規定に準拠。",
+            'pt': "Registro de Segurança: Registro de visitante completo, nenhuma atividade anormal. Uso do quarto em conformidade com os regulamentos."
+          },
+          access: "available" 
+        },
+        { 
+          id: 7, 
+          roomNumber: "520", 
+          title: "ROOM 520 - 豪华客房 - 钱七 - 2025-11-13", 
+          content: {
+            'zh-CN': "安保记录：正常状态。客人行为规范，无安保问题报告。",
+            'en': "Security Record: Normal status. Guest behavior standard, no security issues reported.",
+            'ja': "セキュリティ記録：正常状態。客の行動規範、セキュリティ問題報告なし。",
+            'pt': "Registro de Segurança: Status normal. Comportamento do hóspede padrão, nenhum problema de segurança relatado."
+          },
+          access: "available" 
+        },
+        { 
+          id: 8, 
+          roomNumber: "615", 
+          title: "ROOM 615 - 主题套房 - 孙八 - 2025-11-19", 
+          content: {
+            'zh-CN': "安保记录：新入住客人，身份验证完成。暂无异常活动报告。",
+            'en': "Security Record: Newly checked-in guest, identity verification completed. No abnormal activity reports yet.",
+            'ja': "セキュリティ記録：新規チェックイン客、身元確認完了。現時点で異常活動報告なし。",
+            'pt': "Registro de Segurança: Hóspede recém-check-in, verificação de identidade concluída. Nenhum relatório de atividade anormal ainda."
+          },
+          access: "available" 
+        }
+      ],
+      page2: [
+        { 
+          id: 9, 
+          roomNumber: "702", 
+          title: "ROOM 702 - 标准客房 - 周九 - 2025-11-16", 
+          content: {
+            'zh-CN': "安保记录：正常使用状态。客人行为符合酒店规定，无异常报告。",
+            'en': "Security Record: Normal usage status. Guest behavior complies with hotel regulations, no abnormal reports.",
+            'ja': "セキュリティ記録：正常使用状態。客の行動はホテル規定に準拠、異常報告なし。",
+            'pt': "Registro de Segurança: Status de uso normal. Comportamento do hóspede em conformidade com os regulamentos do hotel, nenhum relatório anormal."
+          },
+          access: "available" 
+        },
+        { 
+          id: 10, 
+          roomNumber: "815", 
+          title: "ROOM 815 - 商务套房 - 吴十 - 2025-11-15", 
+          content: {
+            'zh-CN': "安保记录：轻微设备故障报告，已安排维修。无安全风险。",
+            'en': "Security Record: Minor equipment failure reported, maintenance arranged. No security risk.",
+            'ja': "セキュリティ記録：軽微な設備故障報告、メンテナンス手配済み。安全リスクなし。",
+            'pt': "Registro de Segurança: Falha menor de equipamento relatada, manutenção organizada. Nenhum risco de segurança."
+          },
+          access: "available" 
+        },
+        { 
+          id: 11, 
+          roomNumber: "4030", 
+          title: "ROOM 4030 - 豪华客房 - 陈逸风 - 2025-11-10", 
+          content: {
+            'zh-CN': "安保记录：情绪波动较大，多次在走廊徘徊。访问记录显示异常频繁出入。海景阳台门多次异常开启。",
+            'en': "Security Record: Significant emotional fluctuations, repeatedly wandering in corridors. Access records show abnormally frequent entries and exits. Sea view balcony door opened abnormally multiple times.",
+            'ja': "セキュリティ記録：情緒変動が大きく、複数回廊下を徘徊。アクセス記録が異常に頻繁な出入りを表示。海側バルコニードアが複数回異常に開閉。",
+            'pt': "Registro de Segurança: Flutuações emocionais significativas, repetidamente vagueando pelos corredores. Registros de acesso mostram entradas e saídas anormalmente frequentes. Porta da varanda com vista para o mar aberta anormalmente várias vezes."
+          },
+          access: "available",
+          special: true
+        },
+        { 
+          id: 12, 
+          roomNumber: "302", 
+          title: "ROOM 302 - 总统套房 - 王天宇 - 2025-11-18", 
+          content: {
+            'zh-CN': "安保记录：高额赌局进行中，情绪极度波动。检测到多次激烈争吵声音。需要加强该区域巡逻。",
+            'en': "Security Record: High-stakes gambling in progress, extreme emotional fluctuations. Multiple intense argument sounds detected. Need to strengthen patrols in this area.",
+            'ja': "セキュリティ記録：高額賭博進行中、情緒が極度に変動。複数回の激しい口論音声を検出。このエリアのパトロール強化が必要。",
+            'pt': "Registro de Segurança: Apostas de alto valor em andamento, flutuações emocionais extremas. Múltiplos sons de discussão intensa detectados. Necessário reforçar patrulhas nesta área."
+          },
+          access: "available",
+          special: true
+        },
+        { 
+          id: 13, 
+          roomNumber: "924", 
+          title: "ROOM 924 - 标准客房 - 郑十一 - 2025-11-17", 
+          content: {
+            'zh-CN': "安保记录：正常状态。客人按时返回房间，无异常活动。",
+            'en': "Security Record: Normal status. Guest returned to room on time, no abnormal activity.",
+            'ja': "セキュリティ記録：正常状態。客は時間通りに部屋に戻り、異常活動なし。",
+            'pt': "Registro de Segurança: Status normal. Hóspede retornou ao quarto no horário, nenhuma atividade anormal."
+          },
+          access: "available" 
+        },
+        { 
+          id: 14, 
+          roomNumber: "1033", 
+          title: "ROOM 1033 - 豪华客房 - 冯十二 - 2025-11-14", 
+          content: {
+            'zh-CN': "安保记录：轻微烟雾报警误报，已检查确认安全。无其他问题。",
+            'en': "Security Record: Minor smoke alarm false alarm, checked and confirmed safe. No other issues.",
+            'ja': "セキュリティ記録：軽微な煙探知機誤作動、検査済み安全確認。その他問題なし。",
+            'pt': "Registro de Segurança: Falso alarme menor de alarme de fumaça, verificado e confirmado seguro. Nenhum outro problema."
+          },
+          access: "available" 
+        },
+        { 
+          id: 15, 
+          roomNumber: "1120", 
+          title: "ROOM 1120 - 商务套房 - 陈十三 - 2025-11-13", 
+          content: {
+            'zh-CN': "安保记录：正常商务活动。访客登记完整，无安保问题。",
+            'en': "Security Record: Normal business activities. Visitor registration complete, no security issues.",
+            'ja': "セキュリティ記録：正常なビジネス活動。訪問者登録完全、セキュリティ問題なし。",
+            'pt': "Registro de Segurança: Atividades comerciais normais. Registro de visitante completo, nenhum problema de segurança."
+          },
+          access: "available" 
+        },
+        { 
+          id: 16, 
+          roomNumber: "1207", 
+          title: "ROOM 1207 - 主题套房 - 褚十四 - 2025-11-19", 
+          content: {
+            'zh-CN': "安保记录：新入住，身份验证通过。暂无异常报告。",
+            'en': "Security Record: New check-in, identity verification passed. No abnormal reports yet.",
+            'ja': "セキュリティ記録：新規チェックイン、身元確認通過。現時点で異常報告なし。",
+            'pt': "Registro de Segurança: Novo check-in, verificação de identidade aprovada. Nenhum relatório anormal ainda."
+          },
+          access: "available" 
+        }
+      ],
+      page3: [
+        { 
+          id: 17, 
+          roomNumber: "1305", 
+          title: "ROOM 1305 - 标准客房 - 卫十五 - 2025-11-18", 
+          content: {
+            'zh-CN': "安保记录：正常状态。客人行为规范，无异常活动。",
+            'en': "Security Record: Normal status. Guest behavior standard, no abnormal activity.",
+            'ja': "セキュリティ記録：正常状態。客の行動規範、異常活動なし。",
+            'pt': "Registro de Segurança: Status normal. Comportamento do hóspede padrão, nenhuma atividade anormal."
+          },
+          access: "available" 
+        },
+        { 
+          id: 18, 
+          roomNumber: "314", 
+          title: "ROOM 314 - 主题套房 - 赵雨婷 - 2025-11-16", 
+          content: {
+            'zh-CN': "安保记录：私人舞蹈室使用频繁，运动模式异常激烈。多次检测到超越人体极限的运动数据。",
+            'en': "Security Record: Private dance studio used frequently, movement patterns abnormally intense. Multiple detections of movement data exceeding human limits.",
+            'ja': "セキュリティ記録：プライベートダンススタジオ頻繁使用、運動パターンが異常に激しい。人間の限界を超える運動データを複数回検出。",
+            'pt': "Registro de Segurança: Estúdio de dança privativo usado frequentemente, padrões de movimento anormalmente intensos. Múltiplas detecções de dados de movimento excedendo limites humanos."
+          },
+          access: "available",
+          special: true
+        },
+        { 
+          id: 19, 
+          roomNumber: "902", 
+          title: "ROOM 902 - 总统套房 - 刘星辰 - 2025-11-14", 
+          content: {
+            'zh-CN': "安保记录：异常高音量活动，音响设备使用超出正常范围。检测到特殊频率声音模式，可能涉及特殊仪式。",
+            'en': "Security Record: Abnormally high volume activity, audio equipment usage beyond normal range. Special frequency sound patterns detected, possibly involving special rituals.",
+            'ja': "セキュリティ記録：異常な高音量活動、音響設備使用が通常範囲を超える。特殊周波数音声パターンを検出、特殊儀式の可能性あり。",
+            'pt': "Registro de Segurança: Atividade de volume anormalmente alto, uso de equipamento de áudio além da faixa normal. Padrões sonoros de frequência especial detectados, possivelmente envolvendo rituais especiais."
+          },
+          access: "available",
+          special: true
+        },
+        { 
+          id: 20, 
+          roomNumber: "1508", 
+          title: "ROOM 1508 - 豪华客房 - 蒋十六 - 2025-11-17", 
+          content: {
+            'zh-CN': "安保记录：正常状态。客人按时用餐返回，无异常行为。",
+            'en': "Security Record: Normal status. Guest returned from meals on time, no abnormal behavior.",
+            'ja': "セキュリティ記録：正常状態。客は食事から時間通りに戻り、異常行動なし。",
+            'pt': "Registro de Segurança: Status normal. Hóspede retornou das refeições no horário, nenhum comportamento anormal."
+          },
+          access: "available" 
+        },
+        { 
+          id: 21, 
+          roomNumber: "1612", 
+          title: "ROOM 1612 - 商务套房 - 沈十七 - 2025-11-15", 
+          content: {
+            'zh-CN': "安保记录：商务会议进行中，访客登记完整。无安保问题。",
+            'en': "Security Record: Business meeting in progress, visitor registration complete. No security issues.",
+            'ja': "セキュリティ記録：ビジネス会議進行中、訪問者登録完全。セキュリティ問題なし。",
+            'pt': "Registro de Segurança: Reunião de negócios em andamento, registro de visitante completo. Nenhum problema de segurança."
+          },
+          access: "available" 
+        },
+        { 
+          id: 22, 
+          roomNumber: "1703", 
+          title: "ROOM 1703 - 标准客房 - 韩十八 - 2025-11-13", 
+          content: {
+            'zh-CN': "安保记录：轻微漏水报告，已安排维修。无安全风险。",
+            'en': "Security Record: Minor water leakage reported, maintenance arranged. No security risk.",
+            'ja': "セキュリティ記録：軽微な漏水報告、メンテナンス手配済み。安全リスクなし。",
+            'pt': "Registro de Segurança: Vazamento menor de água relatado, manutenção organizada. Nenhum risco de segurança."
+          },
+          access: "available" 
+        },
+        { 
+          id: 23, 
+          roomNumber: "1820", 
+          title: "ROOM 1820 - 主题套房 - 杨十九 - 2025-11-19", 
+          content: {
+            'zh-CN': "安保记录：新入住客人，身份验证完成。暂无异常活动。",
+            'en': "Security Record: Newly checked-in guest, identity verification completed. No abnormal activity yet.",
+            'ja': "セキュリティ記録：新規チェックイン客、身元確認完了。現時点で異常活動なし。",
+            'pt': "Registro de Segurança: Hóspede recém-check-in, verificação de identidade concluída. Nenhuma atividade anormal ainda."
+          },
+          access: "available" 
+        },
+        { 
+          id: 24, 
+          roomNumber: "1901", 
+          title: "ROOM 1901 - 豪华客房 - 朱二十 - 2025-11-16", 
+          content: {
+            'zh-CN': "安保记录：正常状态。客人行为符合规定，无异常报告。",
+            'en': "Security Record: Normal status. Guest behavior complies with regulations, no abnormal reports.",
+            'ja': "セキュリティ記録：正常状態。客の行動は規定に準拠、異常報告なし。",
+            'pt': "Registro de Segurança: Status normal. Comportamento do hóspede em conformidade com os regulamentos, nenhum relatório anormal."
+          },
+          access: "available" 
+        }
+      ]
+    };
+
+    // 页面状态
+    let currentRoomPage = 1;
+    let currentLanguage = 'zh-CN';
+
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.dashboard': '安保工作台',
+        'nav.records': '客房记录',
+        'nav.monitor': '监控系统',
+        'nav.patrol': '巡逻记录',
+        'nav.worklog': '工作日志',
+        'nav.forum': '员工论坛',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'language': '语言',
+        'dashboard.title': '安保工作台',
+        'dashboard.cameras': '监控摄像头',
+        'dashboard.camerasDesc': '在线监控摄像头',
+        'dashboard.todayPatrols': '今日巡逻',
+        'dashboard.todayPatrolsDesc': '今日已完成巡逻',
+        'dashboard.suspicious': '可疑行为',
+        'dashboard.suspiciousDesc': '今日可疑行为报告',
+        'dashboard.workLog': '工作日志',
+        'dashboard.workLogDesc': '今日工作记录',
+        'dashboard.importantReminders': '今日重要提醒',
+        'dashboard.systemStatus': '系统状态：正常运行',
+        'dashboard.alertReminder': '警报：143号房间检测到异常声音模式，需要调查',
+        'dashboard.cameraReminder': '通知：东侧走廊3号摄像头离线，已安排维修',
+        'dashboard.patrolReminder': '重要：VIP区域需要额外巡逻，已安排加强安保',
+        'dashboard.schedule': '今日排班：赵强 (08:00-16:00) | 王刚 (16:00-24:00)',
+        'dashboard.performance': '安保绩效：响应时间优秀 | 事件处理率 100%',
+        'records.title': '客房记录',
+        'records.allRecords': '所有客房记录',
+        'records.searchPlaceholder': '搜索记录...',
+        'records.filter': '筛选',
+        'records.showing': '显示 1-8 条，共 24 条记录',
+        'records.previous': '上一页',
+        'records.next': '下一页',
+        'records.viewDetails': '查看详情',
+        'monitor.title': '监控系统',
+        'monitor.live': '实时监控',
+        'monitor.camera': '摄像头',
+        'monitor.lobby': '大堂 - CAM-01',
+        'monitor.elevator': '电梯厅 - CAM-07',
+        'monitor.fullView': '完整视图',
+        'monitor.recordings': '查看录像',
+        'monitor.cameraStatus': '摄像头状态',
+        'monitor.online': '在线摄像头',
+        'monitor.offline': '离线摄像头',
+        'monitor.offlineList': '离线摄像头列表',
+        'monitor.eastCorridor': '东侧走廊',
+        'monitor.offlineSince': '离线3小时',
+        'monitor.maintenance': '维修中',
+        'monitor.storage': '储藏室',
+        'monitor.parking': '停车场B区',
+        'patrol.title': '巡逻记录',
+        'patrol.newRecord': '新建巡逻记录',
+        'patrol.route': '巡逻路线',
+        'patrol.selectRoute': '选择巡逻路线',
+        'patrol.routeA': '路线A - 大堂及前台区域',
+        'patrol.routeB': '路线B - 客房楼层1-10层',
+        'patrol.routeC': '路线C - 客房楼层11-20层',
+        'patrol.routeD': '路线D - 餐厅及娱乐设施',
+        'patrol.routeE': '路线E - 停车场及外围',
+        'patrol.time': '巡逻时间',
+        'patrol.observations': '观察记录',
+        'patrol.observationsPlaceholder': '记录巡逻过程中的观察情况...',
+        'patrol.incidents': '事件记录',
+        'patrol.incidentsPlaceholder': '记录巡逻过程中发生的事件...',
+        'patrol.save': '保存记录',
+        'patrol.history': '历史巡逻记录',
+        'patrol.yesterday': '昨天 14:30',
+        'patrol.log1': '正常巡逻，发现143号房间有异常声音，已记录并上报。其他区域无异常。',
+        'patrol.patrolBy': '巡逻人：赵强',
+        'patrol.twoDaysAgo': '2天前 10:15',
+        'patrol.log2': '发现一名可疑人员在酒店外徘徊，已上前询问并记录身份信息。内部区域一切正常。',
+        'patrol.threeDaysAgo': '3天前 16:45',
+        'patrol.log3': '发现902号房间有异常噪音，调查后发现是客人音响设备问题，已协助解决。',
+        'patrol.showing': '显示 1-3 条，共 24 条记录',
+        'patrol.previous': '上一页',
+        'patrol.next': '下一页',
+        'worklog.title': '工作日志',
+        'worklog.newLog': '新建工作日志',
+        'worklog.titlePlaceholder': '输入日志标题',
+        'worklog.content': '内容',
+        'worklog.contentPlaceholder': '记录您的工作情况、安全事件和重要事项...',
+        'worklog.save': '保存日志',
+        'worklog.history': '历史工作日志',
+        'worklog.workLog': '工作日志',
+        'worklog.yesterday': '昨天 18:30',
+        'worklog.log1': '今日处理安全警报5个，完成巡逻4次。143号房间声音异常持续，需要进一步调查。监控系统运行正常。',
+        'worklog.twoDaysAgo': '2天前 18:45',
+        'worklog.log2': '今日工作正常，处理安保请求3个。发现一名可疑人员在酒店外徘徊，已记录并上报。监控摄像头维护完成。',
+        'worklog.threeDaysAgo': '3天前 18:20',
+        'worklog.log3': '今日处理902号房间噪音投诉，协助客人调整音响设备。完成所有巡逻路线，无异常情况报告。',
+        'worklog.showing': '显示 1-3 条，共 24 条日志',
+        'worklog.previous': '上一页',
+        'worklog.next': '下一页',
+        'forum.title': '员工论坛',
+        'forum.latest': '最新讨论',
+        'forum.newTopic': '发布新话题',
+        'forum.post1.title': '最近监控系统频繁报错，大家有遇到吗？',
+        'forum.hoursAgo': '2小时前',
+        'forum.post1.content': '东侧走廊的摄像头最近经常离线，系统显示连接错误。已经检查过线路，看起来没问题。有人遇到类似情况吗？',
+        'forum.post1.info': '发布者：安保部-赵强 · 分类：',
+        'forum.category.tech': '技术问题',
+        'forum.post1.stats': '回复：4 | 查看：28',
+        'forum.post2.title': '143号房间的异常声音持续好几天了',
+        'forum.hoursAgo2': '5小时前',
+        'forum.post2.content': '这几天143号房间一直有奇怪的声音警报，但每次巡逻检查都没发现异常。客人也说没事。有点诡异...',
+        'forum.post2.info': '发布者：安保部-王刚 · 分类：',
+        'forum.category.work': '工作交流',
+        'forum.post2.stats': '回复：23 | 查看：156',
+        'forum.post3.title': '新安保协议更新通知',
+        'forum.hoursAgo3': '5小时前',
+        'forum.post3.content': '管理员RIKI更新了安保协议，增加了对特定房间的监控权限和异常报告流程...',
+        'forum.post3.info': '发布者：分析部主管-王芳 · 分类：',
+        'forum.category.system': '系统更新',
+        'forum.post3.stats': '回复：7 | 查看：42',
+        'forum.post4.title': '夜间巡逻注意事项提醒',
+        'forum.daysAgo': '1天前',
+        'forum.post4.content': '最近夜间巡逻时发现一些区域照明不足，已报修。大家巡逻时请特别注意安全...',
+        'forum.post4.info': '发布者：安保部-李强 · 分类：',
+        'forum.post4.stats': '回复：5 | 查看：31',
+        'forum.post5.title': '关于291号房间的一些发现',
+        'forum.daysAgo2': '2天前',
+        'forum.post5.content': '监控显示291号房间客人几乎从不离开房间，运动传感器显示异常规律的活动模式...',
+        'forum.post5.info': '发布者：安保部-赵强 · 分类：',
+        'forum.category.security': '安全监控',
+        'forum.post5.stats': '回复：3 | 查看：24',
+        'forum.post6.title': '酒店安保培训计划',
+        'forum.daysAgo3': '3天前',
+        'forum.post6.content': '下周三将举行新的安保培训，内容包括异常行为识别和紧急情况处理。请所有安保人员参加...',
+        'forum.post6.info': '发布者：安保经理-陈伟 · 分类：',
+        'forum.post6.stats': '回复：12 | 查看：87',
+        'forum.showing': '显示 1-6 条，共 42 条话题',
+        'forum.previous': '上一页',
+        'forum.next': '下一页',
+        'forum.categories': '论坛分类',
+        'forum.category.security': '安全监控',
+        'forum.category.tech': '技术问题',
+        'forum.category.system': '系统更新',
+        'forum.category.notice': '部门通知',
+        'forum.category.leisure': '休闲娱乐',
+        'forum.hotTopics': '热门话题',
+        'forum.hotStats1': '回复 23 · 查看 156',
+        'forum.hotStats2': '回复 3 · 查看 24',
+        'forum.hotStats3': '回复 7 · 查看 42',
+        'forum.hotStats4': '回复 4 · 查看 28',
+        'forum.rules': '论坛规则',
+        'forum.rule1': '• 禁止讨论敏感安保信息',
+        'forum.rule2': '• 所有工作交流必须专业',
+        'forum.rule3': '• 发现异常请立即报告管理员',
+        'forum.rule4': '• 保持专业态度，尊重同事',
+        'forum.rule5': '• 遵守公司保密协议',
+        'forum.systemNote': '系统提示：您的所有活动都会被记录',
+        'footer.system': '安保系统 v2.1.4',
+        'footer.usage': '仅供内部使用 - 保密级别：高级',
+        'footer.lastUpdate': '最后系统更新: 2025-11-12 11:02',
+        'footer.systemStatus': '系统状态:',
+        'footer.runningNormal': '运行正常'
+      },
+      'en': {
+        'nav.dashboard': 'Security Dashboard',
+        'nav.records': 'Room Records',
+        'nav.monitor': 'Monitor System',
+        'nav.patrol': 'Patrol Records',
+        'nav.worklog': 'Work Log',
+        'nav.forum': 'Staff Forum',
+        'user.profile': 'Profile',
+        'user.settings': 'Settings',
+        'user.help': 'Help',
+        'user.logout': 'Logout',
+        'language': 'Language',
+        'dashboard.title': 'Security Dashboard',
+        'dashboard.cameras': 'Security Cameras',
+        'dashboard.camerasDesc': 'Online security cameras',
+        'dashboard.todayPatrols': 'Today Patrols',
+        'dashboard.todayPatrolsDesc': 'Patrols completed today',
+        'dashboard.suspicious': 'Suspicious Activity',
+        'dashboard.suspiciousDesc': 'Suspicious activity reports today',
+        'dashboard.workLog': 'Work Log',
+        'dashboard.workLogDesc': 'Today work records',
+        'dashboard.importantReminders': 'Important Reminders Today',
+        'dashboard.systemStatus': 'System Status: Normal Operation',
+        'dashboard.alertReminder': 'Alert: Room 143 detected abnormal sound patterns, needs investigation',
+        'dashboard.cameraReminder': 'Notice: East corridor camera 3 offline, maintenance scheduled',
+        'dashboard.patrolReminder': 'Important: VIP area requires additional patrols, enhanced security arranged',
+        'dashboard.schedule': 'Today Schedule: Zhao Qiang (08:00-16:00) | Wang Gang (16:00-24:00)',
+        'dashboard.performance': 'Security Performance: Response time excellent | Incident resolution rate 100%',
+        'records.title': 'Room Records',
+        'records.allRecords': 'All Room Records',
+        'records.searchPlaceholder': 'Search records...',
+        'records.filter': 'Filter',
+        'records.showing': 'Showing 1-8 of 24 records',
+        'records.previous': 'Previous',
+        'records.next': 'Next',
+        'records.viewDetails': 'View Details',
+        'monitor.title': 'Monitor System',
+        'monitor.live': 'Live Monitoring',
+        'monitor.camera': 'Camera',
+        'monitor.lobby': 'Lobby - CAM-01',
+        'monitor.elevator': 'Elevator Hall - CAM-07',
+        'monitor.fullView': 'Full View',
+        'monitor.recordings': 'View Recordings',
+        'monitor.cameraStatus': 'Camera Status',
+        'monitor.online': 'Online Cameras',
+        'monitor.offline': 'Offline Cameras',
+        'monitor.offlineList': 'Offline Camera List',
+        'monitor.eastCorridor': 'East Corridor',
+        'monitor.offlineSince': 'Offline 3 hours',
+        'monitor.maintenance': 'Maintenance',
+        'monitor.storage': 'Storage Room',
+        'monitor.parking': 'Parking Area B',
+        'patrol.title': 'Patrol Records',
+        'patrol.newRecord': 'New Patrol Record',
+        'patrol.route': 'Patrol Route',
+        'patrol.selectRoute': 'Select Patrol Route',
+        'patrol.routeA': 'Route A - Lobby & Front Desk Area',
+        'patrol.routeB': 'Route B - Guest Floors 1-10',
+        'patrol.routeC': 'Route C - Guest Floors 11-20',
+        'patrol.routeD': 'Route D - Restaurant & Entertainment',
+        'patrol.routeE': 'Route E - Parking & Perimeter',
+        'patrol.time': 'Patrol Time',
+        'patrol.observations': 'Observations',
+        'patrol.observationsPlaceholder': 'Record observations during patrol...',
+        'patrol.incidents': 'Incident Records',
+        'patrol.incidentsPlaceholder': 'Record incidents during patrol...',
+        'patrol.save': 'Save Record',
+        'patrol.history': 'Historical Patrol Records',
+        'patrol.yesterday': 'Yesterday 14:30',
+        'patrol.log1': 'Normal patrol, found abnormal sound in Room 143, recorded and reported. Other areas normal.',
+        'patrol.patrolBy': 'Patrol by: Zhao Qiang',
+        'patrol.twoDaysAgo': '2 days ago 10:15',
+        'patrol.log2': 'Found suspicious person loitering outside hotel, approached and recorded identity information. Internal areas all normal.',
+        'patrol.threeDaysAgo': '3 days ago 16:45',
+        'patrol.log3': 'Found abnormal noise in Room 902, investigation found guest audio equipment issue, assisted resolution.',
+        'patrol.showing': 'Showing 1-3 of 24 records',
+        'patrol.previous': 'Previous',
+        'patrol.next': 'Next',
+        'worklog.title': 'Work Log',
+        'worklog.newLog': 'New Work Log',
+        'worklog.titlePlaceholder': 'Enter log title',
+        'worklog.content': 'Content',
+        'worklog.contentPlaceholder': 'Record your work situation, security incidents and important matters...',
+        'worklog.save': 'Save Log',
+        'worklog.history': 'Historical Work Logs',
+        'worklog.workLog': 'Work Log',
+        'worklog.yesterday': 'Yesterday 18:30',
+        'worklog.log1': 'Today handled 5 security alerts, completed 4 patrols. Room 143 sound anomaly continues, needs further investigation. Monitor system running normal.',
+        'worklog.twoDaysAgo': '2 days ago 18:45',
+        'worklog.log2': 'Normal work today, handled 3 security requests. Found suspicious person loitering outside hotel, recorded and reported. Security camera maintenance completed.',
+        'worklog.threeDaysAgo': '3 days ago 18:20',
+        'worklog.log3': 'Today handled Room 902 noise complaint, assisted guest adjusting audio equipment. Completed all patrol routes, no abnormal reports.',
+        'worklog.showing': 'Showing 1-3 of 24 logs',
+        'worklog.previous': 'Previous',
+        'worklog.next': 'Next',
+        'forum.title': 'Staff Forum',
+        'forum.latest': 'Latest Discussions',
+        'forum.newTopic': 'New Topic',
+        'forum.post1.title': 'Recent monitor system frequent errors, anyone else experiencing?',
+        'forum.hoursAgo': '2 hours ago',
+        'forum.post1.content': 'East corridor cameras frequently going offline recently, system shows connection errors. Already checked wiring, seems fine. Anyone experiencing similar issues?',
+        'forum.post1.info': 'Posted by: Security-Zhao Qiang · Category:',
+        'forum.category.tech': 'Technical Issues',
+        'forum.post1.stats': 'Replies: 4 | Views: 28',
+        'forum.post2.title': 'Room 143 abnormal sound continues for days',
+        'forum.hoursAgo2': '5 hours ago',
+        'forum.post2.content': 'Room 143 has been having strange sound alerts these days, but each patrol check found nothing abnormal. Guest also says nothing wrong. A bit eerie...',
+        'forum.post2.info': 'Posted by: Security-Wang Gang · Category:',
+        'forum.category.work': 'Work Communication',
+        'forum.post2.stats': 'Replies: 23 | Views: 156',
+        'forum.post3.title': 'New security protocol update notice',
+        'forum.hoursAgo3': '5 hours ago',
+        'forum.post3.content': 'Administrator RIKI updated security protocol, added monitoring permissions for specific rooms and abnormal reporting procedures...',
+        'forum.post3.info': 'Posted by: Analysis Department Manager-Wang Fang · Category:',
+        'forum.category.system': 'System Updates',
+        'forum.post3.stats': 'Replies: 7 | Views: 42',
+        'forum.post4.title': 'Night patrol precautions reminder',
+        'forum.daysAgo': '1 day ago',
+        'forum.post4.content': 'Recently found some areas insufficient lighting during night patrols, reported for repair. Everyone please pay special attention to safety during patrols...',
+        'forum.post4.info': 'Posted by: Security-Li Qiang · Category:',
+        'forum.post4.stats': 'Replies: 5 | Views: 31',
+        'forum.post5.title': 'Some findings about Room 291',
+        'forum.daysAgo2': '2 days ago',
+        'forum.post5.content': 'Monitoring shows Room 291 guest almost never leaves room, motion sensors show abnormally regular activity patterns...',
+        'forum.post5.info': 'Posted by: Security-Zhao Qiang · Category:',
+        'forum.category.security': 'Security Monitoring',
+        'forum.post5.stats': 'Replies: 3 | Views: 24',
+        'forum.post6.title': 'Hotel security training plan',
+        'forum.daysAgo3': '3 days ago',
+        'forum.post6.content': 'New security training next Wednesday,内容包括异常行为识别和紧急情况处理。请所有安保人员参加...',
+        'forum.post6.info': 'Posted by: Security Manager-Chen Wei · Category:',
+        'forum.post6.stats': 'Replies: 12 | Views: 87',
+        'forum.showing': 'Showing 1-6 of 42 topics',
+        'forum.previous': 'Previous',
+        'forum.next': 'Next',
+        'forum.categories': 'Forum Categories',
+        'forum.category.security': 'Security Monitoring',
+        'forum.category.tech': 'Technical Issues',
+        'forum.category.system': 'System Updates',
+        'forum.category.notice': 'Department Notices',
+        'forum.category.leisure': 'Leisure & Entertainment',
+        'forum.hotTopics': 'Hot Topics',
+        'forum.hotStats1': 'Replies 23 · Views 156',
+        'forum.hotStats2': 'Replies 3 · Views 24',
+        'forum.hotStats3': 'Replies 7 · Views 42',
+        'forum.hotStats4': 'Replies 4 · Views 28',
+        'forum.rules': 'Forum Rules',
+        'forum.rule1': '• No discussion of sensitive security information',
+        'forum.rule2': '• All work communication must be professional',
+        'forum.rule3': '• Report anomalies to administrator immediately',
+        'forum.rule4': '• Maintain professional attitude, respect colleagues',
+        'forum.rule5': '• Comply with company confidentiality agreement',
+        'forum.systemNote': 'System Note: All your activities are recorded',
+        'footer.system': 'Security System v2.1.4',
+        'footer.usage': 'For internal use only - Security level: High',
+        'footer.lastUpdate': 'Last system update: 2025-11-12 11:02',
+        'footer.systemStatus': 'System Status:',
+        'footer.runningNormal': 'Running normal'
+      },
+      'ja': {
+        'nav.dashboard': 'セキュリティダッシュボード',
+        'nav.records': '客室記録',
+        'nav.monitor': '監視システム',
+        'nav.patrol': 'パトロール記録',
+        'nav.worklog': '作業ログ',
+        'nav.forum': 'スタッフフォーラム',
+        'user.profile': '個人情報',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプ',
+        'user.logout': 'ログアウト',
+        'language': '言語',
+        'dashboard.title': 'セキュリティダッシュボード',
+        'dashboard.cameras': '監視カメラ',
+        'dashboard.camerasDesc': 'オンライン監視カメラ',
+        'dashboard.todayPatrols': '本日パトロール',
+        'dashboard.todayPatrolsDesc': '本日完了したパトロール',
+        'dashboard.suspicious': '不審行為',
+        'dashboard.suspiciousDesc': '本日の不審行為報告',
+        'dashboard.workLog': '作業ログ',
+        'dashboard.workLogDesc': '本日作業記録',
+        'dashboard.importantReminders': '本日の重要なお知らせ',
+        'dashboard.systemStatus': 'システム状態：正常稼働中',
+        'dashboard.alertReminder': 'アラート：143号室で異常音パターンを検出、調査必要',
+        'dashboard.cameraReminder': '通知：東側廊下カメラ3オフライン、メンテナンス予定',
+        'dashboard.patrolReminder': '重要：VIPエリア追加パトロール必要、強化セキュリティ手配済み',
+        'dashboard.schedule': '本日シフト：趙強 (08:00-16:00) | 王剛 (16:00-24:00)',
+        'dashboard.performance': 'セキュリティ実績：応答時間優秀 | インシデント解決率 100%',
+        'records.title': '客室記録',
+        'records.allRecords': '全客室記録',
+        'records.searchPlaceholder': '記録を検索...',
+        'records.filter': 'フィルター',
+        'records.showing': '1-8件目を表示（全24件）',
+        'records.previous': '前へ',
+        'records.next': '次へ',
+        'records.viewDetails': '詳細を表示',
+        'monitor.title': '監視システム',
+        'monitor.live': 'ライブ監視',
+        'monitor.camera': 'カメラ',
+        'monitor.lobby': 'ロビー - CAM-01',
+        'monitor.elevator': 'エレベーターホール - CAM-07',
+        'monitor.fullView': '全体表示',
+        'monitor.recordings': '録画表示',
+        'monitor.cameraStatus': 'カメラ状態',
+        'monitor.online': 'オンラインカメラ',
+        'monitor.offline': 'オフラインカメラ',
+        'monitor.offlineList': 'オフラインカメラリスト',
+        'monitor.eastCorridor': '東側廊下',
+        'monitor.offlineSince': 'オフライン3時間',
+        'monitor.maintenance': 'メンテナンス中',
+        'monitor.storage': '倉庫',
+        'monitor.parking': '駐車場B区',
+        'patrol.title': 'パトロール記録',
+        'patrol.newRecord': '新規パトロール記録',
+        'patrol.route': 'パトロールルート',
+        'patrol.selectRoute': 'パトロールルートを選択',
+        'patrol.routeA': 'ルートA - ロビー及びフロントエリア',
+        'patrol.routeB': 'ルートB - 客室階1-10階',
+        'patrol.routeC': 'ルートC - 客室階11-20階',
+        'patrol.routeD': 'ルートD - レストラン及び娯楽施設',
+        'patrol.routeE': 'ルートE - 駐車場及び外周',
+        'patrol.time': 'パトロール時間',
+        'patrol.observations': '観察記録',
+        'patrol.observationsPlaceholder': 'パトロール中の観察状況を記録...',
+        'patrol.incidents': 'インシデント記録',
+        'patrol.incidentsPlaceholder': 'パトロール中のインシデントを記録...',
+        'patrol.save': '記録保存',
+        'patrol.history': '過去のパトロール記録',
+        'patrol.yesterday': '昨日 14:30',
+        'patrol.log1': '通常パトロール、143号室で異常音を発見、記録及び報告。他のエリア異常なし。',
+        'patrol.patrolBy': 'パトロール担当：趙強',
+        'patrol.twoDaysAgo': '2日前 10:15',
+        'patrol.log2': 'ホテル外で不審人物を発見、接近し身元情報記録。内部エリア全て正常。',
+        'patrol.threeDaysAgo': '3日前 16:45',
+        'patrol.log3': '902号室で異常騒音を発見、調査で客の音響設備問題を発見、解決支援。',
+        'patrol.showing': '1-3件目を表示（全24件）',
+        'patrol.previous': '前へ',
+        'patrol.next': '次へ',
+        'worklog.title': '作業ログ',
+        'worklog.newLog': '新規作業ログ',
+        'worklog.titlePlaceholder': 'ログタイトルを入力',
+        'worklog.content': '内容',
+        'worklog.contentPlaceholder': '作業状況、セキュリティインシデント、重要事項を記録...',
+        'worklog.save': 'ログ保存',
+        'worklog.history': '過去の作業ログ',
+        'worklog.workLog': '作業ログ',
+        'worklog.yesterday': '昨日 18:30',
+        'worklog.log1': '本日セキュリティアラート5件処理、パトロール4回完了。143号室音声異常継続、追加調査必要。監視システム正常稼働。',
+        'worklog.twoDaysAgo': '2日前 18:45',
+        'worklog.log2': '本日通常業務、セキュリティリクエスト3件処理。ホテル外で不審人物を発見、記録及び報告。監視カメラメンテナンス完了。',
+        'worklog.threeDaysAgo': '3日前 18:20',
+        'worklog.log3': '本日902号室騒音苦情処理、客の音響設備調整支援。全パトロールルート完了、異常報告なし。',
+        'worklog.showing': '1-3件目を表示（全24件）',
+        'worklog.previous': '前へ',
+        'worklog.next': '次へ',
+        'forum.title': 'スタッフフォーラム',
+        'forum.latest': '最新議論',
+        'forum.newTopic': '新規トピック',
+        'forum.post1.title': '最近監視システム頻繁エラー、皆さん遭遇していますか？',
+        'forum.hoursAgo': '2時間前',
+        'forum.post1.content': '東側廊下カメラ最近頻繁オフライン、システム接続エラー表示。配線確認済み、問題なさそう。似た状況の方はいますか？',
+        'forum.post1.info': '投稿者：セキュリティ-趙強 · カテゴリ：',
+        'forum.category.tech': '技術問題',
+        'forum.post1.stats': '返信：4 | 閲覧：28',
+        'forum.post2.title': '143号室異常音数日間継続',
+        'forum.hoursAgo2': '5時間前',
+        'forum.post2.content': 'ここ数日143号室で奇妙な音声アラート、しかし各パトロール検査で異常発見せず。客も問題ないと言う。少し不気味...',
+        'forum.post2.info': '投稿者：セキュリティ-王剛 · カテゴリ：',
+        'forum.category.work': '仕事交流',
+        'forum.post2.stats': '返信：23 | 閲覧：156',
+        'forum.post3.title': '新セキュリティプロトコル更新通知',
+        'forum.hoursAgo3': '5時間前',
+        'forum.post3.content': '管理者RIKIがセキュリティプロトコル更新、特定客室への監視権限及び異常報告流程追加...',
+        'forum.post3.info': '投稿者：ぶんせきぶ しゅかん-王芳 · カテゴリ：',
+        'forum.category.system': 'システム更新',
+        'forum.post3.stats': '返信：7 | 閲覧：42',
+        'forum.post4.title': '夜間パトロール注意事項リマインダー',
+        'forum.daysAgo': '1日前',
+        'forum.post4.content': '最近夜間パトロール時一部エリア照明不足発見、修理依頼済み。皆さんパトロール時安全に特に注意してください...',
+        'forum.post4.info': '投稿者：セキュリティ-李強 · カテゴリ：',
+        'forum.post4.stats': '返信：5 | 閲覧：31',
+        'forum.post5.title': '291号室に関するいくつかの発見',
+        'forum.daysAgo2': '2日前',
+        'forum.post5.content': '監視表示291号室客ほとんど部屋を離れず、動作センサー異常規則的活動パターン表示...',
+        'forum.post5.info': '投稿者：セキュリティ-趙強 · カテゴリ：',
+        'forum.category.security': 'セキュリティ監視',
+        'forum.post5.stats': '返信：3 | 閲覧：24',
+        'forum.post6.title': 'ホテルセキュリティトレーニング計画',
+        'forum.daysAgo3': '3日前',
+        'forum.post6.content': '来週水曜新セキュリティトレーニング開催、内容は異常行動識別及び緊急状況処理を含む。全セキュリティ要員参加願います...',
+        'forum.post6.info': '投稿者：セキュリティマネージャ-陳偉 · カテゴリ：',
+        'forum.post6.stats': '返信：12 | 閲覧：87',
+        'forum.showing': '1-6件目を表示（全42件）',
+        'forum.previous': '前へ',
+        'forum.next': '次へ',
+        'forum.categories': 'フォーラムカテゴリ',
+        'forum.category.security': 'セキュリティ監視',
+        'forum.category.tech': '技術問題',
+        'forum.category.system': 'システム更新',
+        'forum.category.notice': '部門通知',
+        'forum.category.leisure': 'レジャー＆エンターテインメント',
+        'forum.hotTopics': '人気トピック',
+        'forum.hotStats1': '返信 23 · 閲覧 156',
+        'forum.hotStats2': '返信 3 · 閲覧 24',
+        'forum.hotStats3': '返信 7 · 閲覧 42',
+        'forum.hotStats4': '返信 4 · 閲覧 28',
+        'forum.rules': 'フォーラムルール',
+        'forum.rule1': '• 敏感なセキュリティ情報の議論禁止',
+        'forum.rule2': '• すべての仕事交流はプロフェッショナルでなければならない',
+        'forum.rule3': '• 異常を発見したらすぐに管理者に報告',
+        'forum.rule4': '• 専門的な態度を保ち、同僚を尊重する',
+        'forum.rule5': '• 会社の機密保持契約を遵守する',
+        'forum.systemNote': 'システム注記：あなたのすべての活動は記録されます',
+        'footer.system': 'セキュリティシステム v2.1.4',
+        'footer.usage': '内部使用のみ - 機密レベル：高',
+        'footer.lastUpdate': '最終システム更新：2025-11-12 11:02',
+        'footer.systemStatus': 'システム状態：',
+        'footer.runningNormal': '正常稼働中'
+      },
+      'pt': {
+        'nav.dashboard': 'Painel de Segurança',
+        'nav.records': 'Registros de Quartos',
+        'nav.monitor': 'Sistema de Monitoramento',
+        'nav.patrol': 'Registros de Patrulha',
+        'nav.worklog': 'Registro de Trabalho',
+        'nav.forum': 'Fórum de Funcionários',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações',
+        'user.help': 'Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'language': 'Idioma',
+        'dashboard.title': 'Painel de Segurança',
+        'dashboard.cameras': 'Câmeras de Segurança',
+        'dashboard.camerasDesc': 'Câmeras de segurança online',
+        'dashboard.todayPatrols': 'Patrulhas de Hoje',
+        'dashboard.todayPatrolsDesc': 'Patrulhas concluídas hoje',
+        'dashboard.suspicious': 'Atividade Suspeita',
+        'dashboard.suspiciousDesc': 'Relatórios de atividade suspeita hoje',
+        'dashboard.workLog': 'Registro de Trabalho',
+        'dashboard.workLogDesc': 'Registros de trabalho hoje',
+        'dashboard.importantReminders': 'Lembretes Importantes de Hoje',
+        'dashboard.systemStatus': 'Status do Sistema: Operação Normal',
+        'dashboard.alertReminder': 'Alerta: Sala 143 detectou padrões sonoros anormais, precisa de investigação',
+        'dashboard.cameraReminder': 'Aviso: Câmera do corredor leste 3 offline, manutenção agendada',
+        'dashboard.patrolReminder': 'Importante: Área VIP requer patrulhas adicionais, segurança reforçada organizada',
+        'dashboard.schedule': 'Escala de Hoje: Zhao Qiang (08:00-16:00) | Wang Gang (16:00-24:00)',
+        'dashboard.performance': 'Desempenho de Segurança: Tempo de resposta excelente | Taxa de resolução de incidentes 100%',
+        'records.title': 'Registros de Quartos',
+        'records.allRecords': 'Todos os Registros de Quartos',
+        'records.searchPlaceholder': 'Pesquisar registros...',
+        'records.filter': 'Filtrar',
+        'records.showing': 'Mostrando 1-8 de 24 registros',
+        'records.previous': 'Anterior',
+        'records.next': 'Próxima',
+        'records.viewDetails': 'Ver Detalhes',
+        'monitor.title': 'Sistema de Monitoramento',
+        'monitor.live': 'Monitoramento ao Vivo',
+        'monitor.camera': 'Câmera',
+        'monitor.lobby': 'Saguão - CAM-01',
+        'monitor.elevator': 'Hall do Elevador - CAM-07',
+        'monitor.fullView': 'Visualização Completa',
+        'monitor.recordings': 'Ver Gravações',
+        'monitor.cameraStatus': 'Status da Câmera',
+        'monitor.online': 'Câmeras Online',
+        'monitor.offline': 'Câmeras Offline',
+        'monitor.offlineList': 'Lista de Câmeras Offline',
+        'monitor.eastCorridor': 'Corredor Leste',
+        'monitor.offlineSince': 'Offline 3 horas',
+        'monitor.maintenance': 'Manutenção',
+        'monitor.storage': 'Sala de Armazenamento',
+        'monitor.parking': 'Área de Estacionamento B',
+        'patrol.title': 'Registros de Patrulha',
+        'patrol.newRecord': 'Novo Registro de Patrulha',
+        'patrol.route': 'Rota de Patrulha',
+        'patrol.selectRoute': 'Selecionar Rota de Patrulha',
+        'patrol.routeA': 'Rota A - Área do Saguão e Recepção',
+        'patrol.routeB': 'Rota B - Andares de Hóspedes 1-10',
+        'patrol.routeC': 'Rota C - Andares de Hóspedes 11-20',
+        'patrol.routeD': 'Rota D - Restaurante e Entretenimento',
+        'patrol.routeE': 'Rota E - Estacionamento e Perímetro',
+        'patrol.time': 'Hora da Patrulha',
+        'patrol.observations': 'Observações',
+        'patrol.observationsPlaceholder': 'Registrar observações durante a patrulha...',
+        'patrol.incidents': 'Registros de Incidentes',
+        'patrol.incidentsPlaceholder': 'Registrar incidentes durante a patrulha...',
+        'patrol.save': 'Salvar Registro',
+        'patrol.history': 'Registros Históricos de Patrulha',
+        'patrol.yesterday': 'Ontem 14:30',
+        'patrol.log1': 'Patrulha normal, encontrou som anormal na Sala 143, registrado e relatado. Outras áreas normais.',
+        'patrol.patrolBy': 'Patrulha por: Zhao Qiang',
+        'patrol.twoDaysAgo': '2 dias atrás 10:15',
+        'patrol.log2': 'Encontrou pessoa suspeita perambulando fora do hotel, abordou e registrou informações de identidade. Áreas internas todas normais.',
+        'patrol.threeDaysAgo': '3 dias atrás 16:45',
+        'patrol.log3': 'Encontrou ruído anormal na Sala 902, investigação encontrou problema de equipamento de áudio do hóspede, auxiliou resolução.',
+        'patrol.showing': 'Mostrando 1-3 de 24 registros',
+        'patrol.previous': 'Anterior',
+        'patrol.next': 'Próxima',
+        'worklog.title': 'Registro de Trabalho',
+        'worklog.newLog': 'Novo Registro de Trabalho',
+        'worklog.titlePlaceholder': 'Digite o título do registro',
+        'worklog.content': 'Conteúdo',
+        'worklog.contentPlaceholder': 'Registre sua situação de trabalho, incidentes de segurança e assuntos importantes...',
+        'worklog.save': 'Salvar Registro',
+        'worklog.history': 'Registros de Trabalho Históricos',
+        'worklog.workLog': 'Registro de Trabalho',
+        'worklog.yesterday': 'Ontem 18:30',
+        'worklog.log1': 'Hoje tratados 5 alertas de segurança, completadas 4 patrulhas. Anomalia sonora Sala 143 continua, precisa de investigação adicional. Sistema de monitoramento funcionando normal.',
+        'worklog.twoDaysAgo': '2 dias atrás 18:45',
+        'worklog.log2': 'Trabalho normal hoje, tratados 3 pedidos de segurança. Encontrou pessoa suspeita perambulando fora do hotel, registrado e relatado. Manutenção de câmeras de segurança concluída.',
+        'worklog.threeDaysAgo': '3 dias atrás 18:20',
+        'worklog.log3': 'Hoje tratada reclamação de ruído Sala 902, auxiliou hóspede ajustando equipamento de áudio. Completadas todas as rotas de patrulha, nenhum relatório anormal.',
+        'worklog.showing': 'Mostrando 1-3 de 24 registros',
+        'worklog.previous': 'Anterior',
+        'worklog.next': 'Próxima',
+        'forum.title': 'Fórum de Funcionários',
+        'forum.latest': 'Discussões Recentes',
+        'forum.newTopic': 'Novo Tópico',
+        'forum.post1.title': 'Sistema de monitoramento recente com erros frequentes, alguém mais experimentando?',
+        'forum.hoursAgo': '2 horas atrás',
+        'forum.post1.content': 'Câmeras do corredor leste frequentemente ficando offline recentemente, sistema mostra erros de conexão. Já verifiquei fiação, parece bem. Alguém experimentando problemas similares?',
+        'forum.post1.info': 'Postado por: Segurança-Zhao Qiang · Categoria:',
+        'forum.category.tech': 'Problemas Técnicos',
+        'forum.post1.stats': 'Respostas: 4 | Visualizações: 28',
+        'forum.post2.title': 'Som anormal Sala 143 continua por dias',
+        'forum.hoursAgo2': '5 horas atrás',
+        'forum.post2.content': 'Sala 143 tem tido alertas sonoros estranhos esses dias, mas cada verificação de patrulha não encontrou nada anormal. Hóspede também diz nada errado. Um pouco estranho...',
+        'forum.post2.info': 'Postado por: Segurança-Wang Gang · Categoria:',
+        'forum.category.work': 'Comunicação de Trabalho',
+        'forum.post2.stats': 'Respostas: 23 | Visualizações: 156',
+        'forum.post3.title': 'Aviso de atualização de novo protocolo de segurança',
+        'forum.hoursAgo3': '5 horas atrás',
+        'forum.post3.content': 'Administrador RIKI atualizou protocolo de segurança, adicionou permissões de monitoramento para quartos específicos e procedimentos de relatório anormal...',
+        'forum.post3.info': 'Postado por: Gerente do Departamento de Análise-Wang Fang · Categoria:',
+        'forum.category.system': 'Atualizações do Sistema',
+        'forum.post3.stats': 'Respostas: 7 | Visualizações: 42',
+        'forum.post4.title': 'Lembrete de precauções de patrulha noturna',
+        'forum.daysAgo': '1 dia atrás',
+        'forum.post4.content': 'Recentemente encontrou algumas áreas com iluminação insuficiente durante patrulhas noturnas, relatado para reparo. Todos por favor prestem atenção especial à segurança durante patrulhas...',
+        'forum.post4.info': 'Postado por: Segurança-Li Qiang · Categoria:',
+        'forum.post4.stats': 'Respostas: 5 | Visualizações: 31',
+        'forum.post5.title': 'Algumas descobertas sobre a Sala 291',
+        'forum.daysAgo2': '2 dias atrás',
+        'forum.post5.content': 'Monitoramento mostra hóspede Sala 291 quase nunca deixa o quarto, sensores de movimento mostram padrões de atividade anormalmente regulares...',
+        'forum.post5.info': 'Postado por: Segurança-Zhao Qiang · Categoria:',
+        'forum.category.security': 'Monitoramento de Segurança',
+        'forum.post5.stats': 'Respostas: 3 | Visualizações: 24',
+        'forum.post6.title': 'Plano de treinamento de segurança do hotel',
+        'forum.daysAgo3': '3 dias atrás',
+        'forum.post6.content': 'Novo treinamento de segurança próxima quarta-feira,内容包括异常行为识别和紧急情况处理。请所有安保人员参加...',
+        'forum.post6.info': 'Postado por: Gerente de Segurança-Chen Wei · Categoria:',
+        'forum.post6.stats': 'Respostas: 12 | Visualizações: 87',
+        'forum.showing': 'Mostrando 1-6 de 42 tópicos',
+        'forum.previous': 'Anterior',
+        'forum.next': 'Próxima',
+        'forum.categories': 'Categorias do Fórum',
+        'forum.category.security': 'Monitoramento de Segurança',
+        'forum.category.tech': 'Problemas Técnicos',
+        'forum.category.system': 'Atualizações do Sistema',
+        'forum.category.notice': 'Avisos do Departamento',
+        'forum.category.leisure': 'Lazer e Entretenimento',
+        'forum.hotTopics': 'Tópicos Quentes',
+        'forum.hotStats1': 'Respostas 23 · Visualizações 156',
+        'forum.hotStats2': 'Respostas 3 · Visualizações 24',
+        'forum.hotStats3': 'Respostas 7 · Visualizações 42',
+        'forum.hotStats4': 'Respostas 4 · Visualizações 28',
+        'forum.rules': 'Regras do Fórum',
+        'forum.rule1': '• Nenhuma discussão de informações sensíveis de segurança',
+        'forum.rule2': '• Toda comunicação de trabalho deve ser profissional',
+        'forum.rule3': '• Reporte anomalias ao administrador imediatamente',
+        'forum.rule4': '• Mantenha atitude profissional, respeite colegas',
+        'forum.rule5': '• Cumpra acordo de confidencialidade da empresa',
+        'forum.systemNote': 'Nota do Sistema: Todas as suas atividades são registradas',
+        'footer.system': 'Sistema de Segurança v2.1.4',
+        'footer.usage': 'Uso interno apenas - Nível de segurança: Alto',
+        'footer.lastUpdate': 'Última atualização do sistema: 2025-11-12 11:02',
+        'footer.systemStatus': 'Status do Sistema:',
+        'footer.runningNormal': 'Executando normal'
+      }
+    };
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+          // 初始化页面数据
+          loadRecords();
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        currentLanguage = lang;
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+        
+        // 重新加载客房记录以更新语言
+        loadRecords();
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 页面切换功能
+      function switchPage(sectionId) {
+        // 隐藏所有页面
+        document.querySelectorAll('.page-section').forEach(section => {
+          section.classList.remove('active');
+        });
+        
+        // 显示选中的页面
+        document.getElementById(sectionId).classList.add('active');
+        
+        // 滚动到页面顶部
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+        
+        // 关闭移动菜单
+        if (!mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          const icon = menuToggle.querySelector('i');
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        }
+      }
+      
+      // 为导航链接添加事件监听器
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const sectionId = this.getAttribute('data-section');
+          switchPage(sectionId);
+        });
+      });
+      
+      // 为导航卡片添加事件监听器
+      document.querySelectorAll('.nav-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+          e.preventDefault();
+          const sectionId = this.getAttribute('data-section');
+          switchPage(sectionId);
+        });
+      });
+      
+      // 客房记录搜索功能
+      document.getElementById('record-search').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        filterRecords(searchTerm);
+      });
+      
+      // 客房记录分页
+      document.getElementById('record-prev').addEventListener('click', function() {
+        if (currentRoomPage > 1) {
+          currentRoomPage--;
+          loadRecords();
+          updateRoomTabs();
+        }
+      });
+      
+      document.getElementById('record-next').addEventListener('click', function() {
+        if (currentRoomPage < 3) {
+          currentRoomPage++;
+          loadRecords();
+          updateRoomTabs();
+        }
+      });
+      
+      // 房间页签切换
+      document.querySelectorAll('.room-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          const page = parseInt(this.getAttribute('data-room-page'));
+          currentRoomPage = page;
+          loadRecords();
+          updateRoomTabs();
+        });
+      });
+      
+      // 更新房间页签样式
+      function updateRoomTabs() {
+        document.querySelectorAll('.room-tab').forEach(t => {
+          t.classList.remove('text-white', 'border-accent');
+          t.classList.add('text-gray-400');
+        });
+        document.querySelector(`.room-tab[data-room-page="${currentRoomPage}"]`).classList.add('text-white', 'border-accent');
+        document.querySelector(`.room-tab[data-room-page="${currentRoomPage}"]`).classList.remove('text-gray-400');
+      }
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+
+    // 加载客房记录
+    function loadRecords() {
+      const recordList = document.getElementById('record-list');
+      const pageInfo = document.getElementById('record-page-info');
+      const records = roomRecords[`page${currentRoomPage}`];
+      
+      recordList.innerHTML = '';
+      
+      records.forEach(record => {
+        const recordElement = document.createElement('div');
+        recordElement.className = 'forum-post p-4';
+        
+        let accessBadge = '<span class="text-success text-sm">可访问</span>';
+        
+        // 特殊房间的查看详情按钮跳转到新页面
+        let viewButton = '';
+        if (record.special) {
+                       // 定义需要跳转至专属安保记录页的房间号列表
+                       const specialRooms = ['143', '291', '4030', '302', '314', '902'];
+                      // 判断当前房间号是否在特殊列表中
+                       const isSpecialRoom = specialRooms.includes(record.roomNumber);
+  
+                    // 动态生成跳转地址：特殊房间跳转至专属页面，其他房间用原链接
+                      const detailUrl = isSpecialRoom 
+                         ? `${record.roomNumber}安保部记录.html`  // 例如：143 → 143安保部记录.html
+                         : `room-details.html?room=${record.roomNumber}`;
+  
+                    viewButton = `<a href="${detailUrl}" class="text-accent hover:text-white transition-colors flex items-center"><i class="fa fa-eye mr-1"></i> <span data-i18n="records.viewDetails">查看详情</span></a>`;
+} else {
+                       viewButton = `<button class="text-gray-500 cursor-not-allowed flex items-center"><i class="fa fa-eye mr-1"></i> <span data-i18n="records.viewDetails">查看详情</span></button>`;
+}
+        
+        // 获取当前语言的记录内容
+        const recordContent = record.content[currentLanguage] || record.content['zh-CN'];
+        
+        recordElement.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="text-lg font-semibold text-white">${record.title}</h4>
+            <div class="flex items-center space-x-2">
+              ${accessBadge}
+              <span class="text-gray-400 text-sm">房间 ${record.roomNumber}</span>
+            </div>
+          </div>
+          <p class="text-gray-300 text-sm mb-3">${recordContent}</p>
+          <div class="flex justify-between items-center text-xs text-gray-400">
+            <span>${record.title.split(' - ')[1]} - ${record.title.split(' - ')[2]}</span>
+            ${viewButton}
+          </div>
+        `;
+        
+        recordList.appendChild(recordElement);
+      });
+      
+      // 更新分页信息
+      const startIndex = (currentRoomPage - 1) * 8 + 1;
+      const endIndex = (currentRoomPage - 1) * 8 + records.length;
+      pageInfo.textContent = `显示 ${startIndex}-${endIndex} 条，共 24 条记录`;
+      
+      // 更新分页按钮状态
+      document.getElementById('record-prev').disabled = currentRoomPage === 1;
+      document.getElementById('record-next').disabled = currentRoomPage === 3;
+      
+      // 更新页签样式
+      updateRoomTabs();
+    }
+    
+    // 更新房间页签样式
+    function updateRoomTabs() {
+      document.querySelectorAll('.room-tab').forEach(t => {
+        t.classList.remove('text-white', 'border-b-2', 'border-accent');
+        t.classList.add('text-gray-400');
+      });
+      document.querySelector(`.room-tab[data-room-page="${currentRoomPage}"]`).classList.add('text-white', 'border-b-2', 'border-accent');
+      document.querySelector(`.room-tab[data-room-page="${currentRoomPage}"]`).classList.remove('text-gray-400');
+    }
+    
+    // 过滤客房记录
+    function filterRecords(searchTerm) {
+      // 由于我们只有24个房间的记录，搜索功能可以简单实现
+      const allRecords = Object.values(roomRecords).flat();
+      const filteredRecords = allRecords.filter(record => 
+        record.title.toLowerCase().includes(searchTerm) || 
+        record.content[currentLanguage].toLowerCase().includes(searchTerm) ||
+        record.roomNumber.toLowerCase().includes(searchTerm)
+      );
+      
+      const recordList = document.getElementById('record-list');
+      recordList.innerHTML = '';
+      
+      if (filteredRecords.length === 0) {
+        recordList.innerHTML = '<div class="text-center py-4 text-gray-400">未找到匹配的记录</div>';
+        return;
+      }
+      
+      filteredRecords.forEach(record => {
+        const recordElement = document.createElement('div');
+        recordElement.className = 'forum-post p-4';
+        
+        let accessBadge = '<span class="text-success text-sm">可访问</span>';
+        
+        // 特殊房间的查看详情按钮跳转到新页面
+        let viewButton = '';
+        if (record.special) {
+          viewButton = `<a href="room-details.html?room=${record.roomNumber}" class="text-accent hover:text-white transition-colors flex items-center"><i class="fa fa-eye mr-1"></i> <span data-i18n="records.viewDetails">查看详情</span></a>`;
+        } else {
+          viewButton = `<button class="text-gray-500 cursor-not-allowed flex items-center"><i class="fa fa-eye mr-1"></i> <span data-i18n="records.viewDetails">查看详情</span></button>`;
+        }
+        
+        // 获取当前语言的记录内容
+        const recordContent = record.content[currentLanguage] || record.content['zh-CN'];
+        
+        recordElement.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="text-lg font-semibold text-white">${record.title}</h4>
+            <div class="flex items-center space-x-2">
+              ${accessBadge}
+              <span class="text-gray-400 text-sm">房间 ${record.roomNumber}</span>
+            </div>
+          </div>
+          <p class="text-gray-300 text-sm mb-3">${recordContent}</p>
+          <div class="flex justify-between items-center text-xs text-gray-400">
+            <span>${record.title.split(' - ')[1]} - ${record.title.split(' - ')[2]}</span>
+            ${viewButton}
+          </div>
+        `;
+        
+        recordList.appendChild(recordElement);
+      });
+      
+      document.getElementById('record-page-info').textContent = `显示 1-${filteredRecords.length} 条，共 ${filteredRecords.length} 条记录`;
+    }
+  </script>
+</body>
+</html>

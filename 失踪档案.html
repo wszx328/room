@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>失踪人口档案 - 李文轩 | 警方数据库</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        secondary: '#1e293b',
+                        accent: '#f87171',
+                        dark: '#020617',
+                        light: '#f1f5f9',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        info: '#3b82f6'
+                    },
+                    fontFamily: {
+                        mono: ['Consolas', 'Monaco', 'monospace'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            }
+            .bg-grid {
+                background-image: linear-gradient(rgba(156, 163, 175, 0.1) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(156, 163, 175, 0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+            }
+            .animate-fade-in {
+                animation: fadeIn 0.8s ease-in-out;
+            }
+            .animate-slide-up {
+                animation: slideUp 0.6s ease-out;
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            }
+            .language-dropdown {
+                display: none;
+                position: absolute;
+                right: 0;
+                top: 100%;
+                background-color: #1e293b;
+                min-width: 160px;
+                border-radius: 0.375rem;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+                z-index: 100;
+                overflow: hidden;
+            }
+            .language-dropdown.show {
+                display: block;
+            }
+            .language-option {
+                padding: 0.75rem 1rem;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+            .language-option:hover {
+                background-color: #334155;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-primary text-light min-h-screen bg-grid">
+    <!-- 顶部导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 bg-dark/80 backdrop-blur-sm z-50 border-b border-accent/30">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-shield text-accent text-xl"></i>
+                <span class="text-lg font-bold tracking-wider lang" data-key="siteTitle">警方公开数据库</span>
+            </div>
+            
+            <!-- 搜索栏 -->
+            <div class="relative hidden md:block">
+                <input type="text" placeholder="搜索档案..." class="lang-placeholder bg-secondary/70 border border-gray-600 rounded-md px-4 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-accent w-64" data-key="searchPlaceholder">
+                <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+            
+            <!-- 用户信息和语言切换 -->
+            <div class="flex items-center space-x-4">
+                <span class="text-sm hidden md:block lang" data-key="accessLevel">访问权限：<span class="text-accent">一级</span></span>
+                
+                <!-- 语言切换 -->
+                <div class="relative">
+                    <button id="languageToggle" class="bg-secondary hover:bg-secondary/80 rounded-md px-3 py-1 text-sm transition-colors flex items-center">
+                        <i class="fa fa-globe mr-1"></i> <span class="lang" data-key="currentLang">中文</span>
+                        <i class="fa fa-caret-down ml-1"></i>
+                    </button>
+                    <div id="languageDropdown" class="language-dropdown">
+                        <div class="language-option" data-lang="zh">中文</div>
+                        <div class="language-option" data-lang="en">English</div>
+                        <div class="language-option" data-lang="ja">日本語</div>
+                        <div class="language-option" data-lang="pt">Português</div>
+                    </div>
+                </div>
+                
+                <button class="bg-secondary hover:bg-secondary/80 rounded-md px-3 py-1 text-sm transition-colors">
+                    <i class="fa fa-user-o mr-1"></i> <span class="lang" data-key="login">登录</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-4 pt-24 pb-16 animate-fade-in">
+        <!-- 页面标题 -->
+        <header class="mb-10 animate-slide-up">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-[clamp(1.5rem,4vw,2.5rem)] font-bold leading-tight">
+                    <i class="fa fa-file-text-o text-accent mr-2"></i><span class="lang" data-key="pageTitle">失踪人口档案</span>
+                </h1>
+                <div class="flex space-x-2">
+                    <span class="px-3 py-1 bg-warning/20 text-warning rounded-full text-xs font-medium">
+                        <i class="fa fa-clock-o mr-1"></i><span class="lang" data-key="caseStatus">未结案</span>
+                    </span>
+                    <span class="px-3 py-1 bg-info/20 text-info rounded-full text-xs font-medium">
+                        <i class="fa fa-eye mr-1"></i><span class="lang" data-key="publicStatus">公开</span>
+                    </span>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center text-gray-400 text-sm gap-4">
+                <span><i class="fa fa-database mr-1"></i> <span class="lang" data-key="fileNumber">档案编号</span>：<span class="text-light">SP-2025-1126-007</span></span>
+                <span><i class="fa fa-calendar-o mr-1"></i> <span class="lang" data-key="lastUpdate">最后更新</span>：<span class="text-light">2025年12月5日</span></span>
+                <span><i class="fa fa-user-o mr-1"></i> <span class="lang" data-key="officerInCharge">负责警官</span>：<span class="text-light">张明</span></span>
+            </div>
+        </header>
+
+        <!-- 档案内容 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 左侧：基本信息 -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- 个人信息卡片 -->
+                <div class="bg-secondary/70 rounded-xl p-6 shadow-xl animate-slide-up card-hover" style="animation-delay: 0.2s">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fa fa-id-card-o text-accent mr-2"></i><span class="lang" data-key="basicInfo">基本信息</span>
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="name">姓名</div>
+                            <div class="col-span-2 text-light">李文轩</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="gender">性别</div>
+                            <div class="col-span-2 text-light lang" data-key="male">男</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="age">年龄</div>
+                            <div class="col-span-2 text-light lang" data-key="ageValue">28岁</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="birthDate">出生日期</div>
+                            <div class="col-span-2 text-light">1997年3月15日</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="height">身高</div>
+                            <div class="col-span-2 text-light lang" data-key="heightValue">约178cm</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="occupation">职业</div>
+                            <div class="col-span-2 text-light lang" data-key="occupationValue">独立游戏程序员</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="contact">联系方式</div>
+                            <div class="col-span-2 text-light lang" data-key="contactValue">138****5678（已停机）</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 失踪信息卡片 -->
+                <div class="bg-secondary/70 rounded-xl p-6 shadow-xl animate-slide-up card-hover" style="animation-delay: 0.3s">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fa fa-search text-accent mr-2"></i><span class="lang" data-key="missingInfo">失踪信息</span>
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="missingDate">失踪日期</div>
+                            <div class="col-span-2 text-light">2025年11月26日</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="missingLocation">失踪地点</div>
+                            <div class="col-span-2 text-light">R∞M酒店（市中心店）</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="lastSeen">最后出现地</div>
+                            <div class="col-span-2 text-light">R∞M酒店291号房</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="reporter">报案人</div>
+                            <div class="col-span-2 text-light">王磊（好友）</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="reportDate">报案日期</div>
+                            <div class="col-span-2 text-light">2025年12月1日</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 特征信息卡片 -->
+                <div class="bg-secondary/70 rounded-xl p-6 shadow-xl animate-slide-up card-hover" style="animation-delay: 0.4s">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fa fa-list-ul text-accent mr-2"></i><span class="lang" data-key="characteristics">特征信息</span>
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="appearance">外貌特征</div>
+                            <div class="col-span-2 text-light lang" data-key="appearanceValue">中等身材，短发，戴黑框眼镜</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="clothing">衣着特征</div>
+                            <div class="col-span-2 text-light lang" data-key="clothingValue">最后被目击时穿着黑色连帽衫、牛仔裤</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1 font-medium text-gray-400 lang" data-key="belongings">随身物品</div>
+                            <div class="col-span-2 text-light lang" data-key="belongingsValue">笔记本电脑、手机、外接显示器（遗落酒店）</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间：案情摘要和调查进展 -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- 案情摘要 -->
+                <div class="bg-secondary/70 rounded-xl p-6 shadow-xl animate-slide-up card-hover" style="animation-delay: 0.2s">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fa fa-file-text text-accent mr-2"></i><span class="lang" data-key="caseSummary">案情摘要</span>
+                    </h2>
+                    <div class="space-y-4 text-light leading-relaxed">
+                        <p class="lang" data-key="summary1">
+                            李文轩于2025年11月12日入住R∞M酒店291号房，据酒店记录显示，其于11月26日办理退房手续。然而，酒店无法提供李文轩离开酒店的监控录像，称"系统维护期间数据丢失"。
+                        </p>
+                        <p class="lang" data-key="summary2">
+                            报案人王磊（李文轩好友）称，自11月20日后便无法联系到李文轩，其家人也表示未收到任何消息。王磊于12月1日向警方报案。
+                        </p>
+                        <p class="lang" data-key="summary3">
+                            警方调查发现，李文轩在入住酒店期间，曾在其个人博客和社交媒体上发布多条关于"突破创作瓶颈"的言论，内容充满积极向上的情绪。最后一条更新于11月25日，标题为《新的世界》，内容简短而神秘。
+                        </p>
+                        <p class="lang" data-key="summary4">
+                            酒店房间搜查结果显示，李文轩的外接显示器遗留在房间内，其他个人物品均已不在。房间内未发现打斗痕迹或其他异常情况。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 调查进展 -->
+                <div class="bg-secondary/70 rounded-xl p-6 shadow-xl animate-slide-up card-hover" style="animation-delay: 0.3s">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fa fa-line-chart text-accent mr-2"></i><span class="lang" data-key="investigationProgress">调查进展</span>
+                    </h2>
+                    <div class="space-y-4">
+                        <!-- 时间线 -->
+                        <div class="relative">
+                            <!-- 时间线轴线 -->
+                            <div class="absolute h-full w-0.5 bg-gray-600 left-3 top-0"></div>
+                            
+                            <!-- 时间点1 -->
+                            <div class="relative pl-10 pb-8">
+                                <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                                    <span class="text-xs">1</span>
+                                </div>
+                                <div class="font-medium text-light">2025年12月1日</div>
+                                <div class="text-gray-400 mt-1 lang" data-key="timeline1">王磊报案，称李文轩失踪</div>
+                            </div>
+                            
+                            <!-- 时间点2 -->
+                            <div class="relative pl-10 pb-8">
+                                <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                                    <span class="text-xs">2</span>
+                                </div>
+                                <div class="font-medium text-light">2025年12月2日</div>
+                                <div class="text-gray-400 mt-1 lang" data-key="timeline2">警方前往R∞M酒店调查，调取监控</div>
+                            </div>
+                            
+                            <!-- 时间点3 -->
+                            <div class="relative pl-10 pb-8">
+                                <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                                    <span class="text-xs">3</span>
+                                </div>
+                                <div class="font-medium text-light">2025年12月3日</div>
+                                <div class="text-gray-400 mt-1 lang" data-key="timeline3">搜查李文轩酒店房间，发现遗落的外接显示器</div>
+                            </div>
+                            
+                            <!-- 时间点4 -->
+                            <div class="relative pl-10 pb-8">
+                                <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                                    <span class="text-xs">4</span>
+                                </div>
+                                <div class="font-medium text-light">2025年12月4日</div>
+                                <div class="text-gray-400 mt-1 lang" data-key="timeline4">约谈酒店管理人员，对方坚称李文轩正常退房</div>
+                            </div>
+                            
+                            <!-- 时间点5 -->
+                            <div class="relative pl-10">
+                                <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-info flex items-center justify-center">
+                                    <span class="text-xs">5</span>
+                                </div>
+                                <div class="font-medium text-light">2025年12月5日</div>
+                                <div class="text-gray-400 mt-1 lang" data-key="timeline5">发现酒店涉及多起类似失踪案，均为"创作者"身份</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 警方备注 -->
+                <div class="bg-secondary/70 rounded-xl p-6 shadow-xl animate-slide-up card-hover" style="animation-delay: 0.4s">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fa fa-sticky-note-o text-accent mr-2"></i><span class="lang" data-key="policeNotes">警方备注</span>
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-dark/50 rounded-lg border-l-4 border-warning">
+                            <p class="text-light">
+                                <i class="fa fa-exclamation-triangle text-warning mr-2"></i>
+                                <strong class="lang" data-key="importantFinding">重要发现：</strong><span class="lang" data-key="findingText">调查显示，R∞M酒店在过去五年内涉及至少3起类似失踪案件，失踪者均为"创作者"身份（包括作家、画家、音乐家、程序员等）。所有失踪者在失踪前均在社交媒体上发布过"突破瓶颈"、"找到灵感"等类似言论。</span>
+                            </p>
+                        </div>
+                        
+                        <div class="p-4 bg-dark/50 rounded-lg border-l-4 border-info">
+                            <p class="text-light">
+                                <i class="fa fa-info-circle text-info mr-2"></i>
+                                <strong class="lang" data-key="investigationDifficulty">调查难点：</strong><span class="lang" data-key="difficultyText">尽管存在上述巧合，但目前暂无直接证据表明酒店与这些失踪案存在关联。所有案件中，酒店均能提供失踪者的"正常退房"记录，但均以各种理由无法提供失踪者离开酒店的监控录像。</span>
+                            </p>
+                        </div>
+                        
+                        <div class="p-4 bg-dark/50 rounded-lg border-l-4 border-gray-500">
+                            <p class="text-light">
+                                <i class="fa fa-lightbulb-o text-gray-500 mr-2"></i>
+                                <strong class="lang" data-key="investigationDirection">调查方向：</strong>
+                            </p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 text-light">
+                                <li class="lang" data-key="direction1">深入调查R∞M酒店的背景信息</li>
+                                <li class="lang" data-key="direction2">寻找更多可能的失踪者，建立案件关联</li>
+                                <li class="lang" data-key="direction3">分析李文轩遗落的外接显示器，寻找可能的数字线索</li>
+                                <li class="lang" data-key="direction4">重新约谈酒店工作人员，特别是291号房附近的服务人员</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="mt-10 bg-secondary/70 rounded-xl p-6 shadow-xl animate-slide-up" style="animation-delay: 0.5s">
+            <div class="flex flex-wrap justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <span class="text-gray-400 mr-4 lang" data-key="fileStatus">档案状态：</span>
+                    <span class="px-3 py-1 bg-warning/20 text-warning rounded-full text-sm font-medium lang" data-key="unresolved">未结案</span>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button class="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-md transition-colors flex items-center">
+                        <i class="fa fa-download mr-2"></i> <span class="lang" data-key="exportFile">导出档案</span>
+                    </button>
+                    <button class="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-md transition-colors flex items-center">
+                        <i class="fa fa-print mr-2"></i> <span class="lang" data-key="printFile">打印档案</span>
+                    </button>
+                    <button class="px-4 py-2 bg-accent hover:bg-accent/80 rounded-md transition-colors flex items-center">
+                        <i class="fa fa-plus mr-2"></i> <span class="lang" data-key="addInfo">补充信息</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark/80 border-t border-accent/30 py-8 mt-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center">
+                        <i class="fa fa-shield text-accent text-xl mr-2"></i>
+                        <span class="text-lg font-bold lang" data-key="siteTitle">警方公开数据库</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1 lang" data-key="footerWarning">
+                        本系统仅授权人员可访问，未经授权使用将依法追究责任
+                    </p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fa fa-question-circle"></i> <span class="lang" data-key="helpCenter">帮助中心</span>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fa fa-lock"></i> <span class="lang" data-key="privacyPolicy">隐私政策</span>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fa fa-book"></i> <span class="lang" data-key="termsOfUse">使用条款</span>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-6 text-center text-gray-500 text-sm">
+                © 2025 <span class="lang" data-key="siteTitle">警方公开数据库</span>. <span class="lang" data-key="allRightsReserved">保留所有权利</span>.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 多语言数据
+        const translations = {
+            zh: {
+                siteTitle: "警方公开数据库",
+                searchPlaceholder: "搜索档案...",
+                accessLevel: "访问权限：",
+                currentLang: "中文",
+                login: "登录",
+                pageTitle: "失踪人口档案",
+                caseStatus: "未结案",
+                publicStatus: "公开",
+                fileNumber: "档案编号",
+                lastUpdate: "最后更新",
+                officerInCharge: "负责警官",
+                basicInfo: "基本信息",
+                name: "姓名",
+                gender: "性别",
+                male: "男",
+                age: "年龄",
+                ageValue: "28岁",
+                birthDate: "出生日期",
+                height: "身高",
+                heightValue: "约178cm",
+                occupation: "职业",
+                occupationValue: "独立游戏程序员",
+                contact: "联系方式",
+                contactValue: "138****5678（已停机）",
+                missingInfo: "失踪信息",
+                missingDate: "失踪日期",
+                missingLocation: "失踪地点",
+                lastSeen: "最后出现地",
+                reporter: "报案人",
+                reportDate: "报案日期",
+                characteristics: "特征信息",
+                appearance: "外貌特征",
+                appearanceValue: "中等身材，短发，戴黑框眼镜",
+                clothing: "衣着特征",
+                clothingValue: "最后被目击时穿着黑色连帽衫、牛仔裤",
+                belongings: "随身物品",
+                belongingsValue: "笔记本电脑、手机、外接显示器（遗落酒店）",
+                caseSummary: "案情摘要",
+                summary1: "李文轩于2025年11月12日入住R∞M酒店291号房，据酒店记录显示，其于11月26日办理退房手续。然而，酒店无法提供李文轩离开酒店的监控录像，称\"系统维护期间数据丢失\"。",
+                summary2: "报案人王磊（李文轩好友）称，自11月20日后便无法联系到李文轩，其家人也表示未收到任何消息。王磊于12月1日向警方报案。",
+                summary3: "警方调查发现，李文轩在入住酒店期间，曾在其个人博客和社交媒体上发布多条关于\"突破创作瓶颈\"的言论，内容充满积极向上的情绪。最后一条更新于11月25日，标题为《新的世界》，内容简短而神秘。",
+                summary4: "酒店房间搜查结果显示，李文轩的外接显示器遗留在房间内，其他个人物品均已不在。房间内未发现打斗痕迹或其他异常情况。",
+                investigationProgress: "调查进展",
+                timeline1: "王磊报案，称李文轩失踪",
+                timeline2: "警方前往R∞M酒店调查，调取监控",
+                timeline3: "搜查李文轩酒店房间，发现遗落的外接显示器",
+                timeline4: "约谈酒店管理人员，对方坚称李文轩正常退房",
+                timeline5: "发现酒店涉及多起类似失踪案，均为\"创作者\"身份",
+                policeNotes: "警方备注",
+                importantFinding: "重要发现：",
+                findingText: "调查显示，R∞M酒店在过去五年内涉及至少3起类似失踪案件，失踪者均为\"创作者\"身份（包括作家、画家、音乐家、程序员等）。所有失踪者在失踪前均在社交媒体上发布过\"突破瓶颈\"、\"找到灵感\"等类似言论。",
+                investigationDifficulty: "调查难点：",
+                difficultyText: "尽管存在上述巧合，但目前暂无直接证据表明酒店与这些失踪案存在关联。所有案件中，酒店均能提供失踪者的\"正常退房\"记录，但均以各种理由无法提供失踪者离开酒店的监控录像。",
+                investigationDirection: "调查方向：",
+                direction1: "深入调查R∞M酒店的背景信息",
+                direction2: "寻找更多可能的失踪者，建立案件关联",
+                direction3: "分析李文轩遗落的外接显示器，寻找可能的数字线索",
+                direction4: "重新约谈酒店工作人员，特别是291号房附近的服务人员",
+                fileStatus: "档案状态：",
+                unresolved: "未结案",
+                exportFile: "导出档案",
+                printFile: "打印档案",
+                addInfo: "补充信息",
+                footerWarning: "本系统仅授权人员可访问，未经授权使用将依法追究责任",
+                helpCenter: "帮助中心",
+                privacyPolicy: "隐私政策",
+                termsOfUse: "使用条款",
+                allRightsReserved: "保留所有权利"
+            },
+            en: {
+                siteTitle: "Police Public Database",
+                searchPlaceholder: "Search files...",
+                accessLevel: "Access Level:",
+                currentLang: "English",
+                login: "Login",
+                pageTitle: "Missing Person File",
+                caseStatus: "Unresolved",
+                publicStatus: "Public",
+                fileNumber: "File Number",
+                lastUpdate: "Last Update",
+                officerInCharge: "Officer in Charge",
+                basicInfo: "Basic Information",
+                name: "Name",
+                gender: "Gender",
+                male: "Male",
+                age: "Age",
+                ageValue: "28 years old",
+                birthDate: "Date of Birth",
+                height: "Height",
+                heightValue: "Approx. 178cm",
+                occupation: "Occupation",
+                occupationValue: "Independent Game Programmer",
+                contact: "Contact",
+                contactValue: "138****5678 (Disconnected)",
+                missingInfo: "Missing Information",
+                missingDate: "Date Missing",
+                missingLocation: "Missing Location",
+                lastSeen: "Last Seen",
+                reporter: "Reporter",
+                reportDate: "Report Date",
+                characteristics: "Characteristics",
+                appearance: "Appearance",
+                appearanceValue: "Medium build, short hair, wears black-frame glasses",
+                clothing: "Clothing",
+                clothingValue: "Last seen wearing black hoodie and jeans",
+                belongings: "Personal Items",
+                belongingsValue: "Laptop, phone, external monitor (left at hotel)",
+                caseSummary: "Case Summary",
+                summary1: "Li Wenxuan checked into Room 291 at R∞M Hotel on November 12, 2025. According to hotel records, he checked out on November 26. However, the hotel was unable to provide surveillance footage of Li Wenxuan leaving the hotel, citing 'data loss during system maintenance'.",
+                summary2: "The reporter, Wang Lei (a friend of Li Wenxuan), stated that he had been unable to contact Li Wenxuan since November 20, and his family also reported not receiving any messages. Wang Lei reported to the police on December 1.",
+                summary3: "Police investigation found that during his stay at the hotel, Li Wenxuan had posted multiple messages on his personal blog and social media about 'breaking through creative blocks', with content full of positive emotions. The last update was on November 25, titled 'New World', with brief and mysterious content.",
+                summary4: "Search results of the hotel room showed that Li Wenxuan's external monitor was left in the room, while other personal items were gone. No signs of struggle or other abnormalities were found in the room.",
+                investigationProgress: "Investigation Progress",
+                timeline1: "Wang Lei reported Li Wenxuan missing",
+                timeline2: "Police investigated R∞M Hotel and retrieved surveillance footage",
+                timeline3: "Searched Li Wenxuan's hotel room, found abandoned external monitor",
+                timeline4: "Interviewed hotel management, who insisted Li Wenxuan checked out normally",
+                timeline5: "Discovered hotel involved in multiple similar missing cases, all victims were 'creators'",
+                policeNotes: "Police Notes",
+                importantFinding: "Important Finding:",
+                findingText: "Investigation shows that R∞M Hotel has been involved in at least 3 similar missing cases over the past five years, all missing persons were 'creators' (including writers, painters, musicians, programmers, etc.). All missing persons had posted messages about 'breaking through bottlenecks' or 'finding inspiration' on social media before their disappearance.",
+                investigationDifficulty: "Investigation Difficulty:",
+                difficultyText: "Despite the above coincidences, there is currently no direct evidence linking the hotel to these disappearances. In all cases, the hotel was able to provide 'normal checkout' records for the missing persons, but gave various reasons for being unable to provide surveillance footage of them leaving the hotel.",
+                investigationDirection: "Investigation Direction:",
+                direction1: "Investigate R∞M Hotel's background information in depth",
+                direction2: "Look for more possible missing persons and establish case connections",
+                direction3: "Analyze Li Wenxuan's abandoned external monitor for possible digital clues",
+                direction4: "Re-interview hotel staff, especially those working near Room 291",
+                fileStatus: "File Status:",
+                unresolved: "Unresolved",
+                exportFile: "Export File",
+                printFile: "Print File",
+                addInfo: "Add Information",
+                footerWarning: "This system is accessible only to authorized personnel. Unauthorized use will be prosecuted.",
+                helpCenter: "Help Center",
+                privacyPolicy: "Privacy Policy",
+                termsOfUse: "Terms of Use",
+                allRightsReserved: "All Rights Reserved"
+            },
+            ja: {
+                siteTitle: "警察公開データベース",
+                searchPlaceholder: "ファイルを検索...",
+                accessLevel: "アクセス権限：",
+                currentLang: "日本語",
+                login: "ログイン",
+                pageTitle: "行方不明者ファイル",
+                caseStatus: "未解決",
+                publicStatus: "公開",
+                fileNumber: "ファイル番号",
+                lastUpdate: "最終更新",
+                officerInCharge: "担当警官",
+                basicInfo: "基本情報",
+                name: "氏名",
+                gender: "性別",
+                male: "男性",
+                age: "年齢",
+                ageValue: "28歳",
+                birthDate: "生年月日",
+                height: "身長",
+                heightValue: "約178cm",
+                occupation: "職業",
+                occupationValue: "独立ゲームプログラマー",
+                contact: "連絡先",
+                contactValue: "138****5678（使用停止中）",
+                missingInfo: "失踪情報",
+                missingDate: "失踪日",
+                missingLocation: "失踪場所",
+                lastSeen: "最後の目撃場所",
+                reporter: "通報者",
+                reportDate: "通報日",
+                characteristics: "特徴情報",
+                appearance: "外見特徴",
+                appearanceValue: "中肉中背、短髪、黒縁メガネ着用",
+                clothing: "服装特徴",
+                clothingValue: "最後の目撃時は黒いフーディーとジーンズを着用",
+                belongings: "所持品",
+                belongingsValue: "ノートパソコン、携帯電話、外部モニター（ホテルに遺留）",
+                caseSummary: "事件概要",
+                summary1: "李文軒は2025年11月12日にR∞Mホテル291号室にチェックインしました。ホテルの記録によると、11月26日にチェックアウトしたとされています。しかし、ホテルは李文軒がホテルを出る監視映像を提供できず、「システムメンテナンス中のデータ損失」と説明しました。",
+                summary2: "通報者の王磊（李文軒の友人）は、11月20日以降李文軒と連絡が取れないと述べ、家族も何の連絡も受け取っていないと報告しました。王磊は12月1日に警察に通報しました。",
+                summary3: "警察の調査により、李文軒はホテル滞在中に個人ブログやSNSで「創作の壁を突破する」という趣旨の投稿を複数行い、内容は前向きな感情に満ちていました。最後の更新は11月25日で、『新しい世界』というタイトルで、短く神秘的な内容でした。",
+                summary4: "ホテル客室の捜索結果によると、李文軒の外部モニターは部屋に残されており、他の私物はすべてなくなっていました。部屋内には争った痕跡やその他の異常は見られませんでした。",
+                investigationProgress: "調査進捗",
+                timeline1: "王磊が李文軒の失踪を通報",
+                timeline2: "警察がR∞Mホテルを調査し、監視映像を取得",
+                timeline3: "李文軒のホテル客室を捜索、遺留された外部モニターを発見",
+                timeline4: "ホテル経営者と面談、李文軒が正常にチェックアウトしたと主張",
+                timeline5: "ホテルが複数の類似失踪事件に関与していることを発見、被害者はすべて「クリエイター」",
+                policeNotes: "警察メモ",
+                importantFinding: "重要な発見：",
+                findingText: "調査によると、R∞Mホテルは過去5年間に少なくとも3件の類似失踪事件に関与しており、行方不明者はすべて「クリエイター」（作家、画家、音楽家、プログラマーなど）でした。すべての行方不明者は失踪前にSNSで「壁を突破する」「インスピレーションを見つける」などの投稿をしていました。",
+                investigationDifficulty: "調査の難点：",
+                difficultyText: "上記の偶然にもかかわらず、現在のところホテルとこれらの失踪事件を直接結びつける証拠はありません。すべての事件において、ホテルは行方不明者の「正常なチェックアウト」記録を提供できましたが、行方不明者がホテルを出る監視映像を提供できない理由は様々でした。",
+                investigationDirection: "調査方向：",
+                direction1: "R∞Mホテルの背景情報を詳細に調査",
+                direction2: "さらに多くの可能性のある行方不明者を探し、事件の関連性を確立",
+                direction3: "李文軒が遺留した外部モニターを分析し、デジタル手がかりを探す",
+                direction4: "ホテルスタッフ、特に291号室周辺の従業員と再面談",
+                fileStatus: "ファイル状態：",
+                unresolved: "未解決",
+                exportFile: "ファイルをエクスポート",
+                printFile: "ファイルを印刷",
+                addInfo: "情報を追加",
+                footerWarning: "本システムは許可された者のみがアクセスできます。無断使用は法的に責任を問われます。",
+                helpCenter: "ヘルプセンター",
+                privacyPolicy: "プライバシーポリシー",
+                termsOfUse: "利用規約",
+                allRightsReserved: "全著作権所有"
+            },
+            pt: {
+                siteTitle: "Base de Dados Pública da Polícia",
+                searchPlaceholder: "Pesquisar arquivos...",
+                accessLevel: "Nível de Acesso:",
+                currentLang: "Português",
+                login: "Login",
+                pageTitle: "Arquivo de Pessoa Desaparecida",
+                caseStatus: "Não Resolvido",
+                publicStatus: "Público",
+                fileNumber: "Número do Arquivo",
+                lastUpdate: "Última Atualização",
+                officerInCharge: "Oficial Responsável",
+                basicInfo: "Informações Básicas",
+                name: "Nome",
+                gender: "Gênero",
+                male: "Masculino",
+                age: "Idade",
+                ageValue: "28 anos",
+                birthDate: "Data de Nascimento",
+                height: "Altura",
+                heightValue: "Aprox. 178cm",
+                occupation: "Ocupação",
+                occupationValue: "Programador de Jogos Independente",
+                contact: "Contato",
+                contactValue: "138****5678 (Desativado)",
+                missingInfo: "Informações do Desaparecimento",
+                missingDate: "Data do Desaparecimento",
+                missingLocation: "Local do Desaparecimento",
+                lastSeen: "Última Vez Visto",
+                reporter: "Denunciante",
+                reportDate: "Data da Denúncia",
+                characteristics: "Características",
+                appearance: "Aparência",
+                appearanceValue: "Corpo médio, cabelo curto, usa óculos de armação preta",
+                clothing: "Vestuário",
+                clothingValue: "Última vez visto usando moletom preto e jeans",
+                belongings: "Pertences Pessoais",
+                belongingsValue: "Laptop, telefone, monitor externo (deixado no hotel)",
+                caseSummary: "Resumo do Caso",
+                summary1: "Li Wenxuan fez check-in no quarto 291 do Hotel R∞M em 12 de novembro de 2025. De acordo com os registros do hotel, ele fez check-out em 26 de novembro. No entanto, o hotel não pôde fornecer imagens de vigilância de Li Wenxuan saindo do hotel, citando 'perda de dados durante a manutenção do sistema'.",
+                summary2: "O denunciante, Wang Lei (amigo de Li Wenxuan), afirmou que não conseguiu contatar Li Wenxuan desde 20 de novembro, e sua família também relatou não ter recebido nenhuma mensagem. Wang Lei fez a denúncia à polícia em 1º de dezembro.",
+                summary3: "A investigação policial descobriu que, durante sua estadia no hotel, Li Wenxuan postou várias mensagens em seu blog pessoal e mídias sociais sobre 'superar bloqueios criativos', com conteúdo cheio de emoções positivas. A última atualização foi em 25 de novembro, intitulada 'Novo Mundo', com conteúdo breve e misterioso.",
+                summary4: "Os resultados da busca no quarto do hotel mostraram que o monitor externo de Li Wenxuan foi deixado no quarto, enquanto outros itens pessoais haviam sumido. Nenhum sinal de luta ou outras anormalidades foi encontrado no quarto.",
+                investigationProgress: "Progresso da Investigação",
+                timeline1: "Wang Lei denunciou o desaparecimento de Li Wenxuan",
+                timeline2: "Polícia investigou o Hotel R∞M e recuperou imagens de vigilância",
+                timeline3: "Revistou o quarto de hotel de Li Wenxuan, encontrou monitor externo abandonado",
+                timeline4: "Entrevistou a administração do hotel, que insistiu que Li Wenxuan fez check-out normalmente",
+                timeline5: "Descobriu que o hotel está envolvido em múltiplos casos semelhantes de desaparecimento, todas as vítimas eram 'criadores'",
+                policeNotes: "Notas da Polícia",
+                importantFinding: "Descoberta Importante:",
+                findingText: "A investigação mostra que o Hotel R∞M esteve envolvido em pelo menos 3 casos semelhantes de desaparecimento nos últimos cinco anos, todas as pessoas desaparecidas eram 'criadores' (incluindo escritores, pintores, músicos, programadores, etc.). Todas as pessoas desaparecidas postaram mensagens sobre 'superar bloqueios' ou 'encontrar inspiração' nas mídias sociais antes de seu desaparecimento.",
+                investigationDifficulty: "Dificuldade da Investigação:",
+                difficultyText: "Apesar das coincidências acima, atualmente não há evidências diretas ligando o hotel a esses desaparecimentos. Em todos os casos, o hotel foi capaz de fornecer registros de 'check-out normal' para as pessoas desaparecidas, mas deu várias razões para não poder fornecer imagens de vigilância delas saindo do hotel.",
+                investigationDirection: "Direção da Investigação:",
+                direction1: "Investigar as informações de fundo do Hotel R∞M em profundidade",
+                direction2: "Procurar por mais possíveis pessoas desaparecidas e estabelecer conexões entre os casos",
+                direction3: "Analisar o monitor externo abandonado de Li Wenxuan em busca de possíveis pistas digitais",
+                direction4: "Reentrevistar a equipe do hotel, especialmente aqueles que trabalham perto do quarto 291",
+                fileStatus: "Status do Arquivo:",
+                unresolved: "Não Resolvido",
+                exportFile: "Exportar Arquivo",
+                printFile: "Imprimir Arquivo",
+                addInfo: "Adicionar Informação",
+                footerWarning: "Este sistema é acessível apenas para pessoal autorizado. Uso não autorizado será processado.",
+                helpCenter: "Central de Ajuda",
+                privacyPolicy: "Política de Privacidade",
+                termsOfUse: "Termos de Uso",
+                allRightsReserved: "Todos os Direitos Reservados"
+            }
+        };
+
+        // 当前语言
+        let currentLanguage = localStorage.getItem('language') || 'zh';
+
+        // 翻译函数
+        function translatePage(language) {
+            // 更新当前语言
+            currentLanguage = language;
+            localStorage.setItem('language', language);
+            
+            // 更新语言按钮文本
+            document.querySelector('#languageToggle .lang').textContent = 
+                translations[language].currentLang;
+            
+            // 更新所有带lang类的元素
+            document.querySelectorAll('.lang').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[language][key]) {
+                    element.textContent = translations[language][key];
+                }
+            });
+            
+            // 更新placeholder
+            document.querySelectorAll('.lang-placeholder').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[language][key]) {
+                    element.placeholder = translations[language][key];
+                }
+            });
+            
+            // 更新html lang属性
+            document.documentElement.lang = language === 'zh' ? 'zh-CN' : language;
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 应用保存的语言设置
+            translatePage(currentLanguage);
+            
+            // 语言切换下拉菜单
+            const languageToggle = document.getElementById('languageToggle');
+            const languageDropdown = document.getElementById('languageDropdown');
+            
+            // 切换下拉菜单显示/隐藏
+            languageToggle.addEventListener('click', function() {
+                languageDropdown.classList.toggle('show');
+            });
+            
+            // 选择语言
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    translatePage(lang);
+                    languageDropdown.classList.remove('show');
+                });
+            });
+            
+            // 点击其他地方关闭下拉菜单
+            document.addEventListener('click', function(event) {
+                if (!languageToggle.contains(event.target) && !languageDropdown.contains(event.target)) {
+                    languageDropdown.classList.remove('show');
+                }
+            });
+            
+            // 模拟加载效果
+            setTimeout(() => {
+                document.querySelectorAll('.animate-fade-in, .animate-slide-up').forEach(el => {
+                    el.style.opacity = 1;
+                    el.style.transform = 'translateY(0)';
+                });
+            }, 300);
+            
+            // 简单的交互效果
+            document.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.textContent.includes(translations[currentLanguage].exportFile) || 
+                        this.textContent.includes(translations[currentLanguage].printFile)) {
+                        alert(currentLanguage === 'zh' ? '打印机未连接。' : 
+                              currentLanguage === 'en' ? 'Printer not connected.' :
+                              currentLanguage === 'ja' ? 'プリンターが接続されていません。' :
+                              'Impressora não conectada.');
+                    } else if (this.textContent.includes(translations[currentLanguage].addInfo)) {
+                        alert(currentLanguage === 'zh' ? '请联系负责警官张明补充案件信息。' : 
+                              currentLanguage === 'en' ? 'Please contact Officer Zhang Ming to add case information.' :
+                              currentLanguage === 'ja' ? '担当警官の張明に連絡して事件情報を追加してください。' :
+                              'Entre em contato com o Oficial Zhang Ming para adicionar informações do caso.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

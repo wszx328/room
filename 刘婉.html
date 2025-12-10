@@ -1,0 +1,2247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R∞M酒店 - 内部系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A1B3D', // 深紫色主色调
+            secondary: '#D4AF37', // 金色辅助色
+            accent: '#8A6BBE', // 淡紫色强调色
+            dark: '#0F0B18', // 深色背景（更深邃）
+            warning: '#ff4444', // 警告红
+            success: '#44ff44', // 系统绿色
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Courier New', 'monospace'], // 等宽字体用于系统提示
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .text-glow {
+        text-shadow: 0 0 15px rgba(138, 107, 190, 0.8);
+      }
+      .text-glitch {
+        position: relative;
+      }
+      .text-glitch::before, .text-glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .text-glitch::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff4444;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .text-glitch::after {
+        left: -2px;
+        text-shadow: -2px 0 #8A6BBE;
+        clip: rect(24px, 450px, 36px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      .pixel-cat {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+      .noise-bg {
+        position: relative;
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+      }
+      .monitor-line {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(138, 107, 190, 0.1) 50%, 
+          transparent 100%);
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        animation: scanline 6s linear infinite;
+      }
+      .room-number {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: #8A6BBE;
+        text-shadow: 0 0 10px rgba(138, 107, 190, 0.5);
+      }
+      .door-glow {
+        box-shadow: 0 0 20px rgba(138, 107, 190, 0.5);
+      }
+      .flicker {
+        animation: flicker 5s infinite alternate;
+      }
+      .breathing {
+        animation: breathing 4s ease-in-out infinite;
+      }
+      .dark-bg {
+        background: linear-gradient(135deg, #0F0B18 0%, #2A1B3D 50%, #0F0B18 100%);
+      }
+      .terminal-font {
+        font-family: 'Courier New', monospace;
+      }
+      .system-message {
+        border-left: 3px solid #8A6BBE;
+        padding-left: 10px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+      }
+      .forum-post {
+        background: rgba(42, 27, 61, 0.6);
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .forum-post:hover {
+        background: rgba(42, 27, 61, 0.8);
+        border-color: rgba(138, 107, 190, 0.5);
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+    }
+    
+    @keyframes glitch-anim {
+      0% { clip: rect(42px, 9999px, 44px, 0); }
+      5% { clip: rect(12px, 9999px, 59px, 0); }
+      10% { clip: rect(48px, 9999px, 29px, 0); }
+      15% { clip: rect(42px, 9999px, 73px, 0); }
+      20% { clip: rect(63px, 9999px, 27px, 0); }
+      25% { clip: rect(34px, 9999px, 55px, 0); }
+      30% { clip: rect(86px, 9999px, 73px, 0); }
+      35% { clip: rect(20px, 9999px, 20px, 0); }
+      40% { clip: rect(26px, 9999px, 60px, 0); }
+      45% { clip: rect(25px, 9999px, 66px, 0); }
+      50% { clip: rect(57px, 9999px, 98px, 0); }
+      55% { clip: rect(5px, 9999px, 46px, 0); }
+      60% { clip: rect(82px, 9999px, 31px, 0); }
+      65% { clip: rect(54px, 9999px, 27px, 0); }
+      70% { clip: rect(28px, 9999px, 99px, 0); }
+      75% { clip: rect(45px, 9999px, 69px, 0); }
+      80% { clip: rect(23px, 9999px, 85px, 0); }
+      85% { clip: rect(54px, 9999px, 84px, 0); }
+      90% { clip: rect(45px, 9999px, 47px, 0); }
+      95% { clip: rect(37px, 9999px, 20px, 0); }
+      100% { clip: rect(4px, 9999px, 91px, 0); }
+    }
+    
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 100px, 0); }
+      5% { clip: rect(52px, 9999px, 74px, 0); }
+      10% { clip: rect(79px, 9999px, 85px, 0); }
+      15% { clip: rect(75px, 9999px, 5px, 0); }
+      20% { clip: rect(67px, 9999px, 61px, 0); }
+      25% { clip: rect(14px, 9999px, 79px, 0); }
+      30% { clip: rect(1px, 9999px, 66px, 0); }
+      35% { clip: rect(86px, 9999px, 30px, 0); }
+      40% { clip: rect(23px, 9999px, 98px, 0); }
+      45% { clip: rect(85px, 9999px, 72px, 0); }
+      50% { clip: rect(71px, 9999px, 75px, 0); }
+      55% { clip: rect(2px, 9999px, 48px, 0); }
+      60% { clip: rect(30px, 9999px, 16px, 0); }
+      65% { clip: rect(59px, 9999px, 50px, 0); }
+      70% { clip: rect(41px, 9999px, 62px, 0); }
+      75% { clip: rect(2px, 9999px, 82px, 0); }
+      80% { clip: rect(47px, 9999px, 73px, 0); }
+      85% { clip: rect(3px, 9999px, 27px, 0); }
+      90% { clip: rect(26px, 9999px, 55px, 0); }
+      95% { clip: rect(42px, 9999px, 97px, 0); }
+      100% { clip: rect(38px, 9999px, 49px, 0); }
+    }
+    
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+    
+    @keyframes flicker {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+        opacity: 1;
+      }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+        opacity: 0.3;
+      }
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+  
+  <!-- 引入Google字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="text-gray-300 overflow-x-hidden dark-bg noise-bg">
+  <!-- 监控扫描线效果（增强系统感） -->
+  <div class="monitor-line"></div>
+  
+  <!-- 页面加载动画 -->
+  <div id="loader" class="fixed inset-0 bg-dark z-50 flex items-center justify-center transition-opacity duration-1000">
+    <div class="text-white text-center">
+      <div class="pixel-cat w-16 h-16 mx-auto mb-4 opacity-0" id="loader-cat">
+        <!-- 紫色眼睛像素黑猫 -->
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+          <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+          <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+          <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+          <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+          <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+        </svg>
+      </div>
+      <p class="text-accent font-light tracking-widest terminal-font">R∞M内部系统初始化中<span class="animate-pulse">...</span></p>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="fixed w-full bg-dark/80 backdrop-blur-sm z-40 transition-all duration-500" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <span class="text-white font-bold text-xl md:text-2xl tracking-wider terminal-font">R∞M</span>
+        <span class="ml-1 text-accent text-sm hidden md:inline-block">| 前台系统</span>
+      </div>
+      <nav class="hidden md:flex space-x-8 items-center">
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="personal-dashboard">
+          <span data-i18n="nav.dashboard">前台工作台</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="guest-records">
+          <span data-i18n="nav.records">客房记录</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="checkin-out">
+          <span data-i18n="nav.checkin">入住退房</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <!-- 已移除房间状态板块 -->
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="guest-services">
+          <span data-i18n="nav.services">客户服务</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="work-log">
+          <span data-i18n="nav.worklog">工作日志</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white transition-colors duration-300 relative group" data-section="staff-forum">
+          <span data-i18n="nav.forum">员工论坛</span>
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        
+        <!-- 语言切换按钮 -->
+        <div class="relative group">
+          <button id="language-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-globe mr-2"></i>
+            <span id="current-lang">中文</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="language-menu" class="absolute right-0 mt-2 w-32 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+            <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+            <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+            <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+          </div>
+        </div>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <!-- 搜索框 -->
+        <div class="relative group">
+          <input type="text" placeholder="搜索..." class="bg-primary/40 border border-accent/30 rounded-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent w-40 transition-all duration-300 group-hover:w-52 terminal-font">
+          <i class="fa fa-search text-accent absolute right-3 top-1/2 transform -translate-y-1/2"></i>
+        </div>
+        <!-- 用户信息 -->
+        <div class="relative group">
+          <button id="user-menu-toggle" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center">
+            <i class="fa fa-user-circle text-xl mr-2"></i>
+            <span id="username">刘婉</span>
+            <i class="fa fa-caret-down ml-1"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-primary/90 backdrop-blur-sm rounded-sm shadow-lg border border-accent/20 hidden z-50">
+            <div class="px-4 py-2 text-sm text-gray-400 border-b border-accent/20">前台 - 刘婉</div>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.profile">个人资料</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.settings">系统设置</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors" data-i18n="user.help">帮助文档</a>
+            <div class="border-t border-accent/20 mt-2 pt-2">
+              <a href="官网.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-warning/20 hover:text-warning transition-colors" data-i18n="user.logout">退出系统</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="md:hidden text-white" id="menu-toggle">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden bg-dark/95 backdrop-blur-md md:hidden">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="personal-dashboard" data-i18n="nav.dashboard">前台工作台</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="guest-records" data-i18n="nav.records">客房记录</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="checkin-out" data-i18n="nav.checkin">入住退房</a>
+        <!-- 已移除房间状态板块 -->
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="guest-services" data-i18n="nav.services">客户服务</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="work-log" data-i18n="nav.worklog">工作日志</a>
+        <a href="#" class="nav-link text-gray-300 hover:text-white py-2 transition-colors" data-section="staff-forum" data-i18n="nav.forum">员工论坛</a>
+        
+        <!-- 移动端语言切换 -->
+        <div class="border-t border-gray-700 pt-4 mt-4">
+          <div class="px-4 py-2 text-sm text-gray-400" data-i18n="language">语言</div>
+          <button data-lang="zh-CN" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">中文</button>
+          <button data-lang="en" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">English</button>
+          <button data-lang="ja" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">日本語</button>
+          <button data-lang="pt" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-accent/20 hover:text-white transition-colors">Português</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="pt-16">
+    <!-- 前台工作台 -->
+    <section id="personal-dashboard" class="page-section active py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-white" data-i18n="dashboard.title">前台工作台</h1>
+          <div class="text-gray-400 terminal-font">
+            <span id="current-date">2025-11-20</span> | 
+            <span id="current-time">14:32:05</span>
+          </div>
+        </div>
+        
+        <!-- 快速访问卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="checkin-out">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.todayCheckin">今日入住</h3>
+              <i class="fa fa-sign-in text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.todayCheckinDesc">今日预计入住客人</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">5位客人</span>
+              <span class="text-warning text-sm">1位VIP</span>
+            </div>
+          </a>
+          
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="checkin-out">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.todayCheckout">今日退房</h3>
+              <i class="fa fa-sign-out text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.todayCheckoutDesc">今日预计退房客人</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">3位客人</span>
+              <span class="text-success text-sm">2位已退</span>
+            </div>
+          </a>
+          
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="guest-records">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.availableRooms">可用房间</h3>
+              <i class="fa fa-bed text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.availableRoomsDesc">当前可分配房间</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">18间</span>
+              <span class="text-warning text-sm">3间打扫中</span>
+            </div>
+          </a>
+          
+          <a href="#" class="nav-card bg-primary/40 p-6 rounded-sm shadow-sm hover-lift border border-accent/20 group transition-all duration-300" data-section="guest-services">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white" data-i18n="dashboard.guestServices">客户服务</h3>
+              <i class="fa fa-bell text-accent text-xl group-hover:scale-110 transition-transform"></i>
+            </div>
+            <p class="text-gray-300 text-sm mb-2" data-i18n="dashboard.guestServicesDesc">待处理客户请求</p>
+            <div class="flex justify-between items-center">
+              <span class="text-accent font-semibold">4个请求</span>
+              <span class="text-warning text-sm">1个紧急</span>
+            </div>
+          </a>
+        </div>
+        
+        <!-- 今日重要提醒 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20 mb-6">
+          <h2 class="text-xl font-semibold mb-4 text-white" data-i18n="dashboard.importantReminders">今日重要提醒</h2>
+          <div class="space-y-4">
+            <div class="system-message">
+              <p class="text-success terminal-font">> <span data-i18n="dashboard.systemStatus">系统状态：正常运行</span></p>
+            </div>
+            <div class="system-message">
+              <p class="text-warning terminal-font">
+                > <span data-i18n="dashboard.vipReminder">提醒：VIP客人张先生将于16:00抵达，请准备接待</span>
+              </p>
+            </div>
+            <div class="system-message">
+              <p class="text-gray-300 terminal-font">> <span data-i18n="dashboard.cleaningReminder">通知：143号房间需要特别清洁，请勿安排新客人</span></p>
+            </div>
+            <div class="system-message">
+              <p class="text-warning terminal-font">
+                > <span data-i18n="dashboard.lateCheckout">重要：302号房间客人要求延迟退房至18:00，已批准</span>
+              </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-accent/20">
+              <p class="text-gray-400 text-sm terminal-font">> <span data-i18n="dashboard.schedule">今日排班：刘婉 (08:00-16:00) | 张晓 (16:00-24:00)</span></p>
+              <p class="text-gray-400 text-sm terminal-font">> <span data-i18n="dashboard.performance">前台绩效：客户满意度 98% | 办理效率优秀</span></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 今日入住客人列表 -->
+        <div class="bg-primary/40 p-6 rounded-sm border border-accent/20">
+          <h2 class="text-xl font-semibold mb-4 text-white" data-i18n="dashboard.todayGuests">今日入住客人</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-300">
+              <thead class="text-xs text-gray-400 uppercase bg-primary/60">
+                <tr>
+                  <th scope="col" class="px-4 py-3" data-i18n="dashboard.roomNumber">房间号</th>
+                  <th scope="col" class="px-4 py-3" data-i18n="dashboard.guestName">客人姓名</th>
+                  <th scope="col" class="px-4 py-3" data-i18n="dashboard.arrivalTime">预计抵达</th>
+                  <th scope="col" class="px-4 py-3" data-i18n="dashboard.status">状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-accent/20 bg-primary/40 hover:bg-accent/10">
+                  <td class="px-4 py-3 font-medium text-white">605</td>
+                  <td class="px-4 py-3">王佳怡</td>
+                  <td class="px-4 py-3">14:00</td>
+                  <td class="px-4 py-3"><span class="text-warning" data-i18n="dashboard.pendingArrival">待抵达</span></td>
+                </tr>
+                <tr class="border-b border-accent/20 bg-primary/40 hover:bg-accent/10">
+                  <td class="px-4 py-3 font-medium text-white">702</td>
+                  <td class="px-4 py-3">陈颖</td>
+                  <td class="px-4 py-3">15:00</td>
+                  <td class="px-4 py-3"><span class="text-warning" data-i18n="dashboard.pendingArrival">待抵达</span></td>
+                </tr>
+                <tr class="border-b border-accent/20 bg-primary/40 hover:bg-accent/10">
+                  <td class="px-4 py-3 font-medium text-white">839</td>
+                  <td class="px-4 py-3">周浩</td>
+                  <td class="px-4 py-3">16:30</td>
+                  <td class="px-4 py-3"><span class="text-warning" data-i18n="dashboard.pendingArrival">待抵达</span></td>
+                </tr>
+                <tr class="border-b border-accent/20 bg-primary/40 hover:bg-accent/10">
+                  <td class="px-4 py-3 font-medium text-white">932</td>
+                  <td class="px-4 py-3">周佳欣</td>
+                  <td class="px-4 py-3">17:00</td>
+                  <td class="px-4 py-3"><span class="text-warning" data-i18n="dashboard.pendingArrival">待抵达</span></td>
+                </tr>
+                <tr class="bg-primary/40 hover:bg-accent/10">
+                  <td class="px-4 py-3 font-medium text-white">109</td>
+                  <td class="px-4 py-3">李浩然</td>
+                  <td class="px-4 py-3">18:00</td>
+                  <td class="px-4 py-3"><span class="text-warning" data-i18n="dashboard.pendingArrival">待抵达</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 客房记录部分 -->
+    <section id="guest-records" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="records.title">客房记录</h2>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-white" data-i18n="records.allRecords">所有客房记录</h3>
+            <div class="flex space-x-4">
+              <div class="relative">
+                <input type="text" id="record-search" placeholder="搜索记录..." class="bg-primary/60 border border-accent/30 rounded-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent w-64 terminal-font" data-i18n-placeholder="records.searchPlaceholder">
+                <i class="fa fa-search text-accent absolute right-3 top-1/2 transform -translate-y-1/2"></i>
+              </div>
+              <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-filter mr-2"></i>
+                <span data-i18n="records.filter">筛选</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="space-y-4" id="record-list">
+            <!-- 记录将通过JavaScript动态加载 -->
+          </div>
+          
+          <!-- 分页控件 -->
+          <div class="mt-6 flex justify-between items-center">
+            <div class="text-gray-400 text-sm" id="record-page-info">
+              <span data-i18n="records.showing">显示 1-8 条，共 24 条记录</span>
+            </div>
+            <div class="flex space-x-2">
+              <button id="record-prev" class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="records.previous">上一页</span>
+              </button>
+              <button id="record-next" class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="records.next">下一页</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 入住退房部分 -->
+    <section id="checkin-out" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="checkin.title">入住退房管理</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <!-- 入住登记 -->
+          <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="checkin.checkin">入住登记</h3>
+            <form class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-2 text-white" data-i18n="checkin.guestName">客人姓名</label>
+                <input type="text" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="输入客人姓名" data-i18n-placeholder="checkin.guestNamePlaceholder">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2 text-white" data-i18n="checkin.idNumber">身份证号</label>
+                <input type="text" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="输入身份证号码" data-i18n-placeholder="checkin.idNumberPlaceholder">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2 text-white" data-i18n="checkin.roomNumber">房间号</label>
+                <select class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font">
+                  <option value="" data-i18n="checkin.selectRoom">选择房间</option>
+                  <option value="615">615 - <span data-i18n="roomTypes.standard">标准房</span></option>
+                  <option value="722">722 - <span data-i18n="roomTypes.theme">主题房</span></option>
+                  <option value="819">819 - <span data-i18n="roomTypes.deluxe">豪华房</span></option>
+                  <option value="934">934 - <span data-i18n="roomTypes.presidential">总统套房</span></option>
+                  <option value="105">105 - <span data-i18n="roomTypes.standard">标准房</span></option>
+                </select>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2 text-white" data-i18n="checkin.checkinDate">入住日期</label>
+                  <input type="date" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2 text-white" data-i18n="checkin.checkoutDate">退房日期</label>
+                  <input type="date" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font">
+                </div>
+              </div>
+              <div class="pt-2">
+                <button type="submit" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300 w-full">
+                  <span data-i18n="checkin.processCheckin">办理入住</span>
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <!-- 退房办理 -->
+          <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+            <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="checkin.checkout">退房办理</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-2 text-white" data-i18n="checkin.roomNumber">房间号</label>
+                <input type="text" id="checkout-room" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="输入房间号" data-i18n-placeholder="checkin.roomNumberPlaceholder">
+              </div>
+              
+              <div class="bg-primary/60 p-4 rounded-sm hidden" id="checkout-info">
+                <h4 class="text-white font-medium mb-2" data-i18n="checkin.guestInfo">客人信息</h4>
+                <p class="text-gray-300 text-sm mb-1" data-i18n="checkin.name">姓名：<span id="guest-name">-</span></p>
+                <p class="text-gray-300 text-sm mb-1" data-i18n="checkin.checkinDate">入住日期：<span id="checkin-date">-</span></p>
+                <p class="text-gray-300 text-sm mb-3" data-i18n="checkin.totalCharges">消费金额：<span id="total-charges">-</span></p>
+                
+                <div class="flex space-x-2">
+                  <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex-1">
+                    <span data-i18n="checkin.confirmCheckout">确认退房</span>
+                  </button>
+                  <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors flex-1">
+                    <span data-i18n="checkin.printBill">打印账单</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="pt-4">
+                <h4 class="text-white font-medium mb-2" data-i18n="checkin.todayCheckoutList">今日需退房列表</h4>
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center p-2 hover:bg-accent/10 rounded-sm">
+                    <div>
+                      <span class="text-white">615 - 林雨欣</span>
+                      <span class="text-gray-400 text-sm ml-2" data-i18n="checkin.expectedTime">预计12:00</span>
+                    </div>
+                    <span class="text-success text-sm" data-i18n="checkin.checkedOut">已退房</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 hover:bg-accent/10 rounded-sm">
+                    <div>
+                      <span class="text-white">819 - 吴雅婷</span>
+                      <span class="text-gray-400 text-sm ml-2" data-i18n="checkin.expectedTime">预计12:00</span>
+                    </div>
+                    <span class="text-success text-sm" data-i18n="checkin.checkedOut">已退房</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 hover:bg-accent/10 rounded-sm">
+                    <div>
+                      <span class="text-white">722 - 黄文博</span>
+                      <span class="text-gray-400 text-sm ml-2" data-i18n="checkin.expectedTime">预计12:00</span>
+                    </div>
+                    <span class="text-warning text-sm" data-i18n="checkin.pendingCheckout">待退房</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 客户服务部分 -->
+    <section id="guest-services" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="services.title">客户服务</h2>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-white" data-i18n="services.requests">客户服务请求</h3>
+            <div class="flex space-x-4">
+              <div class="relative">
+                <input type="text" placeholder="搜索请求..." class="bg-primary/60 border border-accent/30 rounded-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent w-64 terminal-font" data-i18n-placeholder="services.searchPlaceholder">
+                <i class="fa fa-search text-accent absolute right-3 top-1/2 transform -translate-y-1/2"></i>
+              </div>
+              <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                <i class="fa fa-filter mr-2"></i>
+                <span data-i18n="services.filter">筛选</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="space-y-4">
+            <!-- 服务请求项目 -->
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">房间 302 - <span data-i18n="services.extraTowels">需要额外毛巾</span></h4>
+                <div class="flex items-center space-x-2">
+                  <span class="text-warning text-sm" data-i18n="services.processing">处理中</span>
+                  <span class="text-gray-400 text-sm">10:30</span>
+                </div>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="services.extraTowelsDesc">客人王先生要求提供额外毛巾，已通知客房服务部。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="services.requestType">请求类型：<span class="text-warning" data-i18n="services.housekeeping">客房服务</span></span>
+                <span data-i18n="services.assignedTo">分配：刘婉</span>
+              </div>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">房间 4030 - <span data-i18n="services.acIssue">空调故障</span></h4>
+                <div class="flex items-center space-x-2">
+                  <span class="text-accent text-sm" data-i18n="services.pending">待处理</span>
+                  <span class="text-gray-400 text-sm">11:15</span>
+                </div>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="services.acIssueDesc">客人陈先生报告空调不制冷，需要工程部检查。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="services.requestType">请求类型：<span class="text-warning" data-i18n="services.repair">设备维修</span></span>
+                <span data-i18n="services.assignedTo">分配：未分配</span>
+              </div>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">房间 314 - <span data-i18n="services.lateCheckout">延迟退房请求</span></h4>
+                <div class="flex items-center space-x-2">
+                  <span class="text-success text-sm" data-i18n="services.approved">已批准</span>
+                  <span class="text-gray-400 text-sm">09:45</span>
+                </div>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="services.lateCheckoutDesc">客人赵女士请求延迟退房至14:00，已批准。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="services.requestType">请求类型：<span class="text-success" data-i18n="services.checkoutService">退房服务</span></span>
+                <span data-i18n="services.handledBy">处理人：刘婉</span>
+              </div>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">房间 902 - <span data-i18n="services.wakeupCall">叫醒服务</span></h4>
+                <div class="flex items-center space-x-2">
+                  <span class="text-success text-sm" data-i18n="services.arranged">已安排</span>
+                  <span class="text-gray-400 text-sm">08:20</span>
+                </div>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="services.wakeupCallDesc">客人刘先生要求明早07:00叫醒服务，已安排。</p>
+              <div class="flex justify-between items-center text-xs text-gray-400">
+                <span data-i18n="services.requestType">请求类型：<span class="text-accent" data-i18n="services.wakeupService">叫醒服务</span></span>
+                <span data-i18n="services.handledBy">处理人：刘婉</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 分页控件 -->
+          <div class="mt-6 flex justify-between items-center">
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="services.showing">显示 1-4 条，共 12 条请求</span>
+            </div>
+            <div class="flex space-x-2">
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="services.previous">上一页</span>
+              </button>
+              <button class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="services.next">下一页</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 快速服务按钮 -->
+        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <button class="bg-primary/40 hover:bg-accent/20 p-4 rounded-sm border border-accent/20 transition-all duration-300 group">
+            <div class="flex flex-col items-center">
+              <i class="fa fa-taxi text-accent text-xl mb-2 group-hover:scale-110 transition-transform"></i>
+              <span class="text-white text-sm" data-i18n="services.taxi">叫车服务</span>
+            </div>
+          </button>
+          
+          <button class="bg-primary/40 hover:bg-accent/20 p-4 rounded-sm border border-accent/20 transition-all duration-300 group">
+            <div class="flex flex-col items-center">
+              <i class="fa fa-cutlery text-accent text-xl mb-2 group-hover:scale-110 transition-transform"></i>
+              <span class="text-white text-sm" data-i18n="services.restaurant">餐厅预订</span>
+            </div>
+          </button>
+          
+          <button class="bg-primary/40 hover:bg-accent/20 p-4 rounded-sm border border-accent/20 transition-all duration-300 group">
+            <div class="flex flex-col items-center">
+              <i class="fa fa-ticket text-accent text-xl mb-2 group-hover:scale-110 transition-transform"></i>
+              <span class="text-white text-sm" data-i18n="services.tickets">票务服务</span>
+            </div>
+          </button>
+          
+          <button class="bg-primary/40 hover:bg-accent/20 p-4 rounded-sm border border-accent/20 transition-all duration-300 group">
+            <div class="flex flex-col items-center">
+              <i class="fa fa-medkit text-accent text-xl mb-2 group-hover:scale-110 transition-transform"></i>
+              <span class="text-white text-sm" data-i18n="services.medical">医疗服务</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+    <!-- 工作日志部分 -->
+    <section id="work-log" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="worklog.title">工作日志</h2>
+        
+        <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="worklog.newLog">新建工作日志</h3>
+          <form class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2 text-white" data-i18n="worklog.title">标题</label>
+              <input type="text" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="输入日志标题" data-i18n-placeholder="worklog.titlePlaceholder">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2 text-white" data-i18n="worklog.content">内容</label>
+              <textarea rows="12" class="w-full px-4 py-2 bg-primary/30 border border-accent/30 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent text-white terminal-font" placeholder="记录您的工作情况、客户反馈和重要事项..." data-i18n-placeholder="worklog.contentPlaceholder"></textarea>
+            </div>
+            <div class="pt-2">
+              <button type="submit" class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300">
+                <span data-i18n="worklog.save">保存日志</span>
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- 历史日志 -->
+        <div class="mt-6 bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+          <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="worklog.history">历史工作日志</h3>
+          <div class="space-y-4">
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">2025-11-19 <span data-i18n="worklog.workLog">工作日志</span></h4>
+                <span class="text-gray-400 text-sm" data-i18n="worklog.yesterday">昨天 18:30</span>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log1">今日接待客人28位，处理客户请求15个。VIP客人王先生对服务表示满意。143号房间客人周先生状态异常，已记录。</p>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">2025-11-18 <span data-i18n="worklog.workLog">工作日志</span></h4>
+                <span class="text-gray-400 text-sm" data-i18n="worklog.twoDaysAgo">2天前 18:45</span>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log2">今日工作正常，处理退房12间，入住15间。902号房间客人刘先生要求特殊音响设备，已安排。</p>
+            </div>
+            
+            <div class="forum-post p-4">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-white">2025-11-17 <span data-i18n="worklog.workLog">工作日志</span></h4>
+                <span class="text-gray-400 text-sm" data-i18n="worklog.threeDaysAgo">3天前 18:20</span>
+              </div>
+              <p class="text-gray-300 text-sm mb-3" data-i18n="worklog.log3">今日客户投诉餐厅服务响应慢，已协调餐饮部处理。314号房间赵女士对舞蹈室设施非常满意。</p>
+            </div>
+          </div>
+          
+          <!-- 分页控件 -->
+          <div class="mt-6 flex justify-between items-center">
+            <div class="text-gray-400 text-sm">
+              <span data-i18n="worklog.showing">显示 1-3 条，共 24 条日志</span>
+            </div>
+            <div class="flex space-x-2">
+              <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="worklog.previous">上一页</span>
+              </button>
+              <button class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                <span data-i18n="worklog.next">下一页</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 员工论坛部分 -->
+    <section id="staff-forum" class="page-section py-8">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-white mb-6" data-i18n="forum.title">员工论坛</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2">
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-white" data-i18n="forum.latest">最新讨论</h3>
+                <button class="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-4 rounded-sm transition-all duration-300 flex items-center">
+                  <i class="fa fa-plus mr-2"></i>
+                  <span data-i18n="forum.newTopic">发布新话题</span>
+                </button>
+              </div>
+              
+              <div class="space-y-4">
+                <!-- 论坛帖子 -->
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post1.title">今天是我生日，但还得值班，求安慰！</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.hoursAgo">2小时前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post1.content">今天是我的生日，本来想请假的，但是最近酒店人手不够，只能继续值班了。呜呜呜，求各位同事安慰！</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post1.info">发布者：前台-刘婉 · 分类：<span class="text-accent" data-i18n="forum.category.leisure">休闲娱乐</span></span>
+                    <span data-i18n="forum.post1.stats">回复：4 | 查看：28</span>
+                  </div>
+                </div>
+                
+                <!-- 143号房帖子改为力丸安利贴 -->
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post2.title">必须安利！力丸新专辑《ROOM》太绝了！</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.hoursAgo2">5小时前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post2.content">大家快去听力丸的新专辑《ROOM》！概念太适合我们酒店了，每首歌都对应一个房间的故事，特别是《MORE》这首歌简直绝了！</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post2.info">发布者：前台-张晓 · 分类：<span class="text-accent" data-i18n="forum.category.leisure">休闲娱乐</span></span>
+                    <span data-i18n="forum.post2.stats">回复：23 | 查看：156</span>
+                  </div>
+                </div>
+                
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post3.title">新分析工具使用指南</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.hoursAgo3">5小时前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post3.content">管理员RIKI更新了情感分析工具，增加了新的数据可视化功能...</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post3.info">发布者：分析部主管-王芳 · 分类：<span class="text-accent" data-i18n="forum.category.system">系统更新</span></span>
+                    <span data-i18n="forum.post3.stats">回复：7 | 查看：42</span>
+                  </div>
+                </div>
+                
+                <div class="forum-post p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post4.title">615号房的林女士真贴心</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.daysAgo">1天前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post4.content">林女士今天退房时特意留了小费，还写了感谢信说我们的服务很周到...</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post4.info">发布者：客房服务-李丽 · 分类：<span class="text-accent" data-i18n="forum.category.work">工作交流</span></span>
+                    <span data-i18n="forum.post4.stats">回复：5 | 查看：31</span>
+                  </div>
+                </div>
+                
+                <!-- 修改后的143号房帖子 -->
+                <div class="forum-post p-4 clickable-post" onclick="window.open('八卦贴1.html', '_blank')" style="cursor: pointer;">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post5.title">【小声】有人见过管理员真身吗？感觉神出鬼没的</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.daysAgo2">2天前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post5.content">有没有人知道他在咱们酒店长期包的房间是哪间啊？上次...</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post5.info">发布者：前台-陈雪 · 分类：<span class="text-accent" data-i18n="forum.category.work">工作交流</span></span>
+                    <span data-i18n="forum.post5.stats">回复：3 | 查看：24</span>
+                  </div>
+                </div>
+                
+                <div class="forum-post p-4 clickable-post" onclick="window.open('902论坛帖子2.html', '_blank')" style="cursor: pointer;">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-lg font-semibold text-white" data-i18n="forum.post6.title">有没有人知道701住客为什么被送医院？</h4>
+                    <span class="text-gray-400 text-sm" data-i18n="forum.daysAgo3">3天前</span>
+                  </div>
+                  <p class="text-gray-300 text-sm mb-3" data-i18n="forum.post6.content">昨天凌晨2点多，701的客人突然打电话到前台说心脏不舒服...</p>
+                  <div class="flex justify-between items-center text-xs text-gray-400">
+                    <span data-i18n="forum.post6.info">发布者：前台-金倩 · 分类：<span class="text-accent" data-i18n="forum.category.work">工作交流</span></span>
+                    <span data-i18n="forum.post6.stats">回复：12 | 查看：87</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 分页控件（只显示一页内容但保留按钮） -->
+            <div class="flex justify-between items-center">
+              <div class="text-gray-400 text-sm">
+                <span data-i18n="forum.showing">显示 1-6 条，共 42 条话题</span>
+              </div>
+              <div class="flex space-x-2">
+                <button class="bg-primary/60 hover:bg-accent/20 text-gray-300 hover:text-white py-2 px-4 rounded-sm transition-colors">
+                  <span data-i18n="forum.previous">上一页</span>
+                </button>
+                <button class="bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-sm transition-colors">
+                  <span data-i18n="forum.next">下一页</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="forum.categories">论坛分类</h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.work">工作交流</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">42</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.frontdesk">前台专区</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">28</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.service">客户服务</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">15</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.system">系统更新</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">9</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.notice">部门通知</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">34</span>
+                </div>
+                <div class="flex items-center justify-between p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <span class="text-gray-300" data-i18n="forum.category.leisure">休闲娱乐</span>
+                  <span class="text-accent bg-accent/20 px-2 py-1 rounded-sm text-xs">67</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20 mb-6">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="forum.hotTopics">热门话题</h3>
+              <div class="space-y-3">
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="forum.post2.title">必须安利！力丸新专辑《ROOM》太绝了！</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="forum.hotStats1">回复 23 · 查看 156</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer clickable-post" onclick="window.open('八卦贴1.html', '_blank')" style="cursor: pointer;">
+                  <h4 class="text-white text-sm font-medium" data-i18n="forum.post5.title">【小声】有人见过管理员真身吗？感觉神出鬼没的</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="forum.hotStats2">回复 3 · 查看 24</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="forum.post3.title">新分析工具使用指南</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="forum.hotStats3">回复 7 · 查看 42</p>
+                </div>
+                <div class="p-2 hover:bg-accent/10 rounded-sm cursor-pointer">
+                  <h4 class="text-white text-sm font-medium" data-i18n="forum.restaurantFeedback">餐厅新菜单试吃反馈</h4>
+                  <p class="text-gray-400 text-xs" data-i18n="forum.hotStats4">回复 18 · 查看 94</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-primary/40 backdrop-blur-sm p-6 rounded-sm border border-accent/20">
+              <h3 class="text-xl font-semibold mb-4 text-white" data-i18n="forum.rules">论坛规则</h3>
+              <ul class="text-gray-300 text-sm space-y-2">
+                <li data-i18n="forum.rule1">• 禁止讨论敏感客户信息</li>
+                <li data-i18n="forum.rule2">• 所有工作交流必须专业</li>
+                <li data-i18n="forum.rule3">• 发现异常请立即报告管理员</li>
+                <li data-i18n="forum.rule4">• 保持专业态度，尊重同事</li>
+                <li data-i18n="forum.rule5">• 遵守公司保密协议</li>
+              </ul>
+              <div class="mt-4 pt-4 border-t border-accent/20">
+                <p class="text-gray-400 text-xs terminal-font">> <span data-i18n="forum.systemNote">系统提示：您的所有活动都会被记录</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- 页脚 -->
+  <footer class="bg-dark text-gray-400 py-6 relative border-t border-accent/20">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="flex items-center">
+            <span class="text-white font-bold text-xl tracking-wider terminal-font">R∞M</span>
+            <span class="ml-1 text-accent text-sm">| <span data-i18n="footer.system">前台系统 v2.1.4</span></span>
+          </div>
+          <p class="text-sm mt-2" data-i18n="footer.usage">仅供内部使用 - 保密级别：标准</p>
+        </div>
+        
+        <div class="text-sm">
+          <p data-i18n="footer.lastUpdate">最后系统更新: 2025-11-12 11:02</p>
+          <p class="text-gray-500 terminal-font">> <span data-i18n="footer.systemStatus">系统状态:</span> <span class="text-success" data-i18n="footer.runningNormal">运行正常</span></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 隐藏的像素黑猫（彩蛋） -->
+  <div class="fixed bottom-4 right-4 pixel-cat w-12 h-12 opacity-70 hover:opacity-100 transition-opacity cursor-pointer" id="secret-cat">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="16" height="16" fill="#000000"/>
+      <circle cx="13" cy="14" r="2" fill="#8A6BBE"/>
+      <circle cx="19" cy="14" r="2" fill="#8A6BBE"/>
+      <line x1="12" y1="22" x2="20" y2="22" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="16" cy="26" rx="4" ry="2" fill="#000000"/>
+      <rect x="4" y="18" width="4" height="2" fill="#000000"/>
+      <rect x="24" y="18" width="4" height="2" fill="#000000"/>
+    </svg>
+  </div>
+
+<script>
+    // 数据存储 - 客房记录数据（从前台角度编写）
+    const recordsData = [
+      // 第1页记录
+      [
+        { id: 1, title: "ROOM 615 - 标准客房 - 林雨欣 - 2025-11-03", content: "客人对房间温度提出调整需求，已处理。入住时状态良好，礼貌友好。", access: "available" },
+        { id: 2, title: "ROOM 143 - 标准客房 - 周明哲 - 2025-11-15", content: "客人入住时情绪低落，但退房时状态明显改善。记录显示多次要求客房服务。", access: "available" },
+        { id: 3, title: "ROOM 722 - 主题套房 - 黄文博 - 2025-11-07", content: "客人要求延迟退房，已批准。对酒店服务表示满意。", access: "available" },
+        { id: 4, title: "ROOM 302 - 总统套房 - 王天宇 - 2025-11-18", content: "VIP客人，入住时要求特殊布置。多次要求客房服务和餐饮服务。", access: "available" },
+        { id: 5, title: "ROOM 819 - 豪华客房 - 吴雅婷 - 2025-11-09", content: "客人对餐饮服务提出表扬。入住期间安静，无特殊要求。", access: "available" },
+        { id: 6, title: "ROOM 934 - 总统套房 - 郑浩然 - 2025-11-11", content: "客人要求特殊布置房间，已安排。对管家服务表示特别感谢。", access: "available" },
+        { id: 7, title: "ROOM 105 - 标准客房 - 孙晓梅 - 2025-10-28", content: "常规客房检查记录，无异常情况。客人退房时留下感谢信。", access: "available" },
+        { id: 8, title: "ROOM 4030 - 豪华客房 - 陈逸风 - 2025-11-10", content: "客人情感表达强烈，多次要求延迟清洁服务。对海景房表示满意。", access: "available" }
+      ],
+      // 第2页记录
+      [
+        { id: 9, title: "ROOM 217 - 豪华客房 - 马志强 - 2025-10-25", content: "房间电视设备维修记录，已修复。客人对维修速度表示满意。", access: "available" },
+        { id: 10, title: "ROOM 308 - 主题套房 - 朱雨婷 - 2025-10-20", content: "客户对房间清洁度提出投诉，已处理并赠送补偿。", access: "available" },
+        { id: 11, title: "ROOM 426 - 总统套房 - 胡宇轩 - 2025-10-22", content: "住客对管家服务提出特别感谢，留下丰厚小费。", access: "available" },
+        { id: 12, title: "ROOM 314 - 主题套房 - 赵雨婷 - 2025-11-16", content: "客人要求私人舞蹈室使用时间延长，已批准。对设施非常满意。", access: "available" },
+        { id: 13, title: "ROOM 537 - 标准客房 - 郭晓雯 - 2025-10-18", content: "住客要求更换床品，已处理。对响应速度表示赞赏。", access: "available" },
+        { id: 14, title: "ROOM 648 - 豪华客房 - 林志远 - 2025-10-15", content: "住客对房间隔音效果提出建议，已记录并上报工程部。", access: "available" },
+        { id: 15, title: "ROOM 759 - 主题套房 - 何诗涵 - 2025-10-12", content: "住客要求提前早餐服务，已安排。对餐饮质量高度评价。", access: "available" },
+        { id: 16, title: "ROOM 291 - 主题套房 - 李文轩 - 2025-11-12", content: "客人行为规律，每天固定时间要求咖啡服务。无其他特殊要求。", access: "available" }
+      ],
+      // 第3页记录
+      [
+        { id: 17, title: "ROOM 861 - 总统套房 - 高天宇 - 2025-10-08", content: "住客对SPA服务提出特别表扬，成为酒店会员。", access: "available" },
+        { id: 18, title: "ROOM 972 - 标准客房 - 梁雨欣 - 2025-10-05", content: "常规客房服务记录，无异常情况。客人安静礼貌。", access: "available" },
+        { id: 19, title: "ROOM 1083 - 豪华客房 - 罗浩然 - 2025-10-02", content: "住客要求增加枕头，已提供。对客房服务响应速度满意。", access: "available" },
+        { id: 20, title: "ROOM 1194 - 主题套房 - 宋雅婷 - 2025-09-28", content: "住客对房间装饰提出特别赞赏，拍照分享社交媒体。", access: "available" },
+        { id: 21, title: "ROOM 1205 - 总统套房 - 谢文博 - 2025-09-25", content: "住客要求特殊餐饮安排，已处理。对厨师手艺高度评价。", access: "available" },
+        { id: 22, title: "ROOM 902 - 总统套房 - 刘星辰 - 2025-11-14", content: "客人要求特殊音响设备，已安排。对隔音效果表示满意。", access: "available" },
+        { id: 23, title: "ROOM 511 - 豪华客房 - 杨天宇 - 2025-11-08", content: "房间设备维护记录，已完成例行检查和维护。", access: "available" },
+        { id: 24, title: "ROOM 208 - 标准客房 - 张雪梅 - 2025-11-05", content: "常规客房服务记录，无异常情况报告。客人礼貌友好。", access: "available" }
+      ]
+    ];
+
+    // 页面状态
+    let currentRecordPage = 0;
+
+    // 多语言翻译数据
+    const translations = {
+      'zh-CN': {
+        'nav.dashboard': '前台工作台',
+        'nav.records': '客房记录',
+        'nav.checkin': '入住退房',
+        'nav.services': '客户服务',
+        'nav.worklog': '工作日志',
+        'nav.forum': '员工论坛',
+        'user.profile': '个人资料',
+        'user.settings': '系统设置',
+        'user.help': '帮助文档',
+        'user.logout': '退出系统',
+        'language': '语言',
+        'dashboard.title': '前台工作台',
+        'dashboard.todayCheckin': '今日入住',
+        'dashboard.todayCheckinDesc': '今日预计入住客人',
+        'dashboard.todayCheckout': '今日退房',
+        'dashboard.todayCheckoutDesc': '今日预计退房客人',
+        'dashboard.availableRooms': '可用房间',
+        'dashboard.availableRoomsDesc': '当前可分配房间',
+        'dashboard.guestServices': '客户服务',
+        'dashboard.guestServicesDesc': '待处理客户请求',
+        'dashboard.importantReminders': '今日重要提醒',
+        'dashboard.systemStatus': '系统状态：正常运行',
+        'dashboard.vipReminder': '提醒：VIP客人张先生将于16:00抵达，请准备接待',
+        'dashboard.cleaningReminder': '通知：143号房间需要特别清洁，请勿安排新客人',
+        'dashboard.lateCheckout': '重要：302号房间客人要求延迟退房至18:00，已批准',
+        'dashboard.schedule': '今日排班：刘婉 (08:00-16:00) | 张晓 (16:00-24:00)',
+        'dashboard.performance': '前台绩效：客户满意度 98% | 办理效率优秀',
+        'dashboard.todayGuests': '今日入住客人',
+        'dashboard.roomNumber': '房间号',
+        'dashboard.guestName': '客人姓名',
+        'dashboard.arrivalTime': '预计抵达',
+        'dashboard.status': '状态',
+        'dashboard.pendingArrival': '待抵达',
+        'records.title': '客房记录',
+        'records.allRecords': '所有客房记录',
+        'records.searchPlaceholder': '搜索记录...',
+        'records.filter': '筛选',
+        'records.showing': '显示 1-8 条，共 24 条记录',
+        'records.previous': '上一页',
+        'records.next': '下一页',
+        'checkin.title': '入住退房管理',
+        'checkin.checkin': '入住登记',
+        'checkin.guestName': '客人姓名',
+        'checkin.guestNamePlaceholder': '输入客人姓名',
+        'checkin.idNumber': '身份证号',
+        'checkin.idNumberPlaceholder': '输入身份证号码',
+        'checkin.roomNumber': '房间号',
+        'checkin.selectRoom': '选择房间',
+        'checkin.checkinDate': '入住日期',
+        'checkin.checkoutDate': '退房日期',
+        'checkin.processCheckin': '办理入住',
+        'checkin.checkout': '退房办理',
+        'checkin.roomNumberPlaceholder': '输入房间号',
+        'checkin.guestInfo': '客人信息',
+        'checkin.name': '姓名',
+        'checkin.totalCharges': '消费金额',
+        'checkin.confirmCheckout': '确认退房',
+        'checkin.printBill': '打印账单',
+        'checkin.todayCheckoutList': '今日需退房列表',
+        'checkin.expectedTime': '预计12:00',
+        'checkin.checkedOut': '已退房',
+        'checkin.pendingCheckout': '待退房',
+        'roomTypes.standard': '标准房',
+        'roomTypes.theme': '主题房',
+        'roomTypes.deluxe': '豪华房',
+        'roomTypes.presidential': '总统套房',
+        'services.title': '客户服务',
+        'services.requests': '客户服务请求',
+        'services.searchPlaceholder': '搜索请求...',
+        'services.filter': '筛选',
+        'services.extraTowels': '需要额外毛巾',
+        'services.processing': '处理中',
+        'services.extraTowelsDesc': '客人王先生要求提供额外毛巾，已通知客房服务部。',
+        'services.requestType': '请求类型',
+        'services.housekeeping': '客房服务',
+        'services.assignedTo': '分配',
+        'services.acIssue': '空调故障',
+        'services.pending': '待处理',
+        'services.acIssueDesc': '客人陈先生报告空调不制冷，需要工程部检查。',
+        'services.repair': '设备维修',
+        'services.lateCheckout': '延迟退房请求',
+        'services.approved': '已批准',
+        'services.lateCheckoutDesc': '客人赵女士请求延迟退房至14:00，已批准。',
+        'services.checkoutService': '退房服务',
+        'services.handledBy': '处理人',
+        'services.wakeupCall': '叫醒服务',
+        'services.arranged': '已安排',
+        'services.wakeupCallDesc': '客人刘先生要求明早07:00叫醒服务，已安排。',
+        'services.wakeupService': '叫醒服务',
+        'services.showing': '显示 1-4 条，共 12 条请求',
+        'services.previous': '上一页',
+        'services.next': '下一页',
+        'services.taxi': '叫车服务',
+        'services.restaurant': '餐厅预订',
+        'services.tickets': '票务服务',
+        'services.medical': '医疗服务',
+        'worklog.title': '工作日志',
+        'worklog.newLog': '新建工作日志',
+        'worklog.titlePlaceholder': '输入日志标题',
+        'worklog.content': '内容',
+        'worklog.contentPlaceholder': '记录您的工作情况、客户反馈和重要事项...',
+        'worklog.save': '保存日志',
+        'worklog.history': '历史工作日志',
+        'worklog.workLog': '工作日志',
+        'worklog.yesterday': '昨天 18:30',
+        'worklog.log1': '今日接待客人28位，处理客户请求15个。VIP客人王先生对服务表示满意。143号房间客人周先生状态异常，已记录。',
+        'worklog.twoDaysAgo': '2天前 18:45',
+        'worklog.log2': '今日工作正常，处理退房12间，入住15间。902号房间客人刘先生要求特殊音响设备，已安排。',
+        'worklog.threeDaysAgo': '3天前 18:20',
+        'worklog.log3': '今日客户投诉餐厅服务响应慢，已协调餐饮部处理。314号房间赵女士对舞蹈室设施非常满意。',
+        'worklog.showing': '显示 1-3 条，共 24 条日志',
+        'worklog.previous': '上一页',
+        'worklog.next': '下一页',
+        'forum.title': '员工论坛',
+        'forum.latest': '最新讨论',
+        'forum.newTopic': '发布新话题',
+        'forum.post1.title': '今天是我生日，但还得值班，求安慰！',
+        'forum.hoursAgo': '2小时前',
+        'forum.post1.content': '今天是我的生日，本来想请假的，但是最近酒店人手不够，只能继续值班了。呜呜呜，求各位同事安慰！',
+        'forum.post1.info': '发布者：前台-刘婉 · 分类：',
+        'forum.category.leisure': '休闲娱乐',
+        'forum.post1.stats': '回复：4 | 查看：28',
+        'forum.post2.title': '必须安利！力丸新专辑《ROOM》太绝了！',
+        'forum.hoursAgo2': '5小时前',
+        'forum.post2.content': '大家快去听力丸的新专辑《ROOM》！概念太适合我们酒店了，每首歌都对应一个房间的故事，特别是《MORE》这首歌简直绝了！',
+        'forum.post2.info': '发布者：前台-张晓 · 分类：',
+        'forum.post2.stats': '回复：23 | 查看：156',
+        'forum.post3.title': '新分析工具使用指南',
+        'forum.hoursAgo3': '5小时前',
+        'forum.post3.content': '管理员RIKI更新了情感分析工具，增加了新的数据可视化功能...',
+        'forum.post3.info': '发布者：分析部主管-王芳 · 分类：',
+        'forum.category.system': '系统更新',
+        'forum.post3.stats': '回复：7 | 查看：42',
+        'forum.post4.title': '615号房的林女士真贴心',
+        'forum.daysAgo': '1天前',
+        'forum.post4.content': '林女士今天退房时特意留了小费，还写了感谢信说我们的服务很周到...',
+        'forum.post4.info': '发布者：客房服务-李丽 · 分类：',
+        'forum.category.work': '工作交流',
+        'forum.post4.stats': '回复：5 | 查看：31',
+        'forum.post5.title': '【小声】有人见过管理员真身吗？感觉神出鬼没的',
+        'forum.daysAgo2': '2天前',
+        'forum.post5.content': '有没有人知道他在咱们酒店长期包的房间是哪间啊？上次...',
+        'forum.post5.info': '发布者：前台-陈雪 · 分类：',
+        'forum.category.work': '工作交流',
+        'forum.post5.stats': '回复：3 | 查看：24',
+        'forum.post6.title': '有没有人知道701住客为什么被送医院？',
+        'forum.daysAgo3': '3天前',
+        'forum.post6.content': '昨天凌晨2点多，701的客人突然打电话到前台说心脏不舒服...',
+        'forum.post6.info': '发布者：前台-金倩 · 分类：',
+        'forum.post6.stats': '回复：12 | 查看：87',
+        'forum.showing': '显示 1-6 条，共 42 条话题',
+        'forum.previous': '上一页',
+        'forum.next': '下一页',
+        'forum.categories': '论坛分类',
+        'forum.category.frontdesk': '前台专区',
+        'forum.category.service': '客户服务',
+        'forum.category.notice': '部门通知',
+        'forum.hotTopics': '热门话题',
+        'forum.hotStats1': '回复 23 · 查看 156',
+        'forum.hotStats2': '回复 3 · 查看 24',
+        'forum.hotStats3': '回复 7 · 查看 42',
+        'forum.restaurantFeedback': '餐厅新菜单试吃反馈',
+        'forum.hotStats4': '回复 18 · 查看 94',
+        'forum.rules': '论坛规则',
+        'forum.rule1': '• 禁止讨论敏感客户信息',
+        'forum.rule2': '• 所有工作交流必须专业',
+        'forum.rule3': '• 发现异常请立即报告管理员',
+        'forum.rule4': '• 保持专业态度，尊重同事',
+        'forum.rule5': '• 遵守公司保密协议',
+        'forum.systemNote': '系统提示：您的所有活动都会被记录',
+        'footer.system': '前台系统 v2.1.4',
+        'footer.usage': '仅供内部使用 - 保密级别：标准',
+        'footer.lastUpdate': '最后系统更新: 2025-11-12 11:02',
+        'footer.systemStatus': '系统状态:',
+        'footer.runningNormal': '运行正常'
+      },
+      'en': {
+        'nav.dashboard': 'Front Desk Dashboard',
+        'nav.records': 'Room Records',
+        'nav.checkin': 'Check-in/Check-out',
+        'nav.services': 'Guest Services',
+        'nav.worklog': 'Work Log',
+        'nav.forum': 'Staff Forum',
+        'user.profile': 'Profile',
+        'user.settings': 'Settings',
+        'user.help': 'Help',
+        'user.logout': 'Logout',
+        'language': 'Language',
+        'dashboard.title': 'Front Desk Dashboard',
+        'dashboard.todayCheckin': 'Today Check-in',
+        'dashboard.todayCheckinDesc': 'Expected guests today',
+        'dashboard.todayCheckout': 'Today Check-out',
+        'dashboard.todayCheckoutDesc': 'Expected check-outs today',
+        'dashboard.availableRooms': 'Available Rooms',
+        'dashboard.availableRoomsDesc': 'Currently assignable rooms',
+        'dashboard.guestServices': 'Guest Services',
+        'dashboard.guestServicesDesc': 'Pending guest requests',
+        'dashboard.importantReminders': 'Important Reminders Today',
+        'dashboard.systemStatus': 'System Status: Normal Operation',
+        'dashboard.vipReminder': 'Reminder: VIP guest Mr. Zhang arriving at 16:00, please prepare for reception',
+        'dashboard.cleaningReminder': 'Notice: Room 143 requires special cleaning, do not assign new guests',
+        'dashboard.lateCheckout': 'Important: Guest in Room 302 requested late checkout until 18:00, approved',
+        'dashboard.schedule': 'Today Schedule: Liu Wan (08:00-16:00) | Zhang Xiao (16:00-24:00)',
+        'dashboard.performance': 'Front Desk Performance: Guest Satisfaction 98% | Processing Efficiency Excellent',
+        'dashboard.todayGuests': 'Today Check-in Guests',
+        'dashboard.roomNumber': 'Room Number',
+        'dashboard.guestName': 'Guest Name',
+        'dashboard.arrivalTime': 'Expected Arrival',
+        'dashboard.status': 'Status',
+        'dashboard.pendingArrival': 'Pending Arrival',
+        'records.title': 'Room Records',
+        'records.allRecords': 'All Room Records',
+        'records.searchPlaceholder': 'Search records...',
+        'records.filter': 'Filter',
+        'records.showing': 'Showing 1-8 of 24 records',
+        'records.previous': 'Previous',
+        'records.next': 'Next',
+        'checkin.title': 'Check-in/Check-out Management',
+        'checkin.checkin': 'Check-in Registration',
+        'checkin.guestName': 'Guest Name',
+        'checkin.guestNamePlaceholder': 'Enter guest name',
+        'checkin.idNumber': 'ID Number',
+        'checkin.idNumberPlaceholder': 'Enter ID number',
+        'checkin.roomNumber': 'Room Number',
+        'checkin.selectRoom': 'Select Room',
+        'checkin.checkinDate': 'Check-in Date',
+        'checkin.checkoutDate': 'Check-out Date',
+        'checkin.processCheckin': 'Process Check-in',
+        'checkin.checkout': 'Check-out Process',
+        'checkin.roomNumberPlaceholder': 'Enter room number',
+        'checkin.guestInfo': 'Guest Information',
+        'checkin.name': 'Name',
+        'checkin.totalCharges': 'Total Charges',
+        'checkin.confirmCheckout': 'Confirm Check-out',
+        'checkin.printBill': 'Print Bill',
+        'checkin.todayCheckoutList': 'Today Check-out List',
+        'checkin.expectedTime': 'Expected 12:00',
+        'checkin.checkedOut': 'Checked Out',
+        'checkin.pendingCheckout': 'Pending Check-out',
+        'roomTypes.standard': 'Standard Room',
+        'roomTypes.theme': 'Theme Room',
+        'roomTypes.deluxe': 'Deluxe Room',
+        'roomTypes.presidential': 'Presidential Suite',
+        'services.title': 'Guest Services',
+        'services.requests': 'Guest Service Requests',
+        'services.searchPlaceholder': 'Search requests...',
+        'services.filter': 'Filter',
+        'services.extraTowels': 'Extra Towels Needed',
+        'services.processing': 'Processing',
+        'services.extraTowelsDesc': 'Guest Mr. Wang requested extra towels, notified housekeeping department.',
+        'services.requestType': 'Request Type',
+        'services.housekeeping': 'Housekeeping',
+        'services.assignedTo': 'Assigned to',
+        'services.acIssue': 'AC Issue',
+        'services.pending': 'Pending',
+        'services.acIssueDesc': 'Guest Mr. Chen reported AC not cooling, needs engineering department inspection.',
+        'services.repair': 'Equipment Repair',
+        'services.lateCheckout': 'Late Checkout Request',
+        'services.approved': 'Approved',
+        'services.lateCheckoutDesc': 'Guest Ms. Zhao requested late checkout until 14:00, approved.',
+        'services.checkoutService': 'Check-out Service',
+        'services.handledBy': 'Handled by',
+        'services.wakeupCall': 'Wake-up Call',
+        'services.arranged': 'Arranged',
+        'services.wakeupCallDesc': 'Guest Mr. Liu requested wake-up call at 07:00 tomorrow, arranged.',
+        'services.wakeupService': 'Wake-up Service',
+        'services.showing': 'Showing 1-4 of 12 requests',
+        'services.previous': 'Previous',
+        'services.next': 'Next',
+        'services.taxi': 'Taxi Service',
+        'services.restaurant': 'Restaurant Reservation',
+        'services.tickets': 'Ticket Service',
+        'services.medical': 'Medical Service',
+        'worklog.title': 'Work Log',
+        'worklog.newLog': 'New Work Log',
+        'worklog.titlePlaceholder': 'Enter log title',
+        'worklog.content': 'Content',
+        'worklog.contentPlaceholder': 'Record your work situation, guest feedback and important matters...',
+        'worklog.save': 'Save Log',
+        'worklog.history': 'Historical Work Logs',
+        'worklog.workLog': 'Work Log',
+        'worklog.yesterday': 'Yesterday 18:30',
+        'worklog.log1': 'Today received 28 guests, handled 15 guest requests. VIP guest Mr. Wang satisfied with service. Guest Mr. Zhou in Room 143 showed abnormal state, recorded.',
+        'worklog.twoDaysAgo': '2 days ago 18:45',
+        'worklog.log2': 'Normal work today, processed 12 check-outs, 15 check-ins. Guest Mr. Liu in Room 902 requested special audio equipment, arranged.',
+        'worklog.threeDaysAgo': '3 days ago 18:20',
+        'worklog.log3': 'Guest complained about slow restaurant service response today, coordinated with F&B department. Guest Ms. Zhao in Room 314 very satisfied with dance studio facilities.',
+        'worklog.showing': 'Showing 1-3 of 24 logs',
+        'worklog.previous': 'Previous',
+        'worklog.next': 'Next',
+        'forum.title': 'Staff Forum',
+        'forum.latest': 'Latest Discussions',
+        'forum.newTopic': 'New Topic',
+        'forum.post1.title': 'Today is my birthday, but still have to work, need comfort!',
+        'forum.hoursAgo': '2 hours ago',
+        'forum.post1.content': 'Today is my birthday, originally wanted to take leave, but hotel is short-staffed recently, have to continue working. Sob sob, colleagues please comfort me!',
+        'forum.post1.info': 'Posted by: Front Desk-Liu Wan · Category:',
+        'forum.category.leisure': 'Leisure & Entertainment',
+        'forum.post1.stats': 'Replies: 4 | Views: 28',
+        'forum.post2.title': 'Must recommend! Rikimaru\'s new album "ROOM" is amazing!',
+        'forum.hoursAgo2': '5 hours ago',
+        'forum.post2.content': 'Everyone go listen to Rikimaru\'s new album "ROOM"! The concept perfectly suits our hotel, each song corresponds to a room story, especially the song "MORE" is absolutely amazing!',
+        'forum.post2.info': 'Posted by: Front Desk-Zhang Xiao · Category:',
+        'forum.post2.stats': 'Replies: 23 | Views: 156',
+        'forum.post3.title': 'New Analysis Tool Usage Guide',
+        'forum.hoursAgo3': '5 hours ago',
+        'forum.post3.content': 'Administrator RIKI updated the sentiment analysis tool, added new data visualization functions...',
+        'forum.post3.info': 'Analysis Department Manager-Wang Fang · Category:',
+        'forum.category.system': 'System Updates',
+        'forum.post3.stats': 'Replies: 7 | Views: 42',
+        'forum.post4.title': 'Ms. Lin in Room 615 is so considerate',
+        'forum.daysAgo': '1 day ago',
+        'forum.post4.content': 'Ms. Lin specifically left a tip when checking out today, and wrote a thank you letter saying our service is very considerate...',
+        'forum.post4.info': 'Posted by: Housekeeping-Li Li · Category:',
+        'forum.category.work': 'Work Communication',
+        'forum.post4.stats': 'Replies: 5 | Views: 31',
+        'forum.post5.title': '[Whisper] Has anyone seen the administrator\'s true form? Feels elusive',
+        'forum.daysAgo2': '2 days ago',
+        'forum.post5.content': 'Does anyone know which room he rents long-term in our hotel? Last time...',
+        'forum.post5.info': 'Posted by: Front Desk-Chen Xue · Category:',
+        'forum.category.work': 'Work Communication',
+        'forum.post5.stats': 'Replies: 3 | Views: 24',
+        'forum.post6.title': 'Does anyone know why the resident of Room 701 was taken to the hospital?',
+        'forum.daysAgo3': '3 days ago',
+        'forum.post6.content': 'Around 2 AM in the early hours of yesterday, the guest in Room 701 suddenly called the front desk saying they were having heart discomfort...',
+        'forum.post6.info': 'Posted by: Front Desk - Jin Qian · Category:',
+        'forum.post6.stats': 'Replies: 12 | Views: 87',
+        'forum.showing': 'Showing 1-6 of 42 topics',
+        'forum.previous': 'Previous',
+        'forum.next': 'Next',
+        'forum.categories': 'Forum Categories',
+        'forum.category.frontdesk': 'Front Desk Zone',
+        'forum.category.service': 'Guest Services',
+        'forum.category.notice': 'Department Notices',
+        'forum.hotTopics': 'Hot Topics',
+        'forum.hotStats1': 'Replies 23 · Views 156',
+        'forum.hotStats2': 'Replies 3 · Views 24',
+        'forum.hotStats3': 'Replies 7 · Views 42',
+        'forum.restaurantFeedback': 'New menu tasting feedback',
+        'forum.hotStats4': 'Replies 18 · Views 94',
+        'forum.rules': 'Forum Rules',
+        'forum.rule1': '• No discussion of sensitive guest information',
+        'forum.rule2': '• All work communication must be professional',
+        'forum.rule3': '• Report anomalies to administrator immediately',
+        'forum.rule4': '• Maintain professional attitude, respect colleagues',
+        'forum.rule5': '• Comply with company confidentiality agreement',
+        'forum.systemNote': 'System Note: All your activities are recorded',
+        'footer.system': 'Front Desk System v2.1.4',
+        'footer.usage': 'For internal use only - Security level: Standard',
+        'footer.lastUpdate': 'Last system update: 2025-11-12 11:02',
+        'footer.systemStatus': 'System Status:',
+        'footer.runningNormal': 'Running normal'
+      },
+      'ja': {
+        'nav.dashboard': 'フロントデスク',
+        'nav.records': '客室記録',
+        'nav.checkin': 'チェックイン/アウト',
+        'nav.services': '顧客サービス',
+        'nav.worklog': '作業ログ',
+        'nav.forum': 'スタッフフォーラム',
+        'user.profile': '個人情報',
+        'user.settings': 'システム設定',
+        'user.help': 'ヘルプ',
+        'user.logout': 'ログアウト',
+        'language': '言語',
+        'dashboard.title': 'フロントデスク',
+        'dashboard.todayCheckin': '本日チェックイン',
+        'dashboard.todayCheckinDesc': '本日予定の宿泊客',
+        'dashboard.todayCheckout': '本日チェックアウト',
+        'dashboard.todayCheckoutDesc': '本日予定のチェックアウト',
+        'dashboard.availableRooms': '空室状況',
+        'dashboard.availableRoomsDesc': '現在割り当て可能な部屋',
+        'dashboard.guestServices': '顧客サービス',
+        'dashboard.guestServicesDesc': '未処理のリクエスト',
+        'dashboard.importantReminders': '本日の重要なお知らせ',
+        'dashboard.systemStatus': 'システム状態：正常稼働中',
+        'dashboard.vipReminder': 'リマインダー：VIP客の張氏が16:00に到着予定、対応準備をお願いします',
+        'dashboard.cleaningReminder': '通知：143号室は特別清掃が必要、新規客の割り当て不可',
+        'dashboard.lateCheckout': '重要：302号室の客が18:00までの遅延チェックアウトを要求、承認済み',
+        'dashboard.schedule': '本日のシフト：劉婉 (08:00-16:00) | 張暁 (16:00-24:00)',
+        'dashboard.performance': 'フロントデスク実績：顧客満足度 98% | 処理効率優秀',
+        'dashboard.todayGuests': '本日チェックイン客',
+        'dashboard.roomNumber': '部屋番号',
+        'dashboard.guestName': '客氏名',
+        'dashboard.arrivalTime': '到着予定',
+        'dashboard.status': '状態',
+        'dashboard.pendingArrival': '到着待ち',
+        'records.title': '客室記録',
+        'records.allRecords': '全客室記録',
+        'records.searchPlaceholder': '記録を検索...',
+        'records.filter': 'フィルター',
+        'records.showing': '1-8件目を表示（全24件）',
+        'records.previous': '前へ',
+        'records.next': '次へ',
+        'checkin.title': 'チェックイン/アウト管理',
+        'checkin.checkin': 'チェックイン登録',
+        'checkin.guestName': '客氏名',
+        'checkin.guestNamePlaceholder': '客氏名を入力',
+        'checkin.idNumber': '身分証番号',
+        'checkin.idNumberPlaceholder': '身分証番号を入力',
+        'checkin.roomNumber': '部屋番号',
+        'checkin.selectRoom': '部屋を選択',
+        'checkin.checkinDate': 'チェックイン日',
+        'checkin.checkoutDate': 'チェックアウト日',
+        'checkin.processCheckin': 'チェックイン処理',
+        'checkin.checkout': 'チェックアウト処理',
+        'checkin.roomNumberPlaceholder': '部屋番号を入力',
+        'checkin.guestInfo': '客情報',
+        'checkin.name': '氏名',
+        'checkin.totalCharges': '利用料金',
+        'checkin.confirmCheckout': 'チェックアウト確認',
+        'checkin.printBill': '請求書印刷',
+        'checkin.todayCheckoutList': '本日チェックアウトリスト',
+        'checkin.expectedTime': '予定12:00',
+        'checkin.checkedOut': 'チェックアウト済み',
+        'checkin.pendingCheckout': 'チェックアウト待ち',
+        'roomTypes.standard': 'スタンダード',
+        'roomTypes.theme': 'テーマルーム',
+        'roomTypes.deluxe': 'デラックス',
+        'roomTypes.presidential': 'プレジデンシャルスイート',
+        'services.title': '顧客サービス',
+        'services.requests': '顧客サービスリクエスト',
+        'services.searchPlaceholder': 'リクエストを検索...',
+        'services.filter': 'フィルター',
+        'services.extraTowels': '追加タオル必要',
+        'services.processing': '処理中',
+        'services.extraTowelsDesc': '王様が追加タオルを要求、客室サービス部に通知済み。',
+        'services.requestType': 'リクエスト種類',
+        'services.housekeeping': '客室サービス',
+        'services.assignedTo': '担当者',
+        'services.acIssue': 'エアコン故障',
+        'services.pending': '未処理',
+        'services.acIssueDesc': '陳様がエアコンの冷房不良を報告、設備部門の点検が必要。',
+        'services.repair': '設備修理',
+        'services.lateCheckout': '遅延チェックアウト要求',
+        'services.approved': '承認済み',
+        'services.lateCheckoutDesc': '趙様が14:00までの遅延チェックアウトを要求、承認済み。',
+        'services.checkoutService': 'チェックアウトサービス',
+        'services.handledBy': '処理者',
+        'services.wakeupCall': 'モーニングコール',
+        'services.arranged': '手配済み',
+        'services.wakeupCallDesc': '劉様が明日07:00のモーニングコールを要求、手配済み。',
+        'services.wakeupService': 'モーニングコールサービス',
+        'services.showing': '1-4件目を表示（全12件）',
+        'services.previous': '前へ',
+        'services.next': '次へ',
+        'services.taxi': 'タクシーサービス',
+        'services.restaurant': 'レストラン予約',
+        'services.tickets': 'チケットサービス',
+        'services.medical': '医療サービス',
+        'worklog.title': '作業ログ',
+        'worklog.newLog': '新規作業ログ',
+        'worklog.titlePlaceholder': 'ログタイトルを入力',
+        'worklog.content': '内容',
+        'worklog.contentPlaceholder': '作業状況、顧客フィードバック、重要事項を記録...',
+        'worklog.save': 'ログ保存',
+        'worklog.history': '過去の作業ログ',
+        'worklog.workLog': '作業ログ',
+        'worklog.yesterday': '昨日 18:30',
+        'worklog.log1': '本日客28名受付、顧客リクエスト15件処理。VIP客の王様がサービスに満足。143号室の周様が異常状態、記録済み。',
+        'worklog.twoDaysAgo': '2日前 18:45',
+        'worklog.log2': '本日通常業務、チェックアウト12件、チェックイン15件処理。902号室の劉様が特殊音響設備を要求、手配済み。',
+        'worklog.threeDaysAgo': '3日前 18:20',
+        'worklog.log3': '本日顧客がレストランサービスの応答遅延を苦情、飲食部と調整。314号室の趙様がダンススタジオ設備に大満足。',
+        'worklog.showing': '1-3件目を表示（全24件）',
+        'worklog.previous': '前へ',
+        'worklog.next': '次へ',
+        'forum.title': 'スタッフフォーラム',
+        'forum.latest': '最新議論',
+        'forum.newTopic': '新規トピック',
+        'forum.post1.title': '今日は私の誕生日ですが、まだ勤務です、慰めてください！',
+        'forum.hoursAgo': '2時間前',
+        'forum.post1.content': '今日は私の誕生日です、本来休暇を取りたかったのですが、最近ホテルが人手不足で、勤務を続けなければなりません。嗚嗚、皆さん慰めてください！',
+        'forum.post1.info': '投稿者：フロント-劉婉 · カテゴリ：',
+        'forum.category.leisure': 'レジャー＆エンターテインメント',
+        'forum.post1.stats': '返信：4 | 閲覧：28',
+        'forum.post2.title': 'おすすめ！力丸の新アルバム「ROOM」が最高！',
+        'forum.hoursAgo2': '5時間前',
+        'forum.post2.content': '皆さん力丸の新アルバム「ROOM」を聴いてください！コンセプトが私たちのホテルにぴったりで、各曲が部屋のストーリーに対応しています。特に「MORE」という曲が絶品です！',
+        'forum.post2.info': '投稿者：フロント-張暁 · カテゴリ：',
+        'forum.post2.stats': '返信：23 | 閲覧：156',
+        'forum.post3.title': '新分析ツール使用ガイド',
+        'forum.hoursAgo3': '5時間前',
+        'forum.post3.content': '管理者RIKIが感情分析ツールを更新、新しいデータ可視化機能を追加...',
+        'forum.post3.info': '投稿者：ぶんせきぶ しゅかん-王芳 · カテゴリ：',
+        'forum.category.system': 'システム更新',
+        'forum.post3.stats': '返信：7 | 閲覧：42',
+        'forum.post4.title': '615号室の林様がとても親切',
+        'forum.daysAgo': '1日前',
+        'forum.post4.content': '林様が本日チェックアウト時に特別にチップを残し、私たちのサービスがとても行き届いているという感謝の手紙を書いてくれました...',
+        'forum.post4.info': '投稿者：客室サービス-李麗 · カテゴリ：',
+        'forum.category.work': '仕事交流',
+        'forum.post4.stats': '返信：5 | 閲覧：31',
+        'forum.post5.title': '【小声】誰か管理者の正体を見たことがありますか？神出鬼没な感じ',
+        'forum.daysAgo2': '2日前',
+        'forum.post5.content': '誰か彼が私たちのホテルで長期契約している部屋がどれか知っていますか？この前...',
+        'forum.post5.info': '投稿者：フロント-陳雪 · カテゴリ：',
+        'forum.category.work': '仕事交流',
+        'forum.post5.stats': '返信：3 | 閲覧：24',
+        'forum.post6.title': '701 号室の住人がなぜ病院に運ばれたのか、誰か知っていますか？',
+        'forum.daysAgo3': '3日前',
+        'forum.post6.content': '昨日の午前 2 時過ぎ、701 号室のお客様が突然フロントに電話をかけて、心臓が悪くなったと申しました...',
+        'forum.post6.info': '投稿者：フロント - キン・チェン · カテゴリ：',
+        'forum.post6.stats': '返信：12 | 閲覧：87',
+        'forum.showing': '1-6件目を表示（全42件）',
+        'forum.previous': '前へ',
+        'forum.next': '次へ',
+        'forum.categories': 'フォーラムカテゴリ',
+        'forum.category.frontdesk': 'フロントデスク専用',
+        'forum.category.service': '顧客サービス',
+        'forum.category.notice': '部門通知',
+        'forum.hotTopics': '人気トピック',
+        'forum.hotStats1': '返信 23 · 閲覧 156',
+        'forum.hotStats2': '返信 3 · 閲覧 24',
+        'forum.hotStats3': '返信 7 · 閲覧 42',
+        'forum.restaurantFeedback': '新メニュー試食フィードバック',
+        'forum.hotStats4': '返信 18 · 閲覧 94',
+        'forum.rules': 'フォーラムルール',
+        'forum.rule1': '• 敏感な顧客情報の議論禁止',
+        'forum.rule2': '• すべての仕事交流はプロフェッショナルでなければならない',
+        'forum.rule3': '• 異常を発見したらすぐに管理者に報告',
+        'forum.rule4': '• 専門的な態度を保ち、同僚を尊重する',
+        'forum.rule5': '• 会社の機密保持契約を遵守する',
+        'forum.systemNote': 'システム注記：あなたのすべての活動は記録されます',
+        'footer.system': 'フロントデスクシステム v2.1.4',
+        'footer.usage': '内部使用のみ - 機密レベル：標準',
+        'footer.lastUpdate': '最終システム更新：2025-11-12 11:02',
+        'footer.systemStatus': 'システム状態：',
+        'footer.runningNormal': '正常稼働中'
+      },
+      'pt': {
+        'nav.dashboard': 'Balcão de Recepção',
+        'nav.records': 'Registros de Quartos',
+        'nav.checkin': 'Check-in/Check-out',
+        'nav.services': 'Serviços ao Hóspede',
+        'nav.worklog': 'Registro de Trabalho',
+        'nav.forum': 'Fórum de Funcionários',
+        'user.profile': 'Perfil',
+        'user.settings': 'Configurações',
+        'user.help': 'Ajuda',
+        'user.logout': 'Sair do Sistema',
+        'language': 'Idioma',
+        'dashboard.title': 'Balcão de Recepção',
+        'dashboard.todayCheckin': 'Check-ins de Hoje',
+        'dashboard.todayCheckinDesc': 'Hóspedes esperados hoje',
+        'dashboard.todayCheckout': 'Check-outs de Hoje',
+        'dashboard.todayCheckoutDesc': 'Check-outs esperados hoje',
+        'dashboard.availableRooms': 'Quartos Disponíveis',
+        'dashboard.availableRoomsDesc': 'Quartos atribuíveis atualmente',
+        'dashboard.guestServices': 'Serviços ao Hóspede',
+        'dashboard.guestServicesDesc': 'Solicitações pendentes de hóspedes',
+        'dashboard.importantReminders': 'Lembretes Importantes de Hoje',
+        'dashboard.systemStatus': 'Status do Sistema: Operação Normal',
+        'dashboard.vipReminder': 'Lembrete: Hóspede VIP Sr. Zhang chegando às 16:00, prepare-se para recepção',
+        'dashboard.cleaningReminder': 'Aviso: Quarto 143 requer limpeza especial, não atribuir novos hóspedes',
+        'dashboard.lateCheckout': 'Importante: Hóspede do Quarto 302 solicitou check-out tardio até 18:00, aprovado',
+        'dashboard.schedule': 'Escala de Hoje: Liu Wan (08:00-16:00) | Zhang Xiao (16:00-24:00)',
+        'dashboard.performance': 'Desempenho da Recepção: Satisfação do Hóspede 98% | Eficiência de Processamento Excelente',
+        'dashboard.todayGuests': 'Hóspedes de Check-in de Hoje',
+        'dashboard.roomNumber': 'Número do Quarto',
+        'dashboard.guestName': 'Nome do Hóspede',
+        'dashboard.arrivalTime': 'Chegada Esperada',
+        'dashboard.status': 'Status',
+        'dashboard.pendingArrival': 'Chegada Pendente',
+        'records.title': 'Registros de Quartos',
+        'records.allRecords': 'Todos os Registros de Quartos',
+        'records.searchPlaceholder': 'Pesquisar registros...',
+        'records.filter': 'Filtrar',
+        'records.showing': 'Mostrando 1-8 de 24 registros',
+        'records.previous': 'Anterior',
+        'records.next': 'Próxima',
+        'checkin.title': 'Gerenciamento de Check-in/Check-out',
+        'checkin.checkin': 'Registro de Check-in',
+        'checkin.guestName': 'Nome do Hóspede',
+        'checkin.guestNamePlaceholder': 'Digite o nome do hóspede',
+        'checkin.idNumber': 'Número de Identificação',
+        'checkin.idNumberPlaceholder': 'Digite o número de identificação',
+        'checkin.roomNumber': 'Número do Quarto',
+        'checkin.selectRoom': 'Selecionar Quarto',
+        'checkin.checkinDate': 'Data de Check-in',
+        'checkin.checkoutDate': 'Data de Check-out',
+        'checkin.processCheckin': 'Processar Check-in',
+        'checkin.checkout': 'Processo de Check-out',
+        'checkin.roomNumberPlaceholder': 'Digite o número do quarto',
+        'checkin.guestInfo': 'Informações do Hóspede',
+        'checkin.name': 'Nome',
+        'checkin.totalCharges': 'Encargos Totais',
+        'checkin.confirmCheckout': 'Confirmar Check-out',
+        'checkin.printBill': 'Imprimir Conta',
+        'checkin.todayCheckoutList': 'Lista de Check-outs de Hoje',
+        'checkin.expectedTime': 'Esperado 12:00',
+        'checkin.checkedOut': 'Check-out Realizado',
+        'checkin.pendingCheckout': 'Check-out Pendente',
+        'roomTypes.standard': 'Quarto Padrão',
+        'roomTypes.theme': 'Quarto Temático',
+        'roomTypes.deluxe': 'Quarto de Luxo',
+        'roomTypes.presidential': 'Suíte Presidencial',
+        'services.title': 'Serviços ao Hóspede',
+        'services.requests': 'Solicitações de Serviço ao Hóspede',
+        'services.searchPlaceholder': 'Pesquisar solicitações...',
+        'services.filter': 'Filtrar',
+        'services.extraTowels': 'Toalhas Extras Necessárias',
+        'services.processing': 'Processando',
+        'services.extraTowelsDesc': 'Hóspede Sr. Wang solicitou toalhas extras, notificado departamento de governança.',
+        'services.requestType': 'Tipo de Solicitação',
+        'services.housekeeping': 'Governança',
+        'services.assignedTo': 'Atribuído a',
+        'services.acIssue': 'Problema no Ar Condicionado',
+        'services.pending': 'Pendente',
+        'services.acIssueDesc': 'Hóspede Sr. Chen relatou ar condicionado não resfriando, precisa de inspeção do departamento de engenharia.',
+        'services.repair': 'Reparo de Equipamento',
+        'services.lateCheckout': 'Solicitação de Check-out Tardio',
+        'services.approved': 'Aprovado',
+        'services.lateCheckoutDesc': 'Hóspede Sra. Zhao solicitou check-out tardio até 14:00, aprovado.',
+        'services.checkoutService': 'Serviço de Check-out',
+        'services.handledBy': 'Tratado por',
+        'services.wakeupCall': 'Chamada de Despertar',
+        'services.arranged': 'Organizado',
+        'services.wakeupCallDesc': 'Hóspede Sr. Liu solicitou chamada de despertar às 07:00 amanhã, organizado.',
+        'services.wakeupService': 'Serviço de Despertar',
+        'services.showing': 'Mostrando 1-4 de 12 solicitações',
+        'services.previous': 'Anterior',
+        'services.next': 'Próxima',
+        'services.taxi': 'Serviço de Táxi',
+        'services.restaurant': 'Reserva de Restaurante',
+        'services.tickets': 'Serviço de Bilhetes',
+        'services.medical': 'Serviço Médico',
+        'worklog.title': 'Registro de Trabalho',
+        'worklog.newLog': 'Novo Registro de Trabalho',
+        'worklog.titlePlaceholder': 'Digite o título do registro',
+        'worklog.content': 'Conteúdo',
+        'worklog.contentPlaceholder': 'Registre sua situação de trabalho, feedback dos hóspedes e assuntos importantes...',
+        'worklog.save': 'Salvar Registro',
+        'worklog.history': 'Registros de Trabalho Históricos',
+        'worklog.workLog': 'Registro de Trabalho',
+        'worklog.yesterday': 'Ontem 18:30',
+        'worklog.log1': 'Hoje recebidos 28 hóspedes, tratadas 15 solicitações de hóspedes. Hóspede VIP Sr. Wang satisfeito com serviço. Hóspede Sr. Zhou no Quarto 143 mostrou estado anormal, registrado.',
+        'worklog.twoDaysAgo': '2 dias atrás 18:45',
+        'worklog.log2': 'Trabalho normal hoje, processados 12 check-outs, 15 check-ins. Hóspede Sr. Liu no Quarto 902 solicitou equipamento de áudio especial, organizado.',
+        'worklog.threeDaysAgo': '3 dias atrás 18:20',
+        'worklog.log3': 'Hóspede reclamou sobre resposta lenta do serviço de restaurante hoje, coordenado com departamento de F&B. Hóspede Sra. Zhao no Quarto 314 muito satisfeita com instalações de estúdio de dança.',
+        'worklog.showing': 'Mostrando 1-3 de 24 registros',
+        'worklog.previous': 'Anterior',
+        'worklog.next': 'Próxima',
+        'forum.title': 'Fórum de Funcionários',
+        'forum.latest': 'Discussões Recentes',
+        'forum.newTopic': 'Novo Tópico',
+        'forum.post1.title': 'Hoje é meu aniversário, mas ainda tenho que trabalhar, preciso de consolo!',
+        'forum.hoursAgo': '2 horas atrás',
+        'forum.post1.content': 'Hoje é meu aniversário, originalmente queria tirar licença, mas hotel está com falta de pessoal recentemente, tenho que continuar trabalhando. Chorando, colegas por favor me consolem!',
+        'forum.post1.info': 'Postado por: Recepção-Liu Wan · Categoria:',
+        'forum.category.leisure': 'Lazer e Entretenimento',
+        'forum.post1.stats': 'Respostas: 4 | Visualizações: 28',
+        'forum.post2.title': 'Devo recomendar! Novo álbum do Rikimaru "ROOM" é incrível!',
+        'forum.hoursAgo2': '5 horas atrás',
+        'forum.post2.content': 'Todos vão ouvir o novo álbum do Rikimaru "ROOM"! O conceito se adequa perfeitamente ao nosso hotel, cada música corresponde a uma história de quarto, especialmente a música "MORE" é absolutamente incrível!',
+        'forum.post2.info': 'Postado por: Recepção-Zhang Xiao · Categoria:',
+        'forum.post2.stats': 'Respostas: 23 | Visualizações: 156',
+        'forum.post3.title': 'Guia de Uso da Nova Ferramenta de Análise',
+        'forum.hoursAgo3': '5 horas atrás',
+        'forum.post3.content': 'Administrador RIKI atualizou a ferramenta de análise de sentimento, adicionou novas funções de visualização de dados...',
+        'forum.post3.info': 'Gerente do Departamento de Análise-Wang Fang · Categoria:',
+        'forum.category.system': 'Atualizações do Sistema',
+        'forum.post3.stats': 'Respostas: 7 | Visualizações: 42',
+        'forum.post4.title': 'Sra. Lin no Quarto 615 é tão atenciosa',
+        'forum.daysAgo': '1 dia atrás',
+        'forum.post4.content': 'Sra. Lin especificamente deixou uma gorjeta ao fazer check-out hoje, e escreveu uma carta de agradecimento dizendo que nosso serviço é muito atencioso...',
+        'forum.post4.info': 'Postado por: Serviço de Quarto-Li Li · Categoria:',
+        'forum.category.work': 'Comunicação de Trabalho',
+        'forum.post4.stats': 'Respostas: 5 | Visualizações: 31',
+        'forum.post5.title': '[Sussurro] Alguém já viu a verdadeira forma do administrador? Parece esquivo',
+        'forum.daysAgo2': '2 dias atrás',
+        'forum.post5.content': 'Alguém sabe qual quarto ele aluga a longo prazo em nosso hotel? Da última vez...',
+        'forum.post5.info': 'Postado por: Recepção-Chen Xue · Categoria:',
+        'forum.category.work': 'Comunicação de Trabalho',
+        'forum.post5.stats': 'Respostas: 3 | Visualizações: 24',
+        'forum.post6.title': 'Alguém sabe por que o morador do quarto 701 foi levado para o hospital?',
+        'forum.daysAgo3': '3 dias atrás',
+        'forum.post6.content': 'Por volta das 2 da madrugada de ontem, o hóspede do quarto 701 ligou de repente para a recepção dizendo que estava sentindo mal no coração...',
+        'forum.post6.info': 'Postado por: Recepção - Jin Qian · Categoria:',
+        'forum.post6.stats': 'Respostas: 12 | Visualizações: 87',
+        'forum.showing': 'Mostrando 1-6 de 42 tópicos',
+        'forum.previous': 'Anterior',
+        'forum.next': 'Próxima',
+        'forum.categories': 'Categorias do Fórum',
+        'forum.category.frontdesk': 'Área da Recepção',
+        'forum.category.service': 'Serviços ao Hóspede',
+        'forum.category.notice': 'Avisos do Departamento',
+        'forum.hotTopics': 'Tópicos Quentes',
+        'forum.hotStats1': 'Respostas 23 · Visualizações 156',
+        'forum.hotStats2': 'Respostas 3 · Visualizações 24',
+        'forum.hotStats3': 'Respostas 7 · Visualizações 42',
+        'forum.restaurantFeedback': 'Feedback de degustação do novo menu',
+        'forum.hotStats4': 'Respostas 18 · Visualizações 94',
+        'forum.rules': 'Regras do Fórum',
+        'forum.rule1': '• Nenhuma discussão de informações sensíveis de hóspedes',
+        'forum.rule2': '• Toda comunicação de trabalho deve ser profissional',
+        'forum.rule3': '• Reporte anomalias ao administrador imediatamente',
+        'forum.rule4': '• Mantenha atitude profissional, respeite colegas',
+        'forum.rule5': '• Cumpra acordo de confidencialidade da empresa',
+        'forum.systemNote': 'Nota do Sistema: Todas as suas atividades são registradas',
+        'footer.system': 'Sistema de Recepção v2.1.4',
+        'footer.usage': 'Uso interno apenas - Nível de segurança: Padrão',
+        'footer.lastUpdate': 'Última atualização do sistema: 2025-11-12 11:02',
+        'footer.systemStatus': 'Status do Sistema:',
+        'footer.runningNormal': 'Executando normal'
+      }
+    };
+
+    // 页面加载动画
+    window.addEventListener('DOMContentLoaded', () => {
+      const loader = document.getElementById('loader');
+      const loaderCat = document.getElementById('loader-cat');
+      
+      // 显示黑猫动画
+      setTimeout(() => {
+        loaderCat.classList.add('animate-pulse');
+        loaderCat.style.opacity = '1';
+        loaderCat.style.transition = 'opacity 0.5s ease';
+      }, 500);
+      
+      // 加载完成后隐藏加载界面
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+          // 初始化页面数据
+          loadRecords();
+        }, 1000);
+      }, 2000);
+      
+      // 更新日期和时间
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toISOString().split('T')[0];
+        document.getElementById('current-time').textContent = now.toTimeString().split(' ')[0];
+      }
+      
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+      
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('py-2', 'shadow-md', 'bg-dark/90');
+          navbar.classList.remove('py-3', 'bg-dark/80');
+        } else {
+          navbar.classList.add('py-3', 'bg-dark/80');
+          navbar.classList.remove('py-2', 'shadow-md', 'bg-dark/90');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // 菜单图标切换
+        const icon = menuToggle.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        } else {
+          icon.classList.remove('fa-bars');
+          icon.classList.add('fa-times');
+        }
+      });
+      
+      // 用户菜单切换
+      const userMenuToggle = document.getElementById('user-menu-toggle');
+      const userMenu = document.getElementById('user-menu');
+      
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭用户菜单
+      document.addEventListener('click', () => {
+        userMenu.classList.add('hidden');
+      });
+      
+      // 阻止用户菜单内的点击事件冒泡
+      userMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言切换功能
+      const languageToggle = document.getElementById('language-toggle');
+      const languageMenu = document.getElementById('language-menu');
+      const currentLang = document.getElementById('current-lang');
+      
+      // 切换语言菜单显示/隐藏
+      languageToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        languageMenu.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他区域关闭语言菜单
+      document.addEventListener('click', () => {
+        languageMenu.classList.add('hidden');
+      });
+      
+      // 阻止语言菜单内的点击事件冒泡
+      languageMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      // 语言选择处理
+      document.querySelectorAll('[data-lang]').forEach(button => {
+        button.addEventListener('click', () => {
+          const lang = button.getAttribute('data-lang');
+          setLanguage(lang);
+          languageMenu.classList.add('hidden');
+          
+          // 更新当前语言显示
+          currentLang.textContent = button.textContent;
+          
+          // 保存语言选择到本地存储
+          localStorage.setItem('preferred-language', lang);
+        });
+      });
+      
+      // 设置语言函数
+      function setLanguage(lang) {
+        // 更新html的lang属性
+        document.documentElement.setAttribute('lang', lang);
+        
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+        
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.setAttribute('placeholder', translations[lang][key]);
+          }
+        });
+      }
+      
+      // 从本地存储加载用户偏好的语言
+      const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+      setLanguage(savedLang);
+      
+      // 更新当前语言显示
+      const savedLangButton = document.querySelector(`[data-lang="${savedLang}"]`);
+      if (savedLangButton) {
+        currentLang.textContent = savedLangButton.textContent;
+      }
+      
+      // 页面切换功能
+      function switchPage(sectionId) {
+        // 隐藏所有页面
+        document.querySelectorAll('.page-section').forEach(section => {
+          section.classList.remove('active');
+        });
+        
+        // 显示选中的页面
+        document.getElementById(sectionId).classList.add('active');
+        
+        // 滚动到页面顶部
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+        
+        // 关闭移动菜单
+        if (!mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          const icon = menuToggle.querySelector('i');
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        }
+      }
+      
+      // 为导航链接添加事件监听器
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const sectionId = this.getAttribute('data-section');
+          switchPage(sectionId);
+        });
+      });
+      
+      // 为导航卡片添加事件监听器
+      document.querySelectorAll('.nav-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+          e.preventDefault();
+          const sectionId = this.getAttribute('data-section');
+          switchPage(sectionId);
+        });
+      });
+      
+      // 客房记录搜索功能
+      document.getElementById('record-search').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        filterRecords(searchTerm);
+      });
+      
+      // 客房记录分页
+      document.getElementById('record-prev').addEventListener('click', function() {
+        if (currentRecordPage > 0) {
+          currentRecordPage--;
+          loadRecords();
+        }
+      });
+      
+      document.getElementById('record-next').addEventListener('click', function() {
+        if (currentRecordPage < recordsData.length - 1) {
+          currentRecordPage++;
+          loadRecords();
+        }
+      });
+      
+      // 退房房间号输入事件
+      document.getElementById('checkout-room').addEventListener('input', function() {
+        const roomNumber = this.value;
+        const checkoutInfo = document.getElementById('checkout-info');
+        
+        if (roomNumber === '615' || roomNumber === '819') {
+          checkoutInfo.classList.remove('hidden');
+          document.getElementById('guest-name').textContent = roomNumber === '615' ? '林雨欣' : '吴雅婷';
+          document.getElementById('checkin-date').textContent = '2025-11-03';
+          document.getElementById('total-charges').textContent = roomNumber === '615' ? '¥1,280' : '¥2,150';
+        } else {
+          checkoutInfo.classList.add('hidden');
+        }
+      });
+      
+      // 隐藏的彩蛋 - 点击黑猫触发
+      const secretCat = document.getElementById('secret-cat');
+      const body = document.body;
+      
+      // 创建全屏提示元素
+      const alertOverlay = document.createElement('div');
+      alertOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      `;
+      
+      // 提示文字
+      const alertText = document.createElement('p');
+      alertText.style.cssText = `
+        color: #ff4444;
+        font-size: clamp(1.5rem,5vw,3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: 0 20px;
+        filter: blur(10px);
+        transform: scale(0.8);
+        transition: all 0.5s ease;
+        font-family: 'Courier New', monospace;
+      `;
+      alertText.textContent = '警告：观察者已被观察';
+      
+      // 小字补充
+      const alertSubtext = document.createElement('p');
+      alertSubtext.style.cssText = `
+        color: #8A6BBE;
+        margin-top: 20px;
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.3s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSubtext.textContent = '—— 管理员 RIki';
+      
+      // 底部系统提示
+      const alertSystem = document.createElement('p');
+      alertSystem.style.cssText = `
+        color: #44ff44;
+        position: absolute;
+        bottom: 40px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.6s;
+        font-family: 'Courier New', monospace;
+      `;
+      alertSystem.textContent = '系统日志: 已记录用户交互行为';
+      
+      alertOverlay.appendChild(alertText);
+      alertOverlay.appendChild(alertSubtext);
+      alertOverlay.appendChild(alertSystem);
+      body.appendChild(alertOverlay);
+      
+      // 给黑猫添加点击事件
+      secretCat.addEventListener('click', () => {
+        // 1. 黑猫眼睛变红（临时修改SVG）
+        const originalEyes = secretCat.innerHTML;
+        const redEyeCat = originalEyes.replace(/#8A6BBE/g, '#ff4444'); // 紫色眼睛替换为红色
+        secretCat.innerHTML = redEyeCat;
+        
+        // 2. 显示全屏提示
+        alertOverlay.style.opacity = '1';
+        alertOverlay.style.pointerEvents = 'auto';
+        
+        setTimeout(() => {
+          alertText.style.filter = 'blur(0)';
+          alertText.style.transform = 'scale(1.2)';
+          alertSubtext.style.opacity = '1';
+          alertSystem.style.opacity = '0.7';
+          
+          // 3. 文字震动效果
+          let shakeInterval = setInterval(() => {
+            alertText.style.transform = `scale(1.2) translateX(${Math.random() * 8 - 4}px) translateY(${Math.random() * 4 - 2}px)`;
+          }, 60);
+          
+          // 4. 2.5秒后恢复原状
+          setTimeout(() => {
+            clearInterval(shakeInterval);
+            alertOverlay.style.opacity = '0';
+            alertText.style.filter = 'blur(10px)';
+            alertText.style.transform = 'scale(0.8)';
+            alertSubtext.style.opacity = '0';
+            alertSystem.style.opacity = '0';
+            
+            // 恢复黑猫眼睛颜色
+            setTimeout(() => {
+              secretCat.innerHTML = originalEyes;
+              alertOverlay.style.pointerEvents = 'none';
+            }, 300);
+          }, 2500);
+        }, 100);
+      });
+      
+      // 随机出现的文字闪烁效果
+      const glitchElements = document.querySelectorAll('h2, h3, .terminal-font');
+      setInterval(() => {
+        if (Math.random() > 0.7) { // 30%概率触发
+          let randomElement = glitchElements[Math.floor(Math.random() * glitchElements.length)];
+          randomElement.classList.add('text-glitch');
+          randomElement.setAttribute('data-text', randomElement.textContent);
+          
+          setTimeout(() => {
+            randomElement.classList.remove('text-glitch');
+          }, 1000);
+        }
+      }, 12000);
+    });
+
+    // 加载客房记录
+    function loadRecords() {
+      const recordList = document.getElementById('record-list');
+      const pageInfo = document.getElementById('record-page-info');
+      const records = recordsData[currentRecordPage];
+      
+      recordList.innerHTML = '';
+      
+      records.forEach(record => {
+        const recordElement = document.createElement('div');
+        recordElement.className = 'forum-post p-4';
+        
+        let accessBadge = '<span class="text-success text-sm">可访问</span>';
+        let viewButton = '';
+        
+        // 检查是否是特定房间，如果是则打开新页面
+        const roomNumbers = ['143', '291', '4030', '302', '314', '902'];
+        const roomNumber = record.title.split(' - ')[0].split(' ')[1];
+        
+        if (roomNumbers.includes(roomNumber)) {
+          viewButton = `<button class="text-accent hover:text-white transition-colors flex items-center" onclick="window.open('${roomNumber}前台记录.html', '_blank')"><i class="fa fa-external-link mr-1"></i> 查看详情</button>`;
+        } else {
+          viewButton = '<button class="text-accent hover:text-white transition-colors flex items-center"><i class="fa fa-eye mr-1"></i> 查看详情</button>';
+        }
+        
+        recordElement.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="text-lg font-semibold text-white">${record.title}</h4>
+            <div class="flex items-center space-x-2">
+              ${accessBadge}
+              <span class="text-gray-400 text-sm">${record.title.split(' - ')[3]}</span>
+            </div>
+          </div>
+          <p class="text-gray-300 text-sm mb-3">${record.content}</p>
+          <div class="flex justify-between items-center text-xs text-gray-400">
+            <span>${record.title.split(' - ')[1]} - ${record.title.split(' - ')[2]}</span>
+            ${viewButton}
+          </div>
+        `;
+        
+        recordList.appendChild(recordElement);
+      });
+      
+      pageInfo.textContent = `显示 ${currentRecordPage * 8 + 1}-${currentRecordPage * 8 + records.length} 条，共 ${recordsData.length * 8} 条记录`;
+    }
+    
+    // 过滤客房记录
+    function filterRecords(searchTerm) {
+      const allRecords = recordsData.flat();
+      const filteredRecords = allRecords.filter(record => 
+        record.title.toLowerCase().includes(searchTerm) || 
+        record.content.toLowerCase().includes(searchTerm)
+      );
+      
+      const recordList = document.getElementById('record-list');
+      recordList.innerHTML = '';
+      
+      if (filteredRecords.length === 0) {
+        recordList.innerHTML = '<div class="text-center py-4 text-gray-400">未找到匹配的记录</div>';
+        return;
+      }
+      
+      filteredRecords.slice(0, 8).forEach(record => {
+        const recordElement = document.createElement('div');
+        recordElement.className = 'forum-post p-4';
+        
+        let accessBadge = '<span class="text-success text-sm">可访问</span>';
+        let viewButton = '';
+        
+        // 检查是否是特定房间，如果是则打开新页面
+        const roomNumbers = ['143', '291', '4030', '302', '314', '902'];
+        const roomNumber = record.title.split(' - ')[0].split(' ')[1];
+        
+        if (roomNumbers.includes(roomNumber)) {
+          viewButton = '<button class="text-accent hover:text-white transition-colors flex items-center" onclick="window.open(\'\', \'_blank\')"><i class="fa fa-external-link mr-1"></i> 查看详情</button>';
+        } else {
+          viewButton = '<button class="text-accent hover:text-white transition-colors flex items-center"><i class="fa fa-eye mr-1"></i> 查看详情</button>';
+        }
+        
+        recordElement.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="text-lg font-semibold text-white">${record.title}</h4>
+            <div class="flex items-center space-x-2">
+              ${accessBadge}
+              <span class="text-gray-400 text-sm">${record.title.split(' - ')[3]}</span>
+            </div>
+          </div>
+          <p class="text-gray-300 text-sm mb-3">${record.content}</p>
+          <div class="flex justify-between items-center text-xs text-gray-400">
+            <span>${record.title.split(' - ')[1]} - ${record.title.split(' - ')[2]}</span>
+            ${viewButton}
+          </div>
+        `;
+        
+        recordList.appendChild(recordElement);
+      });
+      
+      document.getElementById('record-page-info').textContent = `显示 1-${Math.min(8, filteredRecords.length)} 条，共 ${filteredRecords.length} 条记录`;
+    }
+  </script>
+</body>
+</html>

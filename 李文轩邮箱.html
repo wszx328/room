@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱系统 - 李文轩</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #d6c2ff 0%, #b19cd9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .email-container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(177, 156, 217, 0.3);
+            overflow: hidden;
+            height: calc(100vh - 40px);
+        }
+        
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(135deg, #b19cd9 0%, #d6c2ff 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+        }
+        
+        .compose-btn {
+            background: white;
+            color: #8a6bc9;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .compose-btn i {
+            margin-right: 8px;
+        }
+        
+        .compose-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .folders {
+            list-style: none;
+            flex-grow: 1;
+        }
+        
+        .folders li {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .folders li i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .folders li.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+        
+        .folders li:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .folder-count {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 邮件列表区域 */
+        .mail-list {
+            flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .mail-list-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .mail-list-header h2 {
+            color: #8a6bc9;
+            font-size: 1.3rem;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f9f7ff;
+            border-radius: 20px;
+            padding: 8px 15px;
+            width: 250px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            margin-left: 8px;
+            outline: none;
+        }
+        
+        /* 语言切换按钮样式 - 移动到右上角 */
+        .language-switcher {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+        
+        .language-btn {
+            background: #8a6bc9;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .language-btn:hover {
+            background: #6a4fa3;
+        }
+        
+        .language-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+            min-width: 120px;
+        }
+        
+        .language-menu.active {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #8a6bc9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .language-option:hover {
+            background: #f9f7ff;
+        }
+        
+        .language-flag {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        .mail-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mail-item:hover {
+            background: #f9f7ff;
+        }
+        
+        .mail-item.active {
+            background: #f0ebff;
+            border-left: 3px solid #8a6bc9;
+        }
+        
+        .mail-item.unread .mail-subject {
+            font-weight: 600;
+        }
+        
+        .mail-checkbox {
+            margin-right: 15px;
+        }
+        
+        .mail-sender {
+            width: 180px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .mail-subject {
+            font-weight: 500;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-preview {
+            color: #777;
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-date {
+            color: #999;
+            font-size: 0.85rem;
+            margin-left: 15px;
+        }
+        
+        /* 邮件内容区域 */
+        .mail-view {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .mail-view.active {
+            display: block;
+        }
+        
+        .mail-view-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mail-view-subject {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .mail-view-info {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .mail-view-sender {
+            font-weight: 600;
+            color: #8a6bc9;
+        }
+        
+        .mail-view-body {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .mail-view-body p {
+            margin-bottom: 15px;
+        }
+        
+        .mail-view-body ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .mail-view-body li {
+            margin-bottom: 8px;
+        }
+        
+        .mail-attachments {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .attachments-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #8a6bc9;
+        }
+        
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .attachment-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .attachment-icon {
+            color: #8a6bc9;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .attachment-name {
+            flex: 1;
+        }
+        
+        .attachment-size {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        /* 云盘备份样式 */
+        .cloud-storage {
+            padding: 20px;
+            display: none;
+            overflow-y: auto;
+            height: 100%;
+        }
+        
+        .cloud-storage.active {
+            display: block;
+        }
+        
+        .folder-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .folder-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .folder-icon {
+            color: #8a6bc9;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .folder-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .file-list {
+            margin-left: 30px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .file-icon {
+            color: #8a6bc9;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .file-name {
+            flex: 1;
+        }
+        
+        .cloud-log {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f9f7ff;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* 模态窗口样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            color: #8a6bc9;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .room-animation {
+            width: 100%;
+            height: 300px;
+            background: #1a1a2e;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .room-wall {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+        }
+        
+        .room-door {
+            position: absolute;
+            width: 80px;
+            height: 160px;
+            background: #1a1a2e;
+            border: 3px solid #8a6bc9;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transform-origin: left;
+            animation: doorSwing 4s infinite;
+        }
+        
+        .room-door::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #8a6bc9;
+            border-radius: 50%;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+        }
+        
+        .room-window {
+            position: absolute;
+            width: 100px;
+            height: 80px;
+            background: #0f3460;
+            border: 2px solid #8a6bc9;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: windowGlow 8s infinite;
+        }
+        
+        .room-window::before, .room-window::after {
+            content: '';
+            position: absolute;
+            background: #8a6bc9;
+        }
+        
+        .room-window::before {
+            width: 2px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .room-window::after {
+            width: 100%;
+            height: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .clock {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #1a1a2e;
+            border: 3px solid #8a6bc9;
+            border-radius: 50%;
+            top: 50px;
+            right: 50px;
+        }
+        
+        .clock-center {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #8a6bc9;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        .hour-hand {
+            position: absolute;
+            width: 4px;
+            height: 25px;
+            background: #8a6bc9;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            animation: hourRotate 20s infinite linear;
+        }
+        
+        .minute-hand {
+            position: absolute;
+            width: 3px;
+            height: 35px;
+            background: #8a6bc9;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            animation: minuteRotate 5s infinite linear;
+        }
+        
+        .loop-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #8a6bc9;
+            font-size: 1.2rem;
+            font-weight: 600;
+            animation: counterChange 2s infinite;
+        }
+        
+        .looping-text {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #8a6bc9;
+            font-size: 1rem;
+            animation: textPulse 3s infinite;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .password-btn {
+            background: #8a6bc9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .password-btn:hover {
+            background: #6a4fa3;
+        }
+        
+        .text-content {
+            width: 100%;
+            height: 300px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            overflow-y: auto;
+        }
+        
+        /* 动画定义 */
+        @keyframes doorSwing {
+            0% { transform: translateX(-50%) rotateY(0deg); }
+            25% { transform: translateX(-50%) rotateY(-90deg); }
+            50% { transform: translateX(-50%) rotateY(-90deg); }
+            75% { transform: translateX(-50%) rotateY(0deg); }
+            100% { transform: translateX(-50%) rotateY(0deg); }
+        }
+        
+        @keyframes windowGlow {
+            0% { background-color: #0f3460; }
+            50% { background-color: #1a5a9c; }
+            100% { background-color: #0f3460; }
+        }
+        
+        @keyframes hourRotate {
+            0% { transform: translate(-50%, -100%) rotate(0deg); }
+            100% { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+        
+        @keyframes minuteRotate {
+            0% { transform: translate(-50%, -100%) rotate(0deg); }
+            100% { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+        
+        @keyframes counterChange {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        @keyframes textPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .email-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .mail-sender {
+                width: 120px;
+            }
+            
+            .language-switcher {
+                position: static;
+                margin-top: 10px;
+            }
+            
+            .mail-list-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+        
+        /* 链接样式 */
+        .news-link {
+            color: #8a6bc9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .news-link:hover {
+            color: #6a4fa3;
+            text-decoration: underline;
+        }
+        
+        .failed-mail {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+        
+        .disabled-link {
+            color: #666;
+            text-decoration: none;
+            pointer-events: none;
+        }
+        
+        .non-clickable {
+            color: #666;
+            text-decoration: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-envelope"></i>
+                <h1 data-i18n="mailbox_title">邮箱系统 - 李文轩</h1>
+            </div>
+            
+            <button class="compose-btn">
+                <i class="fas fa-edit"></i>
+                <span data-i18n="compose">写邮件</span>
+            </button>
+            
+            <ul class="folders">
+                <li class="active" data-folder="inbox">
+                    <i class="fas fa-inbox"></i>
+                    <span data-i18n="inbox">收件箱</span>
+                    <span class="folder-count">3</span>
+                </li>
+                <li data-folder="sent">
+                    <i class="fas fa-paper-plane"></i>
+                    <span data-i18n="sent">发件箱</span>
+                    <span class="folder-count">1</span>
+                </li>
+                <li data-folder="cloud">
+                    <i class="fas fa-cloud"></i>
+                    <span data-i18n="cloud_storage">云盘备份</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 邮件列表 -->
+            <div class="mail-list">
+                <div class="mail-list-header">
+                    <h2 data-i18n="inbox">收件箱</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" data-i18n-placeholder="search_placeholder" placeholder="搜索邮件...">
+                    </div>
+                    
+                    <!-- 语言切换按钮 - 移动到右上角 -->
+                    <div class="language-switcher">
+                        <button class="language-btn" id="language-btn">
+                            <i class="fas fa-globe"></i>
+                            <span id="current-lang">中文</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="language-menu" id="language-menu">
+                            <div class="language-option" data-lang="zh-CN">
+                                <span>中文</span>
+                            </div>
+                            <div class="language-option" data-lang="en">
+                                <span>English</span>
+                            </div>
+                            <div class="language-option" data-lang="ja">
+                                <span>日本語</span>
+                            </div>
+                            <div class="language-option" data-lang="pt">
+                                <span>Português</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 收件箱邮件列表 -->
+                <div class="mail-list-content" id="inbox-list">
+                    <div class="mail-item unread" data-mail="1">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">游戏论坛中心</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail4_subject">关于帖子《求助！如何在代码里植入不可篡改的信息？》的移除通知</div>
+                            <div class="mail-preview" data-i18n="mail4_preview">尊敬的用户李文轩：您好！非常抱歉地通知，您于游戏论坛发布的帖子《求助！如何在代码里植入不可篡改的信息？》因涉及可能危害游戏安全的技术讨论...</div>
+                        </div>
+                        <div class="mail-date">2025-11-26</div>
+                    </div>
+                    
+                    <div class="mail-item unread active" data-mail="2">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">R∞M文创部</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail1_subject">创作者灵感扶持计划邀请</div>
+                            <div class="mail-preview" data-i18n="mail1_preview">尊敬的李老师，您的《DAYDREAMS》项目已通过筛选，R∞M酒店291房为您提供免费7天创作空间...</div>
+                        </div>
+                        <div class="mail-date">2025-11-10</div>
+                    </div>
+                    
+                    <div class="mail-item unread" data-mail="3">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">王磊</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail2_subject">无主题</div>
+                            <div class="mail-preview" data-i18n="mail2_preview">文轩，你怎么回事？电话打不通，微信不回！你说住7天，现在都10天了，是不是出什么事了？...</div>
+                        </div>
+                        <div class="mail-date">2025-11-22</div>
+                    </div>
+                </div>
+                
+                <!-- 发件箱邮件列表 -->
+                <div class="mail-list-content" id="sent-list" style="display: none;">
+                    <div class="mail-item failed-mail" data-mail="4">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">李文轩</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail3_subject">救命！291是循环牢笼！</div>
+                            <div class="mail-preview" data-i18n="mail3_preview">我被困在24小时循环里，已经第17天了。酒店会篡改我的代码和记忆，它在吃我的情绪...</div>
+                        </div>
+                        <div class="mail-date">2025-11-24</div>
+                    </div>
+                </div>
+                
+                <!-- 云盘备份文件列表 -->
+                <div class="mail-list-content" id="cloud-list" style="display: none;">
+                    <div class="folder-item" data-folder="daydreams">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <div class="folder-name" data-i18n="folder_name">《DAYDREAMS_最终版》</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 邮件内容区域 -->
+            <div class="mail-view" id="mail-view">
+                <!-- 邮件1内容 - 游戏论坛通知 -->
+                <div class="mail-view-content" id="mail1-content">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail4_subject">关于帖子《求助！如何在代码里植入不可篡改的信息？》的移除通知</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">游戏论坛中心</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-26 16:45</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail4_content">
+                        <p>尊敬的用户李文轩：</p>
+                        <p>您好！</p>
+                        <p>非常抱歉地通知，您于游戏论坛发布的帖子《求助！如何在代码里植入不可篡改的信息？》因涉及可能危害游戏安全的技术讨论，违反了《游戏社区安全管理规范》第 2.1 条 "禁止发布可能用于篡改游戏数据、制作违规插件等危害游戏公平性的内容" 规定，现已被系统移除。</p>
+                        <p>为保障您的内容权益，系统已为该帖子生成备份，您可通过以下链接查看完整原文（备份保留 72 小时，请及时查阅）：</p>
+                        <p>【<span class="non-clickable">立即查看帖子备份</span>】→ 
+                           <a href="游戏论坛.html" target="_blank" class="news-link">https://game-forum.com/backup/xxxx1234</a>
+                        </p>
+                        <p>温馨提示：</p>
+                        <ul>
+                            <li>若多次发布同类违规内容，账号可能面临禁言、限制发帖等处罚，请遵守社区规则，共同维护健康的交流环境；</li>
+                            <li>如对删除结果有异议，可在 72 小时内通过以下方式申诉：<br>
+                                申诉通道：<span class="disabled-link">https://game-forum.com/appeal</span><br>
+                                客服邮箱：<span class="disabled-link">support@game-forum.com</span><br>
+                                需提供帖子原文截图、违规判定异议说明等材料；</li>
+                            <li>如需咨询合规的技术讨论方向，可参考《社区允许讨论的技术范畴指引》：<span class="disabled-link">https://game-forum.com/guide/tech</span>。</li>
+                        </ul>
+                        <p>感谢您的理解与支持，祝您在游戏论坛交流愉快！</p>
+                        <p>游戏论坛系统中心</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件2内容 -->
+                <div class="mail-view-content" id="mail2-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail1_subject">创作者灵感扶持计划邀请</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">R∞M文创部</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-10 14:30</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail1_content">
+                        <p>尊敬的李老师，</p>
+                        <p>您的《DAYDREAMS》项目已通过筛选，R∞M酒店291房为您提供免费7天创作空间，这里的极简环境将帮您突破瓶颈。</p>
+                        <p>点击链接预订：<a href="官网.html" class="news-link">https://r∞m-hotel.com</a></p>
+                    </div>
+                </div>
+                
+                <!-- 邮件3内容 -->
+                <div class="mail-view-content" id="mail3-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail2_subject">无主题</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">王磊</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-22 09:15</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail2_content">
+                        <p>文轩，你怎么回事？电话打不通，微信不回！你说住7天，现在都10天了，是不是出什么事了？我帮你查了R∞M酒店，之前有创作者在那失踪过！</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件4内容 -->
+                <div class="mail-view-content" id="mail4-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail3_subject">救命！291是循环牢笼！</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="to">收件人：</span>
+                                <span class="mail-view-sender">王磊</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025-11-24 23:42</span>
+                            </div>
+                        </div>
+                        <div class="failed-mail" data-i18n="failed_status">发送失败 - 收件人不存在</div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail3_content">
+                        <p>我被困在24小时循环里，已经第17天了。酒店会篡改我的代码和记忆，它在吃我的情绪。我把真相编码进了一个文件，密码是Loop27（我已经循环27次了）。如果我没出去，帮我曝光这个酒店……</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 云盘备份区域 -->
+            <div class="cloud-storage" id="cloud-storage">
+                <div class="folder-item" data-folder="daydreams">
+                    <i class="fas fa-folder-open folder-icon"></i>
+                    <div class="folder-name" data-i18n="folder_name">《DAYDREAMS_最终版》</div>
+                </div>
+                
+                <div class="file-list">
+                    <div class="file-item" data-file="exe">
+                        <i class="fas fa-gamepad file-icon"></i>
+                        <div class="file-name" data-i18n="file1_name">游戏执行程序.exe</div>
+                    </div>
+                    <div class="file-item" data-file="rar">
+                        <i class="fas fa-file-archive file-icon"></i>
+                        <div class="file-name" data-i18n="file2_name">绝望的挣扎.rar</div>
+                    </div>
+                    <div class="file-item" data-file="txt">
+                        <i class="fas fa-file-alt file-icon"></i>
+                        <div class="file-name" data-i18n="file3_name">新建文档.txt</div>
+                    </div>
+                </div>
+                
+                <div class="cloud-log">
+                    <h3 data-i18n="cloud_log_title">云盘操作日志</h3>
+                    <p data-i18n="cloud_log_content">最后一次登录时间：2025年11月27日 06:00</p>
+                    <p data-i18n="cloud_log_action">最后一次操作：文件被匿名账号访问并修改</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态窗口 -->
+    <div class="modal" id="room-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="room_title">无限循环的房间</h3>
+                <button class="modal-close" id="room-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="room-animation">
+                    <div class="room-wall"></div>
+                    <div class="room-door"></div>
+                    <div class="room-window"></div>
+                    <div class="clock">
+                        <div class="clock-center"></div>
+                        <div class="hour-hand"></div>
+                        <div class="minute-hand"></div>
+                    </div>
+                    <div class="loop-counter">循环: 27</div>
+                    <div class="looping-text">无限循环中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="password-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="password_title">请输入密码</h3>
+                <button class="modal-close" id="password-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="password" class="password-input" id="password-input" placeholder="密码">
+                <button class="password-btn" id="password-submit" data-i18n="submit">提交</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="text-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="text_title">新建文档.txt</h3>
+                <button class="modal-close" id="text-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="text-content">wklvkrwholvdvwrpdfkzhduhdooirrg</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="corrupted-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="corrupted_title">文件已损坏</h3>
+                <button class="modal-close" id="corrupted-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="room-animation" style="background: #000; display: flex; justify-content: center; align-items: center;">
+                    <p style="color: #fff; font-size: 1.2rem;" data-i18n="corrupted_message">文件内容无法读取</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言翻译数据
+        const translations = {
+            'zh-CN': {
+                'mailbox_title': '邮箱系统 - 李文轩',
+                'compose': '写邮件',
+                'inbox': '收件箱',
+                'sent': '发件箱',
+                'cloud_storage': '云盘备份',
+                'search_placeholder': '搜索邮件...',
+                'from': '发件人：',
+                'to': '收件人：',
+                'date': '日期：',
+                'attachments': '附件',
+                'mail1_subject': '创作者灵感扶持计划邀请',
+                'mail1_preview': '尊敬的李老师，您的《DAYDREAMS》项目已通过筛选，R∞M酒店291房为您提供免费7天创作空间...',
+                'mail1_content': '<p>尊敬的李老师，</p><p>您的《DAYDREAMS》项目已通过筛选，R∞M酒店291房为您提供免费7天创作空间，这里的极简环境将帮您突破瓶颈。</p><p>点击链接预订：<a href="官网.html" class="news-link">https://r∞m-hotel.com</a></p>',
+                'mail2_subject': '无主题',
+                'mail2_preview': '文轩，你怎么回事？电话打不通，微信不回！你说住7天，现在都10天了，是不是出什么事了？...',
+                'mail2_content': '<p>文轩，你怎么回事？电话打不通，微信不回！你说住7天，现在都10天了，是不是出什么事了？我帮你查了R∞M酒店，之前有创作者在那失踪过！</p>',
+                'mail3_subject': '救命！291是循环牢笼！',
+                'mail3_preview': '我被困在24小时循环里，已经第17天了。酒店会篡改我的代码和记忆，它在吃我的情绪...',
+                'mail3_content': '<p>我被困在24小时循环里，已经第17天了。酒店会篡改我的代码和记忆，它在吃我的情绪。我把真相编码进了一个文件，密码是Loop27（我已经循环27次了）。如果我没出去，帮我曝光这个酒店……</p>',
+                'mail4_subject': '关于帖子《求助！如何在代码里植入不可篡改的信息？》的移除通知',
+                'mail4_preview': '尊敬的用户李文轩：您好！非常抱歉地通知，您于游戏论坛发布的帖子《求助！如何在代码里植入不可篡改的信息？》因涉及可能危害游戏安全的技术讨论...',
+                'mail4_content': '<p>尊敬的用户李文轩：</p><p>您好！</p><p>非常抱歉地通知，您于游戏论坛发布的帖子《求助！如何在代码里植入不可篡改的信息？》因涉及可能危害游戏安全的技术讨论，违反了《游戏社区安全管理规范》第 2.1 条 "禁止发布可能用于篡改游戏数据、制作违规插件等危害游戏公平性的内容" 规定，现已被系统移除。</p><p>为保障您的内容权益，系统已为该帖子生成备份，您可通过以下链接查看完整原文（备份保留 72 小时，请及时查阅）：</p><p>【<span class="non-clickable">立即查看帖子备份</span>】→ <a href="游戏论坛.html" target="_blank" class="news-link">https://game-forum.com/backup/xxxx1234</a></p><p>温馨提示：</p><ul><li>若多次发布同类违规内容，账号可能面临禁言、限制发帖等处罚，请遵守社区规则，共同维护健康的交流环境；</li><li>如对删除结果有异议，可在 72 小时内通过以下方式申诉：<br>申诉通道：<span class="disabled-link">https://game-forum.com/appeal</span><br>客服邮箱：<span class="disabled-link">support@game-forum.com</span><br>需提供帖子原文截图、违规判定异议说明等材料；</li><li>如需咨询合规的技术讨论方向，可参考《社区允许讨论的技术范畴指引》：<span class="disabled-link">https://game-forum.com/guide/tech</span>。</li></ul><p>感谢您的理解与支持，祝您在游戏论坛交流愉快！</p><p>游戏论坛系统中心</p>',
+                'failed_status': '发送失败 - 收件人不存在',
+                'folder_name': '《DAYDREAMS_最终版》',
+                'file1_name': '游戏执行程序.exe',
+                'file2_name': '绝望的挣扎.rar',
+                'file3_name': '新建文档.txt',
+                'cloud_log_title': '云盘操作日志',
+                'cloud_log_content': '最后一次登录时间：2025年11月27日 06:00',
+                'cloud_log_action': '最后一次操作：文件被匿名账号访问并修改',
+                'room_title': '无限循环的房间',
+                'password_title': '请输入密码',
+                'submit': '提交',
+                'text_title': '新建文档.txt',
+                'corrupted_title': '文件已损坏',
+                'corrupted_message': '文件内容无法读取'
+            },
+            'en': {
+                'mailbox_title': 'Email System - Li Wenxuan',
+                'compose': 'Compose',
+                'inbox': 'Inbox',
+                'sent': 'Sent',
+                'cloud_storage': 'Cloud Storage',
+                'search_placeholder': 'Search emails...',
+                'from': 'From:',
+                'to': 'To:',
+                'date': 'Date:',
+                'attachments': 'Attachments',
+                'mail1_subject': 'Creator Inspiration Support Program Invitation',
+                'mail1_preview': 'Dear Teacher Li, your "DAYDREAMS" project has been selected, R∞M Hotel Room 291 offers you a free 7-day creative space...',
+                'mail1_content': '<p>Dear Teacher Li,</p><p>Your "DAYDREAMS" project has been selected, R∞M Hotel Room 291 offers you a free 7-day creative space, the minimalist environment here will help you break through bottlenecks.</p><p>Click to book: <a href="https://r∞m-hotel.com" class="news-link">https://r∞m-hotel.com</a></p>',
+                'mail2_subject': 'No Subject',
+                'mail2_preview': 'Wenxuan, what\'s going on? Your phone is off, no reply on WeChat! You said 7 days, now it\'s been 10 days, is something wrong?...',
+                'mail2_content': '<p>Wenxuan, what\'s going on? Your phone is off, no reply on WeChat! You said 7 days, now it\'s been 10 days, is something wrong? I checked R∞M Hotel for you, creators have disappeared there before!</p>',
+                'mail3_subject': 'Help! 291 is a Loop Prison!',
+                'mail3_preview': 'I\'m trapped in a 24-hour loop, it\'s been 17 days. The hotel alters my code and memories, it\'s feeding on my emotions...',
+                'mail3_content': '<p>I\'m trapped in a 24-hour loop, it\'s been 17 days. The hotel alters my code and memories, it\'s feeding on my emotions. I\'ve encoded the truth into a file, the password is Loop27 (I\'ve looped 27 times). If I don\'t get out, help me expose this hotel...</p>',
+                'mail4_subject': 'Removal Notice for Post "Help! How to Embed Tamper-Proof Information in Code?"',
+                'mail4_preview': 'Dear User Li Wenxuan: We regret to inform you that your post "Help! How to Embed Tamper-Proof Information in Code?" has been removed...',
+                'mail4_content': '<p>Dear User Li Wenxuan:</p><p>Hello!</p><p>We regret to inform you that your post "Help! How to Embed Tamper-Proof Information in Code?" has been removed due to discussions involving techniques that could potentially harm game security, violating Article 2.1 of the "Game Community Security Management Guidelines" which prohibits "content that may be used to tamper with game data, create unauthorized plugins, or otherwise compromise game fairness."</p><p>To protect your content rights, the system has generated a backup of this post. You can view the complete original text through the following link (the backup will be retained for 72 hours, please check promptly):</p><p>【<span class="non-clickable">View Post Backup Immediately</span>】→ <a href="https://game-forum.com/backup/xxxx1234" target="_blank" class="news-link">https://game-forum.com/backup/xxxx1234</a></p><p>Friendly Reminder:</p><ul><li>If you repeatedly post similar prohibited content, your account may face penalties such as suspension or posting restrictions. Please abide by community rules to maintain a healthy communication environment;</li><li>If you disagree with the removal decision, you can appeal within 72 hours through the following methods:<br>Appeal Channel: <span class="disabled-link">https://game-forum.com/appeal</span><br>Customer Service Email: <span class="disabled-link">support@game-forum.com</span><br>Please provide screenshots of the original post, explanation of your objection to the violation determination, and other relevant materials;</li><li>For guidance on compliant technical discussion directions, please refer to the "Community-Allowed Technical Discussion Scope Guide": <span class="disabled-link">https://game-forum.com/guide/tech</span>.</li></ul><p>Thank you for your understanding and support. We wish you a pleasant experience on the Game Forum!</p><p>Game Forum System Center</p>',
+                'failed_status': 'Send Failed - Recipient Does Not Exist',
+                'folder_name': '《DAYDREAMS_Final Version》',
+                'file1_name': 'Game Executable.exe',
+                'file2_name': 'Desperate Struggle.rar',
+                'file3_name': 'New Document.txt',
+                'cloud_log_title': 'Cloud Operation Log',
+                'cloud_log_content': 'Last login time: November 27, 2025 06:00',
+                'cloud_log_action': 'Last operation: File accessed and modified by anonymous account',
+                'room_title': 'Infinite Loop Room',
+                'password_title': 'Please Enter Password',
+                'submit': 'Submit',
+                'text_title': 'New Document.txt',
+                'corrupted_title': 'File Corrupted',
+                'corrupted_message': 'File content cannot be read'
+            },
+            'ja': {
+                'mailbox_title': 'メールシステム - 李文軒',
+                'compose': '作成',
+                'inbox': '受信トレイ',
+                'sent': '送信済み',
+                'cloud_storage': 'クラウドストレージ',
+                'search_placeholder': 'メールを検索...',
+                'from': '差出人：',
+                'to': '宛先：',
+                'date': '日付：',
+                'attachments': '添付ファイル',
+                'mail1_subject': 'クリエイターインスピレーション支援プログラム招待',
+                'mail1_preview': '尊敬する李先生、あなたの「DAYDREAMS」プロジェクトが選考を通過しました。R∞Mホテル291号室で無料7日間の創作スペースを提供します...',
+                'mail1_content': '<p>尊敬する李先生、</p><p>あなたの「DAYDREAMS」プロジェクトが選考を通過しました。R∞Mホテル291号室で無料7日間の創作スペースを提供します。ここのミニマリスト環境はあなたがボトルネックを突破するのを助けます。</p><p>予約はこちら：<a href="https://r∞m-hotel.com" class="news-link">https://r∞m-hotel.com</a></p>',
+                'mail2_subject': '件名なし',
+                'mail2_preview': '文軒、どうしたの？電話が通じない、WeChatも返信なし！7日と言っていたのに、今はもう10日経った、何かあったの？...',
+                'mail2_content': '<p>文軒、どうしたの？電話が通じない、WeChatも返信なし！7日と言っていたのに、今はもう10日経った、何かあったの？R∞Mホテルを調べてみたけど、前にそこでクリエイターが失踪したことがあるよ！</p>',
+                'mail3_subject': '助けて！291はループ牢獄だ！',
+                'mail3_preview': '24時間ループに閉じ込められている、もう17日目だ。ホテルは私のコードと記憶を改ざんし、私の感情を食べている...',
+                'mail3_content': '<p>24時間ループに閉じ込められている、もう17日目だ。ホテルは私のコードと記憶を改ざんし、私の感情を食べている。真実をファイルにエンコードした、パスワードはLoop27（私は27回ループした）。もし私が出られなかったら、このホテルを暴露してくれ...</p>',
+                'mail4_subject': '投稿「助けて！コードに改ざん不可能な情報を埋め込む方法は？」の削除通知',
+                'mail4_preview': 'ユーザー李文軒様：ゲームフォーラムに投稿された「助けて！コードに改ざん不可能な情報を埋め込む方法は？」という投稿は、ゲームセキュリティに危害を加える可能性のある技術的な議論を含むため...',
+                'mail4_content': '<p>ユーザー李文軒様：</p><p>ご利用いただきありがとうございます。</p><p>ゲームフォーラムに投稿された「助けて！コードに改ざん不可能な情報を埋め込む方法は？」という投稿は、ゲームセキュリティに危害を加える可能性のある技術的な議論を含むため、「ゲームコミュニティセキュリティ管理ガイドライン」第2.1条「ゲームデータの改ざん、不正なプラグインの作成など、ゲームの公平性を損なう可能性のある内容の公開を禁止する」規定に違反し、システムにより削除されました。</p><p>お客様のコンテンツ権利を保護するため、システムはこの投稿のバックアップを生成しました。以下のリンクから完全な原文を閲覧できます（バックアップは72時間保持されますので、お早めにご確認ください）：</p><p>【<span class="non-clickable">投稿バックアップをすぐに表示</span>】→ <a href="https://game-forum.com/backup/xxxx1234" target="_blank" class="news-link">https://game-forum.com/backup/xxxx1234</a></p><p>ご注意：</p><ul><li>同様の禁止内容を繰り返し投稿した場合、アカウントが投稿制限などの処罰を受ける可能性があります。健全な交流環境を維持するため、コミュニティルールを遵守してください。</li><li>削除結果に異議がある場合は、72時間以内に以下の方法で申し立てることができます：<br>申し立てチャネル：<span class="disabled-link">https://game-forum.com/appeal</span><br>カスタマーサービスメール：<span class="disabled-link">support@game-forum.com</span><br>投稿原文のスクリーンショット、違反判定に対する異議説明などの資料を提供してください。</li><li>準拠した技術的議論の方向性について相談が必要な場合は、「コミュニティで許可されている技術的議論の範囲ガイド」を参照してください：<span class="disabled-link">https://game-forum.com/guide/tech</span>。</li></ul><p>ご理解とご支援に感謝し、ゲームフォーラムでの交流が楽しいものになりますようお祈り申し上げます。</p><p>ゲームフォーラムシステムセンター</p>',
+                'failed_status': '送信失敗 - 受信者が存在しません',
+                'folder_name': '《DAYDREAMS_最終版》',
+                'file1_name': 'ゲーム実行プログラム.exe',
+                'file2_name': '絶望のあがき.rar',
+                'file3_name': '新規文書.txt',
+                'cloud_log_title': 'クラウド操作ログ',
+                'cloud_log_content': '最終ログイン時間：2025年11月27日 06:00',
+                'cloud_log_action': '最終操作：ファイルが匿名アカウントによりアクセス・変更されました',
+                'room_title': '無限ループの部屋',
+                'password_title': 'パスワードを入力してください',
+                'submit': '送信',
+                'text_title': '新規文書.txt',
+                'corrupted_title': 'ファイルが破損しています',
+                'corrupted_message': 'ファイルの内容を読み取れません'
+            },
+            'pt': {
+                'mailbox_title': 'Sistema de Email - Li Wenxuan',
+                'compose': 'Escrever',
+                'inbox': 'Caixa de Entrada',
+                'sent': 'Enviados',
+                'cloud_storage': 'Armazenamento na Nuvem',
+                'search_placeholder': 'Pesquisar emails...',
+                'from': 'De:',
+                'to': 'Para:',
+                'date': 'Data:',
+                'attachments': 'Anexos',
+                'mail1_subject': 'Convite do Programa de Apoio à Inspiração do Criador',
+                'mail1_preview': 'Prezado Professor Li, seu projeto "DAYDREAMS" foi selecionado, o Quarto 291 do Hotel R∞M oferece um espaço criativo gratuito de 7 dias...',
+                'mail1_content': '<p>Prezado Professor Li,</p><p>Seu projeto "DAYDREAMS" foi selecionado, o Quarto 291 do Hotel R∞M oferece um espaço criativo gratuito de 7 dias, o ambiente minimalista aqui o ajudará a superar os gargalos.</p><p>Clique para reservar: <a href="https://r∞m-hotel.com" class="news-link">https://r∞m-hotel.com</a></p>',
+                'mail2_subject': 'Sem Assunto',
+                'mail2_preview': 'Wenxuan, o que está acontecendo? Seu telefone está desligado, sem resposta no WeChat! Você disse 7 dias, agora já são 10 dias, algo está errado?...',
+                'mail2_content': '<p>Wenxuan, o que está acontecendo? Seu telefone está desligado, sem resposta no WeChat! Você disse 7 dias, agora já são 10 dias, algo está errado? Verifiquei o Hotel R∞M para você, criadores desapareceram lá antes!</p>',
+                'mail3_subject': 'Socorro! 291 é uma Prisão de Loop!',
+                'mail3_preview': 'Estou preso em um loop de 24 horas, já faz 17 dias. O hotel altera meu código e memórias, está se alimentando das minhas emoções...',
+                'mail3_content': '<p>Estou preso em um loop de 24 horas, já faz 17 dias. O hotel altera meu código e memórias, está se alimentando das minhas emoções. Codifiquei a verdade em um arquivo, a senha é Loop27 (já fiz loop 27 vezes). Se eu não sair, me ajude a expor este hotel...</p>',
+                'mail4_subject': 'Aviso de Remoção do Post "Ajuda! Como Inserir Informações à Prova de Violação no Código?"',
+                'mail4_preview': 'Prezado usuário Li Wenxuan: Lamentamos informar que seu post "Ajuda! Como Inserir Informações à Prova de Violação no Código?" foi removido...',
+                'mail4_content': '<p>Prezado usuário Li Wenxuan:</p><p>Olá!</p><p>Lamentamos informar que seu post "Ajuda! Como Inserir Informações à Prova de Violação no Código?" foi removido devido a discussões envolvendo técnicas que poderiam potencialmente prejudicar a segurança do jogo, violando o Artigo 2.1 das "Diretrizes de Gerenciamento de Segurança da Comunidade do Jogo" que proíbe "conteúdo que possa ser usado para adulterar dados do jogo, criar plug-ins não autorizados ou comprometer a justiça do jogo".</p><p>Para proteger seus direitos de conteúdo, o sistema gerou um backup deste post. Você pode visualizar o texto original completo através do seguinte link (o backup será mantido por 72 horas, verifique prontamente):</p><p>【<span class="non-clickable">Visualizar Backup do Post Imediatamente</span>】→ <a href="https://game-forum.com/backup/xxxx1234" target="_blank" class="news-link">https://game-forum.com/backup/xxxx1234</a></p><p>Lembrete Amigável:</p><ul><li>Se você publicar repetidamente conteúdo proibido semelhante, sua conta pode enfrentar penalidades como suspensão ou restrições de postagem. Por favor, cumpra as regras da comunidade para manter um ambiente de comunicação saudável;</li><li>Se você discordar da decisão de remoção, pode recorrer dentro de 72 horas através dos seguintes métodos:<br>Canal de Recurso: <span class="disabled-link">https://game-forum.com/appeal</span><br>E-mail de Suporte ao Cliente: <span class="disabled-link">support@game-forum.com</span><br>Forneça capturas de tela do post original, explicação de sua objeção à determinação de violação e outros materiais relevantes;</li><li>Para orientação sobre direções de discussão técnica em conformidade, consulte o "Guia de Escopo de Discussão Técnica Permitida pela Comunidade": <span class="disabled-link">https://game-forum.com/guide/tech</span>.</li></ul><p>Agradecemos sua compreensão e apoio. Desejamos a você uma experiência agradável no Fórum de Jogos!</p><p>Centro do Sistema do Fórum de Jogos</p>',
+                'failed_status': 'Falha no Envio - Destinatário Não Existe',
+                'folder_name': '《DAYDREAMS_Versão Final》',
+                'file1_name': 'Executável do Jogo.exe',
+                'file2_name': 'Luta Desesperada.rar',
+                'file3_name': 'Novo Documento.txt',
+                'cloud_log_title': 'Log de Operações na Nuvem',
+                'cloud_log_content': 'Último login: 27 de Novembro de 2025 06:00',
+                'cloud_log_action': 'Última operação: Arquivo acessado e modificado por conta anônima',
+                'room_title': 'Sala de Loop Infinito',
+                'password_title': 'Por Favor, Insira a Senha',
+                'submit': 'Enviar',
+                'text_title': 'Novo Documento.txt',
+                'corrupted_title': 'Arquivo Corrompido',
+                'corrupted_message': 'Conteúdo do arquivo não pode ser lido'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 语言切换功能
+            const languageBtn = document.getElementById('language-btn');
+            const languageMenu = document.getElementById('language-menu');
+            const currentLang = document.getElementById('current-lang');
+            
+            // 切换语言菜单显示/隐藏
+            languageBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                languageMenu.classList.toggle('active');
+            });
+            
+            // 点击页面其他区域关闭语言菜单
+            document.addEventListener('click', function() {
+                languageMenu.classList.remove('active');
+            });
+            
+            // 阻止语言菜单内的点击事件冒泡
+            languageMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 语言选择处理
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    languageMenu.classList.remove('active');
+                    
+                    // 更新当前语言显示
+                    currentLang.textContent = this.querySelector('span').textContent;
+                    
+                    // 保存语言选择到本地存储
+                    localStorage.setItem('preferred-language', lang);
+                });
+            });
+            
+            // 设置语言函数
+            function setLanguage(lang) {
+                // 更新html的lang属性
+                document.documentElement.setAttribute('lang', lang);
+                
+                // 更新所有带有data-i18n属性的元素
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.innerHTML = translations[lang][key];
+                    }
+                });
+                
+                // 更新所有带有data-i18n-placeholder属性的元素
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                    const key = element.getAttribute('data-i18n-placeholder');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.setAttribute('placeholder', translations[lang][key]);
+                    }
+                });
+            }
+            
+            // 从本地存储加载用户偏好的语言
+            const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+            setLanguage(savedLang);
+            
+            // 更新当前语言显示
+            const savedLangOption = document.querySelector(`.language-option[data-lang="${savedLang}"]`);
+            if (savedLangOption) {
+                currentLang.textContent = savedLangOption.querySelector('span').textContent;
+            }
+            
+            // 文件夹切换功能
+            const folderItems = document.querySelectorAll('.folders li');
+            const mailLists = document.querySelectorAll('.mail-list-content');
+            const mailView = document.getElementById('mail-view');
+            const cloudStorage = document.getElementById('cloud-storage');
+            
+            folderItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    folderItems.forEach(i => i.classList.remove('active'));
+                    mailLists.forEach(list => list.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件列表
+                    const folder = this.getAttribute('data-folder');
+                    
+                    if (folder === 'cloud') {
+                        mailView.classList.remove('active');
+                        cloudStorage.classList.add('active');
+                    } else {
+                        document.getElementById(`${folder}-list`).style.display = 'block';
+                        cloudStorage.classList.remove('active');
+                        
+                        // 更新邮件列表标题
+                        document.querySelector('.mail-list-header h2').textContent = this.querySelector('span').textContent;
+                        
+                        // 隐藏邮件内容区域
+                        mailView.classList.remove('active');
+                    }
+                });
+            });
+            
+            // 邮件选择功能
+            const mailItems = document.querySelectorAll('.mail-item');
+            const mailContents = document.querySelectorAll('.mail-view-content');
+            
+            mailItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    mailItems.forEach(i => i.classList.remove('active'));
+                    mailContents.forEach(content => content.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件内容
+                    const mailId = this.getAttribute('data-mail');
+                    document.getElementById(`mail${mailId}-content`).style.display = 'block';
+                    
+                    // 显示邮件内容区域
+                    mailView.classList.add('active');
+                });
+            });
+            
+            // 文件点击功能
+            const fileItems = document.querySelectorAll('.file-item');
+            const roomModal = document.getElementById('room-modal');
+            const passwordModal = document.getElementById('password-modal');
+            const textModal = document.getElementById('text-modal');
+            const corruptedModal = document.getElementById('corrupted-modal');
+            
+            fileItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const file = this.getAttribute('data-file');
+                    
+                    if (file === 'exe') {
+                        roomModal.classList.add('active');
+                    } else if (file === 'rar') {
+                        passwordModal.classList.add('active');
+                    } else if (file === 'txt') {
+                        textModal.classList.add('active');
+                    }
+                });
+            });
+            
+            // 模态窗口关闭功能
+            document.getElementById('room-close').addEventListener('click', function() {
+                roomModal.classList.remove('active');
+            });
+            
+            document.getElementById('password-close').addEventListener('click', function() {
+                passwordModal.classList.remove('active');
+            });
+            
+            document.getElementById('text-close').addEventListener('click', function() {
+                textModal.classList.remove('active');
+            });
+            
+            document.getElementById('corrupted-close').addEventListener('click', function() {
+                corruptedModal.classList.remove('active');
+            });
+            
+            // 密码提交功能
+            document.getElementById('password-submit').addEventListener('click', function() {
+                const password = document.getElementById('password-input').value;
+                
+                if (password === 'Loop27') {
+                    passwordModal.classList.remove('active');
+                    corruptedModal.classList.add('active');
+                } else {
+                    alert('密码错误！');
+                }
+            });
+            
+            // 点击模态窗口外部关闭
+            window.addEventListener('click', function(e) {
+                if (e.target === roomModal) {
+                    roomModal.classList.remove('active');
+                }
+                if (e.target === passwordModal) {
+                    passwordModal.classList.remove('active');
+                }
+                if (e.target === textModal) {
+                    textModal.classList.remove('active');
+                }
+                if (e.target === corruptedModal) {
+                    corruptedModal.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

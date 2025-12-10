@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱系统 - 赵雨婷</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #d6c2ff 0%, #b19cd9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .email-container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(177, 156, 217, 0.3);
+            overflow: hidden;
+            height: calc(100vh - 40px);
+        }
+        
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(135deg, #b19cd9 0%, #d6c2ff 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+        }
+        
+        .compose-btn {
+            background: white;
+            color: #8a6bc9;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .compose-btn i {
+            margin-right: 8px;
+        }
+        
+        .compose-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .folders {
+            list-style: none;
+            flex-grow: 1;
+        }
+        
+        .folders li {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .folders li i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .folders li.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+        
+        .folders li:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .folder-count {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+        }
+        
+        /* 同步浏览器搜索数据按钮 */
+        .sync-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            margin-top: auto;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sync-button i {
+            margin-right: 8px;
+        }
+        
+        .sync-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 邮件列表区域 */
+        .mail-list {
+            flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .mail-list-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .mail-list-header h2 {
+            color: #8a6bc9;
+            font-size: 1.3rem;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f9f7ff;
+            border-radius: 20px;
+            padding: 8px 15px;
+            width: 250px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            margin-left: 8px;
+            outline: none;
+        }
+        
+        /* 语言切换按钮样式 - 移动到右上角 */
+        .language-switcher {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+        
+        .language-btn {
+            background: #8a6bc9;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .language-btn:hover {
+            background: #6a4fa3;
+        }
+        
+        .language-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+            min-width: 120px;
+        }
+        
+        .language-menu.active {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #8a6bc9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .language-option:hover {
+            background: #f9f7ff;
+        }
+        
+        .language-flag {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        .mail-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mail-item:hover {
+            background: #f9f7ff;
+        }
+        
+        .mail-item.active {
+            background: #f0ebff;
+            border-left: 3px solid #8a6bc9;
+        }
+        
+        .mail-item.unread .mail-subject {
+            font-weight: 600;
+        }
+        
+        .mail-checkbox {
+            margin-right: 15px;
+        }
+        
+        .mail-sender {
+            width: 180px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .mail-subject {
+            font-weight: 500;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-preview {
+            color: #777;
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .mail-date {
+            color: #999;
+            font-size: 0.85rem;
+            margin-left: 15px;
+        }
+        
+        /* 邮件内容区域 */
+        .mail-view {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .mail-view.active {
+            display: block;
+        }
+        
+        .mail-view-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mail-view-subject {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .mail-view-info {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .mail-view-sender {
+            font-weight: 600;
+            color: #8a6bc9;
+        }
+        
+        .mail-view-body {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .mail-view-body p {
+            margin-bottom: 15px;
+        }
+        
+        .mail-view-body ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .mail-view-body li {
+            margin-bottom: 8px;
+        }
+        
+        .mail-attachments {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .attachments-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #8a6bc9;
+        }
+        
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .attachment-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .attachment-icon {
+            color: #8a6bc9;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .attachment-name {
+            flex: 1;
+        }
+        
+        .attachment-size {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        /* 云盘备份样式 */
+        .cloud-storage {
+            padding: 20px;
+            display: none;
+            overflow-y: auto;
+            height: 100%;
+        }
+        
+        .cloud-storage.active {
+            display: block;
+        }
+        
+        .folder-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .folder-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .folder-icon {
+            color: #8a6bc9;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .folder-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .file-list {
+            margin-left: 30px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-item:hover {
+            background: #f9f7ff;
+            border-color: #d6c2ff;
+        }
+        
+        .file-icon {
+            color: #8a6bc9;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .file-name {
+            flex: 1;
+        }
+        
+        .cloud-log {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f9f7ff;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* 模态窗口样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            color: #8a6bc9;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        /* 视频播放器样式 */
+        .video-player {
+            width: 100%;
+            height: 300px;
+            background-color: #000;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .video-player video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* 保留旧动画样式（原天鹅湖动画样式）用于其他地方 */
+        .ballet-animation {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stage {
+            position: absolute;
+            width: 100%;
+            height: 60px;
+            background: #6d4c41;
+            bottom: 0;
+        }
+        
+        .ballerina {
+            position: absolute;
+            width: 60px;
+            height: 150px;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: ballerinaDance 4s infinite ease-in-out;
+        }
+        
+        .ballerina-body {
+            position: absolute;
+            width: 20px;
+            height: 60px;
+            background: #f8c8dc;
+            top: 0;
+            left: 20px;
+            border-radius: 10px;
+        }
+        
+        .ballerina-head {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: #f8c8dc;
+            border-radius: 50%;
+            top: -20px;
+            left: 17.5px;
+        }
+        
+        .ballerina-arm-left {
+            position: absolute;
+            width: 5px;
+            height: 50px;
+            background: #f8c8dc;
+            top: 10px;
+            left: 5px;
+            transform-origin: top center;
+            animation: armLeftMove 2s infinite alternate;
+        }
+        
+        .ballerina-arm-right {
+            position: absolute;
+            width: 5px;
+            height: 50px;
+            background: #f8c8dc;
+            top: 10px;
+            left: 35px;
+            transform-origin: top center;
+            animation: armRightMove 2s infinite alternate;
+        }
+        
+        .ballerina-leg-left {
+            position: absolute;
+            width: 5px;
+            height: 70px;
+            background: #f8c8dc;
+            top: 60px;
+            left: 20px;
+            transform-origin: top center;
+            animation: legLeftMove 2s infinite alternate;
+        }
+        
+        .ballerina-leg-right {
+            position: absolute;
+            width: 5px;
+            height: 60px;
+            background: #f8c8dc;
+            top: 60px;
+            left: 20px;
+            transform-origin: top center;
+            transform: rotate(-30deg);
+        }
+        
+        .tutu {
+            position: absolute;
+            width: 60px;
+            height: 25px;
+            background: #fff;
+            top: 50px;
+            left: 0;
+            border-radius: 30px 30px 10px 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .swan {
+            position: absolute;
+            width: 30px;
+            height: 20px;
+            background: white;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            bottom: 20px;
+            right: 30px;
+            animation: swanSwim 8s infinite linear;
+        }
+        
+        .swan-neck {
+            position: absolute;
+            width: 25px;
+            height: 5px;
+            background: white;
+            border-radius: 5px;
+            top: -15px;
+            left: 10px;
+            transform: rotate(-20deg);
+        }
+        
+        .swan-head {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: orange;
+            border-radius: 50%;
+            top: -25px;
+            left: 30px;
+        }
+        
+        .lake {
+            position: absolute;
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to top, rgba(30, 144, 255, 0.7), rgba(30, 144, 255, 0.3));
+            bottom: 60px;
+            animation: lakeRipple 3s infinite;
+        }
+        
+        .music-notes {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 1.5rem;
+            animation: notesFloat 3s infinite;
+        }
+        
+        .ballet-title {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        /* 浏览器历史记录样式 */
+        .browser-history {
+            width: 100%;
+            height: 400px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .history-section {
+            margin-bottom: 20px;
+        }
+        
+        .history-date {
+            font-weight: bold;
+            color: #8a6bc9;
+            margin-bottom: 10px;
+        }
+        
+        .history-item {
+            margin-left: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .history-deleted {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+        
+        .history-website {
+            color: #2e86c1;
+        }
+        
+        /* 动画定义 */
+        @keyframes ballerinaDance {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(10deg); }
+            50% { transform: translateX(-50%) rotate(0deg); }
+            75% { transform: translateX(-50%) rotate(-10deg); }
+            100% { transform: translateX(-50%) rotate(0deg); }
+        }
+        
+        @keyframes armLeftMove {
+            0% { transform: rotate(30deg); }
+            100% { transform: rotate(60deg); }
+        }
+        
+        @keyframes armRightMove {
+            0% { transform: rotate(-30deg); }
+            100% { transform: rotate(-60deg); }
+        }
+        
+        @keyframes legLeftMove {
+            0% { transform: rotate(20deg); }
+            100% { transform: rotate(60deg); }
+        }
+        
+        @keyframes swanSwim {
+            0% { right: 30px; }
+            100% { right: -30px; }
+        }
+        
+        @keyframes lakeRipple {
+            0% { background: linear-gradient(to top, rgba(30, 144, 255, 0.7), rgba(30, 144, 255, 0.3)); }
+            50% { background: linear-gradient(to top, rgba(30, 144, 255, 0.5), rgba(30, 144, 255, 0.1)); }
+            100% { background: linear-gradient(to top, rgba(30, 144, 255, 0.7), rgba(30, 144, 255, 0.3)); }
+        }
+        
+        @keyframes notesFloat {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-20px); opacity: 0; }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .email-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .mail-sender {
+                width: 120px;
+            }
+            
+            .language-switcher {
+                position: static;
+                margin-top: 10px;
+            }
+            
+            .mail-list-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+        
+        /* 链接样式 */
+        .news-link {
+            color: #8a6bc9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .news-link:hover {
+            color: #6a4fa3;
+            text-decoration: underline;
+        }
+        
+        .failed-mail {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+        
+        .disabled-link {
+            color: #666;
+            text-decoration: none;
+            pointer-events: none;
+        }
+        
+        .non-clickable {
+            color: #666;
+            text-decoration: none;
+            pointer-events: none;
+        }
+        
+        /* 旧动画样式（保留原功能） */
+        .room-animation {
+            width: 100%;
+            height: 300px;
+            background: #1a1a2e;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .room-wall {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+        }
+        
+        .room-door {
+            position: absolute;
+            width: 80px;
+            height: 160px;
+            background: #1a1a2e;
+            border: 3px solid #8a6bc9;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transform-origin: left;
+            animation: doorSwing 4s infinite;
+        }
+        
+        .room-door::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #8a6bc9;
+            border-radius: 50%;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+        }
+        
+        .room-window {
+            position: absolute;
+            width: 100px;
+            height: 80px;
+            background: #0f3460;
+            border: 2px solid #8a6bc9;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: windowGlow 8s infinite;
+        }
+        
+        .room-window::before, .room-window::after {
+            content: '';
+            position: absolute;
+            background: #8a6bc9;
+        }
+        
+        .room-window::before {
+            width: 2px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .room-window::after {
+            width: 100%;
+            height: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .clock {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #1a1a2e;
+            border: 3px solid #8a6bc9;
+            border-radius: 50%;
+            top: 50px;
+            right: 50px;
+        }
+        
+        .clock-center {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #8a6bc9;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        .hour-hand {
+            position: absolute;
+            width: 4px;
+            height: 25px;
+            background: #8a6bc9;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            animation: hourRotate 20s infinite linear;
+        }
+        
+        .minute-hand {
+            position: absolute;
+            width: 3px;
+            height: 35px;
+            background: #8a6bc9;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            animation: minuteRotate 5s infinite linear;
+        }
+        
+        .loop-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #8a6bc9;
+            font-size: 1.2rem;
+            font-weight: 600;
+            animation: counterChange 2s infinite;
+        }
+        
+        .looping-text {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #8a6bc9;
+            font-size: 1rem;
+            animation: textPulse 3s infinite;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .password-btn {
+            background: #8a6bc9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .password-btn:hover {
+            background: #6a4fa3;
+        }
+        
+        .text-content {
+            width: 100%;
+            height: 300px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            overflow-y: auto;
+        }
+        
+        /* 动画定义 */
+        @keyframes doorSwing {
+            0% { transform: translateX(-50%) rotateY(0deg); }
+            25% { transform: translateX(-50%) rotateY(-90deg); }
+            50% { transform: translateX(-50%) rotateY(-90deg); }
+            75% { transform: translateX(-50%) rotateY(0deg); }
+            100% { transform: translateX(-50%) rotateY(0deg); }
+        }
+        
+        @keyframes windowGlow {
+            0% { background-color: #0f3460; }
+            50% { background-color: #1a5a9c; }
+            100% { background-color: #0f3460; }
+        }
+        
+        @keyframes hourRotate {
+            0% { transform: translate(-50%, -100%) rotate(0deg); }
+            100% { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+        
+        @keyframes minuteRotate {
+            0% { transform: translate(-50%, -100%) rotate(0deg); }
+            100% { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+        
+        @keyframes counterChange {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        @keyframes textPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-envelope"></i>
+                <h1 data-i18n="mailbox_title">邮箱系统 - 赵雨婷</h1>
+            </div>
+            
+            <button class="compose-btn">
+                <i class="fas fa-edit"></i>
+                <span data-i18n="compose">写邮件</span>
+            </button>
+            
+            <ul class="folders">
+                <li class="active" data-folder="inbox">
+                    <i class="fas fa-inbox"></i>
+                    <span data-i18n="inbox">收件箱</span>
+                    <span class="folder-count">4</span>
+                </li>
+                <li data-folder="sent">
+                    <i class="fas fa-paper-plane"></i>
+                    <span data-i18n="sent">发件箱</span>
+                    <span class="folder-count">1</span>
+                </li>
+                <li data-folder="draft">
+                    <i class="fas fa-file-alt"></i>
+                    <span data-i18n="draft">草稿箱</span>
+                    <span class="folder-count">2</span>
+                </li>
+                <li data-folder="cloud">
+                    <i class="fas fa-cloud"></i>
+                    <span data-i18n="cloud_storage">云盘备份</span>
+                </li>
+            </ul>
+            
+            <!-- 同步浏览器搜索数据按钮 -->
+            <button class="sync-button" id="sync-button">
+                <i class="fas fa-sync-alt"></i>
+                <span data-i18n="sync_data">同步浏览器搜索数据</span>
+            </button>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 邮件列表 -->
+            <div class="mail-list">
+                <div class="mail-list-header">
+                    <h2 data-i18n="inbox">收件箱</h2>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" data-i18n-placeholder="search_placeholder" placeholder="搜索邮件...">
+                    </div>
+                    
+                    <!-- 语言切换按钮 - 移动到右上角 -->
+                    <div class="language-switcher">
+                        <button class="language-btn" id="language-btn">
+                            <i class="fas fa-globe"></i>
+                            <span id="current-lang">中文</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="language-menu" id="language-menu">
+                            <div class="language-option" data-lang="zh-CN">
+                                <span>中文</span>
+                            </div>
+                            <div class="language-option" data-lang="en">
+                                <span>English</span>
+                            </div>
+                            <div class="language-option" data-lang="ja">
+                                <span>日本語</span>
+                            </div>
+                            <div class="language-option" data-lang="pt">
+                                <span>Português</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 收件箱邮件列表 -->
+                <div class="mail-list-content" id="inbox-list">
+                    <div class="mail-item unread" data-mail="1">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">仁爱医院</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail1_subject">仁爱医院骨科复诊提醒</div>
+                            <div class="mail-preview" data-i18n="mail1_preview">尊敬的赵雨婷女士：您好！根据我院骨科电子病历系统记录，您于2023年8月18日在我院接受了"右踝关节粉碎性骨折切开复位内固定术"...</div>
+                        </div>
+                        <div class="mail-date">2025/11/18</div>
+                    </div>
+                    
+                    <div class="mail-item unread" data-mail="2">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">R∞M酒店</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail2_subject">给您的心灵一次度假</div>
+                            <div class="mail-preview" data-i18n="mail2_preview">赵小姐您好，我们注意到您最近可能需要一个安静的空间。R∞M酒店位于城市隐秘的街角，远离喧嚣，是疗愈心灵的理想之所...</div>
+                        </div>
+                        <div class="mail-date">2025/10/28</div>
+                    </div>
+                    
+                    <div class="mail-item unread" data-mail="3">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">王医生</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail3_subject">下次咨询预约提醒</div>
+                            <div class="mail-preview" data-i18n="mail3_preview">赵女士：您的下次咨询预约时间为2025/11/25 14:00。请记得按时服药，并记录每日情绪日志。如有紧急情况，请随时联系我...</div>
+                        </div>
+                        <div class="mail-date">2025/10/20</div>
+                    </div>
+                    
+                    <div class="mail-item unread" data-mail="4">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">省芭蕾舞团</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail4_subject">关于您的离职手续</div>
+                            <div class="mail-preview" data-i18n="mail4_preview">赵雨婷老师：您的离职手续已办理完毕。感谢您为舞团做出的贡献，祝您未来一切顺利。如需开具相关证明，请联系人事部...</div>
+                        </div>
+                        <div class="mail-date">2025/09/10</div>
+                    </div>
+                </div>
+                
+                <!-- 发件箱邮件列表 -->
+                <div class="mail-list-content" id="sent-list" style="display: none;">
+                    <div class="mail-item" data-mail="5">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">赵雨婷</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail5_subject">年假申请</div>
+                            <div class="mail-preview" data-i18n="mail5_preview">徐总，我想申请11月16-23日的年假。最近状态很差，需要独处调整。工作我会在假期前交接好...</div>
+                        </div>
+                        <div class="mail-date">11月14日</div>
+                    </div>
+                </div>
+                
+                <!-- 草稿箱邮件列表 -->
+                <div class="mail-list-content" id="draft-list" style="display: none;">
+                    <div class="mail-item" data-mail="6">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">赵雨婷</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail6_subject">无主题</div>
+                            <div class="mail-preview" data-i18n="mail6_preview">我好像找到了。这里有一个房间，有镜子，有音乐。还有一个他。他从不说话，但他的手很稳，他的眼睛像深渊。我跳得比任何时候都好...</div>
+                        </div>
+                        <div class="mail-date">11月21日</div>
+                    </div>
+                    
+                    <div class="mail-item" data-mail="7">
+                        <div class="mail-checkbox">
+                            <input type="checkbox">
+                        </div>
+                        <div class="mail-sender">赵雨婷</div>
+                        <div class="mail-content">
+                            <div class="mail-subject" data-i18n="mail7_subject">无主题</div>
+                            <div class="mail-preview" data-i18n="mail7_preview">为什么要有明天？为什么必须离开？镜子里的世界才是真实的。RIKI先生，还有别的房间吗？还有更多的...糖吗？我可以付钱...</div>
+                        </div>
+                        <div class="mail-date">11月22日</div>
+                    </div>
+                </div>
+                
+                <!-- 云盘备份文件列表 -->
+                <div class="mail-list-content" id="cloud-list" style="display: none;">
+                    <div class="folder-item" data-folder="videos">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <div class="folder-name" data-i18n="folder1_name">【视频】</div>
+                    </div>
+                    <div class="folder-item" data-folder="audios">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <div class="folder-name" data-i18n="folder2_name">【音频】</div>
+                    </div>
+                    <div class="folder-item" data-folder="documents">
+                        <i class="fas fa-folder folder-icon"></i>
+                        <div class="folder-name" data-i18n="folder3_name">【文档】</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 邮件内容区域 -->
+            <div class="mail-view" id="mail-view">
+                <!-- 邮件1内容 - 仁爱医院 -->
+                <div class="mail-view-content" id="mail1-content">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail1_subject">仁爱医院骨科复诊提醒</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">仁爱医院</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/11/18 9:30</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail1_content">
+                        <p>尊敬的赵雨婷女士：</p>
+                        <p>您好！</p>
+                        <p>根据我院骨科电子病历系统记录，您于2023年8月18日在我院接受了"右踝关节粉碎性骨折切开复位内固定术"，主刀医生为骨科主任张维民医生。按照术后康复计划，您需要进行术后三个月关键期复查。</p>
+                        <p><strong>复查预约详情</strong></p>
+                        <p>预约号： OR-20231125-014</p>
+                        <p>就诊时间： 2023年11月25日（周六）上午10:00</p>
+                        <p>就诊地点： 仁爱医院门诊大楼3楼骨科专家诊区7号诊室</p>
+                        <p>接诊医生： 张维民医生</p>
+                        <p>预计耗时： 约60-90分钟（含检查时间）</p>
+                        <p>我们理解康复期对您身心带来的挑战。仁爱医院骨科康复团队将持续为您提供支持，助您稳步重返健康生活。</p>
+                        <p>祝您康复顺利！</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件2内容 - R∞M酒店 -->
+                <div class="mail-view-content" id="mail2-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail2_subject">给您的心灵一次度假</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">R∞M酒店</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/10/28 14:23</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail2_content">
+                        <p>赵小姐您好，</p>
+                        <p>我们注意到您最近可能需要一个安静的空间。</p>
+                        <p>R∞M酒店位于城市隐秘的街角，远离喧嚣，是疗愈心灵的理想之所。我们的每个房间都经过精心设计，能够满足不同客人的特殊需求。</p>
+                        <p>或许，您会在这里找回失去的自己。</p>
+                        <p>随信附上订房优惠码：DANCE314</p>
+                        <p>期待您的光临。</p>
+                        <p>R∞M酒店</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件3内容 - 王医生 -->
+                <div class="mail-view-content" id="mail3-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail3_subject">下次咨询预约提醒</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">王医生</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/10/20 16:45</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail3_content">
+                        <p>赵女士：</p>
+                        <p>您的下次咨询预约时间为2025/11/25 14:00。</p>
+                        <p>请记得按时服药，并记录每日情绪日志。如有紧急情况，请随时联系我。</p>
+                        <p>另，我注意到您最近的日志中多次提到"想要重新跳舞"的想法。我们下次可以深入讨论一下如何以更健康的方式面对这个愿望。</p>
+                        <p>请记住，接受现实不代表放弃希望。</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件4内容 - 省芭蕾舞团 -->
+                <div class="mail-view-content" id="mail4-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail4_subject">关于您的离职手续</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="from">发件人：</span>
+                                <span class="mail-view-sender">省芭蕾舞团</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>2025/09/10 10:15</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail4_content">
+                        <p>赵雨婷老师：</p>
+                        <p>您的离职手续已办理完毕。感谢您为舞团做出的贡献，祝您未来一切顺利。</p>
+                        <p>如需开具相关证明，请联系人事部。</p>
+                        <p>省芭蕾舞团人事部</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件5内容 - 发件箱 -->
+                <div class="mail-view-content" id="mail5-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail5_subject">年假申请</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="to">收件人：</span>
+                                <span class="mail-view-sender">徐总监</span>
+                            </div>
+                            <div>
+                                <span data-i18n="date">日期：</span>
+                                <span>11月14日 22:17</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail5_content">
+                        <p>徐总，我想申请11月16-23日的年假。最近状态很差，需要独处调整。工作我会在假期前交接好。</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件6内容 - 草稿箱1 -->
+                <div class="mail-view-content" id="mail6-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail6_subject">无主题</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="draft">草稿</span>
+                            </div>
+                            <div>
+                                <span data-i18n="last_edit">最后编辑：</span>
+                                <span>11月21日 03:45</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail6_content">
+                        <p>我好像找到了。这里有一个房间，有镜子，有音乐。还有一个他。他从不说话，但他的手很稳，他的眼睛像深渊。我跳得比任何时候都好。脚不疼了，一点也不疼。是巧克力吗？还是别的什么？我不在乎。今晚我们要跳《吉赛尔》第二幕，鬼王会来吗？</p>
+                    </div>
+                </div>
+                
+                <!-- 邮件7内容 - 草稿箱2 -->
+                <div class="mail-view-content" id="mail7-content" style="display: none;">
+                    <div class="mail-view-header">
+                        <h2 class="mail-view-subject" data-i18n="mail7_subject">无主题</h2>
+                        <div class="mail-view-info">
+                            <div>
+                                <span data-i18n="draft">草稿</span>
+                            </div>
+                            <div>
+                                <span data-i18n="last_edit">最后编辑：</span>
+                                <span>11月22日 22:30</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mail-view-body" data-i18n="mail7_content">
+                        <p>为什么要有明天？为什么必须离开？镜子里的世界才是真实的。RIKI先生，还有别的房间吗？还有更多的...糖吗？我可以付钱，多少都可以。我的存款，我的保险金，都可以。让我留下。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 云盘备份区域 -->
+            <div class="cloud-storage" id="cloud-storage">
+                <div class="folder-item" data-folder="videos">
+                    <i class="fas fa-folder-open folder-icon"></i>
+                    <div class="folder-name" data-i18n="folder1_name">【视频】</div>
+                </div>
+                
+                <div class="file-list">
+                    <div class="file-item" data-file="video1">
+                        <i class="fas fa-video file-icon"></i>
+                        <div class="file-name" data-i18n="file1_name">《胡桃夹子》独舞演出录像.mp4</div>
+                        <div class="attachment-size">(大小：2.1GB)</div>
+                    </div>
+                    <div class="file-item" data-file="swanlake">
+                        <i class="fas fa-video file-icon"></i>
+                        <div class="file-name" data-i18n="file2_name">《天鹅湖》主演高清录像.mp4</div>
+                        <div class="attachment-size">(大小：3.6GB)</div>
+                    </div>
+                    <div class="file-item" data-file="video3">
+                        <i class="fas fa-video file-icon"></i>
+                        <div class="file-name" data-i18n="file3_name">排练室练习录像.mp4</div>
+                        <div class="attachment-size">(大小：4.3GB)</div>
+                    </div>
+                </div>
+                
+                <div class="folder-item" data-folder="audios">
+                    <i class="fas fa-folder-open folder-icon"></i>
+                    <div class="folder-name" data-i18n="folder2_name">【音频】</div>
+                </div>
+                
+                <div class="file-list">
+                    <div class="file-item" data-file="audio1">
+                        <i class="fas fa-music file-icon"></i>
+                        <div class="file-name" data-i18n="file4_name">Tchaikovsky_SwanLake_ActII.mp3</div>
+                    </div>
+                    <div class="file-item" data-file="audio2">
+                        <i class="fas fa-music file-icon"></i>
+                        <div class="file-name" data-i18n="file5_name">Delibes_Coppelia_Waltz.mp3</div>
+                    </div>
+                </div>
+                
+                <div class="folder-item" data-folder="documents">
+                    <i class="fas fa-folder-open folder-icon"></i>
+                    <div class="folder-name" data-i18n="folder3_name">【文档】</div>
+                </div>
+                
+                <div class="file-list">
+                    <div class="file-item" data-file="doc1">
+                        <i class="fas fa-file-word file-icon"></i>
+                        <div class="file-name" data-i18n="file6_name">广告公司工作文档.doc</div>
+                    </div>
+                    <div class="file-item" data-file="doc2">
+                        <i class="fas fa-file-pdf file-icon"></i>
+                        <div class="file-name" data-i18n="file7_name">脚踝骨折诊断报告.pdf</div>
+                    </div>
+                    <div class="file-item" data-file="doc3">
+                        <i class="fas fa-file-word file-icon"></i>
+                        <div class="file-name" data-i18n="file8_name">原创芭蕾舞剧《微光》脚本.doc</div>
+                    </div>
+                    <div class="file-item" data-file="doc4">
+                        <i class="fas fa-file-word file-icon"></i>
+                        <div class="file-name" data-i18n="file9_name">舞蹈动作拆解文档.doc</div>
+                    </div>
+                </div>
+                
+                <div class="cloud-log">
+                    <h3 data-i18n="cloud_log_title">云盘操作日志</h3>
+                    <p data-i18n="cloud_log_content">最后一次备份时间：2025年11月23日 02:15</p>
+                    <p data-i18n="cloud_log_action">备份内容：个人资料及工作文件</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态窗口 -->
+    <div class="modal" id="room-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="room_title">无限循环的房间</h3>
+                <button class="modal-close" id="room-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="room-animation">
+                    <div class="room-wall"></div>
+                    <div class="room-door"></div>
+                    <div class="room-window"></div>
+                    <div class="clock">
+                        <div class="clock-center"></div>
+                        <div class="hour-hand"></div>
+                        <div class="minute-hand"></div>
+                    </div>
+                    <div class="loop-counter">循环: 27</div>
+                    <div class="looping-text">无限循环中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="password-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="password_title">请输入密码</h3>
+                <button class="modal-close" id="password-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="password" class="password-input" id="password-input" placeholder="密码">
+                <button class="password-btn" id="password-submit" data-i18n="submit">提交</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="text-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="text_title">新建文档.txt</h3>
+                <button class="modal-close" id="text-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="text-content">wklvkrwholvdvwrpdfkzhduhdooirrg</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="corrupted-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="corrupted_title">文件已损坏</h3>
+                <button class="modal-close" id="corrupted-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="room-animation" style="background: #000; display: flex; justify-content: center; align-items: center;">
+                    <p style="color: #fff; font-size: 1.2rem;" data-i18n="corrupted_message">文件内容无法读取</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 天鹅湖视频播放模态窗口 -->
+    <div class="modal" id="swanlake-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="swanlake_title">天鹅湖</h3>
+                <button class="modal-close" id="swanlake-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="video-player">
+                    <video controls autoplay>
+                        <source src="芭蕾.mp4" type="video/mp4">
+                        您的浏览器不支持Video标签。
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 浏览器历史记录模态窗口 -->
+    <div class="modal" id="browser-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="browser_title">浏览器搜索数据</h3>
+                <button class="modal-close" id="browser-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="browser-history" data-i18n="browser_content">
+                    <div class="history-section">
+                        <div class="history-date">浏览器历史记录</div>
+                        <div class="history-date">【2025年11月】</div>
+                        <div class="history-item">━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+                        <div class="history-item">11/14</div>
+                        <div class="history-item">- "安静的度假酒店推荐"</div>
+                        <div class="history-item">- "R∞M酒店评价"</div>
+                        <div class="history-item">- "R∞M酒店怎么样"</div>
+                        <div class="history-item">- "海景房舒适吗"</div>
+                        <div class="history-item">11/16</div>
+                        <div class="history-item">- "舞蹈损伤恢复训练"</div>
+                        <div class="history-item">- "右脚踝骨折后能跳舞吗"</div>
+                        <div class="history-item">- "芭蕾舞演员伤后复出案例"</div>
+                        <div class="history-item">11/18</div>
+                        <div class="history-item">- "如何快速恢复舞蹈能力"</div>
+                        <div class="history-item">- "止痛药可以和其他药一起吃吗"</div>
+                        <div class="history-item">- "连续跳舞多久算过度训练"</div>
+                        <div class="history-item">11/20</div>
+                        <div class="history-item">- "幻觉是怎么产生的"</div>
+                        <div class="history-item">- "看到不存在的人是精神病吗"</div>
+                        <div class="history-item">- "如何判断自己是否产生幻觉"</div>
+                        <div class="history-item history-deleted">（该条搜索记录随后被删除）</div>
+                        <div class="history-item">11/21</div>
+                        <div class="history-item">- "两个人跳舞需要什么配合"</div>
+                        <div class="history-item">- "双人芭蕾舞技巧"</div>
+                        <div class="history-item">- "完美的舞伴是什么样的"</div>
+                        <div class="history-item">11/22 03:30</div>
+                        <div class="history-item">- "R∞M酒店续住怎么办理"</div>
+                        <div class="history-item">- "R∞M酒店长期租住"</div>
+                        <div class="history-item">- "314号房可以一直住吗"</div>
+                        <div class="history-item">━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+                    </div>
+                    
+                    <div class="history-section">
+                        <div class="history-date">【2025年10月】</div>
+                        <div class="history-item">10/28</div>
+                        <div class="history-item">- "R∞M酒店是真的吗"</div>
+                        <div class="history-item">- "R∞M酒店地址在哪"</div>
+                        <div class="history-item">- "DANCE314优惠码怎么用"</div>
+                        <div class="history-item">10/15</div>
+                        <div class="history-item">- "退役舞者怎么办"</div>
+                        <div class="history-item">- "失去梦想后怎么活下去"</div>
+                        <div class="history-item">- "人生没有意义了怎么办"</div>
+                        <div class="history-item">10/08</div>
+                        <div class="history-item">- "脚踝骨折多久能恢复"</div>
+                        <div class="history-item">- "钢钉取出后能跳舞吗"</div>
+                        <div class="history-item">- "芭蕾舞演员职业伤害"</div>
+                        <div class="history-item">━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+                    </div>
+                    
+                    <div class="history-section">
+                        <div class="history-date">【2025年9月】</div>
+                        <div class="history-item">09/20</div>
+                        <div class="history-item">- "如何接受自己不能跳舞了"</div>
+                        <div class="history-item">- "转行做什么比较好"</div>
+                        <div class="history-item">- "舞者退役后都做什么"</div>
+                        <div class="history-item">09/15</div>
+                        <div class="history-item">- "无痛自杀方法"</div>
+                        <div class="history-item history-deleted">（该条搜索随后被清除）</div>
+                        <div class="history-item">━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+                    </div>
+                    
+                    <div class="history-section">
+                        <div class="history-date">【最近访问的网站】</div>
+                        <div class="history-item history-website">- R∞M酒店官网（访问23次）</div>
+                        <div class="history-item history-website">- 芭蕾舞视频网站（访问67次）</div>
+                        <div class="history-item history-website">- 心理健康论坛（访问12次）</div>
+                        <div class="history-item history-website">- 药品购买网站（访问8次）</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 多语言翻译数据
+        const translations = {
+            'zh-CN': {
+                'mailbox_title': '邮箱系统 - 赵雨婷',
+                'compose': '写邮件',
+                'inbox': '收件箱',
+                'sent': '发件箱',
+                'draft': '草稿箱',
+                'cloud_storage': '云盘备份',
+                'sync_data': '同步浏览器搜索数据',
+                'search_placeholder': '搜索邮件...',
+                'from': '发件人：',
+                'to': '收件人：',
+                'date': '日期：',
+                'draft': '草稿',
+                'last_edit': '最后编辑：',
+                'attachments': '附件',
+                'mail1_subject': '仁爱医院骨科复诊提醒',
+                'mail1_preview': '尊敬的赵雨婷女士：您好！根据我院骨科电子病历系统记录，您于2023年8月18日在我院接受了"右踝关节粉碎性骨折切开复位内固定术"...',
+                'mail1_content': '<p>尊敬的赵雨婷女士：</p><p>您好！</p><p>根据我院骨科电子病历系统记录，您于2023年8月18日在我院接受了"右踝关节粉碎性骨折切开复位内固定术"，主刀医生为骨科主任张维民医生。按照术后康复计划，您需要进行术后三个月关键期复查。</p><p><strong>复查预约详情</strong></p><p>预约号： OR-20231125-014</p><p>就诊时间： 2023年11月25日（周六）上午10:00</p><p>就诊地点： 仁爱医院门诊大楼3楼骨科专家诊区7号诊室</p><p>接诊医生： 张维民医生</p><p>预计耗时： 约60-90分钟（含检查时间）</p><p>我们理解康复期对您身心带来的挑战。仁爱医院骨科康复团队将持续为您提供支持，助您稳步重返健康生活。</p><p>祝您康复顺利！</p>',
+                'mail2_subject': '给您的心灵一次度假',
+                'mail2_preview': '赵小姐您好，我们注意到您最近可能需要一个安静的空间。R∞M酒店位于城市隐秘的街角，远离喧嚣，是疗愈心灵的理想之所...',
+                'mail2_content': '<p>赵小姐您好，</p><p>我们注意到您最近可能需要一个安静的空间。</p><p>R∞M酒店位于城市隐秘的街角，远离喧嚣，是疗愈心灵的理想之所。我们的每个房间都经过精心设计，能够满足不同客人的特殊需求。</p><p>或许，您会在这里找回失去的自己。</p><p>随信附上订房优惠码：DANCE314</p><p>期待您的光临。</p><p>R∞M酒店</p>',
+                'mail3_subject': '下次咨询预约提醒',
+                'mail3_preview': '赵女士：您的下次咨询预约时间为2025/11/25 14:00。请记得按时服药，并记录每日情绪日志。如有紧急情况，请随时联系我...',
+                'mail3_content': '<p>赵女士：</p><p>您的下次咨询预约时间为2025/11/25 14:00。</p><p>请记得按时服药，并记录每日情绪日志。如有紧急情况，请随时联系我。</p><p>另，我注意到您最近的日志中多次提到"想要重新跳舞"的想法。我们下次可以深入讨论一下如何以更健康的方式面对这个愿望。</p><p>请记住，接受现实不代表放弃希望。</p>',
+                'mail4_subject': '关于您的离职手续',
+                'mail4_preview': '赵雨婷老师：您的离职手续已办理完毕。感谢您为舞团做出的贡献，祝您未来一切顺利。如需开具相关证明，请联系人事部...',
+                'mail4_content': '<p>赵雨婷老师：</p><p>您的离职手续已办理完毕。感谢您为舞团做出的贡献，祝您未来一切顺利。</p><p>如需开具相关证明，请联系人事部。</p><p>省芭蕾舞团人事部</p>',
+                'mail5_subject': '年假申请',
+                'mail5_preview': '徐总，我想申请11月16-23日的年假。最近状态很差，需要独处调整。工作我会在假期前交接好...',
+                'mail5_content': '<p>徐总，我想申请11月16-23日的年假。最近状态很差，需要独处调整。工作我会在假期前交接好。</p>',
+                'mail6_subject': '无主题',
+                'mail6_preview': '我好像找到了。这里有一个房间，有镜子，有音乐。还有一个他。他从不说话，但他的手很稳，他的眼睛像深渊。我跳得比任何时候都好...',
+                'mail6_content': '<p>我好像找到了。这里有一个房间，有镜子，有音乐。还有一个他。他从不说话，但他的手很稳，他的眼睛像深渊。我跳得比任何时候都好。脚不疼了，一点也不疼。是巧克力吗？还是别的什么？我不在乎。今晚我们要跳《吉赛尔》第二幕，鬼王会来吗？</p>',
+                'mail7_subject': '无主题',
+                'mail7_preview': '为什么要有明天？为什么必须离开？镜子里的世界才是真实的。RIKI先生，还有别的房间吗？还有更多的...糖吗？我可以付钱...',
+                'mail7_content': '<p>为什么要有明天？为什么必须离开？镜子里的世界才是真实的。RIKI先生，还有别的房间吗？还有更多的...糖吗？我可以付钱，多少都可以。我的存款，我的保险金，都可以。让我留下。</p>',
+                'failed_status': '发送失败 - 收件人不存在',
+                'folder1_name': '【视频】',
+                'folder2_name': '【音频】',
+                'folder3_name': '【文档】',
+                'file1_name': '《胡桃夹子》独舞演出录像.mp4',
+                'file2_name': '《天鹅湖》主演高清录像.mp4',
+                'file3_name': '排练室练习录像.mp4',
+                'file4_name': 'Tchaikovsky_SwanLake_ActII.mp3',
+                'file5_name': 'Delibes_Coppelia_Waltz.mp3',
+                'file6_name': '广告公司工作文档.doc',
+                'file7_name': '脚踝骨折诊断报告.pdf',
+                'file8_name': '原创芭蕾舞剧《微光》脚本.doc',
+                'file9_name': '舞蹈动作拆解文档.doc',
+                'cloud_log_title': '云盘操作日志',
+                'cloud_log_content': '最后一次备份时间：2025年11月23日 02:15',
+                'cloud_log_action': '备份内容：个人资料及工作文件',
+                'room_title': '无限循环的房间',
+                'password_title': '请输入密码',
+                'submit': '提交',
+                'text_title': '新建文档.txt',
+                'corrupted_title': '文件已损坏',
+                'corrupted_message': '文件内容无法读取',
+                'swanlake_title': '天鹅湖',
+                'browser_title': '浏览器搜索数据',
+                'browser_content': ''
+            },
+            'en': {
+                'mailbox_title': 'Email System - Zhao Yuting',
+                'compose': 'Compose',
+                'inbox': 'Inbox',
+                'sent': 'Sent',
+                'draft': 'Drafts',
+                'cloud_storage': 'Cloud Storage',
+                'sync_data': 'Sync Browser Search Data',
+                'search_placeholder': 'Search emails...',
+                'from': 'From:',
+                'to': 'To:',
+                'date': 'Date:',
+                'draft': 'Draft',
+                'last_edit': 'Last edit:',
+                'attachments': 'Attachments',
+                'mail1_subject': 'Ren\'ai Hospital Orthopedic Follow-up Reminder',
+                'mail1_preview': 'Dear Ms. Zhao Yuting: Hello! According to the electronic medical record system of our hospital orthopedics department, you underwent "open reduction and internal fixation for right ankle comminuted fracture"...',
+                'mail1_content': '<p>Dear Ms. Zhao Yuting:</p><p>Hello!</p><p>According to the electronic medical record system of our hospital orthopedics department, you underwent "open reduction and internal fixation for right ankle comminuted fracture" on August 18, 2023. The chief surgeon was Dr. Zhang Weimin, director of orthopedics. According to the postoperative rehabilitation plan, you need a three-month key follow-up examination.</p><p><strong>Follow-up Appointment Details</strong></p><p>Appointment Number: OR-20231125-014</p><p>Appointment Time: November 25, 2023 (Saturday) 10:00 AM</p><p>Location: Ren\'ai Hospital Outpatient Building, 3rd Floor, Orthopedic Expert Clinic Area, Room 7</p><p>Doctor: Dr. Zhang Weimin</p><p>Estimated Duration: About 60-90 minutes (including examination time)</p><p>We understand the challenges that the recovery period brings to your body and mind. The Ren\'ai Hospital Orthopedic Rehabilitation Team will continue to provide support to help you steadily return to a healthy life.</p><p>Wishing you a smooth recovery!</p>',
+                'mail2_subject': 'A Vacation for Your Soul',
+                'mail2_preview': 'Dear Miss Zhao, We noticed that you might need a quiet space recently. R∞M Hotel is located in a hidden corner of the city, away from the hustle and bustle, an ideal place for healing the soul...',
+                'mail2_content': '<p>Dear Miss Zhao,</p><p>We noticed that you might need a quiet space recently.</p><p>R∞M Hotel is located in a hidden corner of the city, away from the hustle and bustle, an ideal place for healing the soul. Each of our rooms is carefully designed to meet the special needs of different guests.</p><p>Perhaps you will find your lost self here.</p><p>Attached is a booking discount code: DANCE314</p><p>Looking forward to your visit.</p><p>R∞M Hotel</p>',
+                'mail3_subject': 'Next Counseling Appointment Reminder',
+                'mail3_preview': 'Ms. Zhao: Your next counseling appointment is scheduled for 2025/11/25 14:00. Please remember to take your medication on time and keep a daily mood journal. In case of emergency, please contact me at any time...',
+                'mail3_content': '<p>Ms. Zhao:</p><p>Your next counseling appointment is scheduled for 2025/11/25 14:00.</p><p>Please remember to take your medication on time and keep a daily mood journal. In case of emergency, please contact me at any time.</p><p>Additionally, I noticed that your recent journal has repeatedly mentioned the idea of "wanting to dance again". We can discuss in depth next time how to face this wish in a healthier way.</p><p>Remember, accepting reality does not mean giving up hope.</p>',
+                'mail4_subject': 'Regarding Your Resignation Procedures',
+                'mail4_preview': 'Teacher Zhao Yuting: Your resignation procedures have been completed. Thank you for your contribution to the dance troupe and wish you all the best in the future. If you need to issue relevant certificates, please contact the HR department...',
+                'mail4_content': '<p>Teacher Zhao Yuting:</p><p>Your resignation procedures have been completed. Thank you for your contribution to the dance troupe and wish you all the best in the future.</p><p>If you need to issue relevant certificates, please contact the HR department.</p><p>Provincial Ballet Troupe HR Department</p>',
+                'mail5_subject': 'Annual Leave Application',
+                'mail5_preview': 'Director Xu, I would like to apply for annual leave from November 16-23. I have been in a bad state recently and need to be alone to adjust. I will hand over my work before the holiday...',
+                'mail5_content': '<p>Director Xu, I would like to apply for annual leave from November 16-23. I have been in a bad state recently and need to be alone to adjust. I will hand over my work before the holiday.</p>',
+                'mail6_subject': 'No Subject',
+                'mail6_preview': 'I think I found it. There is a room here, with mirrors, music. And a him. He never speaks, but his hands are steady, his eyes are like abyss. I dance better than ever...',
+                'mail6_content': '<p>I think I found it. There is a room here, with mirrors, music. And a him. He never speaks, but his hands are steady, his eyes are like abyss. I dance better than ever. My foot doesn\'t hurt, not at all. Is it chocolate? Or something else? I don\'t care. Tonight we\'ll dance the second act of "Giselle", will the King of the Wilis come?</p>',
+                'mail7_subject': 'No Subject',
+                'mail7_preview': 'Why must there be tomorrow? Why must we leave? The world in the mirror is real. Mr. RIKI, are there other rooms? More... sugar? I can pay...',
+                'mail7_content': '<p>Why must there be tomorrow? Why must we leave? The world in the mirror is real. Mr. RIKI, are there other rooms? More... sugar? I can pay, however much is needed. My savings, my insurance money, all of it. Let me stay.</p>',
+                'failed_status': 'Send Failed - Recipient Does Not Exist',
+                'folder1_name': '[Videos]',
+                'folder2_name': '[Audios]',
+                'folder3_name': '[Documents]',
+                'file1_name': 'Nutcracker Solo Performance Recording.mp4',
+                'file2_name': 'Swan Lake Lead Role HD Recording.mp4',
+                'file3_name': 'Rehearsal Room Practice Recording.mp4',
+                'file4_name': 'Tchaikovsky_SwanLake_ActII.mp3',
+                'file5_name': 'Delibes_Coppelia_Waltz.mp3',
+                'file6_name': 'Advertising Company Work Documents.doc',
+                'file7_name': 'Ankle Fracture Diagnosis Report.pdf',
+                'file8_name': 'Original Ballet "Glimmer" Script.doc',
+                'file9_name': 'Dance Movement Breakdown Document.doc',
+                'cloud_log_title': 'Cloud Operation Log',
+                'cloud_log_content': 'Last backup time: November 23, 2025 02:15',
+                'cloud_log_action': 'Backup content: Personal data and work files',
+                'room_title': 'Infinite Loop Room',
+                'password_title': 'Please Enter Password',
+                'submit': 'Submit',
+                'text_title': 'New Document.txt',
+                'corrupted_title': 'File Corrupted',
+                'corrupted_message': 'File content cannot be read',
+                'swanlake_title': 'Swan Lake',
+                'browser_title': 'Browser Search Data',
+                'browser_content': ''
+            },
+            'ja': {
+                'mailbox_title': 'メールシステム - 趙雨婷',
+                'compose': '作成',
+                'inbox': '受信トレイ',
+                'sent': '送信済み',
+                'draft': '下書き',
+                'cloud_storage': 'クラウドストレージ',
+                'sync_data': 'ブラウザ検索データを同期',
+                'search_placeholder': 'メールを検索...',
+                'from': '差出人：',
+                'to': '宛先：',
+                'date': '日付：',
+                'draft': '下書き',
+                'last_edit': '最終編集：',
+                'attachments': '添付ファイル',
+                'mail1_subject': '仁愛医院整形外科再診のご案内',
+                'mail1_preview': '趙雨婷様：当院整形外科電子カルテシステムの記録によると、2023年8月18日に当院で「右足首粉砕骨折観血的内固定術」を受けられました...',
+                'mail1_content': '<p>趙雨婷様：</p><p>ご案内申し上げます。</p><p>当院整形外科電子カルテシステムの記録によると、2023年8月18日に当院で「右足首粉砕骨折観血的内固定術」を受けられました。執刀医は整形外科主任の張維民医師です。術後リハビリ計画に従い、術後3ヶ月目の重要な経過観察が必要です。</p><p><strong>再診の詳細</strong></p><p>予約番号： OR-20231125-014</p><p>診察時間： 2023年11月25日（土）午前10:00</p><p>診察場所： 仁愛医院外来棟3階整形外科専門診療エリア7号室</p><p>担当医： 張維民医師</p><p>所要時間： 約60-90分（検査時間含む）</p><p>回復期における心身への負担は理解しております。仁愛医院整形外科リハビリチームは、健康的な生活への着実な復帰をサポートし続けます。</p><p>ご回復をお祈り申し上げます。</p>',
+                'mail2_subject': '心に休暇を',
+                'mail2_preview': '趙様、最近静かな空間が必要かもしれません。R∞Mホテルは街の隠れた一角に位置し、騒がしさから離れ、心を癒す理想的な場所です...',
+                'mail2_content': '<p>趙様、</p><p>最近静かな空間が必要かもしれません。</p><p>R∞Mホテルは街の隠れた一角に位置し、騒がしさから離れ、心を癒す理想的な場所です。当ホテルの各客室は、異なるゲストの特別なニーズを満たすよう設計されています。</p><p>もしかすると、ここで失った自分を見つけられるかもしれません。</p><p>ご予約割引コードを添付します：DANCE314</p><p>ご来訪をお待ちしております。</p><p>R∞Mホテル</p>',
+                'mail3_subject': '次回カウンセリング予約のご案内',
+                'mail3_preview': '趙様：次回のカウンセリング予約は2025/11/25 14:00です。お薬は時間通りにお飲みになり、日々の気分を記録してください。緊急の場合はいつでもご連絡ください...',
+                'mail3_content': '<p>趙様：</p><p>次回のカウンセリング予約は2025/11/25 14:00です。</p><p>お薬は時間通りにお飲みになり、日々の気分を記録してください。緊急の場合はいつでもご連絡ください。</p><p>また、最近の記録で「再び踊りたい」という思いが繰り返し言及されていることに気づきました。次回、より健全な方法でこの願いと向き合う方法について深く話し合いましょう。</p><p>現実を受け入れることは、希望を諦めることではないことを覚えておいてください。</p>',
+                'mail4_subject': '退職手続きについて',
+                'mail4_preview': '趙雨婷先生：退職手続きが完了しました。バレエ団への貢献に感謝し、今後のご活躍をお祈り申し上げます。関係証明書の発行が必要な場合は人事部までご連絡ください...',
+                'mail4_content': '<p>趙雨婷先生：</p><p>退職手続きが完了しました。バレエ団への貢献に感謝し、今後のご活躍をお祈り申し上げます。</p><p>関係証明書の発行が必要な場合は人事部までご連絡ください。</p><p>省バレエ団人事部</p>',
+                'mail5_subject': '年次休暇申請',
+                'mail5_preview': '徐総監、11月16-23日の年次休暇を申請したいと思います。最近調子が悪く、一人で調整する必要があります。休暇前に仕事を引き継ぎます...',
+                'mail5_content': '<p>徐総監、11月16-23日の年次休暇を申請したいと思います。最近調子が悪く、一人で調整する必要があります。休暇前に仕事を引き継ぎます。</p>',
+                'mail6_subject': '件名なし',
+                'mail6_preview': '見つけたみたい。ここには部屋があって、鏡があって、音楽がある。そして彼がいる。彼は決して話さないが、手はしっかりしていて、目は深淵のようだ。私は今までで一番上手く踊れる...',
+                'mail6_content': '<p>見つけたみたい。ここには部屋があって、鏡があって、音楽がある。そして彼がいる。彼は決して話さないが、手はしっかりしていて、目は深淵のようだ。私は今までで一番上手く踊れる。足は痛くない、全然痛くない。チョコレート？それとも何か別のもの？気にしない。今夜は「ジゼル」第二幕を踊る、ウィリの王は来るのかな？</p>',
+                'mail7_subject': '件名なし',
+                'mail7_preview': 'なぜ明日がなければならない？なぜ去らなければならない？鏡の中の世界が本当だ。RIKIさん、他の部屋はある？もっと...砂糖は？お金は払えます...',
+                'mail7_content': '<p>なぜ明日がなければならない？なぜ去らなければならない？鏡の中の世界が本当だ。RIKIさん、他の部屋はある？もっと...砂糖は？お金は払えます、いくらでも。私の貯金、保険金、全部。ここにいさせて。</p>',
+                'failed_status': '送信失敗 - 受信者が存在しません',
+                'folder1_name': '【動画】',
+                'folder2_name': '【音声】',
+                'folder3_name': '【ドキュメント】',
+                'file1_name': '「くるみ割り人形」ソロ公演録画.mp4',
+                'file2_name': '「白鳥の湖」主演高清録画.mp4',
+                'file3_name': 'リハーサル室練習録画.mp4',
+                'file4_name': 'Tchaikovsky_SwanLake_ActII.mp3',
+                'file5_name': 'Delibes_Coppelia_Waltz.mp3',
+                'file6_name': '広告会社作業文書.doc',
+                'file7_name': '足首骨折診断報告書.pdf',
+                'file8_name': 'オリジナルバレエ「微光」脚本.doc',
+                'file9_name': 'ダンス動作分解文書.doc',
+                'cloud_log_title': 'クラウド操作ログ',
+                'cloud_log_content': '最終バックアップ時間：2025年11月23日 02:15',
+                'cloud_log_action': 'バックアップ内容：個人データ及び作業ファイル',
+                'room_title': '無限ループの部屋',
+                'password_title': 'パスワードを入力してください',
+                'submit': '送信',
+                'text_title': '新規文書.txt',
+                'corrupted_title': 'ファイルが破損しています',
+                'corrupted_message': 'ファイルの内容を読み取れません',
+                'swanlake_title': '白鳥の湖',
+                'browser_title': 'ブラウザ検索データ',
+                'browser_content': ''
+            },
+            'pt': {
+                'mailbox_title': 'Sistema de Email - Zhao Yuting',
+                'compose': 'Escrever',
+                'inbox': 'Caixa de Entrada',
+                'sent': 'Enviados',
+                'draft': 'Rascunhos',
+                'cloud_storage': 'Armazenamento na Nuvem',
+                'sync_data': 'Sincronizar Dados de Pesquisa do Navegador',
+                'search_placeholder': 'Pesquisar emails...',
+                'from': 'De:',
+                'to': 'Para:',
+                'date': 'Data:',
+                'draft': 'Rascunho',
+                'last_edit': 'Última edição:',
+                'attachments': 'Anexos',
+                'mail1_subject': 'Lembrete de Consulta de Acompanhamento Ortopédica do Hospital Ren\'ai',
+                'mail1_preview': 'Prezada Sra. Zhao Yuting: Olá! De acordo com o sistema de prontuário eletrônico do departamento de ortopedia do nosso hospital, você foi submetida à "redução aberta e fixação interna para fratura cominutiva do tornozelo direito"...',
+                'mail1_content': '<p>Prezada Sra. Zhao Yuting:</p><p>Olá!</p><p>De acordo com o sistema de prontuário eletrônico do departamento de ortopedia do nosso hospital, você foi submetida à "redução aberta e fixação interna para fratura cominutiva do tornozelo direito" em 18 de agosto de 2023. O cirurgião principal foi o Dr. Zhang Weimin, diretor de ortopedia. De acordo com o plano de reabilitação pós-operatório, você precisa de um exame de acompanhamento chave de três meses.</p><p><strong>Detalhes da Consulta de Acompanhamento</strong></p><p>Número do Agendamento: OR-20231125-014</p><p>Horário do Agendamento: 25 de novembro de 2023 (sábado) 10:00</p><p>Localização: Hospital Ren\'ai, Prédio Ambulatorial, 3º Andar, Área da Clínica de Especialistas Ortopédicos, Sala 7</p><p>Médico: Dr. Zhang Weimin</p><p>Duração Estimada: Cerca de 60-90 minutos (incluindo tempo de exame)</p><p>Entendemos os desafios que o período de recuperação traz para seu corpo e mente. A Equipe de Reabilitação Ortopédica do Hospital Ren\'ai continuará fornecendo suporte para ajudá-la a retornar gradualmente a uma vida saudável.</p><p>Desejamos-lhe uma recuperação tranquila!</p>',
+                'mail2_subject': 'Férias para Sua Alma',
+                'mail2_preview': 'Prezada Srta. Zhao, Notamos que você pode precisar de um espaço tranquilo recentemente. O Hotel R∞M está localizado em um canto escondido da cidade, longe da agitação, um lugar ideal para a cura da alma...',
+                'mail2_content': '<p>Prezada Srta. Zhao,</p><p>Notamos que você pode precisar de um espaço tranquilo recentemente.</p><p>O Hotel R∞M está localizado em um canto escondido da cidade, longe da agitação, um lugar ideal para a cura da alma. Cada um de nossos quartos é cuidadosamente projetado para atender às necessidades especiais de diferentes hóspedes.</p><p>Talvez você encontre seu eu perdido aqui.</p><p>Anexo está um código de desconto para reservas: DANCE314</p><p>Aguardamos sua visita.</p><p>Hotel R∞M</p>',
+                'mail3_subject': 'Lembrete da Próxima Consulta de Aconselhamento',
+                'mail3_preview': 'Sra. Zhao: Sua próxima consulta de aconselhamento está agendada para 2025/11/25 14:00. Lembre-se de tomar sua medicação no horário e manter um diário de humor diário. Em caso de emergência, entre em contato comigo a qualquer momento...',
+                'mail3_content': '<p>Sra. Zhao:</p><p>Sua próxima consulta de aconselhamento está agendada para 2025/11/25 14:00.</p><p>Lembre-se de tomar sua medicação no horário e manter um diário de humor diário. Em caso de emergência, entre em contato comigo a qualquer momento.</p><p>Além disso, notei que seu diário recente mencionou repetidamente a ideia de "querer dançar novamente". Podemos discutir profundamente na próxima vez como enfrentar esse desejo de uma maneira mais saudável.</p><p>Lembre-se, aceitar a realidade não significa abandonar a esperança.</p>',
+                'mail4_subject': 'Sobre Seus Procedimentos de Rescisão',
+                'mail4_preview': 'Professora Zhao Yuting: Seus procedimentos de rescisão foram concluídos. Agradecemos sua contribuição para a companhia de balé e desejamos a você tudo de bom no futuro. Se precisar emitir certificados relevantes, entre em contato com o departamento de RH...',
+                'mail4_content': '<p>Professora Zhao Yuting:</p><p>Seus procedimentos de rescisão foram concluídos. Agradecemos sua contribuição para a companhia de balé e desejamos a você tudo de bom no futuro.</p><p>Se precisar emitir certificados relevantes, entre em contato com o departamento de RH.</p><p>Departamento de RH da Companhia de Balé Provincial</p>',
+                'mail5_subject': 'Pedido de Férias Anuais',
+                'mail5_preview': 'Diretor Xu, gostaria de solicitar férias anuais de 16 a 23 de novembro. Estou em um estado ruim recentemente e preciso ficar sozinha para me ajustar. Entregarei meu trabalho antes das férias...',
+                'mail5_content': '<p>Diretor Xu, gostaria de solicitar férias anuais de 16 a 23 de novembro. Estou em um estado ruim recentemente e preciso ficar sozinha para me ajustar. Entregarei meu trabalho antes das férias.</p>',
+                'mail6_subject': 'Sem Assunto',
+                'mail6_preview': 'Acho que encontrei. Há um quarto aqui, com espelhos, música. E um ele. Ele nunca fala, mas suas mãos são firmes, seus olhos são como abismo. Danço melhor do que nunca...',
+                'mail6_content': '<p>Acho que encontrei. Há um quarto aqui, com espelhos, música. E um ele. Ele nunca fala, mas suas mãos são firmes, seus olhos são como abismo. Danço melhor do que nunca. Meu pé não dói, nada. É chocolate? Ou outra coisa? Não me importo. Hoje à noite dançaremos o segundo ato de "Giselle", o Rei dos Willis virá?</p>',
+                'mail7_subject': 'Sem Assunto',
+                'mail7_preview': 'Por que deve haver amanhã? Por que devemos partir? O mundo no espelho é real. Sr. RIKI, há outros quartos? Mais... açúcar? Posso pagar...',
+                'mail7_content': '<p>Por que deve haver amanhã? Por que devemos partir? O mundo no espelho é real. Sr. RIKI, há outros quartos? Mais... açúcar? Posso pagar, o quanto for necessário. Minhas economias, meu dinheiro do seguro, tudo. Deixe-me ficar.</p>',
+                'failed_status': 'Falha no Envio - Destinatário Não Existe',
+                'folder1_name': '[Vídeos]',
+                'folder2_name': '[Áudios]',
+                'folder3_name': '[Documentos]',
+                'file1_name': 'Gravação de Performance Solo do Quebra-Nozes.mp4',
+                'file2_name': 'Gravação HD do Papel Principal de O Lago dos Cisnes.mp4',
+                'file3_name': 'Gravação de Prática da Sala de Ensaios.mp4',
+                'file4_name': 'Tchaikovsky_SwanLake_ActII.mp3',
+                'file5_name': 'Delibes_Coppelia_Waltz.mp3',
+                'file6_name': 'Documentos de Trabalho da Empresa de Publicidade.doc',
+                'file7_name': 'Relatório de Diagnóstico de Fratura de Tornozelo.pdf',
+                'file8_name': 'Roteiro do Balé Original "Brilho".doc',
+                'file9_name': 'Documento de Análise de Movimentos de Dança.doc',
+                'cloud_log_title': 'Log de Operações na Nuvem',
+                'cloud_log_content': 'Último backup: 23 de novembro de 2025 02:15',
+                'cloud_log_action': 'Conteúdo do backup: Dados pessoais e arquivos de trabalho',
+                'room_title': 'Sala de Loop Infinito',
+                'password_title': 'Por Favor, Insira a Senha',
+                'submit': 'Enviar',
+                'text_title': 'Novo Documento.txt',
+                'corrupted_title': 'Arquivo Corrompido',
+                'corrupted_message': 'Conteúdo do arquivo não pode ser lido',
+                'swanlake_title': 'O Lago dos Cisnes',
+                'browser_title': 'Dados de Pesquisa do Navegador',
+                'browser_content': ''
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 语言切换功能
+            const languageBtn = document.getElementById('language-btn');
+            const languageMenu = document.getElementById('language-menu');
+            const currentLang = document.getElementById('current-lang');
+            
+            // 切换语言菜单显示/隐藏
+            languageBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                languageMenu.classList.toggle('active');
+            });
+            
+            // 点击页面其他区域关闭语言菜单
+            document.addEventListener('click', function() {
+                languageMenu.classList.remove('active');
+            });
+            
+            // 阻止语言菜单内的点击事件冒泡
+            languageMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 语言选择处理
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    setLanguage(lang);
+                    languageMenu.classList.remove('active');
+                    
+                    // 更新当前语言显示
+                    currentLang.textContent = this.querySelector('span').textContent;
+                    
+                    // 保存语言选择到本地存储
+                    localStorage.setItem('preferred-language', lang);
+                });
+            });
+            
+            // 设置语言函数
+            function setLanguage(lang) {
+                // 更新html的lang属性
+                document.documentElement.setAttribute('lang', lang);
+                
+                // 更新所有带有data-i18n属性的元素
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (translations[lang] && translations[lang][key]) {
+                        // 特殊处理浏览器历史记录内容（保持原始内容）
+                        if (key === 'browser_content') {
+                            // 浏览器历史记录内容不需要翻译，保持原样
+                            return;
+                        }
+                        element.innerHTML = translations[lang][key];
+                    }
+                });
+                
+                // 更新所有带有data-i18n-placeholder属性的元素
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                    const key = element.getAttribute('data-i18n-placeholder');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.setAttribute('placeholder', translations[lang][key]);
+                    }
+                });
+            }
+            
+            // 从本地存储加载用户偏好的语言
+            const savedLang = localStorage.getItem('preferred-language') || 'zh-CN';
+            setLanguage(savedLang);
+            
+            // 更新当前语言显示
+            const savedLangOption = document.querySelector(`.language-option[data-lang="${savedLang}"]`);
+            if (savedLangOption) {
+                currentLang.textContent = savedLangOption.querySelector('span').textContent;
+            }
+            
+            // 文件夹切换功能
+            const folderItems = document.querySelectorAll('.folders li');
+            const mailLists = document.querySelectorAll('.mail-list-content');
+            const mailView = document.getElementById('mail-view');
+            const cloudStorage = document.getElementById('cloud-storage');
+            
+            folderItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    folderItems.forEach(i => i.classList.remove('active'));
+                    mailLists.forEach(list => list.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件列表
+                    const folder = this.getAttribute('data-folder');
+                    
+                    if (folder === 'cloud') {
+                        mailView.classList.remove('active');
+                        cloudStorage.classList.add('active');
+                    } else if (folder === 'draft') {
+                        document.getElementById(`${folder}-list`).style.display = 'block';
+                        cloudStorage.classList.remove('active');
+                        mailView.classList.remove('active');
+                        
+                        // 更新邮件列表标题
+                        document.querySelector('.mail-list-header h2').textContent = this.querySelector('span').textContent;
+                    } else {
+                        document.getElementById(`${folder}-list`).style.display = 'block';
+                        cloudStorage.classList.remove('active');
+                        
+                        // 更新邮件列表标题
+                        document.querySelector('.mail-list-header h2').textContent = this.querySelector('span').textContent;
+                        
+                        // 隐藏邮件内容区域
+                        mailView.classList.remove('active');
+                    }
+                });
+            });
+            
+            // 邮件选择功能
+            const mailItems = document.querySelectorAll('.mail-item');
+            const mailContents = document.querySelectorAll('.mail-view-content');
+            
+            mailItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    mailItems.forEach(i => i.classList.remove('active'));
+                    mailContents.forEach(content => content.style.display = 'none');
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    
+                    // 显示对应的邮件内容
+                    const mailId = this.getAttribute('data-mail');
+                    document.getElementById(`mail${mailId}-content`).style.display = 'block';
+                    
+                    // 显示邮件内容区域
+                    mailView.classList.add('active');
+                });
+            });
+            
+            // 文件点击功能
+            const fileItems = document.querySelectorAll('.file-item');
+            const roomModal = document.getElementById('room-modal');
+            const passwordModal = document.getElementById('password-modal');
+            const textModal = document.getElementById('text-modal');
+            const corruptedModal = document.getElementById('corrupted-modal');
+            const swanlakeModal = document.getElementById('swanlake-modal');
+            const browserModal = document.getElementById('browser-modal');
+            
+            fileItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const file = this.getAttribute('data-file');
+                    
+                    if (file === 'swanlake') {
+                        // 点击《天鹅湖》文件时显示视频播放器
+                        swanlakeModal.classList.add('active');
+                    } else if (file === 'exe') {
+                        roomModal.classList.add('active');
+                    } else if (file === 'rar') {
+                        passwordModal.classList.add('active');
+                    } else if (file === 'txt') {
+                        textModal.classList.add('active');
+                    }
+                });
+            });
+            
+            // 同步浏览器搜索数据按钮点击事件
+            const syncButton = document.getElementById('sync-button');
+            syncButton.addEventListener('click', function() {
+                browserModal.classList.add('active');
+            });
+            
+            // 模态窗口关闭功能
+            document.getElementById('room-close').addEventListener('click', function() {
+                roomModal.classList.remove('active');
+            });
+            
+            document.getElementById('password-close').addEventListener('click', function() {
+                passwordModal.classList.remove('active');
+            });
+            
+            document.getElementById('text-close').addEventListener('click', function() {
+                textModal.classList.remove('active');
+            });
+            
+            document.getElementById('corrupted-close').addEventListener('click', function() {
+                corruptedModal.classList.remove('active');
+            });
+            
+            document.getElementById('swanlake-close').addEventListener('click', function() {
+                swanlakeModal.classList.remove('active');
+            });
+            
+            document.getElementById('browser-close').addEventListener('click', function() {
+                browserModal.classList.remove('active');
+            });
+            
+            // 密码提交功能
+            document.getElementById('password-submit').addEventListener('click', function() {
+                const password = document.getElementById('password-input').value;
+                
+                if (password === 'Loop27') {
+                    passwordModal.classList.remove('active');
+                    corruptedModal.classList.add('active');
+                } else {
+                    alert('密码错误！');
+                }
+            });
+            
+            // 点击模态窗口外部关闭
+            window.addEventListener('click', function(e) {
+                if (e.target === roomModal) {
+                    roomModal.classList.remove('active');
+                }
+                if (e.target === passwordModal) {
+                    passwordModal.classList.remove('active');
+                }
+                if (e.target === textModal) {
+                    textModal.classList.remove('active');
+                }
+                if (e.target === corruptedModal) {
+                    corruptedModal.classList.remove('active');
+                }
+                if (e.target === swanlakeModal) {
+                    swanlakeModal.classList.remove('active');
+                }
+                if (e.target === browserModal) {
+                    browserModal.classList.remove('active');
+                }
+            });
+            
+            // 初始化：显示收件箱
+            const inboxFolder = document.querySelector('.folders li[data-folder="inbox"]');
+            if (inboxFolder) {
+                inboxFolder.click();
+            }
+            
+            // 初始化：显示第一封邮件
+            const firstMailItem = document.querySelector('.mail-item[data-mail="1"]');
+            if (firstMailItem) {
+                firstMailItem.click();
+            }
+        });
+    </script>
+</body>
+</html>
