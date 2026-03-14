@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>灵异事件吧</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ----- 深紫色调，完全保留原有图标与风格 ----- */
+        :root {
+            --primary-dark: #0d0415; --primary-bg: #130b1f; --header-bg: #1a0f2a;
+            --accent-purple: #c49bff; --accent-dark-purple: #5d3a8a; --text-light: #ece0ff;
+            --text-gray: #bba8dd; --border-color: #4a2a6a;
+            --card-bg: rgba(26, 15, 45, 0.85); --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 0 1px #5d3a8a inset;
+            --hover-glow: 0 0 18px #b27aff; --warning-bg: #2f1b2b; --warning-border: #c45aa0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body {
+            background: var(--primary-dark) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.07"><path d="M70 90 Q90 60 120 80 Q150 100 130 140 Q110 180 70 160 Q30 140 40 100 Q50 60 70 90" fill="%23c49bff" stroke="none"/></svg>');
+            color: var(--text-light); line-height: 1.6; padding: 15px; min-height: 100vh;
+        }
+        .container { max-width: 1300px; margin: 0 auto; background: var(--primary-bg); border-radius: 28px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #5d3a8a; backdrop-filter: blur(2px); }
+        header { background: var(--header-bg); padding: 20px 28px; border-bottom: 2px solid var(--accent-dark-purple); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+        .forum-title { font-size: 28px; color: var(--accent-purple); text-shadow: 0 0 15px #d5aaff; letter-spacing: 2px; display: flex; align-items: center; }
+        .forum-title::before { content: "👁‍🗨"; margin-right: 12px; font-size: 30px; filter: drop-shadow(0 0 5px #c49bff); }
+        .header-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+        .search-box { background: #23163a; border: 1px solid #6d4a9c; border-radius: 40px; padding: 8px 18px; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .search-box:focus-within { border-color: var(--accent-purple); box-shadow: 0 0 15px #ac7eff; }
+        .search-box input { background: transparent; border: none; color: white; font-size: 15px; min-width: 200px; outline: none; }
+        .search-box input::placeholder { color: #937ac0; font-style: italic; }
+        .search-box button { background: none; border: none; color: var(--accent-purple); font-size: 20px; cursor: pointer; line-height: 1; transition: 0.2s; }
+        .search-box button:hover { transform: scale(1.2); text-shadow: 0 0 8px white; }
+        .post-btn { background: #372652; border: 1px solid var(--accent-purple); border-radius: 40px; padding: 8px 20px; color: white; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: 0.3s; font-size: 15px; white-space: nowrap; cursor: pointer; border: none; }
+        .post-btn:hover { background: #553b80; box-shadow: 0 0 18px #d7aaff; transform: translateY(-2px); }
+        .nav-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+        .nav-links a { color: #cdb5f0; text-decoration: none; font-size: 16px; padding: 8px 18px; border-radius: 30px; transition: all 0.25s; cursor: pointer; background: rgba(42, 25, 65, 0.6); border: 1px solid transparent; }
+        .nav-links a:hover, .nav-links a.active { color: white; background: #4f3380; border-color: var(--accent-purple); box-shadow: var(--hover-glow); }
+        .content-container { padding: 30px 30px 20px; }
+        .content-section { display: none; opacity: 0; transition: opacity 0.4s ease; }
+        .content-section.active { display: block; opacity: 1; }
+
+        /* 首页统计 */
+        .welcome-section { text-align: center; padding: 30px 20px; }
+        .welcome-title { font-size: 32px; color: #e5ceff; margin-bottom: 20px; }
+        .stats-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin: 40px 0; }
+        .stat-box { background: rgba(35, 20, 55, 0.8); border-radius: 28px; padding: 20px 30px; min-width: 160px; border: 1px solid #7a54b5; box-shadow: 0 5px 15px black; }
+        .stat-number { font-size: 38px; color: var(--accent-purple); font-weight: 800; }
+        .stat-label { color: #c7aff0; }
+
+        /* 帖子网格 */
+        .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin: 20px 0 30px; }
+        .post-card { background: var(--card-bg); border-radius: 20px; padding: 18px; border: 1px solid #5f3f92; transition: 0.2s ease; cursor: pointer; backdrop-filter: blur(4px); box-shadow: 0 8px 18px #00000077; position: relative; }
+        .post-card:hover { transform: translateY(-6px); border-color: var(--accent-purple); box-shadow: 0 12px 25px #2e1b4e, 0 0 0 2px #a06eff; }
+        .post-rank { display: inline-block; background: #aa40aa; color: white; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; margin-right: 10px; font-weight: bold; box-shadow: 0 0 8px #ff70ff; }
+        .post-tag { background: #543a7a; color: #f0d0ff; padding: 4px 10px; border-radius: 30px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+        .post-title { color: #f7ebff; font-size: 18px; font-weight: 600; margin: 12px 0 8px; line-height: 1.4; }
+        .post-meta { display: flex; flex-wrap: wrap; gap: 16px; color: #c3abec; font-size: 13px; margin-top: 12px; }
+
+        /* 评论区域 */
+        .comment-item { position: relative; padding-right: 40px; }
+
+        /* 详情页 */
+        .detail-page { max-width: 900px; margin: 0 auto; background: #1b112b; border-radius: 32px; padding: 30px; border: 1px solid #8d62cf; }
+        .back-link { display: inline-block; margin-bottom: 25px; color: #c49bff; text-decoration: none; font-size: 18px; }
+        .back-link:hover { text-decoration: underline; }
+        .post-detail-title { font-size: 32px; color: #f0dbff; margin-bottom: 15px; }
+        .post-detail-meta { display: flex; gap: 30px; color: #baa0e8; border-bottom: 1px solid #6e4a9f; padding-bottom: 20px; margin-bottom: 25px; flex-wrap: wrap; }
+        .post-content { background: #231a33; border-radius: 24px; padding: 25px; font-size: 17px; line-height: 1.8; white-space: pre-wrap; border: 1px solid #7e5bb3; margin-bottom: 40px; }
+        .comment-section { margin-top: 30px; }
+        .comment-section h3 { color: #dbbdff; margin-bottom: 20px; }
+        .comment-list { margin-bottom: 25px; }
+        .comment-item { background: #1f1533; border-radius: 16px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #c197ff; }
+        .comment-meta { display: flex; gap: 20px; color: #af94dd; font-size: 13px; margin-bottom: 8px; }
+        .comment-content { color: #ece0ff; }
+        .comment-input-area { display: flex; flex-direction: column; gap: 15px; background: #251b39; padding: 20px; border-radius: 24px; }
+        .comment-input-area input, .comment-input-area textarea { background: #2e2347; border: 1px solid #7d57bb; border-radius: 30px; padding: 14px 20px; color: white; font-size: 15px; resize: vertical; }
+        .comment-input-area button { align-self: flex-end; background: #6f4eac; border: none; color: white; padding: 12px 30px; border-radius: 40px; cursor: pointer; font-weight: 600; }
+        .comment-input-area button:hover { background: #8a6ac7; }
+
+        /* 发帖模态框 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1f1536; border-radius: 40px; padding: 30px; width: 90%; max-width: 500px; border: 2px solid #c49bff; box-shadow: 0 0 40px #ac7eff; }
+        .modal-content h2 { color: #e6cdff; margin-bottom: 25px; }
+        .modal-content input, .modal-content textarea { width: 100%; background: #2b1e44; border: 1px solid #9e7ad4; border-radius: 30px; padding: 15px; margin-bottom: 20px; color: white; font-size: 16px; }
+        .modal-content textarea { min-height: 120px; resize: vertical; }
+        .modal-actions { display: flex; gap: 15px; justify-content: flex-end; }
+        .modal-actions button { padding: 12px 30px; border-radius: 40px; border: none; cursor: pointer; font-weight: bold; }
+        .modal-actions .cancel { background: #3f3158; color: white; }
+        .modal-actions .submit { background: #844fc4; color: white; }
+
+        /* 搜索指示器 & 分页 */
+        .search-indicator { background: #2e1d47; border-left: 6px solid #c49bff; border-radius: 18px; padding: 12px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .clear-search { background: none; border: 1px solid #ac87e0; color: #f0d0ff; padding: 6px 15px; border-radius: 30px; cursor: pointer; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 40px 0 20px; }
+        .page-btn { background: #2e2244; border: 1px solid #8d6ac7; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .page-info { color: var(--text-gray); }
+
+        /* 二维码和底部 */
+        .qr-section { text-align: center; margin: 45px 0 25px; padding: 25px; background: #1f1233; border-radius: 48px; border: 1px solid #7a55b8; }
+        .qr-code { max-width: 160px; border-radius: 20px; border: 2px solid #c49bff; background: white; padding: 8px; }
+        .bottom-back-container { display: flex; justify-content: center; margin: 30px 0 20px; }
+        .bottom-back-btn { background: #362652; color: white; border-radius: 60px; padding: 14px 40px; display: inline-flex; align-items: center; gap: 12px; text-decoration: none; border: 1px solid #bf9cff; transition: 0.3s; }
+        .bottom-back-btn:hover { background: #563d82; transform: scale(1.02); box-shadow: 0 0 20px #dbb5ff; }
+        footer { text-align: center; padding: 25px; color: #9b84c0; border-top: 1px solid #4f3b74; margin-top: 20px; position: relative; }
+        .infinity-symbol { color: #eac7ff; font-weight: 900; font-size: 1.3em; }
+        .flicker { animation: flicker 4s infinite; }
+        @keyframes flicker { 0% { opacity: 1; } 15% { opacity: 0.7; } 30% { opacity: 1; } 55% { opacity: 0.9; } 100% { opacity: 1; } }
+        .warning-note { background: #2f1b2b; border-left: 6px solid #d47ab0; padding: 16px; border-radius: 18px; }
+        .about-content { background: #1f1533; border-radius: 28px; padding: 25px; border: 1px solid #7655b3; }
+        @media (max-width:800px) { header { flex-direction: column; } .posts-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container" id="app"></div>
+
+<!-- 发帖模态框 -->
+<div class="modal" id="postModal">
+    <div class="modal-content">
+        <h2>📢 发布新灵异经历</h2>
+        <input type="text" id="postTitle" placeholder="标题（例如：半夜听见敲门声）">
+        <input type="text" id="postAuthor" placeholder="发帖人（留空默认为匿名）">
+        <textarea id="postContent" placeholder="详细描述你的经历......"></textarea>
+        <div class="modal-actions">
+            <button class="cancel" id="cancelPost">取消</button>
+            <button class="submit" id="submitPost">发帖</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========== 请替换为您自己的 Supabase 信息 ==========
+const SUPABASE_URL = 'https://xuzfszsbmvjjagrfavrw.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_AYZvbagoIx85qpHtvvOxmw_Gl4SHf5G'; 
+// =================================================
+
+// 创建 Supabase 客户端实例
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ---------- 默认帖子数据（14个老帖子）----------
+const defaultPosts = [
+    { id: 'ext_1', title: "有人听说过R∞M酒店吗？感觉很诡异……", tag: "经历", author: "好奇宝宝", date: "2025/12/03 22:30", views: 12478, replies: 11, content: "那天我住进R∞M酒店，走廊尽头总是传来婴儿的笑声...（完整内容略）", comments: [] },
+    { id: 'ext_2', title: "我住过那个\"吃人\"的酒店", tag: "灵异", author: "出差销售员", date: "2023/07/12 22:30", views: 87542, replies: 6, content: "电梯会停在13楼，但按钮上根本没有13楼...", comments: [] },
+    { id: 'ext_3', title: "说说我朋友圈里那个\"完美\"的网红是怎么一步步变成怪物的", tag: "闲谈", author: "TALKIN'BOUT", date: "2024-01-15 23:47", views: 127834, replies: 25, content: "她每天发的自拍，瞳孔位置好像一点点在移动...", comments: [] },
+    { id: 'ext_4', title: "湖边溺水那天，我看见了两个他", tag: "经历", author: "Sink or Swim", date: "2024-11-15 23:47", views: 12847, replies: 21, content: "我溺水被救生员救起，却看到另一个我还在水里挣扎...", comments: [] },
+    { id: 'ext_5', title: "醒来后，我发现所有人的脸都换了", tag: "精", author: "I AM RIKI", date: "2024-01-15 03:47", views: 127834, replies: 130, content: "爸爸妈妈变成了陌生人，但他们都叫我儿子...", comments: [] },
+    { id: 'ext_6', title: "我是个练习生，但我体内好像住着另一个\"我\"", tag: "灵异", author: "BYE BYE", date: "2025-01-15 23:47", views: 15247, replies: 146, content: "每次凌晨三点，我就会在练习室的地板上发现血字...", comments: [] },
+    { id: 'ext_7', title: "酒店房间里有无数眼睛在看我，我快疯了", tag: "灵异", author: "PARANOID", date: "2023-07-25 03:47:22", views: 127834, replies: 52, content: "墙纸上的花纹全都是眼睛，我闭眼就能听见耳语...", comments: [] },
+    { id: 'ext_8', title: "深夜收到的宫廷派对邀请函，我看到了不该看的东西", tag: "经历", author: "KINGDOM", date: "2023-01-15 23:47", views: 12847, replies: 25, content: "邀请函是羊皮纸，地址在郊外废弃的宫殿...", comments: [] },
+    { id: 'ext_9', title: "我前女友每天晚上都会来找我，但她三个月前已经死了", tag: "求助", author: "SUFFOCATE", date: "2023-10-17 02:34", views: 15847, replies: 28, content: "她穿着我们第一次约会的白裙子，站在床边看着我...", comments: [] },
+    { id: 'ext_10', title: "那个只在月圆之夜出现的白衣女人", tag: "诡异", author: "HARD TO LOVE", date: "2023-11-28 23:47", views: 1247, replies: 38, content: "村里老人都说月圆不要出门，我不信，然后...", comments: [] },
+    { id: 'ext_11', title: "演唱会后翻旧手机，我穿越回了9岁那年", tag: "奇幻", author: "PATIENCE", date: "2023-11-28 23:47", views: 15234, replies: 27, content: "手机里多了一段1999年的视频，主角是我自己...", comments: [] },
+    { id: 'ext_12', title: "那座永远爬不到顶的雪山", tag: "诡异", author: "THE CLIMB", date: "2025-12-08 23:47", views: 15847, replies: 204, content: "每次爬到半山腰就会回到起点，GPS完全失灵...", comments: [] },
+    { id: 'ext_13', title: "我室友最近的行为让我感到不寒而栗", tag: "闲谈", author: "FOCUS", date: "2024-03-17 23:47", views: 15847, replies: 48, content: "他半夜会对着墙角说话，用完全陌生的声音...", comments: [] },
+    { id: 'ext_14', title: "我和镜中的自己交换了人生", tag: "奇幻", author: "ANOTHER WORLD", date: "2023-09-17 03:42:18", views: 127538, replies: 134, content: "我走进镜子，现在坐在电脑前打字的是镜子里的我...", comments: [] }
+];
+
+// 全局帖子数组
+let posts = [];
+
+// ---------- 从 Supabase 加载数据 ----------
+async function loadPosts() {
+    const { data, error } = await supabaseClient
+        .from('posts')
+        .select('*')
+        .order('date', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+        console.log('初始化默认数据');
+        const { error: insertError } = await supabaseClient.from('posts').insert(defaultPosts);
+        if (insertError) {
+            console.error('插入默认数据失败', insertError);
+            posts = defaultPosts; // 降级使用本地
+        } else {
+            posts = defaultPosts;
+        }
+    } else {
+        posts = data;
+    }
+    renderApp(); // 首次渲染
+}
+
+// 保存到 Supabase
+async function savePosts() {
+    const { error } = await supabaseClient.from('posts').upsert(posts);
+    if (error) console.error('保存失败', error);
+}
+
+// 工具函数
+function getPostById(id) { return posts.find(p => p.id === id); }
+
+async function incrementView(postId) {
+    const post = posts.find(p => p.id === postId);
+    if (post) { post.views++; await savePosts(); }
+}
+
+async function addComment(postId, author, content) {
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+    const comment = {
+        author: author.trim() || '匿名',
+        content: content.trim(),
+        date: new Date().toLocaleString('zh-CN')
+    };
+    if (!post.comments) post.comments = [];
+    post.comments.push(comment);
+    post.replies = post.comments.length;
+    await savePosts();
+}
+
+async function createPost(title, author, content) {
+    if (!title.trim()) { alert('标题不能为空'); return false; }
+    const newPost = {
+        id: 'int_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8),
+        title: title.trim(),
+        tag: '新帖',
+        author: author.trim() || '匿名',
+        date: new Date().toLocaleString('zh-CN'),
+        views: 0,
+        replies: 0,
+        content: content.trim() || '（无内容）',
+        comments: [],
+        link: null
+    };
+    posts.push(newPost);
+    await savePosts();
+    return newPost.id;
+}
+
+// ---------- 路由 ----------
+const app = document.getElementById('app');
+
+async function renderApp() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let detailPostId = urlParams.get('post_id');
+    if (!detailPostId && window.location.hash) {
+        detailPostId = window.location.hash.substring(1); // 去掉 '#'
+    }
+
+    if (detailPostId) {
+        const post = getPostById(detailPostId);
+        if (!post) {
+            app.innerHTML = '<div style="color:white; padding:50px; text-align:center;">帖子不存在</div>';
+        } else {
+            await incrementView(detailPostId);
+            renderDetailPage(post);
+        }
+    } else {
+        renderForum();
+    }
+}
+
+// 渲染详情页
+function renderDetailPage(post) {
+    const commentsHtml = (post.comments || []).map(c => {
+        return `
+            <div class="comment-item">
+                <div class="comment-meta"><span>👤 ${c.author}</span> <span>📅 ${c.date}</span></div>
+                <div class="comment-content">${c.content.replace(/\n/g, '<br>')}</div>
+            </div>
+        `;
+    }).join('') || '<p style="color:#a98fcf;">暂无评论，来说两句吧~</p>';
+
+    const detailHtml = `
+        <div class="detail-page">
+            <a href="#" class="back-link">← 返回论坛首页</a>
+            <h2 class="post-detail-title">${post.title.replace('R∞M', 'R<span class="infinity-symbol">∞</span>M')}</h2>
+            <div class="post-detail-meta">
+                <span>👤 ${post.author}</span> <span>📅 ${post.date}</span> <span>👁️ ${post.views}</span> <span>💬 ${post.replies}</span>
+            </div>
+            <div class="post-content">${(post.content || '').replace(/\n/g, '<br>')}</div>
+            <div class="comment-section">
+                <h3>评论 (${post.comments.length})</h3>
+                <div class="comment-list">${commentsHtml}</div>
+                <div class="comment-input-area">
+                    <input type="text" id="commentAuthor" placeholder="你的昵称 (留空为匿名)">
+                    <textarea id="commentContent" placeholder="写下你的评论..." rows="3"></textarea>
+                    <button id="submitCommentBtn">发表评论</button>
+                </div>
+            </div>
+        </div>
+    `;
+    app.innerHTML = detailHtml;
+
+    // 发表评论
+    document.getElementById('submitCommentBtn').onclick = async () => {
+        const author = document.getElementById('commentAuthor').value;
+        const content = document.getElementById('commentContent').value;
+        if (!content.trim()) return;
+        await addComment(post.id, author, content);
+        renderDetailPage(getPostById(post.id)); // 重新渲染
+    };
+}
+
+// 渲染论坛列表
+function renderForum() {
+    const forumHTML = `
+        <header>
+            <h1 class="forum-title flicker">灵异事件吧</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜帖子... 例如'酒店'">
+                    <button id="searchBtn">🔍</button>
+                </div>
+                <button class="post-btn" id="showPostModalBtn">📝 发新帖</button>
+            </div>
+            <div class="nav-links">
+                <a class="active" data-section="home">首页</a>
+                <a data-section="hot">热门</a>
+                <a data-section="latest">最新</a>
+                <a data-section="about">关于</a>
+            </div>
+        </header>
+        <div class="spooky-divider" style="height:1px; background:linear-gradient(90deg,transparent,#c49bff,transparent);"></div>
+        <div class="content-container" id="mainContent">
+            <!-- 首页板块 -->
+            <div id="home-section" class="content-section active">
+                <div class="welcome-section">
+                    <h2 class="welcome-title">👁️ 欢迎来到灵异事件吧</h2>
+                    <p class="welcome-text">探索未知，分享奇异。保持开放，不忘理性。<br>今晚，你遇见什么了？</p>
+                    <div class="stats-container">
+                        <div class="stat-box"><div class="stat-number">142,857</div><div class="stat-label">注册会员</div></div>
+                        <div class="stat-box"><div class="stat-number">23,451</div><div class="stat-label">主题帖子</div></div>
+                        <div class="stat-box"><div class="stat-number">891,203</div><div class="stat-label">总回复</div></div>
+                        <div class="stat-box"><div class="stat-number">314</div><div class="stat-label">在线用户</div></div>
+                    </div>
+                    <div class="warning-note">⚠️ 温馨提示：本吧内容多为个人经历，请理性看待，勿传播恐慌。</div>
+                </div>
+            </div>
+            <!-- 热门板块 -->
+            <div id="hot-section" class="content-section">
+                <h3 class="section-title" style="border-left-color:#c49bff;">🔥 热门榜 (按浏览量)</h3>
+                <div id="hotSearchIndicator" class="search-indicator" style="display: none;">
+                    <span>🔎 搜索关键词：<strong id="hotSearchKeyword"></strong> <span id="hotResultCount"></span></span>
+                    <button class="clear-search" id="hotClearSearch">✕ 清除搜索</button>
+                </div>
+                <div id="hotPostsContainer" class="posts-grid"></div>
+                <div class="pagination" id="hotPagination">
+                    <button class="page-btn" id="hotPrev" disabled>◀ 上一页</button>
+                    <span class="page-info" id="hotPageInfo">第 1 / 1 页</span>
+                    <button class="page-btn" id="hotNext" disabled>下一页 ▶</button>
+                </div>
+            </div>
+            <!-- 最新板块 -->
+            <div id="latest-section" class="content-section">
+                <h3 class="section-title" style="border-left-color:#b287f0;">🕒 最新发布</h3>
+                <div id="latestSearchIndicator" class="search-indicator" style="display: none;">
+                    <span>🔎 搜索关键词：<strong id="latestSearchKeyword"></strong> <span id="latestResultCount"></span></span>
+                    <button class="clear-search" id="latestClearSearch">✕ 清除搜索</button>
+                </div>
+                <div id="latestPostsContainer" class="posts-grid"></div>
+                <div class="pagination" id="latestPagination">
+                    <button class="page-btn" id="latestPrev" disabled>◀ 上一页</button>
+                    <span class="page-info" id="latestPageInfo">第 1 / 1 页</span>
+                    <button class="page-btn" id="latestNext" disabled>下一页 ▶</button>
+                </div>
+            </div>
+            <!-- 关于板块 -->
+            <div id="about-section" class="content-section">
+                <h3 class="section-title">👽 关于灵异事件吧</h3>
+                <div class="about-content">
+                    <p>灵异事件吧成立于2010年，是一个专注于超自然现象和灵异事件讨论的线上社区。我们为对神秘事物感兴趣的人们提供一个分享、讨论和探索的平台。</p>
+                    <h3>社区宗旨</h3><ul><li>提供一个理性讨论超自然现象的平台</li><li>鼓励基于事实和个人经历的分享</li><li>保持开放心态，同时培养批判性思维</li><li>尊重不同观点和文化背景</li><li>反对传播恐慌和虚假信息</li></ul>
+                    <h3>社区规则</h3><ol><li>所有分享请基于真实经历或个人观点，禁止编造虚假故事</li><li>尊重其他成员，不得人身攻击或侮辱</li><li>禁止传播暴力、血腥或令人极度不适的内容</li><li>禁止发布广告或推广商业内容</li><li>保护个人隐私，不得泄露他人信息</li><li>遵守中国法律法规，不讨论政治敏感话题</li></ol>
+                    <div class="warning-note">⚠️ 重要提示：如果您或您认识的人正在经历严重的心理困扰，请及时联系专业心理医生或拨打心理援助热线。</div>
+                </div>
+            </div>
+            <!-- 二维码 + 返回官网 -->
+            <div class="qr-section">
+                <h4 class="qr-title">📱 扫描关注公众号</h4>
+                <img src="灵异论坛二维码.jpg" alt="二维码" class="qr-code" onerror="this.style.display='none';">
+                <p style="margin-top:15px;">获取最新灵异事件分享、社区活动通知和独家内容</p>
+            </div>
+            <div class="bottom-back-container">
+                <a href="官网.html" class="bottom-back-btn">← 返回官网</a>
+            </div>
+        </div>
+        <footer>
+            <p>© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息</p>
+            <p>当前时间：<span id="current-time"></span></p>
+        </footer>
+    `;
+    app.innerHTML = forumHTML;
+
+    // 初始化分页状态
+    let hotCurrentPage = 1, latestCurrentPage = 1;
+    let hotSearchMode = false, latestSearchMode = false;
+    let hotSearchResults = [], latestSearchResults = [];
+    let hotSearchKeyword = '', latestSearchKeyword = '';
+
+    const getHotPosts = () => [...posts].sort((a,b) => b.views - a.views);
+    const getLatestPosts = () => [...posts].sort((a,b) => (b.date > a.date ? 1 : -1));
+
+    function renderHotPosts() {
+        const container = document.getElementById('hotPostsContainer');
+        const indicator = document.getElementById('hotSearchIndicator');
+        const keywordSpan = document.getElementById('hotSearchKeyword');
+        const countSpan = document.getElementById('hotResultCount');
+
+        let dataSource = hotSearchMode ? hotSearchResults : getHotPosts();
+        if (hotSearchMode) {
+            keywordSpan.innerText = hotSearchKeyword;
+            countSpan.innerText = `(共 ${dataSource.length} 条)`;
+            indicator.style.display = 'flex';
+        } else indicator.style.display = 'none';
+
+        const totalPages = Math.ceil(dataSource.length / 15) || 1;
+        if (hotCurrentPage > totalPages) hotCurrentPage = totalPages;
+        const start = (hotCurrentPage-1)*15;
+        const pageData = dataSource.slice(start, start+15);
+
+        container.innerHTML = pageData.map((post, idx) => {
+            const rank = start + idx + 1;
+            let cardHtml = `<div class="post-card" data-id="${post.id}" data-link="${post.link || ''}" style="position: relative;">`;
+            cardHtml += `<div><span class="post-rank">${rank}</span><span class="post-tag">${post.tag}</span></div>`;
+            cardHtml += `<div class="post-title">${post.title.replace('R∞M', 'R<span class="infinity-symbol">∞</span>M')}</div>`;
+            cardHtml += `<div class="post-meta">
+                <span>👤 ${post.author}</span> <span>📅 ${post.date}</span> <span>👁️ ${post.views}</span> <span>💬 ${post.replies}</span>
+            </div>`;
+            cardHtml += `</div>`;
+            return cardHtml;
+        }).join('');
+
+        // 绑定帖子点击
+        document.querySelectorAll('#hotPostsContainer .post-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // 忽略按钮点击（已无删除按钮，但保留以防将来添加其他按钮）
+                if (e.target.tagName === 'BUTTON') return;
+                const link = this.dataset.link;
+                const id = this.dataset.id;
+                if (link) {
+                    window.location.href = link;
+                } else if (id) {
+                    window.location.hash = id; // 使用 hash 跳转
+                }
+            });
+        });
+
+        document.getElementById('hotPrev').disabled = hotCurrentPage <= 1;
+        document.getElementById('hotNext').disabled = hotCurrentPage >= totalPages;
+        document.getElementById('hotPageInfo').innerText = `第 ${hotCurrentPage} / ${totalPages} 页`;
+    }
+
+    function renderLatestPosts() {
+        const container = document.getElementById('latestPostsContainer');
+        const indicator = document.getElementById('latestSearchIndicator');
+        const keywordSpan = document.getElementById('latestSearchKeyword');
+        const countSpan = document.getElementById('latestResultCount');
+
+        let dataSource = latestSearchMode ? latestSearchResults : getLatestPosts();
+        if (latestSearchMode) {
+            keywordSpan.innerText = latestSearchKeyword;
+            countSpan.innerText = `(共 ${dataSource.length} 条)`;
+            indicator.style.display = 'flex';
+        } else indicator.style.display = 'none';
+
+        const totalPages = Math.ceil(dataSource.length / 15) || 1;
+        if (latestCurrentPage > totalPages) latestCurrentPage = totalPages;
+        const start = (latestCurrentPage-1)*15;
+        const pageData = dataSource.slice(start, start+15);
+
+        container.innerHTML = pageData.map(post => {
+            let cardHtml = `<div class="post-card" data-id="${post.id}" data-link="${post.link || ''}" style="position: relative;">`;
+            cardHtml += `<div><span class="post-tag">${post.tag}</span></div>`;
+            cardHtml += `<div class="post-title">${post.title.replace('R∞M', 'R<span class="infinity-symbol">∞</span>M')}</div>`;
+            cardHtml += `<div class="post-meta">
+                <span>👤 ${post.author}</span> <span>📅 ${post.date}</span> <span>👁️ ${post.views}</span> <span>💬 ${post.replies}</span>
+            </div>`;
+            cardHtml += `</div>`;
+            return cardHtml;
+        }).join('');
+
+        document.querySelectorAll('#latestPostsContainer .post-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (e.target.tagName === 'BUTTON') return;
+                const link = this.dataset.link;
+                const id = this.dataset.id;
+                if (link) {
+                    window.location.href = link;
+                } else if (id) {
+                    window.location.hash = id;
+                }
+            });
+        });
+
+        document.getElementById('latestPrev').disabled = latestCurrentPage <= 1;
+        document.getElementById('latestNext').disabled = latestCurrentPage >= totalPages;
+        document.getElementById('latestPageInfo').innerText = `第 ${latestCurrentPage} / ${totalPages} 页`;
+    }
+
+    function renderCurrentSection() {
+        const activeId = document.querySelector('.content-section.active')?.id;
+        if (activeId === 'hot-section') renderHotPosts();
+        else if (activeId === 'latest-section') renderLatestPosts();
+    }
+
+    // 导航切换
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = this.dataset.section + '-section';
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(target).classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+
+            if (target === 'hot-section') { hotSearchMode = false; hotCurrentPage = 1; renderHotPosts(); }
+            else if (target === 'latest-section') { latestSearchMode = false; latestCurrentPage = 1; renderLatestPosts(); }
+        });
+    });
+
+    // 搜索
+    function executeSearch(keyword) {
+        if (!keyword.trim()) {
+            if (document.getElementById('hot-section').classList.contains('active')) {
+                hotSearchMode = false; hotCurrentPage = 1; renderHotPosts();
+            } else if (document.getElementById('latest-section').classList.contains('active')) {
+                latestSearchMode = false; latestCurrentPage = 1; renderLatestPosts();
+            }
+            return;
+        }
+        const kw = keyword.toLowerCase().trim();
+        if (document.getElementById('hot-section').classList.contains('active')) {
+            hotSearchResults = posts.filter(p => p.title.toLowerCase().includes(kw) || p.author.toLowerCase().includes(kw));
+            hotSearchMode = true; hotSearchKeyword = keyword; hotCurrentPage = 1; renderHotPosts();
+        } else if (document.getElementById('latest-section').classList.contains('active')) {
+            latestSearchResults = posts.filter(p => p.title.toLowerCase().includes(kw) || p.author.toLowerCase().includes(kw));
+            latestSearchMode = true; latestSearchKeyword = keyword; latestCurrentPage = 1; renderLatestPosts();
+        }
+    }
+
+    document.getElementById('searchBtn').addEventListener('click', () => executeSearch(document.getElementById('searchInput').value));
+    document.getElementById('searchInput').addEventListener('keypress', e => { if (e.key === 'Enter') executeSearch(e.target.value); });
+
+    document.getElementById('hotClearSearch').addEventListener('click', () => { hotSearchMode = false; hotCurrentPage = 1; renderHotPosts(); });
+    document.getElementById('latestClearSearch').addEventListener('click', () => { latestSearchMode = false; latestCurrentPage = 1; renderLatestPosts(); });
+
+    // 分页
+    document.getElementById('hotPrev').onclick = () => { if (hotCurrentPage > 1) { hotCurrentPage--; renderHotPosts(); } };
+    document.getElementById('hotNext').onclick = () => {
+        const total = hotSearchMode ? Math.ceil(hotSearchResults.length/15) : Math.ceil(getHotPosts().length/15);
+        if (hotCurrentPage < total) { hotCurrentPage++; renderHotPosts(); }
+    };
+    document.getElementById('latestPrev').onclick = () => { if (latestCurrentPage > 1) { latestCurrentPage--; renderLatestPosts(); } };
+    document.getElementById('latestNext').onclick = () => {
+        const total = latestSearchMode ? Math.ceil(latestSearchResults.length/15) : Math.ceil(getLatestPosts().length/15);
+        if (latestCurrentPage < total) { latestCurrentPage++; renderLatestPosts(); }
+    };
+
+    // 发帖模态框
+    const modal = document.getElementById('postModal');
+    document.getElementById('showPostModalBtn').onclick = () => modal.classList.add('active');
+    document.getElementById('cancelPost').onclick = () => modal.classList.remove('active');
+    document.getElementById('submitPost').onclick = async () => {
+        const title = document.getElementById('postTitle').value;
+        const author = document.getElementById('postAuthor').value;
+        const content = document.getElementById('postContent').value;
+        const newId = await createPost(title, author, content);
+        if (newId) {
+            modal.classList.remove('active');
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postAuthor').value = '';
+            document.getElementById('postContent').value = '';
+            renderCurrentSection(); // 刷新当前板块
+        }
+    };
+
+    // 时间
+    function updateTime() { document.getElementById('current-time').innerText = new Date().toLocaleString('zh-CN'); }
+    setInterval(updateTime, 1000); updateTime();
+
+    // 默认显示首页，不渲染列表，但保持切换可用
+}
+
+// 无限符号处理
+function processInfinity() {
+    document.querySelectorAll('.post-title, .post-detail-title').forEach(el => {
+        if (el.innerHTML.includes('R∞M')) {
+            el.innerHTML = el.innerHTML.replace(/R∞M/g, 'R<span class="infinity-symbol">∞</span>M');
+        }
+    });
+}
+setInterval(processInfinity, 1000);
+
+// 监听 hash 变化，重新渲染
+window.addEventListener('hashchange', renderApp);
+
+// 启动
+loadPosts();
+</script>
+</body>
+</html>

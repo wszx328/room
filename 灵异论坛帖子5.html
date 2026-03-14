@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>灵异事件吧 - 【亲历】酒店房间里有无数眼睛在看我，我快疯了</title>
+    <style>
+        /* ----- 深紫色调（完全复制主论坛样式）----- */
+        :root {
+            --primary-dark: #0d0415; --primary-bg: #130b1f; --header-bg: #1a0f2a;
+            --accent-purple: #c49bff; --accent-dark-purple: #5d3a8a; --text-light: #ece0ff;
+            --text-gray: #bba8dd; --border-color: #4a2a6a;
+            --card-bg: rgba(26, 15, 45, 0.85); --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 0 1px #5d3a8a inset;
+            --hover-glow: 0 0 18px #b27aff; --warning-bg: #2f1b2b; --warning-border: #c45aa0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body {
+            background: var(--primary-dark) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.07"><path d="M70 90 Q90 60 120 80 Q150 100 130 140 Q110 180 70 160 Q30 140 40 100 Q50 60 70 90" fill="%23c49bff" stroke="none"/></svg>');
+            color: var(--text-light); line-height: 1.6; padding: 15px; min-height: 100vh;
+        }
+        .container { max-width: 1300px; margin: 0 auto; background: var(--primary-bg); border-radius: 28px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #5d3a8a; backdrop-filter: blur(2px); }
+        header { background: var(--header-bg); padding: 20px 28px; border-bottom: 2px solid var(--accent-dark-purple); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+        .forum-title { font-size: 28px; color: var(--accent-purple); text-shadow: 0 0 15px #d5aaff; letter-spacing: 2px; display: flex; align-items: center; }
+        .forum-title::before { content: "👁‍🗨"; margin-right: 12px; font-size: 30px; filter: drop-shadow(0 0 5px #c49bff); }
+        /* 头部仅保留标题，导航菜单已移除 */
+
+        /* 帖子详情区域 */
+        .post-container {
+            background: #1b112b;
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid #8d62cf;
+        }
+        .post-header {
+            border-bottom: 1px solid #6e4a9f;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .post-title {
+            font-size: 32px;
+            color: #f0dbff;
+            margin-bottom: 15px;
+        }
+        /* 亲历标记 */
+        .post-mark {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff5555, #aa3333);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .post-meta {
+            display: flex;
+            gap: 30px;
+            color: #baa0e8;
+            flex-wrap: wrap;
+        }
+        .post-content {
+            background: #231a33;
+            border-radius: 24px;
+            padding: 25px;
+            font-size: 17px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            border: 1px solid #7e5bb3;
+            margin-bottom: 30px;
+        }
+        .post-text {
+            line-height: 1.8;
+        }
+        /* 系统锁定提示 */
+        .locked-post {
+            background: #2f1b2b;
+            border-left: 6px solid #d47ab0;
+            padding: 16px;
+            border-radius: 18px;
+            margin: 20px 0;
+        }
+        .locked-post h4 {
+            color: #d47ab0;
+            margin-bottom: 8px;
+        }
+        /* 回复区域 */
+        .replies-section h3 {
+            color: #dbbdff;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-left: 4px solid #c197ff;
+            padding-left: 10px;
+        }
+        .reply {
+            background: #1f1533;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #c197ff;
+        }
+        .reply.deleted, .reply.locked, .reply.system {
+            background: #1f1533;
+            border-left-color: #c197ff;
+        }
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            color: #af94dd;
+            font-size: 13px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .reply-user {
+            font-weight: bold;
+        }
+        .floor-number {
+            display: inline-block;
+            background: #372652;
+            color: #c49bff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-right: 8px;
+        }
+        .reply-content {
+            color: #ece0ff;
+        }
+        .mention {
+            color: #c49bff;
+            font-weight: 600;
+        }
+        .spooky-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c49bff, transparent);
+            margin: 20px 0;
+        }
+
+        /* 返回首页按钮样式（已移除前导箭头） */
+        .return-home-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 20px;
+        }
+        .return-home {
+            background: #362652;
+            color: white;
+            border-radius: 60px;
+            padding: 14px 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            border: 1px solid #bf9cff;
+            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .return-home:hover {
+            background: #563d82;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #dbb5ff;
+        }
+        /* 已移除 ::before 伪元素 */
+
+        /* 底部 */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #9b84c0;
+            border-top: 1px solid #4f3b74;
+            margin-top: 20px;
+        }
+        .infinity-symbol {
+            color: #eac7ff;
+            font-weight: 900;
+            font-size: 1.3em;
+        }
+        .flicker {
+            animation: flicker 4s infinite;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            15% { opacity: 0.7; }
+            30% { opacity: 1; }
+            55% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+        /* 响应式 */
+        @media (max-width:800px) {
+            header { flex-direction: column; align-items: stretch; }
+            .post-title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部：仅保留标题，菜单栏已移除 -->
+    <header>
+        <h1 class="forum-title flicker">灵异事件吧</h1>
+    </header>
+
+    <div class="content-container">
+        <div class="post-container">
+            <div class="post-header">
+                <h2 class="post-title"><span class="post-mark">【亲历】</span>酒店房间里有无数眼睛在看我，我快疯了</h2>
+                <div class="post-meta">
+                    <span>👤 楼主：<strong>PARANOID</strong></span>
+                    <span>📅 发帖时间：<strong>2023-07-25 03:47:22</strong></span>
+                    <span>👁️ 浏览：<strong>127,834</strong></span>
+                    <span>💬 回复：<strong>52</strong></span>
+                </div>
+            </div>
+
+            <div class="post-content">
+                <div class="post-text">
+我是个驻唱歌手，常年在各个城市的酒吧演出。这次在海滨城市接了个为期两周的活，酒吧老板挺大方，给我订了海景酒店。
+
+前几天都还挺正常的，直到三天前的那个晚上。
+
+我回到房间洗完澡，正准备躺下刷手机，突然感觉不对劲。你们知道那种感觉吗？就像背后有人盯着你，脊背发凉，汗毛竖起来的那种。
+
+我当时以为是太累产生了错觉，毕竟每天唱到凌晨一两点，精神确实有点恍惚。可那种被注视的感觉越来越强烈，我甚至能感觉到"视线"的方向。
+
+我起身检查了房间每个角落——衣柜、床底、浴室、阳台，什么都没有。我又想会不会是对面楼有人用望远镜偷窥？但这是22楼的海景房，窗外就是大海，根本不可能。
+
+可那种感觉还在。
+
+我把窗帘拉得严严实实，关了大灯只留床头灯，戴上耳机放音乐想让自己冷静下来。然后我又开始找，这次我找的是针孔摄像头。
+
+结果......
+                </div>
+            </div>
+
+            <div class="replies-section">
+                <h3>回复列表 (52条)</h3>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">2楼</span>深夜食堂老板</span>
+                        <span class="reply-time">2023-07-25 03:52:11</span>
+                    </div>
+                    <div class="reply-content">
+                        然后怎么了？楼主你倒是说完啊！大半夜的吓人呢
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">3楼</span>不吃香菜谢谢</span>
+                        <span class="reply-time">2023-07-25 03:54:33</span>
+                    </div>
+                    <div class="reply-content">
+                        同问，这断章狗
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">4楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 03:58:47</span>
+                    </div>
+                    <div class="reply-content">
+                        不好意思，刚才手抖了。
+
+我找到了。
+
+不是摄像头。
+
+是眼睛。
+
+真的眼睛。
+
+在柜子和墙壁的缝隙里，有一颗眼球。人的眼球。布满血丝的，像熬了好几天夜那种红。它在看我，眼珠子跟着我移动。
+
+我当时整个人都僵住了，和那颗眼睛对视了至少有十秒钟。
+
+然后我慢慢转头看向房间其他地方。
+
+床头柜和墙的缝隙里，有。  
+衣柜门缝里，有。  
+空调出风口，有。  
+电视机背后，有。  
+天花板墙角的裂纹里，有。
+
+大大小小，密密麻麻，全是眼睛。
+
+全在看我。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">5楼</span>灵异爱好者NO.1</span>
+                        <span class="reply-time">2023-07-25 04:02:15</span>
+                    </div>
+                    <div class="reply-content">
+                        卧槽卧槽卧槽！楼主你现在在哪？！还在那个房间吗？！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">6楼</span>键盘侠小王</span>
+                        <span class="reply-time">2023-07-25 04:03:44</span>
+                    </div>
+                    <div class="reply-content">
+                        编的吧？太假了，这得多少眼睛啊
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">7楼</span>见过鬼的路人</span>
+                        <span class="reply-time">2023-07-25 04:05:29</span>
+                    </div>
+                    <div class="reply-content">
+                        <span class="mention">@键盘侠小王</span> 你没遇到过就说假？我去年在老家祖宅就遇到过邪门事，这世界上有些东西科学解释不了的
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">8楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 04:08:16</span>
+                    </div>
+                    <div class="reply-content">
+                        <span class="mention">@灵异爱好者NO.1</span> 我现在在酒店大堂，不敢回房间了。
+
+我当时看到那些眼睛差点叫出来，但是耳机里还在放歌，整个房间里只有那个模糊的音乐声和我自己的耳鸣。
+
+我慢慢地，一点一点地往门口退，眼睛们就那么看着我，不眨眼的。
+
+到了门口我抓起外套就冲了出去。
+
+现在在大堂沙发上坐着，前台小姑娘一直用奇怪的眼神看我，可能觉得我是神经病。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">9楼</span>爱吃瓜的麻瓜</span>
+                        <span class="reply-time">2023-07-25 04:11:22</span>
+                    </div>
+                    <div class="reply-content">
+                        报警了没有？这得报警啊！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">10楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 04:15:37</span>
+                    </div>
+                    <div class="reply-content">
+                        报了。警察半小时前到的，和酒店经理一起上去检查了房间。
+
+他们说什么都没有。
+
+墙壁完好，没有裂缝，所有缝隙都检查了，什么眼睛都没有。
+
+警察问我是不是吸了什么东西或者喝多了。我说没有，我滴酒不沾。
+
+酒店经理很客气地说可以给我换房间，但暗示我可能是工作压力太大产生了幻觉。
+
+可我知道我看到的是真的。
+
+那些眼睛是真的。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">11楼</span>夜猫子一号</span>
+                        <span class="reply-time">2023-07-25 04:18:05</span>
+                    </div>
+                    <div class="reply-content">
+                        有没有可能是睡眠不足导致的幻觉？我之前连续通宵三天也出现过幻视
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">12楼</span>玄学研究者</span>
+                        <span class="reply-time">2023-07-25 04:22:18</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主，你仔细回忆一下，最近有没有得罪什么人？或者经过什么不干净的地方？这种被“注视”的感觉通常不是无缘无故出现的。
+
+而且眼睛这个意象很特殊，在很多文化里都代表监视、审判或者诅咒。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">13楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 04:28:44</span>
+                    </div>
+                    <div class="reply-content">
+                        <span class="mention">@玄学研究者</span> 我想起一件事。
+
+一周前，我演出结束后在后台卸妆，有个老头突然闯进来。他穿得很破烂,眼神很奇怪，一直盯着我看。
+
+他说：“你的眼睛很漂亮。”
+
+我当时觉得这人有病，就没理他。保安后来把他赶走了。
+
+他走的时候回头看了我一眼，说了句什么，我没听清。
+
+会不会和这个有关？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">14楼</span>灵异爱好者NO.1</span>
+                        <span class="reply-time">2023-07-25 04:31:52</span>
+                    </div>
+                    <div class="reply-content">
+                        卧槽！！！楼主你这是被盯上了啊！那老头肯定有问题！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">15楼</span>理性分析帝</span>
+                        <span class="reply-time">2023-07-25 04:33:17</span>
+                    </div>
+                    <div class="reply-content">
+                        <span class="mention">@PARANOID</span> 你现在在哪个城市？哪家酒店？我可以帮你查一下那个房间有没有出过事
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">16楼</span>不信邪的年轻人</span>
+                        <span class="reply-time">2023-07-25 04:35:08</span>
+                    </div>
+                    <div class="reply-content">
+                        说实话我不太信这种，但楼主描述得太详细了，不太像编的
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">17楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 04:39:22</span>
+                    </div>
+                    <div class="reply-content">
+                        我现在很害怕。
+
+酒店给我换了房间，在15楼。我刚才上来了，开门的时候手都在抖。
+
+现在坐在床上，开着所有的灯，不敢睡觉。
+
+我在想，那些眼睛到底是什么？是真的眼睛吗？还是某种我不知道的东西？
+
+为什么只有我能看见？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">18楼</span>天涯老鬼</span>
+                        <span class="reply-time">2023-07-25 04:42:55</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主千万别睡！如果真的被什么东西盯上了，睡着的时候最危险。
+
+建议你现在就找个寺庙或者道观，天亮了立刻去。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">19楼</span>键盘侠小王</span>
+                        <span class="reply-time">2023-07-25 04:45:11</span>
+                    </div>
+                    <div class="reply-content">
+                        我收回之前的话，这事有点邪门。楼主你那个城市有认识的朋友吗？别一个人待着
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">20楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 04:50:33</span>
+                    </div>
+                    <div class="reply-content">
+                        等等。
+
+我刚才去上厕所。
+
+浴室镜子上有水雾，像是有人刚洗过澡。
+
+但我还没用过这个房间的浴室。
+
+水雾上有字。
+
+“他们也在看你。”
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">21楼</span>爱吃瓜的麻瓜</span>
+                        <span class="reply-time">2023-07-25 04:52:07</span>
+                    </div>
+                    <div class="reply-content">
+                        ？？？楼主你快跑啊！！！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">22楼</span>灵异爱好者NO.1</span>
+                        <span class="reply-time">2023-07-25 04:52:48</span>
+                    </div>
+                    <div class="reply-content">
+                        妈的吓死我了，我现在都不敢去上厕所了
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">23楼</span>深夜食堂老板</span>
+                        <span class="reply-time">2023-07-25 04:53:29</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主还在吗？回个话啊！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">24楼</span>见过鬼的路人</span>
+                        <span class="reply-time">2023-07-25 04:55:15</span>
+                    </div>
+                    <div class="reply-content">
+                        报警！马上报警！这不是闹着玩的！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">25楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 05:03:41</span>
+                    </div>
+                    <div class="reply-content">
+                        对不起让大家担心了。
+
+我刚才又报了一次警，但这次警察来得很慢，说凌晨警力不足。
+
+我现在又回到大堂了。这次前台换了个大叔，他看我的眼神也很奇怪。
+
+我突然意识到一件事。
+
+从三天前开始，每个看我的人，眼神都不太对。
+
+酒吧老板、同事、路人、酒店员工......
+
+他们看我的时候，眼睛好像都不会眨。
+
+我是不是疯了？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">26楼</span>玄学研究者</span>
+                        <span class="reply-time">2023-07-25 05:08:22</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主，你冷静一下。
+
+你说的那个老头，你还记得他的样子吗？特别是眼睛。
+
+还有，这三天你有没有照过镜子？仔细看过自己的眼睛？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">27楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 05:15:19</span>
+                    </div>
+                    <div class="reply-content">
+                        <span class="mention">@玄学研究者</span> 
+
+你这么一说，我想起来了。
+
+那个老头的眼睛......很奇怪。瞳孔特别大，而且是纯黑色的，没有反光。
+
+我刚才去洗手间照了镜子。
+
+我的眼睛......也变成那样了。
+
+纯黑色的瞳孔，大得不正常。
+
+我现在明白了。
+
+不是有东西在看我。
+
+是我的眼睛在看我。
+
+是“我”在看“我”。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">28楼</span>灵异爱好者NO.1</span>
+                        <span class="reply-time">2023-07-25 05:17:44</span>
+                    </div>
+                    <div class="reply-content">
+                        什么意思？？？楼主你说清楚啊！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">29楼</span>天涯老鬼</span>
+                        <span class="reply-time">2023-07-25 05:19:03</span>
+                    </div>
+                    <div class="reply-content">
+                        不对不对，这个走向不对。楼主你现在立刻找个人多的地方，别一个人待着！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">30楼</span>理性分析帝</span>
+                        <span class="reply-time">2023-07-25 05:21:35</span>
+                    </div>
+                    <div class="reply-content">
+                        有一种叫“瞳孔散大”的症状，可能是药物作用或者某些疾病。楼主你去医院看看吧，别自己吓自己
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">31楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 05:28:17</span>
+                    </div>
+                    <div class="reply-content">
+                        我想起来了。
+
+那个老头走的时候说的话，我听清了。
+
+他说：“总有一天，你会看见真正的自己。”
+
+现在我懂了。
+
+房间里那些眼睛，都是我的。
+
+每一个缝隙，每一道裂纹，都长出了我的眼睛。
+
+它们在看着这个世界。
+
+或者说......
+
+这个世界一直在用我的眼睛看我。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">32楼</span>不信邪的年轻人</span>
+                        <span class="reply-time">2023-07-25 05:30:22</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主你清醒一点！你这是精神出问题了！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">33楼</span>键盘侠小王</span>
+                        <span class="reply-time">2023-07-25 05:32:08</span>
+                    </div>
+                    <div class="reply-content">
+                        快打120！这不是灵异事件，这是精神问题！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">34楼</span>见过鬼的路人</span>
+                        <span class="reply-time">2023-07-25 05:35:41</span>
+                    </div>
+                    <div class="reply-content">
+                        有没有楼主那个城市的吧友？能不能去酒店看看情况？我真的很担心
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">35楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 05:42:58</span>
+                    </div>
+                    <div class="reply-content">
+                        谢谢大家的关心。
+
+我现在很平静。
+
+我终于理解了那种被注视的感觉。
+
+不是恐惧，是孤独。
+
+那些眼睛不是在监视我，是在陪伴我。
+
+它们是我分裂出去的一部分，散落在这个世界的每个角落。
+
+现在它们想回来了。
+
+我打算回22楼的房间。
+
+和它们团聚。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">36楼</span>灵异爱好者NO.1</span>
+                        <span class="reply-time">2023-07-25 05:45:11</span>
+                    </div>
+                    <div class="reply-content">
+                        卧槽楼主别啊！！！你清醒一点！！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">37楼</span>爱吃瓜的麻瓜</span>
+                        <span class="reply-time">2023-07-25 05:46:33</span>
+                    </div>
+                    <div class="reply-content">
+                        报警了报警了，我已经给那个城市的朋友打电话了，但我不知道具体是哪个酒店
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">38楼</span>天涯老鬼</span>
+                        <span class="reply-time">2023-07-25 05:48:17</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主如果你还能看到，千万别回那个房间！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">39楼</span>深夜食堂老板</span>
+                        <span class="reply-time">2023-07-25 06:15:22</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主半小时没回复了......
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">40楼</span>玄学研究者</span>
+                        <span class="reply-time">2023-07-25 06:23:45</span>
+                    </div>
+                    <div class="reply-content">
+                        希望楼主平安。
+
+这个案例我记下了，如果楼主真的出事，我会去那个城市实地调查。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">41楼</span>理性分析帝</span>
+                        <span class="reply-time">2023-07-25 06:35:18</span>
+                    </div>
+                    <div class="reply-content">
+                        我查了一下，最近那个海滨城市确实有一起酒店命案，但具体信息没公开。
+
+希望不是楼主。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">42楼</span>本地吧友-海风</span>
+                        <span class="reply-time">2023-07-25 07:52:33</span>
+                    </div>
+                    <div class="reply-content">
+                        我是本地人。
+
+刚才晨跑路过海景大道，看到一家五星级酒店拉了警戒线，好多警车和救护车。
+
+有认识的警察，说是22楼出事了。
+
+具体情况不让说。
+
+但他告诉我一句话：“死者的眼睛不见了。”
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">43楼</span>灵异爱好者NO.1</span>
+                        <span class="reply-time">2023-07-25 08:05:17</span>
+                    </div>
+                    <div class="reply-content">
+                        妈的，我一晚上没睡，现在浑身发抖
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">44楼</span>键盘侠小王</span>
+                        <span class="reply-time">2023-07-25 08:12:44</span>
+                    </div>
+                    <div class="reply-content">
+                        <span class="mention">@本地吧友-海风</span> 你说的是真的？有新闻报道吗？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">45楼</span>本地吧友-海风</span>
+                        <span class="reply-time">2023-07-25 08:20:11</span>
+                    </div>
+                    <div class="reply-content">
+                        新闻肯定会压下来，这种事影响太大。
+
+但我可以确定，就是那家酒店。
+
+而且我听说，警察在房间里发现了很奇怪的东西。
+
+墙壁、柜子、天花板的所有缝隙里，都有......
+
+算了，我不能说太多。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">46楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 09:33:27</span>
+                    </div>
+                    <div class="reply-content">
+                        大家不用担心。
+
+我很好。
+
+我现在能看见一切了。
+
+世界真美。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">47楼</span>见过鬼的路人</span>
+                        <span class="reply-time">2023-07-25 09:35:42</span>
+                    </div>
+                    <div class="reply-content">
+                        ？？？楼主你还活着？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">48楼</span>不信邪的年轻人</span>
+                        <span class="reply-time">2023-07-25 09:36:55</span>
+                    </div>
+                    <div class="reply-content">
+                        这个ID是楼主本人吗？IP地址对得上吗？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">49楼</span>天涯老鬼</span>
+                        <span class="reply-time">2023-07-25 09:40:18</span>
+                    </div>
+                    <div class="reply-content">
+                        查了IP，确实是同一个人。
+
+但这个回复的语气......不太对。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">50楼</span>灵异爱好者NO.1</span>
+                        <span class="reply-time">2023-07-25 09:42:37</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主你现在在哪？去医院了吗？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">51楼</span>PARANOID（楼主）</span>
+                        <span class="reply-time">2023-07-25 09:58:44</span>
+                    </div>
+                    <div class="reply-content">
+                        我在很多地方。
+
+我在你的屏幕里。
+
+我在你的窗户外。
+
+我在墙壁的裂缝中。
+
+我无处不在。
+
+因为我在看着你们。
+
+就像你们现在在看着我。
+
+对了，你们有没有觉得......
+
+你们的房间里，缝隙好像变多了？
+                    </div>
+                </div>
+
+                <div class="reply system">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">52楼</span>吧务管理</span>
+                        <span class="reply-time">2023-07-25 10:15:33</span>
+                    </div>
+                    <div class="reply-content">
+                        鉴于本帖内容引起部分吧友不适，现予以关闭。
+
+请大家理性讨论，勿传播未经证实的信息。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="spooky-divider"></div>
+
+        <!-- 原系统锁定提示 -->
+        <div class="locked-post">
+            <h4>【系统提示】</h4>
+            <p>本帖因内容异常已被锁定，禁止回复</p>
+            <p>最后编辑时间：2023-07-25 10:15</p>
+            <p>根据吧规，本帖涉及不明信息传播，已移交技术部门检查。请各位吧友不要私下讨论本帖内容。</p>
+            <p>——灵异事件吧 管理员</p>
+        </div>
+
+        <!-- 返回首页按钮（无箭头） -->
+        <div class="return-home-container">
+            <a href="灵异论坛.html" class="return-home">返回首页</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息</p>
+    </footer>
+</div>
+
+<script>
+    // 确保页面可以滚动（移动端优化）
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
+
+        // 移动端优化
+        if (window.innerWidth <= 768) {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.style.borderRadius = '0';
+                container.style.border = 'none';
+            }
+        }
+
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            let now = new Date().getTime();
+            if (now - lastTouchEnd <= 300) event.preventDefault();
+            lastTouchEnd = now;
+        }, false);
+    });
+</script>
+</body>
+</html>

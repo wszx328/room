@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>灵异事件吧 - 演唱会后翻旧手机，我穿越回了9岁那年</title>
+    <style>
+        /* ----- 深紫色调（完全复制主论坛样式）----- */
+        :root {
+            --primary-dark: #0d0415; --primary-bg: #130b1f; --header-bg: #1a0f2a;
+            --accent-purple: #c49bff; --accent-dark-purple: #5d3a8a; --text-light: #ece0ff;
+            --text-gray: #bba8dd; --border-color: #4a2a6a;
+            --card-bg: rgba(26, 15, 45, 0.85); --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 0 1px #5d3a8a inset;
+            --hover-glow: 0 0 18px #b27aff; --warning-bg: #2f1b2b; --warning-border: #c45aa0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body {
+            background: var(--primary-dark) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.07"><path d="M70 90 Q90 60 120 80 Q150 100 130 140 Q110 180 70 160 Q30 140 40 100 Q50 60 70 90" fill="%23c49bff" stroke="none"/></svg>');
+            color: var(--text-light); line-height: 1.6; padding: 15px; min-height: 100vh;
+        }
+        .container { max-width: 1300px; margin: 0 auto; background: var(--primary-bg); border-radius: 28px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #5d3a8a; backdrop-filter: blur(2px); }
+        header { background: var(--header-bg); padding: 20px 28px; border-bottom: 2px solid var(--accent-dark-purple); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+        .forum-title { font-size: 28px; color: var(--accent-purple); text-shadow: 0 0 15px #d5aaff; letter-spacing: 2px; display: flex; align-items: center; }
+        .forum-title::before { content: "👁‍🗨"; margin-right: 12px; font-size: 30px; filter: drop-shadow(0 0 5px #c49bff); }
+        /* 头部仅保留标题，导航菜单已移除 */
+
+        /* 帖子详情区域 */
+        .post-container {
+            background: #1b112b;
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid #8d62cf;
+        }
+        .post-header {
+            border-bottom: 1px solid #6e4a9f;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .post-title {
+            font-size: 32px;
+            color: #f0dbff;
+            margin-bottom: 15px;
+        }
+        .post-meta {
+            display: flex;
+            gap: 30px;
+            color: #baa0e8;
+            flex-wrap: wrap;
+        }
+        .post-content {
+            background: #231a33;
+            border-radius: 24px;
+            padding: 25px;
+            font-size: 17px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            border: 1px solid #7e5bb3;
+            margin-bottom: 30px;
+        }
+        .post-text {
+            line-height: 1.8;
+        }
+        .post-text p {
+            margin-bottom: 1.2em;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c49bff, transparent);
+            margin: 20px 0;
+        }
+        /* 回复区域 */
+        .replies-section h3 {
+            color: #dbbdff;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-left: 4px solid #c197ff;
+            padding-left: 10px;
+        }
+        .reply {
+            background: #1f1533;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #c197ff;
+        }
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            color: #af94dd;
+            font-size: 13px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .reply-user {
+            font-weight: bold;
+        }
+        .floor-number {
+            display: inline-block;
+            background: #372652;
+            color: #c49bff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-right: 8px;
+        }
+        .reply-content {
+            color: #ece0ff;
+        }
+        .reply-content .mention {
+            color: #c49bff;
+            font-weight: 600;
+        }
+        .spooky-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c49bff, transparent);
+            margin: 20px 0;
+        }
+
+        /* 返回首页按钮样式（已移除前导箭头） */
+        .return-home-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 20px;
+        }
+        .return-home {
+            background: #362652;
+            color: white;
+            border-radius: 60px;
+            padding: 14px 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            border: 1px solid #bf9cff;
+            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .return-home:hover {
+            background: #563d82;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #dbb5ff;
+        }
+        /* 已移除 ::before 伪元素 */
+
+        /* 底部 */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #9b84c0;
+            border-top: 1px solid #4f3b74;
+            margin-top: 20px;
+        }
+        .infinity-symbol {
+            color: #eac7ff;
+            font-weight: 900;
+            font-size: 1.3em;
+        }
+        .flicker {
+            animation: flicker 4s infinite;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            15% { opacity: 0.7; }
+            30% { opacity: 1; }
+            55% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+        /* 响应式 */
+        @media (max-width:800px) {
+            header { flex-direction: column; align-items: stretch; }
+            .post-title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部：仅保留标题，菜单栏已移除 -->
+    <header>
+        <h1 class="forum-title flicker">灵异事件吧</h1>
+    </header>
+
+    <div class="content-container">
+        <div class="post-container">
+            <div class="post-header">
+                <h2 class="post-title">演唱会后翻旧手机，我穿越回了9岁那年</h2>
+                <div class="post-meta">
+                    <span>👤 楼主：<strong>PATIENCE</strong></span>
+                    <span>📅 发帖时间：<strong>2023-11-28 23:47</strong></span>
+                    <span>👁️ 浏览：<strong>15,234</strong></span>
+                    <span>💬 回复：<strong>27</strong></span>
+                </div>
+            </div>
+
+            <div class="post-content">
+                <div class="post-text">
+吧友们好，我是第一次在这个吧发帖。犹豫了很久要不要把这件事说出来，但憋在心里实在太难受了。我发誓以下所说的每一个字都是真的，如果有半句假话天打雷劈。
+
+事情发生在上周六晚上。我刚看完一场演唱会回到家，整个人还处在兴奋状态睡不着。躺在床上刷手机的时候，突然翻到了相册里一个很老的文件夹，是我妈以前用摄像机拍的家庭录像，后来转存到手机里的。
+
+点开看了几段，都是我小时候的视频。学走路摔跤、第一次唱儿歌、幼儿园跳舞之类的。说实话挺感动的，看着看着眼眶都湿了。
+
+然后问题来了。
+
+当我点开一段9岁时学跳舞的视频时，手机屏幕突然开始闪烁。一开始我还以为是手机出问题了，想退出来重启。但那个光越来越亮，亮到我根本睁不开眼睛。
+
+下一秒，我感觉自己被什么东西吸进去了。
+
+等我能看清周围的时候，我人已经站在我家以前的老房子里了。那个房子我们在我10岁的时候就搬走了，但我对那里的每一个角落都记忆犹新。客厅的碎花沙发，墙上贴的奖状，连空气里的味道都一模一样。
+
+更离谱的是，我看见了9岁的我自己。
+
+（字数限制，容我喝口水继续写）
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="replies-section">
+                <h3>回复列表 (27条)</h3>
+
+                <!-- 回复2楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">2楼</span>路过打酱油</span>
+                        <span class="reply-time">2023-11-28 23:52</span>
+                    </div>
+                    <div class="reply-content">
+                        沙发？等更新
+                    </div>
+                </div>
+
+                <!-- 回复3楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">3楼</span>灵异爱好者007</span>
+                        <span class="reply-time">2023-11-28 23:54</span>
+                    </div>
+                    <div class="reply-content">
+                        卧槽，穿越？楼主继续啊别断章
+                    </div>
+                </div>
+
+                <!-- 回复4楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">4楼</span>PATIENCE</span>
+                        <span class="reply-time">2023-11-29 00:03</span>
+                    </div>
+                    <div class="reply-content">
+                        回来了。
+
+我看见9岁的自己正站在客厅里，对着电视机屏幕学跳舞。动作生涩得让人想笑，但很认真。我妈坐在沙发上看着他（我），脸上带着温柔的笑容。
+
+这个场景我有印象！这就是刚才手机视频里的那一幕！
+
+我试着叫我妈，但她完全听不见。我意识到我可能是以某种"透明人"的状态存在的。但神奇的是，9岁的我能看见我。
+
+他突然停下动作，盯着我看。
+
+"你是谁？"他小声问。
+
+我当时脑子一片混乱，但不知道为什么，我并没有感到害怕。可能是因为这是我自己的过去？总之我很冷静地走过去，蹲在他面前说："我是未来的你。"
+
+他眼睛瞪得老大："真的假的？那你多大了？"
+
+"26岁。"
+
+"哇！那你现在是做什么的？"
+
+看着他那张充满期待的小脸，我突然不知道该说什么。我想告诉他很多事情，想告诉他未来会遇到什么，但又怕改变什么。
+
+最后我只是说："我想跟你聊聊天，可以吗？"
+
+他点点头，拉着我的手走进了他的房间。
+                    </div>
+                </div>
+
+                <!-- 回复5楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">5楼</span>午夜凶铃</span>
+                        <span class="reply-time">2023-11-29 00:07</span>
+                    </div>
+                    <div class="reply-content">
+                        这...这不是穿越文的套路吗？楼主该不会是写小说的吧
+                    </div>
+                </div>
+
+                <!-- 回复6楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">6楼</span>相信科学</span>
+                        <span class="reply-time">2023-11-29 00:09</span>
+                    </div>
+                    <div class="reply-content">
+                        楼上+1，感觉像编的。不过写得挺好，继续看
+                    </div>
+                </div>
+
+                <!-- 回复7楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">7楼</span>天涯过客</span>
+                        <span class="reply-time">2023-11-29 00:15</span>
+                    </div>
+                    <div class="reply-content">
+                        别管真假，故事好看就行。楼主快更
+                    </div>
+                </div>
+
+                <!-- 回复8楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">8楼</span>PATIENCE</span>
+                        <span class="reply-time">2023-11-29 00:23</span>
+                    </div>
+                    <div class="reply-content">
+                        我知道听起来很扯，但我真的没有编。
+
+在他房间里，我们聊了很久。确切说是我在说，他在听。我告诉他，未来他会遇到很多挫折，会有人不理解他，会有人嘲笑他的梦想。但我让他记住，那些真心对待他的人才值得珍惜。
+
+我还告诉他，不要害怕失败。我自己就失败过很多次——考试挂科、面试被拒、暗恋的人喜欢别人。但每一次失败都让我成长。
+
+9岁的我听得很认真，时不时点点头。
+
+"那你现在开心吗？"他突然问我。
+
+这个问题把我问住了。我想了很久才说："大部分时候开心，偶尔也会难过。但总体来说，我没有放弃梦想，这就够了。"
+
+"什么梦想？"
+
+"就是你现在的梦想啊。"我笑着揉揉他的头，"好好跳舞，好好唱歌，相信自己。"
+
+说完这句话，房间开始变得模糊。我知道我要回去了。
+
+"记住我说的话。"我对他说。
+
+他用力点头，眼眶有点红："你会一直保护我吗？"
+
+"傻瓜，我就是你啊。我们会一起走过所有的路。"
+                    </div>
+                </div>
+
+                <!-- 回复9楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">9楼</span>深夜食堂</span>
+                        <span class="reply-time">2023-11-29 00:31</span>
+                    </div>
+                    <div class="reply-content">
+                        妈的，看哭了。虽然不知道真假，但这种设定太戳人了
+                    </div>
+                </div>
+
+                <!-- 回复10楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">10楼</span>量子力学博士</span>
+                        <span class="reply-time">2023-11-29 00:35</span>
+                    </div>
+                    <div class="reply-content">
+                        从物理学角度来说，这种事情不可能发生。但如果真的发生了，我倾向于认为是某种精神投射或者潜意识的显现
+                    </div>
+                </div>
+
+                <!-- 回复11楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">11楼</span>灵异爱好者007</span>
+                        <span class="reply-time">2023-11-29 00:38</span>
+                    </div>
+                    <div class="reply-content">
+                        @量子力学博士 老哥别用科学解释灵异好吗😂这个吧就是讲这些玄乎事的
+                    </div>
+                </div>
+
+                <!-- 回复12楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">12楼</span>PATIENCE</span>
+                        <span class="reply-time">2023-11-29 00:45</span>
+                    </div>
+                    <div class="reply-content">
+                        回到现实的时候，我还保持着躺在床上刷手机的姿势。手机屏幕上，那段视频已经播完了，停在了黑屏界面。
+
+我看了眼时间，只过了五分钟。
+
+但我确定那不是梦。那种真实感太强烈了，我甚至还记得老房子里的气味，记得9岁的我手心的温度。
+
+第二天我打电话给我妈，假装随口问起那段视频拍摄的时间。她说是2006年11月的某个周末。我让她仔细回忆那天有没有什么特别的事。
+
+她想了想说："好像...那天你跳完舞之后，突然跟我说，你以后一定要成为很厉害的人。我当时还挺意外的，因为你平时不会说这种话。"
+
+我握着手机的手在抖。
+
+这证明了那不是梦。我真的回去了，真的和9岁的自己对话了。而且可能...我的话真的影响了过去。
+                    </div>
+                </div>
+
+                <!-- 回复13楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">13楼</span>午夜凶铃</span>
+                        <span class="reply-time">2023-11-29 00:52</span>
+                    </div>
+                    <div class="reply-content">
+                        卧槽？！时间闭环？？
+                    </div>
+                </div>
+
+                <!-- 回复14楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">14楼</span>哲学系学生</span>
+                        <span class="reply-time">2023-11-29 00:56</span>
+                    </div>
+                    <div class="reply-content">
+                        祖父悖论的变体。如果楼主真的影响了过去的自己,那现在的楼主是因为过去被影响才成为现在的样子,还是本来就会成为这个样子所以才回去影响过去?
+                    </div>
+                </div>
+
+                <!-- 回复15楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">15楼</span>天涯过客</span>
+                        <span class="reply-time">2023-11-29 01:03</span>
+                    </div>
+                    <div class="reply-content">
+                        我不管什么悖论,我只想知道楼主现在怎么样?还能再穿回去吗?
+                    </div>
+                </div>
+
+                <!-- 回复16楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">16楼</span>PATIENCE</span>
+                        <span class="reply-time">2023-11-29 01:15</span>
+                    </div>
+                    <div class="reply-content">
+                        这几天我一直在想这件事的意义。
+
+我觉得，也许这不是什么灵异事件，而是一种...提醒？提醒我不要忘记初心，不要忘记9岁时那个单纯的梦想。
+
+现代社会太浮躁了，我们总是被各种事情推着走，慢慢就忘了自己最开始想要什么。演唱会那天，我站在台下看着台上的人，突然意识到自己已经很久没有那种纯粹的热爱了。
+
+也许正是因为这个念头，才触发了那次穿越？
+
+我试过再打开那段视频，但再也没有发生过那种情况。手机就是普通的手机，视频就是普通的视频。
+
+但我记得那次对话的每一个字，记得9岁的我脸上的表情。那些记忆比任何东西都真实。
+
+最后我想说，不管大家信不信，这件事确实改变了我。我重新开始学跳舞了，报了个班。虽然跳得很烂，但我享受那种感觉。
+
+对了，还有一个细节我没说。从老房子回来后，我发现手机相册里多了一张照片。是9岁的我在房间里对着镜头笑，背景是他的房间。
+
+但我确定，我妈从来没给我拍过这样一张照片。
+
+这张照片现在还在我手机里。每次看到都会提醒我，那次经历是真实的。
+                    </div>
+                </div>
+
+                <!-- 回复17楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">17楼</span>灵异爱好者007</span>
+                        <span class="reply-time">2023-11-29 01:22</span>
+                    </div>
+                    <div class="reply-content">
+                        照片！！！楼主能发出来看看吗？
+                    </div>
+                </div>
+
+                <!-- 回复18楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">18楼</span>相信科学</span>
+                        <span class="reply-time">2023-11-29 01:25</span>
+                    </div>
+                    <div class="reply-content">
+                        @灵异爱好者007 就算发出来也看不出真假啊...楼主完全可以找一张旧照片说是那个
+                    </div>
+                </div>
+
+                <!-- 回复19楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">19楼</span>深夜食堂</span>
+                        <span class="reply-time">2023-11-29 01:30</span>
+                    </div>
+                    <div class="reply-content">
+                        不管真假，这个故事给了我很大触动。我也想回去见见小时候的自己，告诉他别那么自卑
+                    </div>
+                </div>
+
+                <!-- 回复20楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">20楼</span>路过打酱油</span>
+                        <span class="reply-time">2023-11-29 01:35</span>
+                    </div>
+                    <div class="reply-content">
+                        同上。如果能回到过去，我想告诉15岁的自己好好读书，别早恋😂
+                    </div>
+                </div>
+
+                <!-- 回复21楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">21楼</span>PATIENCE</span>
+                        <span class="reply-time">2023-11-29 01:48</span>
+                    </div>
+                    <div class="reply-content">
+                        照片我就不发了，毕竟涉及隐私。而且发了你们也会说是假的对吧。
+
+我发这个帖子，不是为了证明什么，只是想分享这段经历。也许有人会觉得我在编故事，也许有人会相信。都没关系。
+
+重要的是，这件事让我明白了一个道理：
+
+我们每个人都在成长，都在变化。但无论走到哪一步，都不要忘记最初的自己。那个单纯的、充满梦想的、勇敢的小孩，才是我们最珍贵的部分。
+
+如果你也有机会回到过去，你会对小时候的自己说什么？
+
+我想，这可能才是这次经历想告诉我的。
+
+就这样吧，谢谢大家的耐心阅读。
+
+晚安。
+                    </div>
+                </div>
+
+                <!-- 回复22楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">22楼</span>哲学系学生</span>
+                        <span class="reply-time">2023-11-29 02:03</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主这个问题问得好。我会告诉10岁的自己：不要因为别人的眼光而改变自己
+                    </div>
+                </div>
+
+                <!-- 回复23楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">23楼</span>午夜凶铃</span>
+                        <span class="reply-time">2023-11-29 02:15</span>
+                    </div>
+                    <div class="reply-content">
+                        我会告诉12岁的我，妈妈的那些唠叨都是爱，要多陪陪她
+                    </div>
+                </div>
+
+                <!-- 回复24楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">24楼</span>天涯过客</span>
+                        <span class="reply-time">2023-11-29 08:47</span>
+                    </div>
+                    <div class="reply-content">
+                        早上醒来看完了整个帖子。不知道为什么眼睛有点酸。楼主保重
+                    </div>
+                </div>
+
+                <!-- 回复25楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">25楼</span>量子力学博士</span>
+                        <span class="reply-time">2023-11-29 09:33</span>
+                    </div>
+                    <div class="reply-content">
+                        仔细想了一晚上，我收回之前的话。科学解释不了的事情太多了。也许真的存在某种我们还不了解的维度或能量。楼主的经历，姑且当作一个美好的奇迹吧
+                    </div>
+                </div>
+
+                <!-- 回复26楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">26楼</span>灵异爱好者007</span>
+                        <span class="reply-time">2023-11-29 12:20</span>
+                    </div>
+                    <div class="reply-content">
+                        这个帖子我收藏了。虽然不知道真假，但确实是我在这个吧看过最温暖的故事
+                    </div>
+                </div>
+
+                <!-- 回复27楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">27楼</span>PATIENCE</span>
+                        <span class="reply-time">2023-11-29 23:51</span>
+                    </div>
+                    <div class="reply-content">
+                        （最后一次冒泡）
+
+谢谢大家的回复。看到有些朋友被触动了，我很高兴。
+
+今晚我又打开了那段视频，就像普通地看一段录像一样。视频里9岁的我还在认真地跳舞，我妈还在旁边微笑。
+
+一切都没有变，但一切又都变了。
+
+因为我知道，那个小孩会长成现在的我。而现在的我，会一直记得对他的承诺。
+
+各位，如果有机会，请珍惜现在的每一刻。因为此刻的你，就是未来的你回忆中的"过去"。
+
+不说了，我去练舞了。
+
+再见。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="spooky-divider"></div>
+
+        <!-- 返回首页按钮（无箭头） -->
+        <div class="return-home-container">
+            <a href="灵异论坛.html" class="return-home">返回首页</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息</p>
+    </footer>
+</div>
+
+<script>
+    // 确保页面可以滚动（移动端优化）
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
+
+        // 移动端优化
+        if (window.innerWidth <= 768) {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.style.borderRadius = '0';
+                container.style.border = 'none';
+            }
+        }
+
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            let now = new Date().getTime();
+            if (now - lastTouchEnd <= 300) event.preventDefault();
+            lastTouchEnd = now;
+        }, false);
+    });
+</script>
+</body>
+</html>

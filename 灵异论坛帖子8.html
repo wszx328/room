@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>灵异事件吧 - 那个只在月圆之夜出现的白衣女人</title>
+    <style>
+        /* ----- 深紫色调（完全复制主论坛样式）----- */
+        :root {
+            --primary-dark: #0d0415; --primary-bg: #130b1f; --header-bg: #1a0f2a;
+            --accent-purple: #c49bff; --accent-dark-purple: #5d3a8a; --text-light: #ece0ff;
+            --text-gray: #bba8dd; --border-color: #4a2a6a;
+            --card-bg: rgba(26, 15, 45, 0.85); --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 0 1px #5d3a8a inset;
+            --hover-glow: 0 0 18px #b27aff; --warning-bg: #2f1b2b; --warning-border: #c45aa0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body {
+            background: var(--primary-dark) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.07"><path d="M70 90 Q90 60 120 80 Q150 100 130 140 Q110 180 70 160 Q30 140 40 100 Q50 60 70 90" fill="%23c49bff" stroke="none"/></svg>');
+            color: var(--text-light); line-height: 1.6; padding: 15px; min-height: 100vh;
+        }
+        .container { max-width: 1300px; margin: 0 auto; background: var(--primary-bg); border-radius: 28px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #5d3a8a; backdrop-filter: blur(2px); }
+        header { background: var(--header-bg); padding: 20px 28px; border-bottom: 2px solid var(--accent-dark-purple); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+        .forum-title { font-size: 28px; color: var(--accent-purple); text-shadow: 0 0 15px #d5aaff; letter-spacing: 2px; display: flex; align-items: center; }
+        .forum-title::before { content: "👁‍🗨"; margin-right: 12px; font-size: 30px; filter: drop-shadow(0 0 5px #c49bff); }
+        /* 头部仅保留标题，导航菜单已移除 */
+
+        /* 帖子详情区域 */
+        .post-container {
+            background: #1b112b;
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid #8d62cf;
+        }
+        .post-header {
+            border-bottom: 1px solid #6e4a9f;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .post-title {
+            font-size: 32px;
+            color: #f0dbff;
+            margin-bottom: 15px;
+        }
+        .post-meta {
+            display: flex;
+            gap: 30px;
+            color: #baa0e8;
+            flex-wrap: wrap;
+        }
+        .post-content {
+            background: #231a33;
+            border-radius: 24px;
+            padding: 25px;
+            font-size: 17px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            border: 1px solid #7e5bb3;
+            margin-bottom: 30px;
+        }
+        .post-text {
+            line-height: 1.8;
+        }
+        .post-text p {
+            margin-bottom: 1.2em;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c49bff, transparent);
+            margin: 20px 0;
+        }
+        /* 回复区域 */
+        .replies-section h3 {
+            color: #dbbdff;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-left: 4px solid #c197ff;
+            padding-left: 10px;
+        }
+        .reply {
+            background: #1f1533;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #c197ff;
+        }
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            color: #af94dd;
+            font-size: 13px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .reply-user {
+            font-weight: bold;
+        }
+        .floor-number {
+            display: inline-block;
+            background: #372652;
+            color: #c49bff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-right: 8px;
+        }
+        .reply-content {
+            color: #ece0ff;
+        }
+        .reply-content .mention {
+            color: #c49bff;
+            font-weight: 600;
+        }
+        .spooky-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c49bff, transparent);
+            margin: 20px 0;
+        }
+
+        /* 返回首页按钮样式（已移除前导箭头） */
+        .return-home-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 20px;
+        }
+        .return-home {
+            background: #362652;
+            color: white;
+            border-radius: 60px;
+            padding: 14px 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            border: 1px solid #bf9cff;
+            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .return-home:hover {
+            background: #563d82;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #dbb5ff;
+        }
+        /* 已移除 ::before 伪元素 */
+
+        /* 底部 */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #9b84c0;
+            border-top: 1px solid #4f3b74;
+            margin-top: 20px;
+        }
+        .infinity-symbol {
+            color: #eac7ff;
+            font-weight: 900;
+            font-size: 1.3em;
+        }
+        .flicker {
+            animation: flicker 4s infinite;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            15% { opacity: 0.7; }
+            30% { opacity: 1; }
+            55% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+        /* 响应式 */
+        @media (max-width:800px) {
+            header { flex-direction: column; align-items: stretch; }
+            .post-title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部：仅保留标题，菜单栏已移除 -->
+    <header>
+        <h1 class="forum-title flicker">灵异事件吧</h1>
+    </header>
+
+    <div class="content-container">
+        <div class="post-container">
+            <div class="post-header">
+                <h2 class="post-title">那个只在月圆之夜出现的白衣女人</h2>
+                <div class="post-meta">
+                    <span>👤 楼主：<strong>HARD TO LOVE</strong></span>
+                    <span>📅 发帖时间：<strong>2023-11-28 23:47</strong></span>
+                    <span>👁️ 浏览：<strong>1,247</strong></span>
+                    <span>💬 回复：<strong>38</strong></span>
+                </div>
+            </div>
+
+            <div class="post-content">
+                <div class="post-text">
+先说明，这是我亲身经历的事，到现在想起来还是后背发凉。
+
+我家在南方某个小县城，镇子外面有一大片芦苇荡，当地人都不太愿意晚上去那边。我以前觉得是迷信，直到去年秋天发生的事。
+
+我有个发小叫林越，从小性格孤僻，长得特别好看，那种清冷系的帅。高中时候一堆女生给他写情书，他连看都不看。大学毕业后他回了老家，在镇上图书馆当管理员，平时就一个人待着。
+
+去年中秋前后，林越开始有点不对劲。他每到月圆那几天就会失踪，手机打不通，人也找不到。他家人报过一次警，第二天他自己回来了，什么也不说。
+
+后来有一次我偶然跟踪了他。
+
+那天是满月，晚上十点多，我看见林越从家里出来，一个人往芦苇荡方向走。我远远跟着，月光很亮，能看清他的背影。他走进芦苇深处，在一片空地上站定，就那么抬头看着月亮，一动不动。
+
+我正觉得奇怪，突然看见芦苇另一边有个白色的影子在移动。
+
+（先发这么多，手有点抖，缓一会儿继续更）
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="replies-section">
+                <h3>回复列表 (38条)</h3>
+
+                <!-- 回复2楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">2楼</span>路过打酱油的</span>
+                        <span class="reply-time">2023-11-28 23:52</span>
+                    </div>
+                    <div class="reply-content">
+                        坐等更新！楼主别断啊！
+                    </div>
+                </div>
+
+                <!-- 回复3楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">3楼</span>夜半听雨</span>
+                        <span class="reply-time">2023-11-28 23:54</span>
+                    </div>
+                    <div class="reply-content">
+                        卧槽，这个点刷到这帖子，我现在一个人在宿舍……
+                    </div>
+                </div>
+
+                <!-- 回复4楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">4楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 00:13</span>
+                    </div>
+                    <div class="reply-content">
+                        回来了。
+
+那个白影越来越近，我才看清是个女人，穿着白色的长裙，走路很慢，像是受了伤。月光下能看见她裙子上有暗色的印记，不知道是泥土还是别的什么。
+
+最诡异的是她的头发，在月光下泛着一种不自然的白色，不是染的那种白，像是……怎么说呢，像是月光本身的颜色。
+
+林越听到脚步声，转过头去。我躲在芦苇后面看着，他们就那么对视着。然后林越做了个我这辈子都忘不了的动作——
+
+他慢慢张开了双臂，就像……就像孔雀开屏一样。
+
+我知道这形容很奇怪，但当时那个姿势，在月光下，真的给我这种感觉。他穿的白色衬衫，月光照在上面，有种说不出的圣洁感。
+
+那个白衣女人在他面前停下了，仰着头看他。我看不清她的表情，但能感觉到一种渴望，一种……崇拜？
+
+他们就这样站了很久，一句话都没说。
+                    </div>
+                </div>
+
+                <!-- 回复5楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">5楼</span>灵异爱好者</span>
+                        <span class="reply-time">2023-11-29 00:18</span>
+                    </div>
+                    <div class="reply-content">
+                        女鬼？还是什么？楼主后来呢？
+                    </div>
+                </div>
+
+                <!-- 回复6楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">6楼</span>深夜食堂</span>
+                        <span class="reply-time">2023-11-29 00:21</span>
+                    </div>
+                    <div class="reply-content">
+                        感觉不像普通鬼故事，有点玄幻的味道
+                    </div>
+                </div>
+
+                <!-- 回复7楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">7楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 00:35</span>
+                    </div>
+                    <div class="reply-content">
+                        后来我实在太冷了，动了一下，芦苇发出声响。
+
+林越突然转头看向我这边，那眼神……怎么说呢，很冷，又很悲伤。白衣女人也顺着他的目光看过来，我整个人都僵住了。
+
+她的脸在月光下白得发光，五官很精致，但眼睛是空的。不是瞎了，是那种……没有焦距，看不见东西的空。
+
+我吓得转身就跑，也不管林越有没有追来，一口气跑回了镇上。
+
+第二天我去找林越，想问清楚到底怎么回事。他开门的时候憔悴得吓人，眼睛红红的，像是哭过。
+
+我问他昨晚那个女人是谁。
+
+他沉默了很久，说："一个追月亮的人。"
+                    </div>
+                </div>
+
+                <!-- 回复8楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">8楼</span>猫在夜里叫</span>
+                        <span class="reply-time">2023-11-29 00:40</span>
+                    </div>
+                    <div class="reply-content">
+                        ？？？这对话信息量有点大
+                    </div>
+                </div>
+
+                <!-- 回复9楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">9楼</span>午夜凶铃</span>
+                        <span class="reply-time">2023-11-29 00:43</span>
+                    </div>
+                    <div class="reply-content">
+                        追月亮的人是什么意思？楼主问清楚了吗？
+                    </div>
+                </div>
+
+                <!-- 回复10楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">10楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 01:02</span>
+                    </div>
+                    <div class="reply-content">
+                        我逼着他说了实情。
+
+林越告诉我，他从小就觉得自己和别人不一样。其他男生喜欢漂亮女孩，他什么都感觉不到。不是性取向问题，是真的对人类没有感情。
+
+唯一能让他感受到美的，只有月亮。
+
+他说他常常觉得自己不属于这个世界，应该活在更高更远的地方。那些追求他的女孩，在他眼里都是灰色的，没有光。
+
+直到半年前的一个月圆夜，他在芦苇荡遇见了那个白衣女人。
+
+女人浑身是伤，衣服上沾着血，但在月光下白得晃眼。她一步一步走向他，眼睛里只有他的倒影。
+
+林越说，那一刻他突然明白了——
+
+她曾经不是白色的。
+                    </div>
+                </div>
+
+                <!-- 回复11楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">11楼</span>路过的医学生</span>
+                        <span class="reply-time">2023-11-29 01:08</span>
+                    </div>
+                    <div class="reply-content">
+                        曾经不是白色的？什么意思？
+                    </div>
+                </div>
+
+                <!-- 回复12楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">12楼</span>推理小能手</span>
+                        <span class="reply-time">2023-11-29 01:12</span>
+                    </div>
+                    <div class="reply-content">
+                        我懂了……她把自己变成了白色？为了接近林越？
+                    </div>
+                </div>
+
+                <!-- 回复13楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">13楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 01:25</span>
+                    </div>
+                    <div class="reply-content">
+                        对。
+
+林越说，那个女人生前应该是个很爱美的人，喜欢彩色的衣服，鲜艳的装饰。但她爱上了林越，知道他只看得见月光的白。
+
+所以她开始改变自己。
+
+染白了头发，穿白色的衣服，甚至……林越说到这里声音都在抖……甚至用刀片刮掉了身上纹的彩色纹身。
+
+她一次次在月圆夜出现，一次次靠近林越，身上的颜色越来越少，伤口越来越多。
+
+林越一开始没理她，继续只看月亮。
+
+直到有一天，她终于完全变成了白色——月光一样的白。那天林越第一次转头看她，第一次对她张开双臂。
+
+"因为那一刻，她终于和月亮一样了。"林越说，"她把自己活成了月光。"
+                    </div>
+                </div>
+
+                <!-- 回复14楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">14楼</span>夜半听雨</span>
+                        <span class="reply-time">2023-11-29 01:31</span>
+                    </div>
+                    <div class="reply-content">
+                        卧槽……这个恐怖吗？我怎么觉得有点悲伤
+                    </div>
+                </div>
+
+                <!-- 回复15楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">15楼</span>细思恐极</span>
+                        <span class="reply-time">2023-11-29 01:35</span>
+                    </div>
+                    <div class="reply-content">
+                        细思极恐好吧！为了一个人把自己毁成这样？而且听起来她已经死了？
+                    </div>
+                </div>
+
+                <!-- 回复16楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">16楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 01:47</span>
+                    </div>
+                    <div class="reply-content">
+                        是的，她已经死了。
+
+林越后来查到，半年前有个女大学生失踪，在镇外的河里发现尸体。法医说死因是失血过多，身上有大量自残伤口，疑似精神问题。
+
+照片就是那个白衣女人。
+
+生前的照片里，她留着彩色挑染的头发，穿着鲜艳的衣服，笑容灿烂。
+
+据说她曾经在图书馆见过林越一次，之后就经常来。但林越从来没正眼看过她。
+
+现在每个月圆夜，她都会出现在芦苇荡。林越说她已经不会说话了，只会静静站着，看着他，眼睛里倒映着月光。
+
+而林越每次都会为她"开屏"——用他全部的温柔和美，只给她一个人看。
+
+"这是我欠她的。"林越最后说，"她用生命追逐我，我至少应该让她看到我的全部。"
+
+我问他，你爱她吗？
+
+他摇头："我不知道什么是爱。但她让我第一次明白，有人可以为了靠近光，付出一切，包括生命和色彩。"
+                    </div>
+                </div>
+
+                <!-- 回复17楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">17楼</span>午夜凶铃</span>
+                        <span class="reply-time">2023-11-29 01:53</span>
+                    </div>
+                    <div class="reply-content">
+                        妈的，我哭了
+                    </div>
+                </div>
+
+                <!-- 回复18楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">18楼</span>灵异爱好者</span>
+                        <span class="reply-time">2023-11-29 01:56</span>
+                    </div>
+                    <div class="reply-content">
+                        这算恐怖故事吗？我怎么觉得是个悲剧爱情故事
+                    </div>
+                </div>
+
+                <!-- 回复19楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">19楼</span>路过打酱油的</span>
+                        <span class="reply-time">2023-11-29 02:01</span>
+                    </div>
+                    <div class="reply-content">
+                        恐怖的是人性吧……为了得到一个人的目光，把自己毁成那样
+                    </div>
+                </div>
+
+                <!-- 回复20楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">20楼</span>推理小能手</span>
+                        <span class="reply-time">2023-11-29 02:05</span>
+                    </div>
+                    <div class="reply-content">
+                        等等，楼主，你后来还去过芦苇荡吗？真的每个月圆夜都能看到她？
+                    </div>
+                </div>
+
+                <!-- 回复21楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">21楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 02:18</span>
+                    </div>
+                    <div class="reply-content">
+                        去过一次，上个月的满月。
+
+远远看着，不敢靠近。
+
+她还是那样，白色长裙，白色长发，在月光下发光。林越面对着她，张开双臂，像是在拥抱，又像是在展示什么。
+
+但这次我注意到一个细节——
+
+林越的衬衫上，有一小块红色的印记。像是血，但在月光下看不太清楚。
+
+后来我问他，他说："她在消失。"
+                    </div>
+                </div>
+
+                <!-- 回复22楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">22楼</span>深夜食堂</span>
+                        <span class="reply-time">2023-11-29 02:23</span>
+                    </div>
+                    <div class="reply-content">
+                        消失？？？
+                    </div>
+                </div>
+
+                <!-- 回复23楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">23楼</span>猫在夜里叫</span>
+                        <span class="reply-time">2023-11-29 02:26</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主你别停啊！说清楚啊！
+                    </div>
+                </div>
+
+                <!-- 回复24楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">24楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 02:41</span>
+                    </div>
+                    <div class="reply-content">
+                        林越说，她的颜色在回来。
+
+每次月圆夜见面，她身上就会多一点颜色——一小块彩色的裙摆，几缕有颜色的头发，皮肤上隐约可见的纹身印记。
+
+就好像时间在倒流，她在变回生前的样子。
+
+"她曾经为了我抹去了所有颜色，现在颜色在归位。"林越说，"等她完全恢复成彩色的时候，就是她彻底离开的时候。"
+
+"为什么？"我问。
+
+"因为她会发现，我从来没有真正看见过她。"林越的声音很轻，"我看见的只是她变成的月光，不是她本身。当她重新拥有颜色，就会明白这一切都没有意义。"
+
+他说完这句话，眼睛红了。
+
+我第一次看见林越哭。
+
+"我终于懂了什么是遗憾。"他说，"当一个人愿意为你褪去所有光彩，你却在她最黯淡的时候才学会欣赏——这比任何鬼故事都恐怖。"
+                    </div>
+                </div>
+
+                <!-- 回复25楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">25楼</span>夜半听雨</span>
+                        <span class="reply-time">2023-11-29 02:48</span>
+                    </div>
+                    <div class="reply-content">
+                        我去……这个故事……
+                    </div>
+                </div>
+
+                <!-- 回复26楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">26楼</span>午夜凶铃</span>
+                        <span class="reply-time">2023-11-29 02:51</span>
+                    </div>
+                    <div class="reply-content">
+                        所以最恐怖的不是鬼，是人活着的时候不懂珍惜？
+                    </div>
+                </div>
+
+                <!-- 回复27楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">27楼</span>细思恐极</span>
+                        <span class="reply-time">2023-11-29 02:56</span>
+                    </div>
+                    <div class="reply-content">
+                        细思极恐……她为了他变成月光，他却只爱月光不爱她
+                    </div>
+                </div>
+
+                <!-- 回复28楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">28楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 03:15</span>
+                    </div>
+                    <div class="reply-content">
+                        最后更新一下。
+
+昨天是满月。我又偷偷去了芦苇荡。
+
+这次她的裙子上有大片彩色的印花，头发也有了棕色和金色。站在那里，像是一只色彩斑斓的鸟。
+
+林越还是张开双臂，但这次他闭着眼睛，眼泪从脸上滑下来。
+
+我听见他说："对不起。"
+
+"对不起我看见你的时候，你已经不是你了。"
+
+"对不起我爱上的是你的牺牲，不是你的本来面目。"
+
+"对不起我花了这么久，才明白你有多美。"
+
+那个女人站在他面前，身上的颜色越来越多，越来越亮。她抬起手，像是想碰他，但没有碰到。
+
+然后她笑了。
+
+是我第一次看见她笑。
+
+月光下，她转身离开，裙摆扬起，像盛开的花，像展翅的鸟，像她生前应该有的样子——绚烂的、骄傲的、不需要为任何人改变的样子。
+
+林越跪在地上，哭得全身发抖。
+
+我想起他说过的话："真正的恐怖不是鬼，是你终于懂了，却已经来不及了。"
+                    </div>
+                </div>
+
+                <!-- 回复29楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">29楼</span>路过打酱油的</span>
+                        <span class="reply-time">2023-11-29 03:22</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主……我现在不知道该说什么
+                    </div>
+                </div>
+
+                <!-- 回复30楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">30楼</span>灵异爱好者</span>
+                        <span class="reply-time">2023-11-29 03:25</span>
+                    </div>
+                    <div class="reply-content">
+                        这个故事我会记一辈子
+                    </div>
+                </div>
+
+                <!-- 回复31楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">31楼</span>推理小能手</span>
+                        <span class="reply-time">2023-11-29 03:31</span>
+                    </div>
+                    <div class="reply-content">
+                        所以她真的走了？彻底消失了？
+                    </div>
+                </div>
+
+                <!-- 回复32楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">32楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 03:47</span>
+                    </div>
+                    <div class="reply-content">
+                        应该是。
+
+今天我去找林越，他不在家。
+
+邻居说他一大早就去了图书馆，把工作辞了，要离开镇子。
+
+留下一句话："我要去学会看见颜色。"
+
+芦苇荡还在那里，月亮还在那里。
+
+但那个为了月光抹去自己颜色的女孩，和那个只看得见月光的男孩，都已经不在了。
+
+有些人倾尽全力想要靠近光，却在过程中失去了自己。
+
+有些人习惯仰望月亮，却忘了身边也有星星在闪烁。
+
+当两个人都明白的时候，往往已经太迟了。
+                    </div>
+                </div>
+
+                <!-- 回复33楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">33楼</span>午夜凶铃</span>
+                        <span class="reply-time">2023-11-29 04:01</span>
+                    </div>
+                    <div class="reply-content">
+                        我现在凌晨四点，看完整个人都不好了
+                    </div>
+                </div>
+
+                <!-- 回复34楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">34楼</span>深夜食堂</span>
+                        <span class="reply-time">2023-11-29 04:15</span>
+                    </div>
+                    <div class="reply-content">
+                        这个故事应该是假的吧？但是道理是真的……
+                    </div>
+                </div>
+
+                <!-- 回复35楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">35楼</span>夜半听雨</span>
+                        <span class="reply-time">2023-11-29 07:22</span>
+                    </div>
+                    <div class="reply-content">
+                        早上起来又看了一遍，细思极恐……为了别人改变自己真的值得吗？
+                    </div>
+                </div>
+
+                <!-- 回复36楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">36楼</span>猫在夜里叫</span>
+                        <span class="reply-time">2023-11-29 09:33</span>
+                    </div>
+                    <div class="reply-content">
+                        我觉得最恐怖的是，她变成月光之后他才看见她，但看见的还不是真正的她
+                    </div>
+                </div>
+
+                <!-- 回复37楼 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">37楼</span>路过的心理学生</span>
+                        <span class="reply-time">2023-11-29 12:47</span>
+                    </div>
+                    <div class="reply-content">
+                        这个故事如果是真的，那个女孩应该有严重的心理问题。过度追求一个人导致自我迷失，最后自残……这是很典型的病态依恋
+                    </div>
+                </div>
+
+                <!-- 回复38楼 - 楼主 -->
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">38楼</span>HARD TO LOVE（楼主）</span>
+                        <span class="reply-time">2023-11-29 14:20</span>
+                    </div>
+                    <div class="reply-content">
+                        可能吧。但我更愿意相信，她只是爱得太用力了。
+
+用力到忘记了，最美的自己，不是变成别人眼中的样子，而是保持自己原本的色彩。
+
+如果有来生，希望她做一只骄傲的孔雀，永远不需要为任何人褪色。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="spooky-divider"></div>
+
+        <!-- 返回首页按钮（无箭头） -->
+        <div class="return-home-container">
+            <a href="灵异论坛.html" class="return-home">返回首页</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息</p>
+    </footer>
+</div>
+
+<script>
+    // 确保页面可以滚动（移动端优化）
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
+
+        // 移动端优化
+        if (window.innerWidth <= 768) {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.style.borderRadius = '0';
+                container.style.border = 'none';
+            }
+        }
+
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            let now = new Date().getTime();
+            if (now - lastTouchEnd <= 300) event.preventDefault();
+            lastTouchEnd = now;
+        }, false);
+    });
+</script>
+</body>
+</html>

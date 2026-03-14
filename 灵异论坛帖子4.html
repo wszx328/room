@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>灵异事件吧 - 我是个练习生，但我体内好像住着另一个"我"</title>
+    <style>
+        /* ----- 深紫色调（完全复制主论坛样式）----- */
+        :root {
+            --primary-dark: #0d0415; --primary-bg: #130b1f; --header-bg: #1a0f2a;
+            --accent-purple: #c49bff; --accent-dark-purple: #5d3a8a; --text-light: #ece0ff;
+            --text-gray: #bba8dd; --border-color: #4a2a6a;
+            --card-bg: rgba(26, 15, 45, 0.85); --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 0 1px #5d3a8a inset;
+            --hover-glow: 0 0 18px #b27aff; --warning-bg: #2f1b2b; --warning-border: #c45aa0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body {
+            background: var(--primary-dark) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.07"><path d="M70 90 Q90 60 120 80 Q150 100 130 140 Q110 180 70 160 Q30 140 40 100 Q50 60 70 90" fill="%23c49bff" stroke="none"/></svg>');
+            color: var(--text-light); line-height: 1.6; padding: 15px; min-height: 100vh;
+        }
+        .container { max-width: 1300px; margin: 0 auto; background: var(--primary-bg); border-radius: 28px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #5d3a8a; backdrop-filter: blur(2px); }
+        header { background: var(--header-bg); padding: 20px 28px; border-bottom: 2px solid var(--accent-dark-purple); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+        .forum-title { font-size: 28px; color: var(--accent-purple); text-shadow: 0 0 15px #d5aaff; letter-spacing: 2px; display: flex; align-items: center; }
+        .forum-title::before { content: "👁‍🗨"; margin-right: 12px; font-size: 30px; filter: drop-shadow(0 0 5px #c49bff); }
+        /* 头部仅保留标题，导航菜单已移除 */
+
+        /* 帖子详情区域 */
+        .post-container {
+            background: #1b112b;
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid #8d62cf;
+        }
+        .post-header {
+            border-bottom: 1px solid #6e4a9f;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .post-title {
+            font-size: 32px;
+            color: #f0dbff;
+            margin-bottom: 15px;
+        }
+        .post-meta {
+            display: flex;
+            gap: 30px;
+            color: #baa0e8;
+            flex-wrap: wrap;
+        }
+        .post-content {
+            background: #231a33;
+            border-radius: 24px;
+            padding: 25px;
+            font-size: 17px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            border: 1px solid #7e5bb3;
+            margin-bottom: 30px;
+        }
+        .post-text {
+            line-height: 1.8;
+        }
+        /* 锁定提示（原页面未使用，但保留样式） */
+        .locked-post {
+            background: #2f1b2b;
+            border-left: 6px solid #d47ab0;
+            padding: 16px;
+            border-radius: 18px;
+            margin: 20px 0;
+        }
+        .locked-post h4 {
+            color: #d47ab0;
+            margin-bottom: 8px;
+        }
+        /* 回复区域 */
+        .replies-section h3 {
+            color: #dbbdff;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-left: 4px solid #c197ff;
+            padding-left: 10px;
+        }
+        .reply {
+            background: #1f1533;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #c197ff;
+        }
+        .reply.deleted, .reply.locked, .reply.system {
+            background: #1f1533;
+            border-left-color: #c197ff;
+        }
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            color: #af94dd;
+            font-size: 13px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .reply-user {
+            font-weight: bold;
+        }
+        .floor-number {
+            display: inline-block;
+            background: #372652;
+            color: #c49bff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-right: 8px;
+        }
+        .reply-content {
+            color: #ece0ff;
+        }
+        .mention {
+            color: #c49bff;
+            font-weight: 600;
+        }
+        /* 折叠楼层样式（适配新主题） */
+        .folded-replies {
+            background: #1a102a;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #5a3a8a;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .folded-replies:hover {
+            background: #2a1a3a;
+        }
+        .folded-header {
+            color: #bba8dd;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .folded-count {
+            color: #c49bff;
+            font-weight: bold;
+        }
+        .folded-icon {
+            font-size: 16px;
+            color: #c49bff;
+        }
+        .spooky-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c49bff, transparent);
+            margin: 20px 0;
+        }
+
+        /* 返回首页按钮样式（已移除前导箭头） */
+        .return-home-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 20px;
+        }
+        .return-home {
+            background: #362652;
+            color: white;
+            border-radius: 60px;
+            padding: 14px 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            border: 1px solid #bf9cff;
+            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .return-home:hover {
+            background: #563d82;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #dbb5ff;
+        }
+        /* 已移除 ::before 伪元素 */
+
+        /* 底部 */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #9b84c0;
+            border-top: 1px solid #4f3b74;
+            margin-top: 20px;
+        }
+        .infinity-symbol {
+            color: #eac7ff;
+            font-weight: 900;
+            font-size: 1.3em;
+        }
+        .flicker {
+            animation: flicker 4s infinite;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            15% { opacity: 0.7; }
+            30% { opacity: 1; }
+            55% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+        /* 响应式 */
+        @media (max-width:800px) {
+            header { flex-direction: column; align-items: stretch; }
+            .post-title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部：仅保留标题，菜单栏已移除 -->
+    <header>
+        <h1 class="forum-title flicker">灵异事件吧</h1>
+    </header>
+
+    <div class="content-container">
+        <div class="post-container">
+            <div class="post-header">
+                <h2 class="post-title">我是个练习生，但我体内好像住着另一个"我"</h2>
+                <div class="post-meta">
+                    <span>👤 楼主：<strong>BYE BYE</strong></span>
+                    <span>📅 发帖时间：<strong>2025-01-15 23:47</strong></span>
+                    <span>👁️ 浏览：<strong>15,247</strong></span>
+                    <span>💬 回复：<strong>146</strong></span>
+                </div>
+            </div>
+
+            <div class="post-content">
+                <div class="post-text">
+各位吧友好，我叫苏晓宇，是一名练习生。
+
+今天发生的事情让我后背发凉，我必须找个地方说出来，不然我怕我会疯。
+
+事情是这样的。我在某娱乐公司做练习生已经三年了，一直在准备出道。但不知道从什么时候开始，我脑子里会出现一个声音。
+
+一开始我以为是自己太焦虑，出现了负面想法。但后来我发现不对劲——那个声音会说话，会跟我对话，而且说的话我根本没想过。
+
+比如今天下午，导师让我准备明天的舞台彩排。我刚要开口说"好的，我会努力"，脑子里突然响起一个声音："别说话，点头就行。你会说错的，会被笑话的。"
+
+我当时愣住了。那个声音听起来像我，但语气完全不同，充满了恐惧和恶意。
+
+更可怕的是，我发现我的嘴巴自己闭上了，我只是机械地点了点头。
+
+晚上彩排前，主持人想采访我几句话。我张开嘴想说，但那个声音又出现了："闭嘴！万一说错了会被剪辑成黑料，会被骂上热搜！笑一笑就行了！"
+
+这次我感觉到了恐惧。因为我的身体开始不受控制——我想说话，但喉咙像被什么东西掐住了一样，发不出声音。
+
+我只能对着镜头傻笑。
+
+回到宿舍后我对着镜子看自己，突然发现镜子里的"我"笑了一下。
+
+但我根本没笑。
+
+然后那个声音又响起来了："你太弱了，苏晓宇。让我来吧。"
+
+我现在不敢睡觉。我不知道醒来后，这具身体还是不是我的。
+
+有人遇到过类似的情况吗？我该怎么办？
+                </div>
+            </div>
+
+            <div class="replies-section">
+                <h3>回复列表 (146条)</h3>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">2楼</span>灵异小白兔</span>
+                        <span class="reply-time">2025-01-15 23:52</span>
+                    </div>
+                    <div class="reply-content">
+                        卧槽，这不会是人格分裂吧？楼主快去看心理医生啊
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">3楼</span>夜半听雨声</span>
+                        <span class="reply-time">2025-01-15 23:54</span>
+                    </div>
+                    <div class="reply-content">
+                        我怎么感觉像是被附身了……楼主你是不是最近去过什么不干净的地方？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">4楼</span>BYE BYE（楼主）</span>
+                        <span class="reply-time">2025-01-15 23:58</span>
+                    </div>
+                    <div class="reply-content">
+                        回2楼：我也怀疑过是心理问题，但人格分裂不会让身体不受控制吧？我真的感觉有东西在控制我的肌肉……
+
+回3楼：没去过啊，我每天就是公司、宿舍两点一线。不过……我想起来了，大概两个月前，有个算命的在地铁口拦住我，说我"三魂不稳，七魄游离"，让我买个平安符。我当时以为是骗子就走了。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">5楼</span>吃瓜不怕事大</span>
+                        <span class="reply-time">2025-01-16 00:03</span>
+                    </div>
+                    <div class="reply-content">
+                        练习生？该不会是某个选秀综艺的吧哈哈哈，楼主你红了记得回来更新
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">6楼</span>莲蓬老居士</span>
+                        <span class="reply-time">2025-01-16 00:07</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主，我说句你可能不爱听的话。
+
+你这个情况，在玄学上叫"夺舍"。
+
+简单说就是有东西想要占据你的身体。这种东西一般是怨灵或者执念特别重的孤魂野鬼。它们会先蚕食你的意志，让你怀疑自己，最后完全取代你。
+
+你现在还能发帖说明还有救。记住，千万不要听从那个声音的建议，越听从它越强大。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">7楼</span>BYE BYE（楼主）</span>
+                        <span class="reply-time">2025-01-16 00:15</span>
+                    </div>
+                    <div class="reply-content">
+                        回6楼：您说的我更害怕了……那我该怎么办？
+
+另外我刚才又发现一件事。我翻了一下手机相册，发现最近一个月的自拍里，我的眼神越来越空洞。特别是最近一周的照片，我的眼睛里好像没有光了，像个……傀儡。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">8楼</span>子夜敲门人</span>
+                        <span class="reply-time">2025-01-16 00:21</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主，我是认真的。
+
+你去照镜子，盯着自己的眼睛，大声说："这是我的身体，你滚出去。"
+
+如果镜子里的你表情扭曲或者露出诡异的笑容，那就证实了6楼说的。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">9楼</span>爱吃火锅的猫</span>
+                        <span class="reply-time">2025-01-16 00:23</span>
+                    </div>
+                    <div class="reply-content">
+                        我去，越看越毛骨悚然……楼主还在吗？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">10楼</span>BYE BYE（楼主）</span>
+                        <span class="reply-time">2025-01-16 00:31</span>
+                    </div>
+                    <div class="reply-content">
+                        在。
+
+我刚才按8楼说的做了。
+
+我对着镜子说完那句话后，镜子里的"我"慢慢地歪了歪头，然后咧开嘴笑了。
+
+那个笑容不是我做出来的。
+
+我能感觉到脸上的肌肉在动，但不是我控制的。
+
+然后那个声音说："你以为你是谁？这具身体本该是我的。你只是个懦夫，只配被我取代。"
+
+我现在浑身发抖。我不知道该怎么办。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">11楼</span>莲蓬老居士</span>
+                        <span class="reply-time">2025-01-16 00:38</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主听我说！
+
+它现在还不能完全控制你，说明你的意志还在抵抗。
+
+明天你那个舞台彩排，无论那个声音说什么，你都要开口说话，要表达自己的想法。这是夺回控制权的唯一机会。
+
+夺舍之灵最怕的就是宿主的强大意志。你越软弱，它越强大；你越坚定，它越虚弱。
+
+记住，那个舞台就是你的战场。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">12楼</span>深海恐惧症晚期</span>
+                        <span class="reply-time">2025-01-16 00:42</span>
+                    </div>
+                    <div class="reply-content">
+                        妈呀妈呀妈呀，我不敢看了但又想知道后续……
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">13楼</span>BYE BYE（楼主）</span>
+                        <span class="reply-time">2025-01-16 00:47</span>
+                    </div>
+                    <div class="reply-content">
+                        谢谢11楼。
+
+我决定试试。明天彩排我一定要开口说话，一定要做回自己。
+
+如果明天我还能回来发帖，就说明我成功了。
+
+如果我没有回来更新……
+
+那可能，这个账号后面发言的，就不是我了。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">14楼</span>吃瓜不怕事大</span>
+                        <span class="reply-time">2025-01-16 00:50</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主加油！我们等你回来！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">15楼</span>夜半听雨声</span>
+                        <span class="reply-time">2025-01-16 00:53</span>
+                    </div>
+                    <div class="reply-content">
+                        已收藏，坐等更新
+                    </div>
+                </div>
+
+                <!-- 折叠的水楼楼层 -->
+                <div class="folded-replies" onclick="toggleFoldedReplies()">
+                    <div class="folded-header">
+                        <span class="folded-icon">👇</span>
+                        <span>【一些无意义的水楼楼层】</span>
+                        <span class="folded-count">16楼 - 137楼 (共122条)</span>
+                        <span class="folded-icon">👇</span>
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">138楼</span>灵异小白兔</span>
+                        <span class="reply-time">2025-01-16 18:23</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主呢？彩排结束了吧？怎么不更新？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">139楼</span>子夜敲门人</span>
+                        <span class="reply-time">2025-01-16 18:35</span>
+                    </div>
+                    <div class="reply-content">
+                        不会真出事了吧……
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">140楼</span>BYE BYE（楼主）</span>
+                        <span class="reply-time">2025-01-16 20:17</span>
+                    </div>
+                    <div class="reply-content">
+                        我回来了。
+
+今天下午彩排的时候，主持人又来采访我。那个声音又出现了，让我闭嘴，让我只要笑就好。
+
+但这次我没听。
+
+我深吸一口气，挺直了胸膛，一字一句地说出了自己的想法。
+
+刚开始我的声音在发抖，但说到后来，我感觉越来越顺畅。我能感受到那个声音在削弱，在嘶吼，在挣扎。
+
+当我说完最后一句话的时候，我感觉脑子里传来一声尖叫，然后……那个声音消失了。
+
+彻底消失了。
+
+我站在舞台中央，感受到了久违的自由。观众在为我鼓掌，我能看到他们眼中的光。
+
+我回到宿舍照镜子，镜子里的我眼睛又有光了。
+
+我夺回了自己的身体。
+
+谢谢各位吧友，特别是11楼。你救了我。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">141楼</span>莲蓬老居士</span>
+                        <span class="reply-time">2025-01-16 20:25</span>
+                    </div>
+                    <div class="reply-content">
+                        恭喜楼主。
+
+记住今天的感受，以后无论遇到什么困难，都不要放弃自己。
+
+那些想要吞噬你的东西，无论是真实的灵体，还是内心的恐惧，只要你足够坚定，它们就无法伤害你。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">142楼</span>深海恐惧症晚期</span>
+                        <span class="reply-time">2025-01-16 20:31</span>
+                    </div>
+                    <div class="reply-content">
+                        呜呜呜好感动！楼主太棒了！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">143楼</span>夜半听雨声</span>
+                        <span class="reply-time">2025-01-16 20:35</span>
+                    </div>
+                    <div class="reply-content">
+                        这故事太魔幻了……但我竟然相信了。楼主加油，期待你出道的那一天！
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">144楼</span>爱吃火锅的猫</span>
+                        <span class="reply-time">2025-01-16 20:42</span>
+                    </div>
+                    <div class="reply-content">
+                        所以那个"声音"到底是什么？真的是鬼吗？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">145楼</span>BYE BYE（楼主）</span>
+                        <span class="reply-time">2025-01-16 20:58</span>
+                    </div>
+                    <div class="reply-content">
+                        回144楼：我也不知道。也许是真的有什么东西想占据我的身体，也许只是我内心的恐惧具象化了。
+
+但不管是什么，它现在已经消失了。
+
+我只知道，我重新找回了自己。
+
+这就够了。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">146楼</span>子夜敲门人</span>
+                        <span class="reply-time">2025-01-16 21:05</span>
+                    </div>
+                    <div class="reply-content">
+                        有时候，人性的恐惧比鬼怪更可怕。
+
+楼主这个故事告诉我们，无论面对什么，都不要放弃自己的声音。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="spooky-divider"></div>
+
+        <!-- 返回首页按钮（无箭头） -->
+        <div class="return-home-container">
+            <a href="灵异论坛.html" class="return-home">返回首页</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息</p>
+        <p>当前时间：<span id="current-time"></span></p>
+    </footer>
+</div>
+
+<script>
+    // 折叠楼层提示功能（保留）
+    function toggleFoldedReplies() {
+        alert('16楼-137楼为一些无意义的水楼楼层，已折叠显示。');
+    }
+
+    // 确保页面可以滚动（移动端优化）
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
+
+        // 更新时间
+        function updateTime() {
+            const timeEl = document.getElementById('current-time');
+            if (timeEl) timeEl.innerText = new Date().toLocaleString('zh-CN');
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // 移动端优化
+        if (window.innerWidth <= 768) {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.style.borderRadius = '0';
+                container.style.border = 'none';
+            }
+        }
+
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            let now = new Date().getTime();
+            if (now - lastTouchEnd <= 300) event.preventDefault();
+            lastTouchEnd = now;
+        }, false);
+    });
+</script>
+</body>
+</html>

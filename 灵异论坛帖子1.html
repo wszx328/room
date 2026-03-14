@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>灵异事件吧 - 说说我朋友圈里那个"完美"的网红是怎么一步步变成怪物的</title>
+    <style>
+        /* ----- 深紫色调（完全复制主论坛样式）----- */
+        :root {
+            --primary-dark: #0d0415; --primary-bg: #130b1f; --header-bg: #1a0f2a;
+            --accent-purple: #c49bff; --accent-dark-purple: #5d3a8a; --text-light: #ece0ff;
+            --text-gray: #bba8dd; --border-color: #4a2a6a;
+            --card-bg: rgba(26, 15, 45, 0.85); --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 0 1px #5d3a8a inset;
+            --hover-glow: 0 0 18px #b27aff; --warning-bg: #2f1b2b; --warning-border: #c45aa0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body {
+            background: var(--primary-dark) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.07"><path d="M70 90 Q90 60 120 80 Q150 100 130 140 Q110 180 70 160 Q30 140 40 100 Q50 60 70 90" fill="%23c49bff" stroke="none"/></svg>');
+            color: var(--text-light); line-height: 1.6; padding: 15px; min-height: 100vh;
+        }
+        .container { max-width: 1300px; margin: 0 auto; background: var(--primary-bg); border-radius: 28px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #5d3a8a; backdrop-filter: blur(2px); }
+        header { background: var(--header-bg); padding: 20px 28px; border-bottom: 2px solid var(--accent-dark-purple); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+        .forum-title { font-size: 28px; color: var(--accent-purple); text-shadow: 0 0 15px #d5aaff; letter-spacing: 2px; display: flex; align-items: center; }
+        .forum-title::before { content: "👁‍🗨"; margin-right: 12px; font-size: 30px; filter: drop-shadow(0 0 5px #c49bff); }
+        /* 头部仅保留标题，导航菜单已移除 */
+
+        /* 帖子详情区域 */
+        .post-container {
+            background: #1b112b;
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid #8d62cf;
+        }
+        .post-header {
+            border-bottom: 1px solid #6e4a9f;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .post-title {
+            font-size: 32px;
+            color: #f0dbff;
+            margin-bottom: 15px;
+        }
+        .post-meta {
+            display: flex;
+            gap: 30px;
+            color: #baa0e8;
+            flex-wrap: wrap;
+        }
+        .post-content {
+            background: #231a33;
+            border-radius: 24px;
+            padding: 25px;
+            font-size: 17px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            border: 1px solid #7e5bb3;
+            margin-bottom: 30px;
+        }
+        .post-text {
+            line-height: 1.8;
+        }
+        /* 锁定提示 */
+        .locked-post {
+            background: #2f1b2b;
+            border-left: 6px solid #d47ab0;
+            padding: 16px;
+            border-radius: 18px;
+            margin: 20px 0;
+        }
+        .locked-post h4 {
+            color: #d47ab0;
+            margin-bottom: 8px;
+        }
+        /* 回复区域 */
+        .replies-section h3 {
+            color: #dbbdff;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-left: 4px solid #c197ff;
+            padding-left: 10px;
+        }
+        .reply {
+            background: #1f1533;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #c197ff;
+        }
+        .reply.deleted, .reply.locked, .reply.system {
+            background: #1f1533;
+            border-left-color: #c197ff;
+        }
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            color: #af94dd;
+            font-size: 13px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .reply-user {
+            font-weight: bold;
+        }
+        .floor-number {
+            display: inline-block;
+            background: #372652;
+            color: #c49bff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-right: 8px;
+        }
+        .reply-content {
+            color: #ece0ff;
+        }
+        .mention {
+            color: #c49bff;
+            font-weight: 600;
+        }
+        .spooky-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c49bff, transparent);
+            margin: 20px 0;
+        }
+
+        /* 返回首页按钮样式（已移除前导箭头） */
+        .return-home-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 20px;
+        }
+        .return-home {
+            background: #362652;
+            color: white;
+            border-radius: 60px;
+            padding: 14px 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            border: 1px solid #bf9cff;
+            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .return-home:hover {
+            background: #563d82;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px #dbb5ff;
+        }
+        /* 已移除 ::before 伪元素 */
+
+        /* 底部 */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #9b84c0;
+            border-top: 1px solid #4f3b74;
+            margin-top: 20px;
+        }
+        .infinity-symbol {
+            color: #eac7ff;
+            font-weight: 900;
+            font-size: 1.3em;
+        }
+        .flicker {
+            animation: flicker 4s infinite;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            15% { opacity: 0.7; }
+            30% { opacity: 1; }
+            55% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+        /* 响应式 */
+        @media (max-width:800px) {
+            header { flex-direction: column; align-items: stretch; }
+            .post-title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部：仅保留标题，菜单栏已移除 -->
+    <header>
+        <h1 class="forum-title flicker">灵异事件吧</h1>
+    </header>
+
+    <div class="content-container">
+        <div class="post-container">
+            <div class="post-header">
+                <h2 class="post-title">说说我朋友圈里那个"完美"的网红是怎么一步步变成怪物的</h2>
+                <div class="post-meta">
+                    <span>👤 楼主：<strong>TALKIN'BOUT</strong></span>
+                    <span>📅 发帖时间：<strong>2024-01-15 23:47</strong></span>
+                    <span>👁️ 浏览：<strong>127,834</strong></span>
+                    <span>💬 回复：<strong>25</strong></span>
+                </div>
+            </div>
+
+            <div class="post-content">
+                <div class="post-text">
+先说明，这事儿是真的，我到现在都不敢细想。
+
+事情的主角叫林晓宇，三年前还是我们这个城市小有名气的生活类博主。长得帅，情商高，从不炒作，也不接烂广告。你们懂的，就是那种让人挑不出毛病的"完美人设"。
+
+问题就出在这个"完美"上。
+
+大概是去年春天开始的吧，有天我闺蜜突然神秘兮兮地跟我说："哎，你知道吗？林晓宇其实有六根手指。"
+
+我当时就笑了："别扯了，他那么多视频照片，哪见过六根手指？"
+
+她说是她表姐的同事的朋友亲眼见过的。我也没当回事儿。
+
+但接下来的事儿就诡异了。
+
+一个月后，公司茶水间，听到有人说林晓宇其实不吃饭的，只喝一种特殊的营养液。
+又过了半个月，地铁上听到两个学生讨论，说林晓宇的影子有时候会消失。
+再后来，小区门口买菜，大妈们聊天说林晓宇其实是双胞胎，两个人轮流出现……
+
+我开始觉得不对劲了。这些传言越来越离谱，但每个人都说得有鼻子有眼的，仿佛亲眼所见。
+
+最让我毛骨悚然的是上个月的事。
+
+那天晚上我失眠刷手机，无意中点开林晓宇的最新视频。镜头里的他还是那么阳光帅气，笑容温暖。但我盯着屏幕看了十几秒后，突然浑身发冷——
+
+他的眼睛位置不太对。好像比正常人高了那么一点点。
+然后我注意到他的手……妈的，视频里真的有六根手指。
+他走路的时候，地上确实没有影子。
+
+我赶紧翻他以前的视频，全都正常。只有最近一个月的视频，开始出现这些"异常"。
+
+但最恐怖的不是这个。
+
+最恐怖的是——当我把这些截图发给朋友们看的时候，他们都说："这不是一直这样的吗？"
+
+就好像……就好像那些传言变成了现实。
+或者说，传言创造了现实。
+
+我去翻了林晓宇的评论区，置顶评论是三天前的：
+
+"你们知道吗？林晓宇其实不是人类。"
+
+这条评论有二十万个赞。
+
+今天下午，林晓宇开了直播。我点进去看了一眼就关了。
+
+那张脸还能辨认出是他，但已经完全不像人类了。眼睛的位置、手指的数量、身体的比例……全都变成了这半年来大家"传说"中的样子。
+
+直播间里三百万人，弹幕全在刷：
+
+"晓宇今天也好帅！"
+"最喜欢你这样了！"
+"果然只有你是最完美的！"
+
+没有一个人觉得不对劲。
+
+只有我看着那个扭曲的、拼凑的、由谣言堆砌出来的怪物，手抖得连手机都快拿不住。
+
+我现在怀疑，是不是当足够多的人相信一个谎言的时候，那个谎言就会变成真实？
+
+还是说……林晓宇从一开始就不存在，他只是我们集体意识创造出来的某种"存在"？
+
+算了，不想了。
+我只想问问吧里的大神们，有没有遇到过类似的事情？
+
+我现在最害怕的是，万一有一天，有人开始传我的谣言……
+                </div>
+            </div>
+
+            <div class="locked-post">
+                <h4>【系统提示】</h4>
+                <p>本帖因内容异常已被锁定，禁止回复</p>
+                <p>最后编辑时间：2024-01-16 11:00</p>
+                <p>根据吧规，本帖涉及不明信息传播，已移交技术部门检查。请各位吧友不要私下讨论本帖内容。</p>
+                <p>——灵异事件吧 管理员</p>
+            </div>
+
+            <div class="replies-section">
+                <h3>回复列表 (25条)</h3>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">1楼</span>夜行者007</span>
+                        <span class="reply-time">2024-01-15 23:52</span>
+                    </div>
+                    <div class="reply-content">
+                        卧槽，看得我鸡皮疙瘩起来了。楼主你确定不是自己看错了？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">2楼</span>TALKIN'BOUT（楼主）</span>
+                        <span class="reply-time">2024-01-15 23:54</span>
+                    </div>
+                    <div class="reply-content">
+                        我也希望是我看错了……但我把截图都保存了，明天发出来你们自己看
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">3楼</span>吃瓜不怕事大</span>
+                        <span class="reply-time">2024-01-15 23:56</span>
+                    </div>
+                    <div class="reply-content">
+                        林晓宇是谁啊？没听说过这个网红
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">4楼</span>TALKIN'BOUT（楼主）</span>
+                        <span class="reply-time">2024-01-15 23:58</span>
+                    </div>
+                    <div class="reply-content">
+                        就是这个最诡异的地方！！！我刚才又去搜了一遍，除了他的账号还在，其他关于他的新闻报道、采访记录、代言广告……全都消失了。就好像这个人从来没有"正式"存在过，只存在于社交媒体和人们的口中……
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">5楼</span>莲蓬深处</span>
+                        <span class="reply-time">2024-01-16 00:03</span>
+                    </div>
+                    <div class="reply-content">
+                        老哥，我说个更细思极恐的。我刚才去搜了林晓宇，确实搜到了他的账号。但我看他的照片和视频，感觉一切正常啊？六根手指？没有影子？你确定不是自己压力太大产生幻觉了？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">6楼</span>TALKIN'BOUT（楼主）</span>
+                        <span class="reply-time">2024-01-16 00:05</span>
+                    </div>
+                    <div class="reply-content">
+                        ……你再仔细看看他最新的那条视频，19秒到23秒的位置，他转身的时候
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">7楼</span>莲蓬深处</span>
+                        <span class="reply-time">2024-01-16 00:09</span>
+                    </div>
+                    <div class="reply-content">
+                        妈的，我看了，确实……等等，不对，我现在觉得这很正常啊？我甚至觉得六根手指挺好看的？楼主你别吓我，我是不是也被影响了？？？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">8楼</span>路过的心理学研究生</span>
+                        <span class="reply-time">2024-01-16 00:15</span>
+                    </div>
+                    <div class="reply-content">
+                        从心理学角度分析，这可能是一种集体癔症或者曼德拉效应的变体。当大量的人重复某个"虚假记忆"时，会对个体的认知产生影响。但楼主说的情况如果是真的，那就超出心理学范畴了……
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">9楼</span>午夜屠夫</span>
+                        <span class="reply-time">2024-01-16 00:21</span>
+                    </div>
+                    <div class="reply-content">
+                        我，我刚才去看了那个直播回放，现在关掉屏幕还能看到那张脸的残影。楼主你害我失眠了
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">10楼</span>隔壁王大爷</span>
+                        <span class="reply-time">2024-01-16 00:27</span>
+                    </div>
+                    <div class="reply-content">
+                        楼上的都别自己吓自己。我看就是楼主编故事呢。什么谣言变现实，扯淡。照这逻辑，我现在说楼主是外星人，楼主就真变外星人了？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">11楼</span>TALKIN'BOUT（楼主）</span>
+                        <span class="reply-time">2024-01-16 00:31</span>
+                    </div>
+                    <div class="reply-content">
+                        <span class="mention">@隔壁王大爷</span> 你别，真别乱说……我现在看自己的手都感觉不太对劲了
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">12楼</span>凌晨三点的太阳</span>
+                        <span class="reply-time">2024-01-16 00:45</span>
+                    </div>
+                    <div class="reply-content">
+                        我有个大胆的猜测。会不会林晓宇本来就不是人？他是那种会根据人类认知而改变形态的存在？因为他太"完美"了，完美到不真实，所以人们开始本能地给他添加"缺陷"，而这些"缺陷"反而让他变得更加……不对劲
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">13楼</span>旧城以西</span>
+                        <span class="reply-time">2024-01-16 01:03</span>
+                    </div>
+                    <div class="reply-content">
+                        我去，我突然想起来，我高中同学就叫林晓宇。但我现在怎么想都想不起他的脸了，只记得"很帅""很完美"这种抽象的形容词……
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">14楼</span>TALKIN'BOUT（楼主）</span>
+                        <span class="reply-time">2024-01-16 01:07</span>
+                    </div>
+                    <div class="reply-content">
+                        楼上的，你同学现在还联系吗？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">15楼</span>旧城以西</span>
+                        <span class="reply-time">2024-01-16 01:12</span>
+                    </div>
+                    <div class="reply-content">
+                        刚才翻了通讯录和朋友圈，没有这个人。但我确定我们班确实有个林晓宇……或者说，我们都"记得"有个林晓宇？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">16楼</span>不存在的404</span>
+                        <span class="reply-time">2024-01-16 01:28</span>
+                    </div>
+                    <div class="reply-content">
+                        细思极恐系列又添一笔。楼主保重，记得远离任何关于林晓宇的讨论。还有，千万别让别人讨论你。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">17楼</span>TALKIN'BOUT（楼主）</span>
+                        <span class="reply-time">2024-01-16 01:35</span>
+                    </div>
+                    <div class="reply-content">
+                        谢谢提醒。我现在准备卸载所有社交软件了。最后说一句，如果哪天你们在网上看到关于我的奇怪传言，请不要相信，也不要传播。
+                        <br><br>
+                        拜托了。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">18楼</span>吃瓜群众甲</span>
+                        <span class="reply-time">2024-01-16 01:52</span>
+                    </div>
+                    <div class="reply-content">
+                        楼主这是要跑路的节奏？等等，我去搜一下"TALKIN'BOUT"这个ID……
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">19楼</span>莲蓬深处</span>
+                        <span class="reply-time">2024-01-16 02:15</span>
+                    </div>
+                    <div class="reply-content">
+                        草，楼主真注销了？我现在越想越不对劲。刚才那个说要搜楼主ID的人呢？18楼怎么不说话了？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">20楼</span>夜不归宿</span>
+                        <span class="reply-time">2024-01-16 02:47</span>
+                    </div>
+                    <div class="reply-content">
+                        有一说一，我现在不敢睡觉了。话说回来，林晓宇到底是谁啊？我怎么感觉自己好像认识他，但又说不出在哪见过……
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">21楼</span>凌晨四点的猫</span>
+                        <span class="reply-time">2024-01-16 03:33</span>
+                    </div>
+                    <div class="reply-content">
+                        你们知道吗？其实18楼那个人从一开始就不存在。我一直在刷新这个帖子，根本没有18楼。
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">22楼</span>路过的萌新</span>
+                        <span class="reply-time">2024-01-16 04:12</span>
+                    </div>
+                    <div class="reply-content">
+                        楼上的你别吓人，我明明看到18楼了啊。不过现在再看，18楼的内容好像变了？之前不是说要搜楼主ID吗？现在怎么变成"你们知道吗，楼主其实……"
+                        <br><br>
+                        后面的字看不清了，像是被打了马赛克。
+                    </div>
+                </div>
+
+                <div class="reply system">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">系统</span>【系统提示】</span>
+                        <span class="reply-time">2024-01-16 04:12</span>
+                    </div>
+                    <div class="reply-content">
+                        该楼层因违规已被屏蔽
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">23楼</span>老吧友</span>
+                        <span class="reply-time">2024-01-16 06:28</span>
+                    </div>
+                    <div class="reply-content">
+                        早上醒来看到这帖子，感觉昨晚这帮人是集体魔怔了吧？什么林晓宇、什么楼主注销，我看回复记录都挺正常的啊。18楼也在啊，就是普通的盖楼而已。
+                        <br><br>
+                        话说这楼怎么才23楼？我记得昨晚睡前看已经100多楼了……
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">24楼</span>午夜屠夫</span>
+                        <span class="reply-time">2024-01-16 09:47</span>
+                    </div>
+                    <div class="reply-content">
+                        <span class="mention">@老吧友</span> 你再往上翻翻，是不是有些楼层的内容和你记忆中的不一样了？
+                    </div>
+                </div>
+
+                <div class="reply">
+                    <div class="reply-header">
+                        <span class="reply-user"><span class="floor-number">25楼</span>不想透露姓名的网友</span>
+                        <span class="reply-time">2024-01-16 10:33</span>
+                    </div>
+                    <div class="reply-content">
+                        我只想问，有人记得楼主到底讲了什么故事吗？我看了三遍主楼，每次看到的内容都不太一样……
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 返回首页按钮（无箭头） -->
+        <div class="return-home-container">
+            <a href="灵异论坛.html" class="return-home">返回首页</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 灵异事件吧 - 仅供娱乐讨论，请勿轻信未经证实的信息</p>
+        <p>当前时间：<span id="current-time"></span></p>
+    </footer>
+</div>
+
+<script>
+    // 更新时间（原页面脚本已简化，只保留时间显示和必要的优化）
+    document.addEventListener('DOMContentLoaded', function() {
+        // 更新时间
+        function updateTime() {
+            const timeEl = document.getElementById('current-time');
+            if (timeEl) timeEl.innerText = new Date().toLocaleString('zh-CN');
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // 确保页面可以滚动
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
+
+        // 移动端优化
+        if (window.innerWidth <= 768) {
+            document.querySelector('.container').style.borderRadius = '0';
+            document.querySelector('.container').style.border = 'none';
+        }
+
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            let now = new Date().getTime();
+            if (now - lastTouchEnd <= 300) event.preventDefault();
+            lastTouchEnd = now;
+        }, false);
+    });
+</script>
+</body>
+</html>
